@@ -476,6 +476,17 @@ class ManifestError(Exception):
     """Error building or writing the dataset manifest."""
 
 
+class ManifestCorruptionError(ManifestError):
+    """Manifest is internally inconsistent or fails the frozen selection rules."""
+
+
+class ManifestDriftError(ManifestError):
+    """Upstream Defects4J metadata no longer matches the recorded active snapshot.
+
+    The existing manifest must be preserved; do not resample in place.
+    """
+
+
 def experiment_git_commit(workspace: Path | None = None) -> str | None:
     """Return the jev-ci repo commit, or None if unavailable (never '')."""
     root = workspace or Path("/workspace")
@@ -643,6 +654,313 @@ def build_manifest_from_installation(
     )
 
 
+def load_manifest(path: Path | None = None) -> dict:
+    """Parse manifest JSON from disk."""
+    manifest_path = Path(path or DEFAULT_MANIFEST_PATH)
+    if not manifest_path.is_file():
+        raise ManifestError(f"manifest not found: {manifest_path}")
+    try:
+        return json.loads(manifest_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise ManifestCorruptionError(
+            f"manifest is not valid JSON: {manifest_path}: {exc}"
+        ) from exc
+
+
+def _require(mapping: Mapping[str, object], key: str, *, context: str) -> object:
+    if key not in mapping:
+        raise ManifestCorruptionError(f"{context}: missing field {key!r}")
+    return mapping[key]
+
+
+def _require_list(mapping: Mapping[str, object], key: str, *, context: str) -> list:
+    value = _require(mapping, key, context=context)
+    if not isinstance(value, list):
+        raise ManifestCorruptionError(f"{context}.{key}: expected list, got {type(value).__name__}")
+    return value
+
+
+def verify_manifest_integrity(manifest: Mapping[str, object]) -> None:
+    """Validate schema, counts, uniqueness, and selection against the recorded active sets.
+
+    Does not contact Defects4J. Raises ManifestCorruptionError on failure.
+    """
+    for key in (
+        "defects4j_version",
+        "defects4j_commit",
+        "selection_seed",
+        "projects",
+        "development_bug_ids",
+        "evaluation_bug_ids",
+        "created_at",
+        "git_commit",
+        "project_order",
+        "environment",
+    ):
+        _require(manifest, key, context="manifest")
+
+    if manifest["selection_seed"] != SELECTION_SEED:
+        raise ManifestCorruptionError(
+            f"manifest.selection_seed: expected {SELECTION_SEED}, "
+            f"got {manifest['selection_seed']!r}"
+        )
+    if manifest["project_order"] != list(PROJECT_ORDER):
+        raise ManifestCorruptionError(
+            f"manifest.project_order: expected {list(PROJECT_ORDER)}, "
+            f"got {manifest['project_order']!r}"
+        )
+    if not isinstance(manifest["defects4j_version"], str) or not manifest["defects4j_version"]:
+        raise ManifestCorruptionError("manifest.defects4j_version: must be a nonempty string")
+    if not isinstance(manifest["defects4j_commit"], str) or not manifest["defects4j_commit"]:
+        raise ManifestCorruptionError("manifest.defects4j_commit: must be a nonempty string")
+
+    environment = manifest["environment"]
+    if not isinstance(environment, Mapping):
+        raise ManifestCorruptionError("manifest.environment: expected object")
+    for key in ("python_version", "java_version", "os", "architecture", "timezone"):
+        _require(environment, key, context="manifest.environment")
+
+    projects = manifest["projects"]
+    if not isinstance(projects, Mapping):
+        raise ManifestCorruptionError("manifest.projects: expected object")
+
+    active_lists: dict[str, list[str]] = {}
+    for project in PROJECT_ORDER:
+        if project not in projects:
+            raise ManifestCorruptionError(f"manifest.projects: missing project {project}")
+        entry = projects[project]
+        if not isinstance(entry, Mapping):
+            raise ManifestCorruptionError(f"manifest.projects.{project}: expected object")
+
+        active = _require_list(entry, "active_bug_ids", context=f"projects.{project}")
+        try:
+            validated_active = validate_active_ids(project, [str(x) for x in active])
+        except ActiveIdError as exc:
+            raise ManifestCorruptionError(f"projects.{project}.active_bug_ids: {exc}") from exc
+        active_lists[project] = list(validated_active)
+
+        count = _require(entry, "active_count", context=f"projects.{project}")
+        if count != len(validated_active):
+            raise ManifestCorruptionError(
+                f"projects.{project}.active_count: expected {len(validated_active)}, got {count}"
+            )
+        digest = _require(entry, "active_content_sha256", context=f"projects.{project}")
+        expected_digest = content_hash(validated_active)
+        if digest != expected_digest:
+            raise ManifestCorruptionError(
+                f"projects.{project}.active_content_sha256: does not match active_bug_ids"
+            )
+
+        selected = [str(x) for x in _require_list(entry, "selected_ids", context=f"projects.{project}")]
+        development = [
+            str(x) for x in _require_list(entry, "development_ids", context=f"projects.{project}")
+        ]
+        evaluation = [
+            str(x) for x in _require_list(entry, "evaluation_ids", context=f"projects.{project}")
+        ]
+        if len(selected) != SAMPLE_SIZE:
+            raise ManifestCorruptionError(
+                f"projects.{project}.selected_ids: expected {SAMPLE_SIZE}, got {len(selected)}"
+            )
+        if len(set(selected)) != SAMPLE_SIZE:
+            raise ManifestCorruptionError(
+                f"projects.{project}.selected_ids: contains duplicates"
+            )
+        if development != selected[:DEVELOPMENT_PER_PROJECT]:
+            raise ManifestCorruptionError(
+                f"projects.{project}.development_ids: must equal selected_ids[0:5] in order"
+            )
+        if evaluation != selected[DEVELOPMENT_PER_PROJECT:]:
+            raise ManifestCorruptionError(
+                f"projects.{project}.evaluation_ids: must equal selected_ids[5:30] in order"
+            )
+        active_set = set(validated_active)
+        for bug_id in selected:
+            if bug_id not in active_set:
+                raise ManifestCorruptionError(
+                    f"projects.{project}.selected_ids: {bug_id!r} not in active_bug_ids"
+                )
+
+        for field, bare in (
+            ("selected_qualified_ids", selected),
+            ("development_qualified_ids", development),
+            ("evaluation_qualified_ids", evaluation),
+        ):
+            qualified = [
+                str(x) for x in _require_list(entry, field, context=f"projects.{project}")
+            ]
+            expected = [qualify_bug_id(project, bug_id) for bug_id in bare]
+            if qualified != expected:
+                raise ManifestCorruptionError(
+                    f"projects.{project}.{field}: does not match bare ids"
+                )
+
+    try:
+        expected_selection = select_bugs(active_lists)
+    except (ActiveIdError, SelectionError) as exc:
+        raise ManifestCorruptionError(
+            f"could not recompute selection from recorded active sets: {exc}"
+        ) from exc
+
+    for entry in expected_selection.projects:
+        recorded = projects[entry.project]
+        if list(recorded["selected_ids"]) != list(entry.selected_ids):
+            raise ManifestCorruptionError(
+                f"projects.{entry.project}.selected_ids: does not match "
+                f"recomputed sample for seed {SELECTION_SEED}"
+            )
+
+    development_bug_ids = [
+        str(x) for x in _require_list(manifest, "development_bug_ids", context="manifest")
+    ]
+    evaluation_bug_ids = [
+        str(x) for x in _require_list(manifest, "evaluation_bug_ids", context="manifest")
+    ]
+    if development_bug_ids != list(expected_selection.development_bug_ids):
+        raise ManifestCorruptionError(
+            "manifest.development_bug_ids: does not match recomputed development split"
+        )
+    if evaluation_bug_ids != list(expected_selection.evaluation_bug_ids):
+        raise ManifestCorruptionError(
+            "manifest.evaluation_bug_ids: does not match recomputed evaluation split"
+        )
+    if len(development_bug_ids) != len(PROJECT_ORDER) * DEVELOPMENT_PER_PROJECT:
+        raise ManifestCorruptionError(
+            f"manifest.development_bug_ids: expected "
+            f"{len(PROJECT_ORDER) * DEVELOPMENT_PER_PROJECT}, got {len(development_bug_ids)}"
+        )
+    if len(evaluation_bug_ids) != len(PROJECT_ORDER) * EVALUATION_PER_PROJECT:
+        raise ManifestCorruptionError(
+            f"manifest.evaluation_bug_ids: expected "
+            f"{len(PROJECT_ORDER) * EVALUATION_PER_PROJECT}, got {len(evaluation_bug_ids)}"
+        )
+    combined = development_bug_ids + evaluation_bug_ids
+    if len(set(combined)) != len(combined):
+        raise ManifestCorruptionError(
+            "manifest development/evaluation ids are not unique across splits"
+        )
+    overlap = set(development_bug_ids) & set(evaluation_bug_ids)
+    if overlap:
+        raise ManifestCorruptionError(
+            f"manifest: ids appear in both development and evaluation: {sorted(overlap)[:5]}"
+        )
+
+
+def check_manifest_upstream_drift(
+    manifest: Mapping[str, object],
+    *,
+    check_assumptions: bool = True,
+) -> None:
+    """Compare recorded active snapshots to the current pinned Defects4J install.
+
+    Raises ManifestDriftError when metadata changed. Never modifies the manifest.
+    """
+    try:
+        catalog = load_active_bug_catalog(check_assumptions=check_assumptions)
+    except ActiveIdError as exc:
+        raise ManifestDriftError(
+            f"could not read current Defects4J metadata for drift check: {exc}"
+        ) from exc
+
+    problems: list[str] = []
+    if catalog.defects4j_version != manifest.get("defects4j_version"):
+        problems.append(
+            f"defects4j_version: manifest={manifest.get('defects4j_version')!r}, "
+            f"installed={catalog.defects4j_version!r}"
+        )
+    if catalog.defects4j_commit != manifest.get("defects4j_commit"):
+        problems.append(
+            f"defects4j_commit: manifest={manifest.get('defects4j_commit')!r}, "
+            f"installed={catalog.defects4j_commit!r}"
+        )
+
+    projects = manifest.get("projects")
+    if isinstance(projects, Mapping):
+        current = catalog.by_project()
+        for project in PROJECT_ORDER:
+            if project not in projects or not isinstance(projects[project], Mapping):
+                continue
+            recorded = projects[project]
+            live = current[project]
+            recorded_hash = recorded.get("active_content_sha256")
+            if recorded_hash != live.content_sha256:
+                problems.append(
+                    f"projects.{project}.active_content_sha256: "
+                    f"manifest={recorded_hash!r}, installed={live.content_sha256!r}"
+                )
+            recorded_ids = recorded.get("active_bug_ids")
+            if list(recorded_ids or []) != list(live.bug_ids):
+                problems.append(
+                    f"projects.{project}.active_bug_ids: installed active set differs "
+                    f"(manifest count={len(recorded_ids or [])}, "
+                    f"installed count={len(live.bug_ids)})"
+                )
+
+    if problems:
+        raise ManifestDriftError(
+            "upstream Defects4J metadata differs from the locked manifest; "
+            "preserving the existing file (do not resample in place): "
+            + "; ".join(problems)
+        )
+
+
+def verify_manifest_file(
+    path: Path | None = None,
+    *,
+    check_upstream_drift: bool = True,
+    check_assumptions: bool = True,
+) -> dict:
+    """Load and verify a manifest without modifying it.
+
+    Returns the parsed manifest on success.
+    """
+    manifest_path = Path(path or DEFAULT_MANIFEST_PATH)
+    before = manifest_path.read_bytes()
+    manifest = load_manifest(manifest_path)
+    verify_manifest_integrity(manifest)
+    if check_upstream_drift:
+        check_manifest_upstream_drift(manifest, check_assumptions=check_assumptions)
+    after = manifest_path.read_bytes()
+    if after != before:
+        raise ManifestError(
+            f"verify mutated manifest bytes unexpectedly: {manifest_path}"
+        )
+    return manifest
+
+
+def create_manifest_file(
+    path: Path | None = None,
+    *,
+    environment_record_path: Path | None = None,
+    check_assumptions: bool = True,
+) -> tuple[dict, bool]:
+    """Create the manifest once.
+
+    Returns ``(manifest, created)`` where ``created`` is False when the file
+    already existed and was verified without rewriting.
+    """
+    manifest_path = Path(path or DEFAULT_MANIFEST_PATH)
+    if manifest_path.exists():
+        manifest = verify_manifest_file(
+            manifest_path,
+            check_upstream_drift=True,
+            check_assumptions=check_assumptions,
+        )
+        return manifest, False
+
+    manifest = build_manifest_from_installation(
+        environment_record_path=environment_record_path,
+        check_assumptions=check_assumptions,
+    )
+    write_manifest_atomic(manifest_path, manifest)
+    verify_manifest_file(
+        manifest_path,
+        check_upstream_drift=True,
+        check_assumptions=check_assumptions,
+    )
+    return manifest, True
+
+
 def cmd_list_active(args: argparse.Namespace) -> int:
     try:
         catalog = load_active_bug_catalog(check_assumptions=not args.skip_assumption_check)
@@ -709,6 +1027,77 @@ def cmd_build_manifest(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_create(args: argparse.Namespace) -> int:
+    try:
+        manifest, created = create_manifest_file(
+            path=args.path,
+            environment_record_path=args.environment_record,
+            check_assumptions=not args.skip_assumption_check,
+        )
+    except ManifestDriftError as exc:
+        print(f"error: drift: {exc}", file=sys.stderr)
+        print(
+            "hint: existing manifest was not modified; investigate Defects4J pin/install",
+            file=sys.stderr,
+        )
+        return 2
+    except ManifestCorruptionError as exc:
+        print(f"error: corruption: {exc}", file=sys.stderr)
+        print(
+            "hint: run `python src/select_bugs.py verify` for details; "
+            "do not force-resample",
+            file=sys.stderr,
+        )
+        return 1
+    except (ActiveIdError, SelectionError, ManifestError) as exc:
+        _fail(str(exc))
+
+    path = Path(args.path)
+    if created:
+        print(f"created {path}")
+    else:
+        print(f"manifest already exists at {path}; verified; not rewritten")
+    print(
+        f"development={len(manifest['development_bug_ids'])} "
+        f"evaluation={len(manifest['evaluation_bug_ids'])} "
+        f"seed={manifest['selection_seed']}"
+    )
+    return 0
+
+
+def cmd_verify(args: argparse.Namespace) -> int:
+    path = Path(args.path)
+    before = path.read_bytes() if path.is_file() else None
+    try:
+        manifest = verify_manifest_file(
+            path,
+            check_upstream_drift=not args.skip_upstream_drift,
+            check_assumptions=not args.skip_assumption_check,
+        )
+    except ManifestDriftError as exc:
+        print(f"error: drift: {exc}", file=sys.stderr)
+        if before is not None and path.is_file() and path.read_bytes() != before:
+            print("error: verify mutated the manifest unexpectedly", file=sys.stderr)
+        return 2
+    except ManifestCorruptionError as exc:
+        print(f"error: corruption: {exc}", file=sys.stderr)
+        return 1
+    except ManifestError as exc:
+        _fail(str(exc))
+
+    after = path.read_bytes()
+    if before is not None and after != before:
+        print("error: verify mutated the manifest bytes", file=sys.stderr)
+        return 1
+
+    print(f"verified {path}")
+    print(
+        f"defects4j={manifest['defects4j_version']}@{manifest['defects4j_commit'][:12]} "
+        f"created_at={manifest['created_at']} unchanged"
+    )
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Defects4J bug selection for the Jev CI experiment",
@@ -769,6 +1158,51 @@ def build_parser() -> argparse.ArgumentParser:
         help="Do not compare counts to overall.md assumptions (debug only)",
     )
     build_manifest_cmd.set_defaults(func=cmd_build_manifest)
+
+    create_cmd = sub.add_parser(
+        "create",
+        help="Create data/manifest.json once; if it exists, verify and do not rewrite",
+    )
+    create_cmd.add_argument(
+        "--path",
+        type=Path,
+        default=DEFAULT_MANIFEST_PATH,
+        help="Manifest path (default: /workspace/data/manifest.json)",
+    )
+    create_cmd.add_argument(
+        "--environment-record",
+        type=Path,
+        default=DEFAULT_ENVIRONMENT_RECORD_PATH,
+        help="Path to Phase 1 results/environment.json",
+    )
+    create_cmd.add_argument(
+        "--skip-assumption-check",
+        action="store_true",
+        help="Do not compare counts to overall.md assumptions (debug only)",
+    )
+    create_cmd.set_defaults(func=cmd_create)
+
+    verify_cmd = sub.add_parser(
+        "verify",
+        help="Read-only verification of an existing manifest (byte-preserving)",
+    )
+    verify_cmd.add_argument(
+        "--path",
+        type=Path,
+        default=DEFAULT_MANIFEST_PATH,
+        help="Manifest path (default: /workspace/data/manifest.json)",
+    )
+    verify_cmd.add_argument(
+        "--skip-upstream-drift",
+        action="store_true",
+        help="Skip comparison against the current Defects4J install",
+    )
+    verify_cmd.add_argument(
+        "--skip-assumption-check",
+        action="store_true",
+        help="Do not compare counts to overall.md assumptions (debug only)",
+    )
+    verify_cmd.set_defaults(func=cmd_verify)
     return parser
 
 

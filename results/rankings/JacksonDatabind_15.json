@@ -1,0 +1,1801 @@
+{
+  "schema_version": "jev-bm25-ranking-v1",
+  "example_id": "JacksonDatabind_15",
+  "qualified_id": "JacksonDatabind-15",
+  "split": "evaluation",
+  "N": 256,
+  "K": 200,
+  "k_cap": 200,
+  "avgdl": 630.828125,
+  "query_token_count": 781,
+  "distinct_query_terms": 152,
+  "source_missing_count": 0,
+  "candidate_ids": [
+    "com.fasterxml.jackson.databind.convert.TestBeanConversions",
+    "com.fasterxml.jackson.databind.ser.TestConfig",
+    "com.fasterxml.jackson.databind.jsontype.TestExternalId",
+    "com.fasterxml.jackson.databind.deser.TestCustomDeserializers",
+    "com.fasterxml.jackson.databind.ser.TestCustomSerializers",
+    "com.fasterxml.jackson.databind.module.TestSimpleModule",
+    "com.fasterxml.jackson.databind.deser.TestArrayDeserialization",
+    "com.fasterxml.jackson.databind.deser.TestDateDeserialization",
+    "com.fasterxml.jackson.databind.ser.TestSerializerProvider",
+    "com.fasterxml.jackson.databind.seq.ReadRecoveryTest",
+    "com.fasterxml.jackson.databind.TestObjectMapperBeanDeserializer",
+    "com.fasterxml.jackson.databind.ext.TestCoreXMLTypes",
+    "com.fasterxml.jackson.databind.ser.TestBeanSerializer",
+    "com.fasterxml.jackson.databind.deser.TestMapDeserialization",
+    "com.fasterxml.jackson.databind.deser.TestEnumDeserialization",
+    "com.fasterxml.jackson.databind.deser.TestUntypedDeserialization",
+    "com.fasterxml.jackson.databind.ser.TestFieldSerialization",
+    "com.fasterxml.jackson.databind.module.TestTypeModifiers",
+    "com.fasterxml.jackson.databind.deser.TestBeanDeserializer",
+    "com.fasterxml.jackson.databind.creators.TestCreators",
+    "com.fasterxml.jackson.databind.introspect.TestPOJOPropertiesCollector",
+    "com.fasterxml.jackson.databind.ser.TestNullSerialization",
+    "com.fasterxml.jackson.databind.ser.TestCollectionSerialization",
+    "com.fasterxml.jackson.databind.ser.TestFeatures",
+    "com.fasterxml.jackson.databind.filter.TestMapFiltering",
+    "com.fasterxml.jackson.databind.contextual.TestContextualSerialization",
+    "com.fasterxml.jackson.databind.mixins.TestMixinSerForMethods",
+    "com.fasterxml.jackson.databind.filter.TestJsonFilter",
+    "com.fasterxml.jackson.databind.deser.TestCollectionDeserialization",
+    "com.fasterxml.jackson.databind.type.TestTypeFactory",
+    "com.fasterxml.jackson.databind.contextual.TestContextualKeyTypes",
+    "com.fasterxml.jackson.databind.jsontype.TestDefaultForObject",
+    "com.fasterxml.jackson.databind.ser.TestJsonSerialize",
+    "com.fasterxml.jackson.databind.filter.TestUnknownPropertyDeserialization",
+    "com.fasterxml.jackson.databind.creators.TestValueInstantiator",
+    "com.fasterxml.jackson.databind.ser.TestAnnotations",
+    "com.fasterxml.jackson.databind.node.TestObjectNode",
+    "com.fasterxml.jackson.databind.convert.TestMapConversions",
+    "com.fasterxml.jackson.databind.jsontype.TestTypedSerialization",
+    "com.fasterxml.jackson.databind.TestParserUsingMapper",
+    "com.fasterxml.jackson.databind.node.TestConversions",
+    "com.fasterxml.jackson.databind.seq.ReadValuesTest",
+    "com.fasterxml.jackson.databind.ser.TestJsonValue",
+    "com.fasterxml.jackson.databind.ser.TestVirtualProperties",
+    "com.fasterxml.jackson.databind.node.TestArrayNode",
+    "com.fasterxml.jackson.databind.jsontype.TestWithGenerics",
+    "com.fasterxml.jackson.databind.creators.SingleArgCreatorTest",
+    "com.fasterxml.jackson.databind.convert.TestConvertingSerializer",
+    "com.fasterxml.jackson.databind.creators.TestCreatorsDelegating",
+    "com.fasterxml.jackson.databind.jsontype.TestTypedArraySerialization",
+    "com.fasterxml.jackson.databind.TestGeneratorUsingMapper",
+    "com.fasterxml.jackson.databind.ser.TestEnumSerialization",
+    "com.fasterxml.jackson.databind.interop.TestExternalizable",
+    "com.fasterxml.jackson.databind.util.TestTokenBuffer",
+    "com.fasterxml.jackson.databind.ser.TestRootType",
+    "com.fasterxml.jackson.databind.ser.TestSimpleTypes",
+    "com.fasterxml.jackson.databind.ser.TestExceptionHandling",
+    "com.fasterxml.jackson.databind.TestObjectMapper",
+    "com.fasterxml.jackson.databind.deser.TestJacksonTypes",
+    "com.fasterxml.jackson.databind.deser.TestSimpleTypes",
+    "com.fasterxml.jackson.databind.ser.TestMapSerialization",
+    "com.fasterxml.jackson.databind.introspect.TestJacksonAnnotationIntrospector",
+    "com.fasterxml.jackson.databind.struct.TestObjectIdSerialization",
+    "com.fasterxml.jackson.databind.deser.TestJdkTypes",
+    "com.fasterxml.jackson.databind.convert.TestArrayConversions",
+    "com.fasterxml.jackson.databind.ser.TestDateSerialization",
+    "com.fasterxml.jackson.databind.contextual.TestContextualDeserialization",
+    "com.fasterxml.jackson.databind.struct.TestObjectIdDeserialization",
+    "com.fasterxml.jackson.databind.jsontype.TestTypeNames",
+    "com.fasterxml.jackson.databind.creators.TestCreators2",
+    "com.fasterxml.jackson.databind.ser.TestEmptyClass",
+    "com.fasterxml.jackson.databind.jsontype.TestDefaultForScalars",
+    "com.fasterxml.jackson.databind.jsontype.TestTypedArrayDeserialization",
+    "com.fasterxml.jackson.databind.jsontype.TestTypedDeserialization",
+    "com.fasterxml.jackson.databind.interop.TestGroovyBeans",
+    "com.fasterxml.jackson.databind.TestHandlerInstantiation",
+    "com.fasterxml.jackson.databind.struct.TestPOJOAsArray",
+    "com.fasterxml.jackson.databind.TestFormatSchema",
+    "com.fasterxml.jackson.databind.struct.JSOGDeserialize622Test",
+    "com.fasterxml.jackson.databind.node.TestTreeMapperSerializer",
+    "com.fasterxml.jackson.databind.contextual.TestContextAttributeWithSer",
+    "com.fasterxml.jackson.databind.ser.TestAnyGetter",
+    "com.fasterxml.jackson.databind.deser.TestSetterlessProperties",
+    "com.fasterxml.jackson.databind.TestJDKSerialization",
+    "com.fasterxml.jackson.databind.node.TestTreeMapperDeserializer",
+    "com.fasterxml.jackson.databind.ser.TestAnnotationInheritance",
+    "com.fasterxml.jackson.databind.creators.TestCreatorWithNamingStrategy556",
+    "com.fasterxml.jackson.databind.jsonschema.TestGenerateJsonSchema",
+    "com.fasterxml.jackson.databind.ext.TestDOM",
+    "com.fasterxml.jackson.databind.deser.TestValueAnnotations",
+    "com.fasterxml.jackson.databind.convert.TestUpdateValue",
+    "com.fasterxml.jackson.databind.jsontype.TestDefaultForArrays",
+    "com.fasterxml.jackson.databind.node.TestNumberNodes",
+    "com.fasterxml.jackson.databind.deser.TestFieldDeserialization",
+    "com.fasterxml.jackson.databind.util.TestClassUtil",
+    "com.fasterxml.jackson.databind.introspect.TestPropertyConflicts",
+    "com.fasterxml.jackson.databind.module.TestAbstractTypes",
+    "com.fasterxml.jackson.databind.jsontype.TestAbstractTypeNames",
+    "com.fasterxml.jackson.databind.deser.TestTimestampDeserialization",
+    "com.fasterxml.jackson.databind.introspect.TestNamingStrategyCustom",
+    "com.fasterxml.jackson.databind.type.TestJavaType",
+    "com.fasterxml.jackson.databind.convert.TestConvertingDeserializer",
+    "com.fasterxml.jackson.databind.interop.TestHibernate",
+    "com.fasterxml.jackson.databind.deser.TestCustomFactory",
+    "com.fasterxml.jackson.databind.mixins.TestMixinDeserForCreators",
+    "com.fasterxml.jackson.databind.struct.TestUnwrapped",
+    "com.fasterxml.jackson.databind.deser.TestConcurrency",
+    "com.fasterxml.jackson.databind.deser.TestExceptionHandling",
+    "com.fasterxml.jackson.databind.deser.TestAnnotationUsing",
+    "com.fasterxml.jackson.databind.introspect.TestNamingStrategyStd",
+    "com.fasterxml.jackson.databind.deser.TestConfig",
+    "com.fasterxml.jackson.databind.deser.TestOverloaded",
+    "com.fasterxml.jackson.databind.ser.TestJsonSerialize2",
+    "com.fasterxml.jackson.databind.jsontype.TestDefaultForLists",
+    "com.fasterxml.jackson.databind.creators.TestCreators421",
+    "com.fasterxml.jackson.databind.TestObjectMapperBeanSerializer",
+    "com.fasterxml.jackson.databind.views.TestViewSerialization",
+    "com.fasterxml.jackson.databind.creators.TestCreatorNullValue",
+    "com.fasterxml.jackson.databind.struct.TestPOJOAsArrayAdvanced",
+    "com.fasterxml.jackson.databind.ser.TestJdkTypes",
+    "com.fasterxml.jackson.databind.jsontype.TestDefaultForMaps",
+    "com.fasterxml.jackson.databind.introspect.TestNameConflicts",
+    "com.fasterxml.jackson.databind.jsontype.TestSubtypes",
+    "com.fasterxml.jackson.databind.jsontype.TestVisibleTypeId",
+    "com.fasterxml.jackson.databind.deser.TestAnyProperties",
+    "com.fasterxml.jackson.databind.TestRootName",
+    "com.fasterxml.jackson.databind.deser.TestBasicAnnotations",
+    "com.fasterxml.jackson.databind.ser.TestCyclicTypes",
+    "com.fasterxml.jackson.databind.deser.TestGenerics",
+    "com.fasterxml.jackson.databind.deser.TestCyclicTypes",
+    "com.fasterxml.jackson.databind.jsontype.TestSubtypesExistingProperty",
+    "com.fasterxml.jackson.databind.filter.TestIgnorePropsForSerialization",
+    "com.fasterxml.jackson.databind.contextual.TestContextualWithAnnDeserializer",
+    "com.fasterxml.jackson.databind.type.TestTypeBindings",
+    "com.fasterxml.jackson.databind.jsontype.TestPolymorphicWithDefaultImpl",
+    "com.fasterxml.jackson.databind.ser.TestGenericTypes",
+    "com.fasterxml.jackson.databind.struct.TestObjectIdWithPolymorphic",
+    "com.fasterxml.jackson.databind.struct.TestFormatForCollections",
+    "com.fasterxml.jackson.databind.struct.TestObjectIdWithEquals",
+    "com.fasterxml.jackson.databind.jsontype.TestCustomTypeIdResolver",
+    "com.fasterxml.jackson.databind.ser.TestJSONP",
+    "com.fasterxml.jackson.databind.contextual.TestContextAttributeWithDeser",
+    "com.fasterxml.jackson.databind.seq.ObjectWriterTest",
+    "com.fasterxml.jackson.databind.filter.TestSimpleSerializationIgnore",
+    "com.fasterxml.jackson.databind.jsontype.TestTypedContainerSerialization",
+    "com.fasterxml.jackson.databind.ser.TestNullProperties",
+    "com.fasterxml.jackson.databind.node.TestFindMethods",
+    "com.fasterxml.jackson.databind.node.TestTreeTraversingParser",
+    "com.fasterxml.jackson.databind.node.TestJsonNode",
+    "com.fasterxml.jackson.databind.ser.TestJsonRawValue",
+    "com.fasterxml.jackson.databind.introspect.TestAnnotionBundles",
+    "com.fasterxml.jackson.databind.deser.TestGenericMapDeser",
+    "com.fasterxml.jackson.databind.creators.TestPolymorphicCreators",
+    "com.fasterxml.jackson.databind.mixins.TestMixinSerForClass",
+    "com.fasterxml.jackson.databind.util.ISO8601UtilsTest",
+    "com.fasterxml.jackson.databind.creators.TestConstructFromMap",
+    "com.fasterxml.jackson.databind.ser.TestKeySerializers",
+    "com.fasterxml.jackson.databind.seq.SequenceWriterTest",
+    "com.fasterxml.jackson.databind.mixins.TestMixinDeserForClass",
+    "com.fasterxml.jackson.databind.ser.TestJacksonTypes",
+    "com.fasterxml.jackson.databind.creators.TestPolymorphicDelegating",
+    "com.fasterxml.jackson.databind.struct.TestBackRefsWithPolymorphic",
+    "com.fasterxml.jackson.databind.filter.TestAnyGetterFiltering",
+    "com.fasterxml.jackson.databind.jsontype.TestScalars",
+    "com.fasterxml.jackson.databind.ser.TestTypedRootValueSerialization",
+    "com.fasterxml.jackson.databind.introspect.TestAutoDetect",
+    "com.fasterxml.jackson.databind.convert.TestPolymorphicUpdateValue",
+    "com.fasterxml.jackson.databind.ser.TestUntypedSerialization",
+    "com.fasterxml.jackson.databind.deser.TestIgnoredTypes",
+    "com.fasterxml.jackson.databind.interop.TestCglibUsage",
+    "com.fasterxml.jackson.databind.node.TestNullNode",
+    "com.fasterxml.jackson.databind.creators.ImplicitParamsForCreatorTest",
+    "com.fasterxml.jackson.databind.jsontype.TestGenericListSerialization",
+    "com.fasterxml.jackson.databind.module.TestTypeModifierNameResolution",
+    "com.fasterxml.jackson.databind.deser.TestAnnotationIgnore",
+    "com.fasterxml.jackson.databind.ser.TestExceptionSerialization",
+    "com.fasterxml.jackson.databind.ext.TestJDK16OnlyTypes",
+    "com.fasterxml.jackson.databind.ser.TestTreeSerialization",
+    "com.fasterxml.jackson.databind.deser.TestNoClassDefFoundDeserializer",
+    "com.fasterxml.jackson.databind.deser.TestInjectables",
+    "com.fasterxml.jackson.databind.type.TestAnnotatedClass",
+    "com.fasterxml.jackson.databind.ser.TestSerializationOrder",
+    "com.fasterxml.jackson.databind.node.TestMissingNode",
+    "com.fasterxml.jackson.databind.introspect.TestInferredMutators",
+    "com.fasterxml.jackson.databind.struct.PojoAsArray646Test",
+    "com.fasterxml.jackson.databind.node.TestJsonPointer",
+    "com.fasterxml.jackson.databind.seq.ObjectReaderTest",
+    "com.fasterxml.jackson.databind.interop.TestJDKProxy",
+    "com.fasterxml.jackson.databind.deser.TestBlocking",
+    "com.fasterxml.jackson.databind.ser.TestNumbers",
+    "com.fasterxml.jackson.databind.jsontype.TestAbstractWithObjectId",
+    "com.fasterxml.jackson.databind.views.TestViewDeserialization",
+    "com.fasterxml.jackson.databind.convert.TestStringConversions",
+    "com.fasterxml.jackson.databind.ser.TestAutoDetect",
+    "com.fasterxml.jackson.databind.introspect.TestPropertyRename",
+    "com.fasterxml.jackson.databind.mixins.TestMixinDeserForMethods",
+    "com.fasterxml.jackson.databind.struct.TestPOJOAsArrayWithBuilder",
+    "com.fasterxml.jackson.databind.deser.TestNumbers",
+    "com.fasterxml.jackson.databind.introspect.TestAnnotationMerging",
+    "com.fasterxml.jackson.databind.type.TestTypeResolution"
+  ],
+  "shortlist_sha256": "997fc6abc1cae843fd16ff2e4902f9914f7eab349be0d7eaf8a656c1869e303b",
+  "ranking": [
+    {
+      "test_class": "com.fasterxml.jackson.databind.convert.TestBeanConversions",
+      "score": 78.97985713745975,
+      "rank": 1,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestConfig",
+      "score": 78.63285144217897,
+      "rank": 2,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestExternalId",
+      "score": 77.87623482976952,
+      "rank": 3,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestCustomDeserializers",
+      "score": 76.44935236131441,
+      "rank": 4,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestCustomSerializers",
+      "score": 76.0120744354541,
+      "rank": 5,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.module.TestSimpleModule",
+      "score": 68.89834841237332,
+      "rank": 6,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestArrayDeserialization",
+      "score": 68.63959361954197,
+      "rank": 7,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestDateDeserialization",
+      "score": 63.09864344033678,
+      "rank": 8,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestSerializerProvider",
+      "score": 62.663293516491926,
+      "rank": 9,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.seq.ReadRecoveryTest",
+      "score": 61.87639309341587,
+      "rank": 10,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.TestObjectMapperBeanDeserializer",
+      "score": 61.8393762899771,
+      "rank": 11,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ext.TestCoreXMLTypes",
+      "score": 60.89291196730812,
+      "rank": 12,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestBeanSerializer",
+      "score": 60.866391884628186,
+      "rank": 13,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestMapDeserialization",
+      "score": 60.44942063305239,
+      "rank": 14,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestEnumDeserialization",
+      "score": 60.333940033138255,
+      "rank": 15,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestUntypedDeserialization",
+      "score": 59.916948288995385,
+      "rank": 16,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestFieldSerialization",
+      "score": 59.71070343336841,
+      "rank": 17,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.module.TestTypeModifiers",
+      "score": 59.409153312186824,
+      "rank": 18,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestBeanDeserializer",
+      "score": 59.104307407769014,
+      "rank": 19,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.creators.TestCreators",
+      "score": 58.9012281790737,
+      "rank": 20,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.introspect.TestPOJOPropertiesCollector",
+      "score": 58.73389328025485,
+      "rank": 21,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestNullSerialization",
+      "score": 58.38896152960136,
+      "rank": 22,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestCollectionSerialization",
+      "score": 58.36412083849427,
+      "rank": 23,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestFeatures",
+      "score": 57.93054288443682,
+      "rank": 24,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.filter.TestMapFiltering",
+      "score": 57.72987747508735,
+      "rank": 25,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.contextual.TestContextualSerialization",
+      "score": 57.32851383687388,
+      "rank": 26,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.mixins.TestMixinSerForMethods",
+      "score": 57.168523818747445,
+      "rank": 27,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.filter.TestJsonFilter",
+      "score": 56.65886433745633,
+      "rank": 28,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestCollectionDeserialization",
+      "score": 56.210863355484484,
+      "rank": 29,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.type.TestTypeFactory",
+      "score": 56.19437149470424,
+      "rank": 30,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.contextual.TestContextualKeyTypes",
+      "score": 56.172127422747664,
+      "rank": 31,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestDefaultForObject",
+      "score": 56.143194128827965,
+      "rank": 32,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestJsonSerialize",
+      "score": 56.07526283631197,
+      "rank": 33,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.filter.TestUnknownPropertyDeserialization",
+      "score": 55.57547597458335,
+      "rank": 34,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.creators.TestValueInstantiator",
+      "score": 54.9264555158392,
+      "rank": 35,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestAnnotations",
+      "score": 54.685118474433565,
+      "rank": 36,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.node.TestObjectNode",
+      "score": 54.08353148250287,
+      "rank": 37,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.convert.TestMapConversions",
+      "score": 53.79806590350331,
+      "rank": 38,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestTypedSerialization",
+      "score": 53.33365048150375,
+      "rank": 39,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.TestParserUsingMapper",
+      "score": 53.292154536651225,
+      "rank": 40,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.node.TestConversions",
+      "score": 52.600778830057656,
+      "rank": 41,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.seq.ReadValuesTest",
+      "score": 52.557963948181,
+      "rank": 42,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestJsonValue",
+      "score": 51.47467470020515,
+      "rank": 43,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestVirtualProperties",
+      "score": 51.14796488277134,
+      "rank": 44,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.node.TestArrayNode",
+      "score": 51.131588996000396,
+      "rank": 45,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestWithGenerics",
+      "score": 51.02999699105072,
+      "rank": 46,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.creators.SingleArgCreatorTest",
+      "score": 50.28619096132845,
+      "rank": 47,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.convert.TestConvertingSerializer",
+      "score": 50.26838906502392,
+      "rank": 48,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.creators.TestCreatorsDelegating",
+      "score": 50.15940565114028,
+      "rank": 49,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestTypedArraySerialization",
+      "score": 49.5833046899155,
+      "rank": 50,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.TestGeneratorUsingMapper",
+      "score": 49.46209621270384,
+      "rank": 51,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestEnumSerialization",
+      "score": 49.10817320138447,
+      "rank": 52,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.interop.TestExternalizable",
+      "score": 49.040010791370804,
+      "rank": 53,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.util.TestTokenBuffer",
+      "score": 46.87246577128095,
+      "rank": 54,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestRootType",
+      "score": 46.600471614381235,
+      "rank": 55,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestSimpleTypes",
+      "score": 46.57776495990467,
+      "rank": 56,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestExceptionHandling",
+      "score": 46.47696331337944,
+      "rank": 57,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.TestObjectMapper",
+      "score": 46.278195353571874,
+      "rank": 58,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestJacksonTypes",
+      "score": 45.72719208323423,
+      "rank": 59,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestSimpleTypes",
+      "score": 45.69574797300565,
+      "rank": 60,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestMapSerialization",
+      "score": 45.58762405299602,
+      "rank": 61,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.introspect.TestJacksonAnnotationIntrospector",
+      "score": 45.36535701032156,
+      "rank": 62,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.struct.TestObjectIdSerialization",
+      "score": 45.11084750788464,
+      "rank": 63,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestJdkTypes",
+      "score": 44.55778144479253,
+      "rank": 64,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.convert.TestArrayConversions",
+      "score": 43.821605175898554,
+      "rank": 65,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestDateSerialization",
+      "score": 43.67739257898517,
+      "rank": 66,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.contextual.TestContextualDeserialization",
+      "score": 43.556200261704085,
+      "rank": 67,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.struct.TestObjectIdDeserialization",
+      "score": 43.40477376040258,
+      "rank": 68,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestTypeNames",
+      "score": 43.25001027269022,
+      "rank": 69,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.creators.TestCreators2",
+      "score": 42.89009955318437,
+      "rank": 70,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestEmptyClass",
+      "score": 42.85819814660932,
+      "rank": 71,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestDefaultForScalars",
+      "score": 42.74595042159852,
+      "rank": 72,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestTypedArrayDeserialization",
+      "score": 42.61748887070859,
+      "rank": 73,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestTypedDeserialization",
+      "score": 42.46669670339702,
+      "rank": 74,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.interop.TestGroovyBeans",
+      "score": 42.430229918890696,
+      "rank": 75,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.TestHandlerInstantiation",
+      "score": 42.38906373466476,
+      "rank": 76,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.struct.TestPOJOAsArray",
+      "score": 42.10634919274758,
+      "rank": 77,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.TestFormatSchema",
+      "score": 42.07299201779999,
+      "rank": 78,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.struct.JSOGDeserialize622Test",
+      "score": 41.86914330321326,
+      "rank": 79,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.node.TestTreeMapperSerializer",
+      "score": 41.788565353771524,
+      "rank": 80,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.contextual.TestContextAttributeWithSer",
+      "score": 41.62786502261355,
+      "rank": 81,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestAnyGetter",
+      "score": 40.970276513635184,
+      "rank": 82,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestSetterlessProperties",
+      "score": 40.519988060366444,
+      "rank": 83,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.TestJDKSerialization",
+      "score": 40.5170289974416,
+      "rank": 84,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.node.TestTreeMapperDeserializer",
+      "score": 40.28230652527042,
+      "rank": 85,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestAnnotationInheritance",
+      "score": 40.121025959170744,
+      "rank": 86,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.creators.TestCreatorWithNamingStrategy556",
+      "score": 39.70964788351575,
+      "rank": 87,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsonschema.TestGenerateJsonSchema",
+      "score": 39.643659958969174,
+      "rank": 88,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ext.TestDOM",
+      "score": 39.42340330711974,
+      "rank": 89,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestValueAnnotations",
+      "score": 39.42315510004366,
+      "rank": 90,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.convert.TestUpdateValue",
+      "score": 39.41682970560737,
+      "rank": 91,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestDefaultForArrays",
+      "score": 39.317992385083365,
+      "rank": 92,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.node.TestNumberNodes",
+      "score": 39.28176011847131,
+      "rank": 93,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestFieldDeserialization",
+      "score": 38.578570112977765,
+      "rank": 94,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.util.TestClassUtil",
+      "score": 38.56032702025824,
+      "rank": 95,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.introspect.TestPropertyConflicts",
+      "score": 38.41267863649516,
+      "rank": 96,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.module.TestAbstractTypes",
+      "score": 37.14483380644386,
+      "rank": 97,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestAbstractTypeNames",
+      "score": 36.97203852604033,
+      "rank": 98,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestTimestampDeserialization",
+      "score": 36.88053574342368,
+      "rank": 99,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.introspect.TestNamingStrategyCustom",
+      "score": 36.790869393753724,
+      "rank": 100,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.type.TestJavaType",
+      "score": 36.757300963443086,
+      "rank": 101,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.convert.TestConvertingDeserializer",
+      "score": 36.752234508763095,
+      "rank": 102,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.interop.TestHibernate",
+      "score": 36.27262739026333,
+      "rank": 103,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestCustomFactory",
+      "score": 35.91156618879321,
+      "rank": 104,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.mixins.TestMixinDeserForCreators",
+      "score": 35.88917965121676,
+      "rank": 105,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.struct.TestUnwrapped",
+      "score": 35.693878624311786,
+      "rank": 106,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestConcurrency",
+      "score": 35.488466088764596,
+      "rank": 107,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestExceptionHandling",
+      "score": 35.31549272039368,
+      "rank": 108,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestAnnotationUsing",
+      "score": 35.185772501087484,
+      "rank": 109,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.introspect.TestNamingStrategyStd",
+      "score": 34.98669706827543,
+      "rank": 110,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestConfig",
+      "score": 34.52247157364526,
+      "rank": 111,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestOverloaded",
+      "score": 34.25241588319797,
+      "rank": 112,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestJsonSerialize2",
+      "score": 33.98782989728696,
+      "rank": 113,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestDefaultForLists",
+      "score": 33.835249159517176,
+      "rank": 114,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.creators.TestCreators421",
+      "score": 33.78674490177314,
+      "rank": 115,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.TestObjectMapperBeanSerializer",
+      "score": 33.714009401405434,
+      "rank": 116,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.views.TestViewSerialization",
+      "score": 33.6788157931271,
+      "rank": 117,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.creators.TestCreatorNullValue",
+      "score": 33.623342206642114,
+      "rank": 118,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.struct.TestPOJOAsArrayAdvanced",
+      "score": 33.61000388728074,
+      "rank": 119,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestJdkTypes",
+      "score": 33.596323706963204,
+      "rank": 120,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestDefaultForMaps",
+      "score": 33.555950742472255,
+      "rank": 121,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.introspect.TestNameConflicts",
+      "score": 33.54693827647087,
+      "rank": 122,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestSubtypes",
+      "score": 33.24369539547655,
+      "rank": 123,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestVisibleTypeId",
+      "score": 32.81147640745645,
+      "rank": 124,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestAnyProperties",
+      "score": 32.57348439380015,
+      "rank": 125,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.TestRootName",
+      "score": 32.48072661222064,
+      "rank": 126,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestBasicAnnotations",
+      "score": 32.470810542870204,
+      "rank": 127,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestCyclicTypes",
+      "score": 32.26042520394825,
+      "rank": 128,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestGenerics",
+      "score": 32.25369864119234,
+      "rank": 129,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestCyclicTypes",
+      "score": 31.93243798414552,
+      "rank": 130,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestSubtypesExistingProperty",
+      "score": 31.81096630548039,
+      "rank": 131,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.filter.TestIgnorePropsForSerialization",
+      "score": 31.512702300426817,
+      "rank": 132,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.contextual.TestContextualWithAnnDeserializer",
+      "score": 31.20031422549056,
+      "rank": 133,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.type.TestTypeBindings",
+      "score": 31.084814076453213,
+      "rank": 134,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestPolymorphicWithDefaultImpl",
+      "score": 31.065064349936463,
+      "rank": 135,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestGenericTypes",
+      "score": 30.759081515163317,
+      "rank": 136,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.struct.TestObjectIdWithPolymorphic",
+      "score": 29.972636834589924,
+      "rank": 137,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.struct.TestFormatForCollections",
+      "score": 29.934598791114468,
+      "rank": 138,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.struct.TestObjectIdWithEquals",
+      "score": 29.891257027459666,
+      "rank": 139,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestCustomTypeIdResolver",
+      "score": 29.804254536086656,
+      "rank": 140,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestJSONP",
+      "score": 29.247719423489293,
+      "rank": 141,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.contextual.TestContextAttributeWithDeser",
+      "score": 29.107465803535227,
+      "rank": 142,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.seq.ObjectWriterTest",
+      "score": 29.008802081777393,
+      "rank": 143,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.filter.TestSimpleSerializationIgnore",
+      "score": 28.96901327575353,
+      "rank": 144,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestTypedContainerSerialization",
+      "score": 28.424967776345614,
+      "rank": 145,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestNullProperties",
+      "score": 28.24020588197669,
+      "rank": 146,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.node.TestFindMethods",
+      "score": 28.183165148202452,
+      "rank": 147,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.node.TestTreeTraversingParser",
+      "score": 27.84456410975869,
+      "rank": 148,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.node.TestJsonNode",
+      "score": 27.497888105886908,
+      "rank": 149,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestJsonRawValue",
+      "score": 26.68483816182043,
+      "rank": 150,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.introspect.TestAnnotionBundles",
+      "score": 26.453882535984086,
+      "rank": 151,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestGenericMapDeser",
+      "score": 26.34310730747385,
+      "rank": 152,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.creators.TestPolymorphicCreators",
+      "score": 26.264452003482095,
+      "rank": 153,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.mixins.TestMixinSerForClass",
+      "score": 26.036201028757397,
+      "rank": 154,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.util.ISO8601UtilsTest",
+      "score": 26.030771640640808,
+      "rank": 155,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.creators.TestConstructFromMap",
+      "score": 25.927073264910472,
+      "rank": 156,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestKeySerializers",
+      "score": 25.561612632614153,
+      "rank": 157,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.seq.SequenceWriterTest",
+      "score": 25.3701211241072,
+      "rank": 158,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.mixins.TestMixinDeserForClass",
+      "score": 25.25615413684445,
+      "rank": 159,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestJacksonTypes",
+      "score": 25.243021347894064,
+      "rank": 160,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.creators.TestPolymorphicDelegating",
+      "score": 25.166803989258597,
+      "rank": 161,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.struct.TestBackRefsWithPolymorphic",
+      "score": 24.700270655024497,
+      "rank": 162,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.filter.TestAnyGetterFiltering",
+      "score": 24.5395363172814,
+      "rank": 163,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestScalars",
+      "score": 24.512293262665654,
+      "rank": 164,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestTypedRootValueSerialization",
+      "score": 24.48171705793458,
+      "rank": 165,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.introspect.TestAutoDetect",
+      "score": 24.308419990438534,
+      "rank": 166,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.convert.TestPolymorphicUpdateValue",
+      "score": 24.249484429098576,
+      "rank": 167,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestUntypedSerialization",
+      "score": 24.13303132872495,
+      "rank": 168,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestIgnoredTypes",
+      "score": 24.035770677855552,
+      "rank": 169,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.interop.TestCglibUsage",
+      "score": 23.60035591706243,
+      "rank": 170,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.node.TestNullNode",
+      "score": 23.49420334436602,
+      "rank": 171,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.creators.ImplicitParamsForCreatorTest",
+      "score": 23.409982374821173,
+      "rank": 172,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestGenericListSerialization",
+      "score": 23.291335101537012,
+      "rank": 173,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.module.TestTypeModifierNameResolution",
+      "score": 23.234680703509344,
+      "rank": 174,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestAnnotationIgnore",
+      "score": 23.005300735497414,
+      "rank": 175,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestExceptionSerialization",
+      "score": 22.942621006541916,
+      "rank": 176,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ext.TestJDK16OnlyTypes",
+      "score": 22.88525223964898,
+      "rank": 177,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestTreeSerialization",
+      "score": 22.859329103576517,
+      "rank": 178,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestNoClassDefFoundDeserializer",
+      "score": 22.665930819524075,
+      "rank": 179,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestInjectables",
+      "score": 22.636362891165764,
+      "rank": 180,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.type.TestAnnotatedClass",
+      "score": 22.616471150824534,
+      "rank": 181,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestSerializationOrder",
+      "score": 22.58358635124809,
+      "rank": 182,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.node.TestMissingNode",
+      "score": 22.457334731250842,
+      "rank": 183,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.introspect.TestInferredMutators",
+      "score": 22.4497488140698,
+      "rank": 184,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.struct.PojoAsArray646Test",
+      "score": 22.28179232650603,
+      "rank": 185,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.node.TestJsonPointer",
+      "score": 21.315746079710166,
+      "rank": 186,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.seq.ObjectReaderTest",
+      "score": 21.260372633010057,
+      "rank": 187,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.interop.TestJDKProxy",
+      "score": 20.988253070580285,
+      "rank": 188,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestBlocking",
+      "score": 20.933578731772535,
+      "rank": 189,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestNumbers",
+      "score": 20.82312757630648,
+      "rank": 190,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestAbstractWithObjectId",
+      "score": 20.398968695016382,
+      "rank": 191,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.views.TestViewDeserialization",
+      "score": 20.327851787837645,
+      "rank": 192,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.convert.TestStringConversions",
+      "score": 20.206387813437132,
+      "rank": 193,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestAutoDetect",
+      "score": 20.198646773610108,
+      "rank": 194,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.introspect.TestPropertyRename",
+      "score": 20.184686406441948,
+      "rank": 195,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.mixins.TestMixinDeserForMethods",
+      "score": 19.748221747186342,
+      "rank": 196,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.struct.TestPOJOAsArrayWithBuilder",
+      "score": 19.33498458396883,
+      "rank": 197,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestNumbers",
+      "score": 19.296526940374605,
+      "rank": 198,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.introspect.TestAnnotationMerging",
+      "score": 19.10293486607298,
+      "rank": 199,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.type.TestTypeResolution",
+      "score": 19.026577447282758,
+      "rank": 200,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.struct.TestForwardReference",
+      "score": 18.922118362471256,
+      "rank": 201,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsonschema.TestReadJsonSchema",
+      "score": 18.84590636688125,
+      "rank": 202,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.creators.TestBuilderSimple",
+      "score": 18.68309975469124,
+      "rank": 203,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestGenericsBounded",
+      "score": 18.588919627978996,
+      "rank": 204,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestUnwrappedWithTypeInfo",
+      "score": 18.58281813027071,
+      "rank": 205,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.introspect.TestBuilderMethods",
+      "score": 18.540765530441675,
+      "rank": 206,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.interop.TestFormatDetection",
+      "score": 18.271253220110317,
+      "rank": 207,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestPropertyTypeInfo",
+      "score": 18.170355393869897,
+      "rank": 208,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestGenericNumber",
+      "score": 18.1452491075843,
+      "rank": 209,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.struct.TestParentChildReferences",
+      "score": 18.004440874604576,
+      "rank": 210,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestJsonSerialize3",
+      "score": 17.872416695103343,
+      "rank": 211,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.type.TestGenericFieldInSubtype",
+      "score": 17.780900711703037,
+      "rank": 212,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.struct.TestObjectId",
+      "score": 17.65707067820629,
+      "rank": 213,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.mixins.TestMixinSerWithViews",
+      "score": 17.547912797312286,
+      "rank": 214,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.creators.DisablingCreatorsTest",
+      "score": 17.304921341863956,
+      "rank": 215,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.big.TestBiggerData",
+      "score": 17.22041915607648,
+      "rank": 216,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.mixins.TestMixinSerForFields",
+      "score": 17.16677459155014,
+      "rank": 217,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.struct.TestUnwrappedWithPrefix",
+      "score": 16.82987925923629,
+      "rank": 218,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestEnumTyping",
+      "score": 16.774757080745825,
+      "rank": 219,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestInnerClass",
+      "score": 16.235383819223085,
+      "rank": 220,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.TestStdDateFormat",
+      "score": 16.137556499669262,
+      "rank": 221,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestAbstract",
+      "score": 16.037373541402612,
+      "rank": 222,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestExceptionDeserialization",
+      "score": 15.877412355067376,
+      "rank": 223,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestJsonSerializeAs",
+      "score": 15.630698392956468,
+      "rank": 224,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestStatics",
+      "score": 15.607415368478652,
+      "rank": 225,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.util.ISO8601DateFormatTest",
+      "score": 15.507682920516256,
+      "rank": 226,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestArraySerialization",
+      "score": 15.474503042281503,
+      "rank": 227,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestDefaultForEnums",
+      "score": 15.27690238405518,
+      "rank": 228,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.views.TestViewsSerialization2",
+      "score": 15.026664585269701,
+      "rank": 229,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestCachingOfDeser",
+      "score": 14.734422939230175,
+      "rank": 230,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestSimpleAtomicTypes",
+      "score": 14.641615166089943,
+      "rank": 231,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.access.TestSerAnyGetter",
+      "score": 14.577168185974994,
+      "rank": 232,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.node.TestDeepCopy",
+      "score": 14.50062696484437,
+      "rank": 233,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestStatics",
+      "score": 14.481467571955978,
+      "rank": 234,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.node.TestTreeWithType",
+      "score": 14.26188375637051,
+      "rank": 235,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestGenericCollectionDeser",
+      "score": 14.150331225390115,
+      "rank": 236,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.ser.TestSimpleAtomicTypes",
+      "score": 13.867311710137052,
+      "rank": 237,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.node.TestTreeDeserialization",
+      "score": 13.82355120952225,
+      "rank": 238,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.creators.TestValueUpdate",
+      "score": 13.245795932889253,
+      "rank": 239,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.module.TestDuplicateRegistration",
+      "score": 13.196534861326588,
+      "rank": 240,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.creators.TestCreators541",
+      "score": 12.394477318913612,
+      "rank": 241,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestNoTypeInfo",
+      "score": 12.369072525808438,
+      "rank": 242,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.creators.TestCreatorWithPolymorphic113",
+      "score": 12.31666288866239,
+      "rank": 243,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestDefaultWithCreators",
+      "score": 11.672281406321826,
+      "rank": 244,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.deser.TestNullHandling",
+      "score": 11.624598956897875,
+      "rank": 245,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestAbstractContainers",
+      "score": 11.269225536425674,
+      "rank": 246,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.util.TestObjectBuffer",
+      "score": 10.557471789306494,
+      "rank": 247,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.TestVersions",
+      "score": 9.727582760033421,
+      "rank": 248,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.jsontype.TestDefaultForTreeNodes",
+      "score": 9.571714426519584,
+      "rank": 249,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.introspect.BeanNamingTest",
+      "score": 9.181151031973009,
+      "rank": 250,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.mixins.TestMixinInheritance",
+      "score": 8.510742582454984,
+      "rank": 251,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.introspect.TestMixinMerging",
+      "score": 7.6489782677467035,
+      "rank": 252,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.type.TestLocalType609",
+      "score": 7.239945937068854,
+      "rank": 253,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.struct.TestUnwrappedWithSameName647",
+      "score": 5.932898558190376,
+      "rank": 254,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.module.TestKeyDeserializers",
+      "score": 4.664572613966366,
+      "rank": 255,
+      "source_missing": false
+    },
+    {
+      "test_class": "com.fasterxml.jackson.databind.util.ArrayBuildersTest",
+      "score": 0.4481271267224871,
+      "rank": 256,
+      "source_missing": false
+    }
+  ],
+  "manifest": {
+    "selection_seed": 20260922,
+    "defects4j_version": "3.0.1",
+    "defects4j_commit": "6d54320e0db5a357f9ab38a8e4d2e5aead7e1c09",
+    "manifest_created_at": "2026-09-22T23:16:15+00:00"
+  },
+  "settings": {
+    "bm25_version": "jev-bm25-v1",
+    "bm25_k1": 1.5,
+    "bm25_b": 0.75,
+    "tokenizer_version": "jev-code-tokenizer-v1",
+    "lexical_input_contract_version": "jev-bm25-lexical-v1",
+    "query_diff_source": "model_visible_representation"
+  },
+  "input_hashes": {
+    "lexical_input_contract_version": "jev-bm25-lexical-v1",
+    "query_diff_source": "model_visible_representation",
+    "test_class_ids_sha256": "4c1ad9689b31421c6bd1a28d3abe38713a524ad5f9392a14b43c0aea1837a1e1",
+    "query_sha256": "cb204f8059528d41c3a565589c6d49592a82b8a889e588b2d6b203ef0557a51c",
+    "documents_sha256": "890b9f37fe86ba537722ad2607da0795a399e93ccc79f567f26e8a7dc3172612",
+    "inventory_sha256": "79fd125ae00234b56abf7b03a91be25f5a941e0196cdaf6aec6dc28374d61d32",
+    "patch_representation_sha256": "cb204f8059528d41c3a565589c6d49592a82b8a889e588b2d6b203ef0557a51c",
+    "num_documents": 256,
+    "source_missing_count": 0,
+    "tokenizer_version": "jev-code-tokenizer-v1",
+    "tokenizer_config_sha256": "e8f04897083a9ecf43c92e6612d7b16882e7ac713a00bd1de57e63b5efaa7382",
+    "bm25_version": "jev-bm25-v1",
+    "bm25_k1": 1.5,
+    "bm25_b": 0.75
+  },
+  "provenance": {
+    "lexical_input_contract_version": "jev-bm25-lexical-v1",
+    "query_diff_source": "model_visible_representation",
+    "k_cap": 200,
+    "candidates_schema_version": "jev-candidates-v1",
+    "ranking_schema_version": "jev-bm25-ranking-v1",
+    "tokenizer_version": "jev-code-tokenizer-v1",
+    "tokenizer_config_sha256": "e8f04897083a9ecf43c92e6612d7b16882e7ac713a00bd1de57e63b5efaa7382",
+    "bm25_version": "jev-bm25-v1",
+    "bm25_k1": 1.5,
+    "bm25_b": 0.75,
+    "experiment_commit": "edc70bacd23f2fc5f511ef4d97a33376e7b20bf8",
+    "freeze_tag": "experiment-v1",
+    "run_id": "eval-v1-20260923T035853+0000"
+  },
+  "experiment_commit": "edc70bacd23f2fc5f511ef4d97a33376e7b20bf8",
+  "run_id": "eval-v1-20260923T035853+0000"
+}

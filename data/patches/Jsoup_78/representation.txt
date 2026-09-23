@@ -1,0 +1,30 @@
+MODIFIED FILES:
+src/main/java/org/jsoup/helper/DataUtil.java
+
+MODIFIED CLASSES:
+org.jsoup.helper.DataUtil
+
+PROPOSED CODE CHANGE:
+
+--- src/main/java/org/jsoup/helper/DataUtil.java
++++ src/main/java/org/jsoup/helper/DataUtil.java
+@@ -1,6 +1,5 @@
+ package org.jsoup.helper;
+ 
+-import org.jsoup.UncheckedIOException;
+ import org.jsoup.internal.ConstrainableInputStream;
+ import org.jsoup.nodes.Document;
+ import org.jsoup.nodes.Element;
+@@ -149,12 +148,8 @@
+             if (charsetName == null)
+                 charsetName = defaultCharset;
+             BufferedReader reader = new BufferedReader(new InputStreamReader(input, charsetName), bufferSize);
+-            try {
+                 doc = parser.parseInput(reader, baseUri);
+-            } catch (UncheckedIOException e) {
+                 // io exception when parsing (not seen before because reading the stream as we go)
+-                throw e.ioException();
+-            }
+             doc.outputSettings().charset(charsetName);
+         }
+         input.close();

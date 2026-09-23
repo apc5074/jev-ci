@@ -1,0 +1,334 @@
+{
+  "schema_version": "jev-phase7-preflight-v1",
+  "generated_at": "2026-09-23T03:58:53+00:00",
+  "ok": true,
+  "run_id": "eval-v1-20260923T035853+0000",
+  "tag": "experiment-v1",
+  "experiment_commit": "edc70bacd23f2fc5f511ef4d97a33376e7b20bf8",
+  "evaluation_queued": 125,
+  "spend_ceiling_usd": 16.23,
+  "checks": {
+    "freeze": {
+      "ok": true,
+      "tag": "experiment-v1",
+      "commit_sha": "edc70bacd23f2fc5f511ef4d97a33376e7b20bf8",
+      "tag_commit": "edc70bacd23f2fc5f511ef4d97a33376e7b20bf8",
+      "freeze_lock": {
+        "path": "results/phase6/freeze_lock.json",
+        "present": true,
+        "unlocked": true,
+        "tag": "experiment-v1",
+        "commit_sha": "edc70bacd23f2fc5f511ef4d97a33376e7b20bf8",
+        "validated": true
+      },
+      "errors": []
+    },
+    "frozen_hashes": {
+      "ok": true,
+      "frozen": [
+        {
+          "path": "prompts/jev/v1.json",
+          "working_tree_sha256": "2687635cea341f22e88ad848de09be711b6e80fe45f46d93da72e0ca4a477401",
+          "tag_sha256": "2687635cea341f22e88ad848de09be711b6e80fe45f46d93da72e0ca4a477401",
+          "match": true
+        },
+        {
+          "path": "prompts/gpt/v1.json",
+          "working_tree_sha256": "a5e7c1590f560dc6faf1b81fc84bbc4a1cb75d125c370bfa23f2724a6e71fd90",
+          "tag_sha256": "a5e7c1590f560dc6faf1b81fc84bbc4a1cb75d125c370bfa23f2724a6e71fd90",
+          "match": true
+        },
+        {
+          "path": "results/phase6/experiment.json",
+          "working_tree_sha256": "45504fbea563932176eb19eeecc9794478acc9ba8a9f1ec768edcc8308fe5812",
+          "tag_sha256": "45504fbea563932176eb19eeecc9794478acc9ba8a9f1ec768edcc8308fe5812",
+          "match": true
+        },
+        {
+          "path": "results/pricing_snapshot.json",
+          "working_tree_sha256": "e300d66be9e18925b32bac7c32f09454b1aa82afaeccedd20dfb7ef56f4a0b92",
+          "tag_sha256": "e300d66be9e18925b32bac7c32f09454b1aa82afaeccedd20dfb7ef56f4a0b92",
+          "match": true
+        },
+        {
+          "path": "data/manifest.json",
+          "working_tree_sha256": "ec8b1dbc570ea8fa0a160fc5fe1de55d821c91f1452979c544af5094a4582971",
+          "tag_sha256": "ec8b1dbc570ea8fa0a160fc5fe1de55d821c91f1452979c544af5094a4582971",
+          "match": true
+        }
+      ],
+      "documentation": [
+        {
+          "path": "EXPERIMENT.md",
+          "working_tree_sha256": "c2296f7399aee815ce2a5ca893e6eac20ab184e48e1cfd975c44de97843cb221",
+          "tag_sha256": "ed918407003a9841b4b50a7754723495877d7c089d3c8a510a1d22c72dc47654",
+          "match": false,
+          "note": "documentation; drift after tag is recorded, not fatal"
+        },
+        {
+          "path": "experiment.yaml",
+          "working_tree_sha256": "e050bce0ef78a09dcd05743d2ce209e95fd90da24da1df67add159aad7a19b05",
+          "tag_sha256": "40bae8e19645645e8e5e98863de9d849fe444b8f77e4651828b113557ed45f2c",
+          "match": false,
+          "note": "documentation; drift after tag is recorded, not fatal"
+        }
+      ],
+      "errors": []
+    },
+    "manifest_config": {
+      "ok": true,
+      "evaluation_count": 125,
+      "development_count": 25,
+      "evaluation_bug_ids": [
+        "Cli-13",
+        "Cli-11",
+        "Cli-4",
+        "Cli-37",
+        "Cli-9",
+        "Cli-29",
+        "Cli-27",
+        "Cli-22",
+        "Cli-35",
+        "Cli-21",
+        "Cli-3",
+        "Cli-10",
+        "Cli-24",
+        "Cli-34",
+        "Cli-8",
+        "Cli-38",
+        "Cli-25",
+        "Cli-32",
+        "Cli-12",
+        "Cli-17",
+        "Cli-19",
+        "Cli-23",
+        "Cli-28",
+        "Cli-40",
+        "Cli-26",
+        "Lang-5",
+        "Lang-33",
+        "Lang-60",
+        "Lang-13",
+        "Lang-16",
+        "Lang-6",
+        "Lang-36",
+        "Lang-7",
+        "Lang-40",
+        "Lang-23",
+        "Lang-26",
+        "Lang-61",
+        "Lang-30",
+        "Lang-28",
+        "Lang-63",
+        "Lang-10",
+        "Lang-21",
+        "Lang-19",
+        "Lang-43",
+        "Lang-50",
+        "Lang-49",
+        "Lang-17",
+        "Lang-12",
+        "Lang-47",
+        "Lang-41",
+        "Math-86",
+        "Math-77",
+        "Math-33",
+        "Math-14",
+        "Math-67",
+        "Math-58",
+        "Math-43",
+        "Math-89",
+        "Math-13",
+        "Math-104",
+        "Math-41",
+        "Math-93",
+        "Math-64",
+        "Math-42",
+        "Math-92",
+        "Math-17",
+        "Math-28",
+        "Math-72",
+        "Math-69",
+        "Math-85",
+        "Math-10",
+        "Math-19",
+        "Math-71",
+        "Math-62",
+        "Math-96",
+        "Jsoup-33",
+        "Jsoup-54",
+        "Jsoup-13",
+        "Jsoup-78",
+        "Jsoup-21",
+        "Jsoup-87",
+        "Jsoup-81",
+        "Jsoup-64",
+        "Jsoup-86",
+        "Jsoup-69",
+        "Jsoup-16",
+        "Jsoup-50",
+        "Jsoup-75",
+        "Jsoup-85",
+        "Jsoup-23",
+        "Jsoup-72",
+        "Jsoup-24",
+        "Jsoup-40",
+        "Jsoup-48",
+        "Jsoup-5",
+        "Jsoup-47",
+        "Jsoup-84",
+        "Jsoup-6",
+        "Jsoup-20",
+        "Jsoup-7",
+        "JacksonDatabind-15",
+        "JacksonDatabind-49",
+        "JacksonDatabind-108",
+        "JacksonDatabind-100",
+        "JacksonDatabind-77",
+        "JacksonDatabind-110",
+        "JacksonDatabind-47",
+        "JacksonDatabind-86",
+        "JacksonDatabind-74",
+        "JacksonDatabind-51",
+        "JacksonDatabind-42",
+        "JacksonDatabind-97",
+        "JacksonDatabind-72",
+        "JacksonDatabind-111",
+        "JacksonDatabind-35",
+        "JacksonDatabind-38",
+        "JacksonDatabind-103",
+        "JacksonDatabind-87",
+        "JacksonDatabind-44",
+        "JacksonDatabind-62",
+        "JacksonDatabind-93",
+        "JacksonDatabind-5",
+        "JacksonDatabind-66",
+        "JacksonDatabind-99",
+        "JacksonDatabind-78"
+      ],
+      "project_order": [
+        "Cli",
+        "Lang",
+        "Math",
+        "Jsoup",
+        "JacksonDatabind"
+      ],
+      "defects4j_commit": "6d54320e0db5a357f9ab38a8e4d2e5aead7e1c09",
+      "defects4j_version": "3.0.1",
+      "systems": [
+        "Random",
+        "BM25",
+        "Embedding",
+        "Jev",
+        "GPT-Nano"
+      ],
+      "environment_record_ok": true,
+      "errors": []
+    },
+    "evaluation_namespace": {
+      "ok": true,
+      "hits": [],
+      "hit_count": 0,
+      "errors": []
+    },
+    "spend": {
+      "ok": true,
+      "basis": "phase5_usage_scaled_x5_plus_pricing_snapshot",
+      "measured_scale": {
+        "jev": {
+          "scaled_input_tokens": 34677540.0,
+          "scaled_output_tokens": 322920.0,
+          "development_rows": 2691
+        },
+        "gpt": {
+          "scaled_input_tokens": 27846350.0,
+          "scaled_output_tokens": 258870.0,
+          "development_rows": 2761
+        },
+        "embedding": {
+          "scaled_input_tokens": 17230695.0,
+          "scaled_output_tokens": 0.0,
+          "development_rows": 2604
+        }
+      },
+      "estimated_usd": {
+        "jev_openrouter": 1.5366,
+        "gpt_nano_openrouter": 6.217,
+        "embedding_openrouter": 0.3636,
+        "total": 8.1171
+      },
+      "pricing_snapshot_jev_openrouter_eval": {
+        "route": "openrouter",
+        "estimable": true,
+        "n_bugs": 125,
+        "mean_candidates": 150.0,
+        "mean_input_tokens_per_call": 800.0,
+        "estimated_calls": 18750.0,
+        "estimated_input_tokens": 15000000.0,
+        "list_price_inference_usd": 0.63,
+        "platform_fee_usd": 0.03465,
+        "effective_cash_if_prepaid_credits_usd": 0.66465,
+        "input_usd_per_mtok": 0.042,
+        "platform_fee_rate": 0.055
+      },
+      "spend_ceiling_usd": 16.23,
+      "schedule": {
+        "order": [
+          "prepare_dataset",
+          "run_candidates",
+          "run_embeddings",
+          "run_random_baseline",
+          "run_jev",
+          "run_gpt",
+          "assemble_seal"
+        ],
+        "max_concurrency": 16,
+        "note": "Operational guard only; does not change K, models, or sample."
+      }
+    },
+    "providers": {
+      "ok": true,
+      "dotenv_keys_loaded": [],
+      "api_keys_present": {
+        "OPENROUTER_API_KEY": true,
+        "OPENAI_API_KEY": false,
+        "TYPESAFE_API_KEY": false
+      },
+      "probe_ran": true,
+      "jev_probe": {
+        "ok": true,
+        "response_model": null,
+        "response_model_pinned_ok": true,
+        "error": null,
+        "expected_prefix": "typesafe/jev-1.13",
+        "development_observed": "typesafe/jev-1.13-20260917"
+      },
+      "errors": []
+    }
+  },
+  "artifact_layout": {
+    "run_id": "eval-v1-20260923T035853+0000",
+    "experiment_commit": "edc70bacd23f2fc5f511ef4d97a33376e7b20bf8",
+    "phase7_root": "results/phase7",
+    "preflight": "results/phase7/preflight.json",
+    "execution_log": "results/phase7/execution.log.jsonl",
+    "run_record": "results/phase7/run.json",
+    "completed_artifacts": "results/phase7/artifacts/",
+    "failed_attempts": "results/phase7/failures/",
+    "final_audit": "results/phase7/audit.json",
+    "development_protection": "Evaluation writers must only touch evaluation qualified IDs; development paths under data/ and results/ must not be overwritten.",
+    "evaluation_data": {
+      "bugs": "data/bugs/<Project>_<id>/",
+      "patches": "data/patches/<Project>_<id>/",
+      "tests": "data/tests/<Project>_<id>/",
+      "candidates": "data/candidates/<Project>_<id>.json",
+      "rankings": "results/rankings/<Project>_<id>.json"
+    }
+  },
+  "open_items": [
+    {
+      "id": "A-001",
+      "note": "Jsoup-70 ConnectTest OpenRouter WAF on file://etc/passwd; must resolve or formally deviate before relying on eval Jev completeness if evaluation hits the same pattern."
+    }
+  ]
+}

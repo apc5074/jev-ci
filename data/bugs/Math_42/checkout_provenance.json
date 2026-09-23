@@ -1,0 +1,59 @@
+{
+  "qualified_id": "Math-42",
+  "example_id": "Math_42",
+  "project": "Math",
+  "bug_id": "42",
+  "split": "evaluation",
+  "status": "ok",
+  "reused": false,
+  "checked_at": "2026-09-23T04:29:55+00:00",
+  "defects4j_version": "3.0.1",
+  "defects4j_commit": "6d54320e0db5a357f9ab38a8e4d2e5aead7e1c09",
+  "d4j_home": "D4J_HOME",
+  "fixed": {
+    "version_id": "42f",
+    "role": "base",
+    "work_dir": "data/bugs/Math_42/checkouts/fixed",
+    "defects4j_config": {
+      "pid": "Math",
+      "vid": "42f"
+    },
+    "command": [
+      "defects4j",
+      "checkout",
+      "-p",
+      "Math",
+      "-v",
+      "42f",
+      "-w",
+      "data/bugs/Math_42/checkouts/fixed"
+    ],
+    "exit_status": 0
+  },
+  "buggy": {
+    "version_id": "42b",
+    "role": "proposed_change",
+    "work_dir": "data/bugs/Math_42/checkouts/buggy",
+    "defects4j_config": {
+      "pid": "Math",
+      "vid": "42b"
+    },
+    "command": [
+      "defects4j",
+      "checkout",
+      "-p",
+      "Math",
+      "-v",
+      "42b",
+      "-w",
+      "data/bugs/Math_42/checkouts/buggy"
+    ],
+    "exit_status": 0
+  },
+  "logs": {
+    "fixed_stdout_tail": "",
+    "fixed_stderr_tail": "Checking out f656676e to /workspace/data/bugs/Math_42/checkouts/fixed...... OK\nInit local repository...................................................... OK\nTag post-fix revision...................................................... OK\nRun post-checkout hook..................................................... OK\nExcluding broken/flaky tests............................................... OK\nExcluding broken/flaky tests............................................... OK\nExcluding broken/flaky tests............................................... OK\nInitialize fixed program version........................................... OK\nApply patch................................................................ OK\nInitialize buggy program version........................................... OK\nDiff f656676e:f14fdb54..................................................... OK\nApply patch................................................................ OK\nTag pre-fix revision....................................................... OK\nCheck out program version: Math-42f........................................ OK\n",
+    "buggy_stdout_tail": "",
+    "buggy_stderr_tail": "Checking out f656676e to /workspace/data/bugs/Math_42/checkouts/buggy...... OK\nInit local repository...................................................... OK\nTag post-fix revision...................................................... OK\nRun post-checkout hook..................................................... OK\nExcluding broken/flaky tests............................................... OK\nExcluding broken/flaky tests............................................... OK\nExcluding broken/flaky tests............................................... OK\nInitialize fixed program version........................................... OK\nApply patch................................................................ OK\nInitialize buggy program version........................................... OK\nDiff f656676e:f14fdb54..................................................... OK\nApply patch................................................................ OK\nTag pre-fix revision....................................................... OK\nCheck out program version: Math-42b........................................ OK\n"
+  }
+}

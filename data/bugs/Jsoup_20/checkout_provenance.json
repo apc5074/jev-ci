@@ -1,0 +1,59 @@
+{
+  "qualified_id": "Jsoup-20",
+  "example_id": "Jsoup_20",
+  "project": "Jsoup",
+  "bug_id": "20",
+  "split": "evaluation",
+  "status": "ok",
+  "reused": false,
+  "checked_at": "2026-09-23T04:45:31+00:00",
+  "defects4j_version": "3.0.1",
+  "defects4j_commit": "6d54320e0db5a357f9ab38a8e4d2e5aead7e1c09",
+  "d4j_home": "D4J_HOME",
+  "fixed": {
+    "version_id": "20f",
+    "role": "base",
+    "work_dir": "data/bugs/Jsoup_20/checkouts/fixed",
+    "defects4j_config": {
+      "pid": "Jsoup",
+      "vid": "20f"
+    },
+    "command": [
+      "defects4j",
+      "checkout",
+      "-p",
+      "Jsoup",
+      "-v",
+      "20f",
+      "-w",
+      "data/bugs/Jsoup_20/checkouts/fixed"
+    ],
+    "exit_status": 0
+  },
+  "buggy": {
+    "version_id": "20b",
+    "role": "proposed_change",
+    "work_dir": "data/bugs/Jsoup_20/checkouts/buggy",
+    "defects4j_config": {
+      "pid": "Jsoup",
+      "vid": "20b"
+    },
+    "command": [
+      "defects4j",
+      "checkout",
+      "-p",
+      "Jsoup",
+      "-v",
+      "20b",
+      "-w",
+      "data/bugs/Jsoup_20/checkouts/buggy"
+    ],
+    "exit_status": 0
+  },
+  "logs": {
+    "fixed_stdout_tail": "",
+    "fixed_stderr_tail": "Checking out 1d31086a to /workspace/data/bugs/Jsoup_20/checkouts/fixed..... OK\nInit local repository...................................................... OK\nTag post-fix revision...................................................... OK\nCopy generated Ant build file.............................................. OK\nRun post-checkout hook..................................................... OK\nExcluding broken/flaky tests............................................... OK\nBacking up build file: /workspace/data/bugs/Jsoup_20/checkouts/fixed/maven- OK\nInitialize fixed program version........................................... OK\nApply patch................................................................ OK\nInitialize buggy program version........................................... OK\nDiff 1d31086a:2c257f64..................................................... OK\nApply patch................................................................ OK\nTag pre-fix revision....................................................... OK\nCheck out program version: Jsoup-20f....................................... OK\n",
+    "buggy_stdout_tail": "",
+    "buggy_stderr_tail": "Checking out 1d31086a to /workspace/data/bugs/Jsoup_20/checkouts/buggy..... OK\nInit local repository...................................................... OK\nTag post-fix revision...................................................... OK\nCopy generated Ant build file.............................................. OK\nRun post-checkout hook..................................................... OK\nExcluding broken/flaky tests............................................... OK\nBacking up build file: /workspace/data/bugs/Jsoup_20/checkouts/buggy/maven- OK\nInitialize fixed program version........................................... OK\nApply patch................................................................ OK\nInitialize buggy program version........................................... OK\nDiff 1d31086a:2c257f64..................................................... OK\nApply patch................................................................ OK\nTag pre-fix revision....................................................... OK\nCheck out program version: Jsoup-20b....................................... OK\n"
+  }
+}

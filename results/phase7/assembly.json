@@ -1,0 +1,3433 @@
+{
+  "schema_version": "jev-phase7-assembly-v1",
+  "generated_at": "2026-09-23T15:04:33+00:00",
+  "split": "evaluation",
+  "experiment_commit": "edc70bacd23f2fc5f511ef4d97a33376e7b20bf8",
+  "run_id": "eval-v1-20260923T035853+0000",
+  "counts": {
+    "targets": 125,
+    "passed": 125,
+    "failed": 0,
+    "jev_assembled": 113,
+    "gpt_assembled": 125,
+    "accepted_jev_gaps": 12
+  },
+  "accepted_jev_gaps": [
+    {
+      "qualified_id": "Jsoup-33",
+      "test_class": "org.jsoup.integration.UrlConnectTest",
+      "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+    },
+    {
+      "qualified_id": "Jsoup-54",
+      "test_class": "org.jsoup.integration.UrlConnectTest",
+      "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+    },
+    {
+      "qualified_id": "Jsoup-78",
+      "test_class": "org.jsoup.integration.ConnectTest",
+      "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+    },
+    {
+      "qualified_id": "Jsoup-81",
+      "test_class": "org.jsoup.integration.ConnectTest",
+      "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+    },
+    {
+      "qualified_id": "Jsoup-86",
+      "test_class": "org.jsoup.integration.ConnectTest",
+      "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+    },
+    {
+      "qualified_id": "Jsoup-69",
+      "test_class": "org.jsoup.integration.ConnectTest",
+      "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+    },
+    {
+      "qualified_id": "Jsoup-75",
+      "test_class": "org.jsoup.integration.ConnectTest",
+      "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+    },
+    {
+      "qualified_id": "Jsoup-85",
+      "test_class": "org.jsoup.integration.ConnectTest",
+      "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+    },
+    {
+      "qualified_id": "Jsoup-72",
+      "test_class": "org.jsoup.integration.ConnectTest",
+      "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+    },
+    {
+      "qualified_id": "Jsoup-40",
+      "test_class": "org.jsoup.integration.UrlConnectTest",
+      "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+    },
+    {
+      "qualified_id": "Jsoup-47",
+      "test_class": "org.jsoup.integration.UrlConnectTest",
+      "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+    },
+    {
+      "qualified_id": "Jsoup-84",
+      "test_class": "org.jsoup.integration.ConnectTest",
+      "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+    }
+  ],
+  "failed_ids": [],
+  "bugs": [
+    {
+      "qualified_id": "Cli-13",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Cli_13.json",
+          "N": 45,
+          "K": 45
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Cli_13.json",
+          "N": 45,
+          "K": 45
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-11",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Cli_11.json",
+          "N": 24,
+          "K": 24
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Cli_11.json",
+          "N": 24,
+          "K": 24
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-4",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Cli_4.json",
+          "N": 19,
+          "K": 19
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Cli_4.json",
+          "N": 19,
+          "K": 19
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-37",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Cli_37.json",
+          "N": 26,
+          "K": 26
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Cli_37.json",
+          "N": 26,
+          "K": 26
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-9",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Cli_9.json",
+          "N": 22,
+          "K": 22
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Cli_9.json",
+          "N": 22,
+          "K": 22
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-29",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Cli_29.json",
+          "N": 23,
+          "K": 23
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Cli_29.json",
+          "N": 23,
+          "K": 23
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-27",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Cli_27.json",
+          "N": 22,
+          "K": 22
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Cli_27.json",
+          "N": 22,
+          "K": 22
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-22",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Cli_22.json",
+          "N": 22,
+          "K": 22
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Cli_22.json",
+          "N": 22,
+          "K": 22
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-35",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Cli_35.json",
+          "N": 24,
+          "K": 24
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Cli_35.json",
+          "N": 24,
+          "K": 24
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-21",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Cli_21.json",
+          "N": 51,
+          "K": 51
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Cli_21.json",
+          "N": 51,
+          "K": 51
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-3",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Cli_3.json",
+          "N": 19,
+          "K": 19
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Cli_3.json",
+          "N": 19,
+          "K": 19
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-10",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Cli_10.json",
+          "N": 22,
+          "K": 22
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Cli_10.json",
+          "N": 22,
+          "K": 22
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-24",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Cli_24.json",
+          "N": 23,
+          "K": 23
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Cli_24.json",
+          "N": 23,
+          "K": 23
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-34",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Cli_34.json",
+          "N": 23,
+          "K": 23
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Cli_34.json",
+          "N": 23,
+          "K": 23
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-8",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Cli_8.json",
+          "N": 22,
+          "K": 22
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Cli_8.json",
+          "N": 22,
+          "K": 22
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-38",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Cli_38.json",
+          "N": 26,
+          "K": 26
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Cli_38.json",
+          "N": 26,
+          "K": 26
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-25",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Cli_25.json",
+          "N": 23,
+          "K": 23
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Cli_25.json",
+          "N": 23,
+          "K": 23
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-32",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Cli_32.json",
+          "N": 23,
+          "K": 23
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Cli_32.json",
+          "N": 23,
+          "K": 23
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-12",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Cli_12.json",
+          "N": 22,
+          "K": 22
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Cli_12.json",
+          "N": 22,
+          "K": 22
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-17",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Cli_17.json",
+          "N": 23,
+          "K": 23
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Cli_17.json",
+          "N": 23,
+          "K": 23
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-19",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Cli_19.json",
+          "N": 23,
+          "K": 23
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Cli_19.json",
+          "N": 23,
+          "K": 23
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-23",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Cli_23.json",
+          "N": 23,
+          "K": 23
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Cli_23.json",
+          "N": 23,
+          "K": 23
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-28",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Cli_28.json",
+          "N": 23,
+          "K": 23
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Cli_28.json",
+          "N": 23,
+          "K": 23
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-40",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Cli_40.json",
+          "N": 28,
+          "K": 28
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Cli_40.json",
+          "N": 28,
+          "K": 28
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-26",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Cli_26.json",
+          "N": 23,
+          "K": 23
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Cli_26.json",
+          "N": 23,
+          "K": 23
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-5",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Lang_5.json",
+          "N": 113,
+          "K": 113
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Lang_5.json",
+          "N": 113,
+          "K": 113
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-33",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Lang_33.json",
+          "N": 85,
+          "K": 85
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Lang_33.json",
+          "N": 85,
+          "K": 85
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-60",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Lang_60.json",
+          "N": 82,
+          "K": 82
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Lang_60.json",
+          "N": 82,
+          "K": 82
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-13",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Lang_13.json",
+          "N": 111,
+          "K": 111
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Lang_13.json",
+          "N": 111,
+          "K": 111
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-16",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Lang_16.json",
+          "N": 105,
+          "K": 105
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Lang_16.json",
+          "N": 105,
+          "K": 105
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-6",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Lang_6.json",
+          "N": 113,
+          "K": 113
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Lang_6.json",
+          "N": 113,
+          "K": 113
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-36",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Lang_36.json",
+          "N": 84,
+          "K": 84
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Lang_36.json",
+          "N": 84,
+          "K": 84
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-7",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Lang_7.json",
+          "N": 113,
+          "K": 113
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Lang_7.json",
+          "N": 113,
+          "K": 113
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-40",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Lang_40.json",
+          "N": 87,
+          "K": 87
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Lang_40.json",
+          "N": 87,
+          "K": 87
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-23",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Lang_23.json",
+          "N": 95,
+          "K": 95
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Lang_23.json",
+          "N": 95,
+          "K": 95
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-26",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Lang_26.json",
+          "N": 92,
+          "K": 92
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Lang_26.json",
+          "N": 92,
+          "K": 92
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-61",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Lang_61.json",
+          "N": 82,
+          "K": 82
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Lang_61.json",
+          "N": 82,
+          "K": 82
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-30",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Lang_30.json",
+          "N": 88,
+          "K": 88
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Lang_30.json",
+          "N": 88,
+          "K": 88
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-28",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Lang_28.json",
+          "N": 90,
+          "K": 90
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Lang_28.json",
+          "N": 90,
+          "K": 90
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-63",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Lang_63.json",
+          "N": 82,
+          "K": 82
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Lang_63.json",
+          "N": 82,
+          "K": 82
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-10",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Lang_10.json",
+          "N": 111,
+          "K": 111
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Lang_10.json",
+          "N": 111,
+          "K": 111
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-21",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Lang_21.json",
+          "N": 97,
+          "K": 97
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Lang_21.json",
+          "N": 97,
+          "K": 97
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-19",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Lang_19.json",
+          "N": 100,
+          "K": 100
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Lang_19.json",
+          "N": 100,
+          "K": 100
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-43",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Lang_43.json",
+          "N": 90,
+          "K": 90
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Lang_43.json",
+          "N": 90,
+          "K": 90
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-50",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Lang_50.json",
+          "N": 84,
+          "K": 84
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Lang_50.json",
+          "N": 84,
+          "K": 84
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-49",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Lang_49.json",
+          "N": 84,
+          "K": 84
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Lang_49.json",
+          "N": 84,
+          "K": 84
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-17",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Lang_17.json",
+          "N": 100,
+          "K": 100
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Lang_17.json",
+          "N": 100,
+          "K": 100
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-12",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Lang_12.json",
+          "N": 111,
+          "K": 111
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Lang_12.json",
+          "N": 111,
+          "K": 111
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-47",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Lang_47.json",
+          "N": 86,
+          "K": 86
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Lang_47.json",
+          "N": 86,
+          "K": 86
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-41",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Lang_41.json",
+          "N": 87,
+          "K": 87
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Lang_41.json",
+          "N": 87,
+          "K": 87
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-86",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Math_86.json",
+          "N": 184,
+          "K": 184
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Math_86.json",
+          "N": 184,
+          "K": 184
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-77",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Math_77.json",
+          "N": 218,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Math_77.json",
+          "N": 218,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-33",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Math_33.json",
+          "N": 288,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Math_33.json",
+          "N": 288,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-14",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Math_14.json",
+          "N": 350,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Math_14.json",
+          "N": 350,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-67",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Math_67.json",
+          "N": 235,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Math_67.json",
+          "N": 235,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-58",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Math_58.json",
+          "N": 240,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Math_58.json",
+          "N": 240,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-43",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Math_43.json",
+          "N": 284,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Math_43.json",
+          "N": 284,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-89",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Math_89.json",
+          "N": 174,
+          "K": 174
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Math_89.json",
+          "N": 174,
+          "K": 174
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-13",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Math_13.json",
+          "N": 350,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Math_13.json",
+          "N": 350,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-104",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Math_104.json",
+          "N": 127,
+          "K": 127
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Math_104.json",
+          "N": 127,
+          "K": 127
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-41",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Math_41.json",
+          "N": 284,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Math_41.json",
+          "N": 284,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-93",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Math_93.json",
+          "N": 158,
+          "K": 158
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Math_93.json",
+          "N": 158,
+          "K": 158
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-64",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Math_64.json",
+          "N": 240,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Math_64.json",
+          "N": 240,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-42",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Math_42.json",
+          "N": 284,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Math_42.json",
+          "N": 284,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-92",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Math_92.json",
+          "N": 159,
+          "K": 159
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Math_92.json",
+          "N": 159,
+          "K": 159
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-17",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Math_17.json",
+          "N": 314,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Math_17.json",
+          "N": 314,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-28",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Math_28.json",
+          "N": 301,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Math_28.json",
+          "N": 301,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-72",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Math_72.json",
+          "N": 219,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Math_72.json",
+          "N": 219,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-69",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Math_69.json",
+          "N": 226,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Math_69.json",
+          "N": 226,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-85",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Math_85.json",
+          "N": 204,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Math_85.json",
+          "N": 204,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-10",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Math_10.json",
+          "N": 352,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Math_10.json",
+          "N": 352,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-19",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Math_19.json",
+          "N": 312,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Math_19.json",
+          "N": 312,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-71",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Math_71.json",
+          "N": 222,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Math_71.json",
+          "N": 222,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-62",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Math_62.json",
+          "N": 245,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Math_62.json",
+          "N": 245,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-96",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Math_96.json",
+          "N": 143,
+          "K": 143
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Math_96.json",
+          "N": 143,
+          "K": 143
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-33",
+      "assembled": [
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Jsoup_33.json",
+          "N": 25,
+          "K": 25
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": {
+        "test_class": "org.jsoup.integration.UrlConnectTest",
+        "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+      },
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "GPT-Nano": true,
+        "Jev": false,
+        "Jev_accepted_gap": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-54",
+      "assembled": [
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Jsoup_54.json",
+          "N": 26,
+          "K": 26
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": {
+        "test_class": "org.jsoup.integration.UrlConnectTest",
+        "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+      },
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "GPT-Nano": true,
+        "Jev": false,
+        "Jev_accepted_gap": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-13",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Jsoup_13.json",
+          "N": 19,
+          "K": 19
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Jsoup_13.json",
+          "N": 19,
+          "K": 19
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-78",
+      "assembled": [
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Jsoup_78.json",
+          "N": 34,
+          "K": 34
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": {
+        "test_class": "org.jsoup.integration.ConnectTest",
+        "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+      },
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "GPT-Nano": true,
+        "Jev": false,
+        "Jev_accepted_gap": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-21",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Jsoup_21.json",
+          "N": 22,
+          "K": 22
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Jsoup_21.json",
+          "N": 22,
+          "K": 22
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-87",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Jsoup_87.json",
+          "N": 35,
+          "K": 35
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Jsoup_87.json",
+          "N": 35,
+          "K": 35
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-81",
+      "assembled": [
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Jsoup_81.json",
+          "N": 34,
+          "K": 34
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": {
+        "test_class": "org.jsoup.integration.ConnectTest",
+        "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+      },
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "GPT-Nano": true,
+        "Jev": false,
+        "Jev_accepted_gap": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-64",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Jsoup_64.json",
+          "N": 27,
+          "K": 27
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Jsoup_64.json",
+          "N": 27,
+          "K": 27
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-86",
+      "assembled": [
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Jsoup_86.json",
+          "N": 35,
+          "K": 35
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": {
+        "test_class": "org.jsoup.integration.ConnectTest",
+        "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+      },
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "GPT-Nano": true,
+        "Jev": false,
+        "Jev_accepted_gap": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-69",
+      "assembled": [
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Jsoup_69.json",
+          "N": 34,
+          "K": 34
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": {
+        "test_class": "org.jsoup.integration.ConnectTest",
+        "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+      },
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "GPT-Nano": true,
+        "Jev": false,
+        "Jev_accepted_gap": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-16",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Jsoup_16.json",
+          "N": 21,
+          "K": 21
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Jsoup_16.json",
+          "N": 21,
+          "K": 21
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-50",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Jsoup_50.json",
+          "N": 26,
+          "K": 26
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Jsoup_50.json",
+          "N": 26,
+          "K": 26
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-75",
+      "assembled": [
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Jsoup_75.json",
+          "N": 34,
+          "K": 34
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": {
+        "test_class": "org.jsoup.integration.ConnectTest",
+        "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+      },
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "GPT-Nano": true,
+        "Jev": false,
+        "Jev_accepted_gap": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-85",
+      "assembled": [
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Jsoup_85.json",
+          "N": 34,
+          "K": 34
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": {
+        "test_class": "org.jsoup.integration.ConnectTest",
+        "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+      },
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "GPT-Nano": true,
+        "Jev": false,
+        "Jev_accepted_gap": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-23",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Jsoup_23.json",
+          "N": 23,
+          "K": 23
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Jsoup_23.json",
+          "N": 23,
+          "K": 23
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-72",
+      "assembled": [
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Jsoup_72.json",
+          "N": 34,
+          "K": 34
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": {
+        "test_class": "org.jsoup.integration.ConnectTest",
+        "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+      },
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "GPT-Nano": true,
+        "Jev": false,
+        "Jev_accepted_gap": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-24",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Jsoup_24.json",
+          "N": 23,
+          "K": 23
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Jsoup_24.json",
+          "N": 23,
+          "K": 23
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-40",
+      "assembled": [
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Jsoup_40.json",
+          "N": 25,
+          "K": 25
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": {
+        "test_class": "org.jsoup.integration.UrlConnectTest",
+        "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+      },
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "GPT-Nano": true,
+        "Jev": false,
+        "Jev_accepted_gap": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-48",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Jsoup_48.json",
+          "N": 26,
+          "K": 26
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Jsoup_48.json",
+          "N": 26,
+          "K": 26
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-5",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Jsoup_5.json",
+          "N": 16,
+          "K": 16
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Jsoup_5.json",
+          "N": 16,
+          "K": 16
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-47",
+      "assembled": [
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Jsoup_47.json",
+          "N": 26,
+          "K": 26
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": {
+        "test_class": "org.jsoup.integration.UrlConnectTest",
+        "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+      },
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "GPT-Nano": true,
+        "Jev": false,
+        "Jev_accepted_gap": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-84",
+      "assembled": [
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Jsoup_84.json",
+          "N": 34,
+          "K": 34
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": {
+        "test_class": "org.jsoup.integration.ConnectTest",
+        "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+      },
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "GPT-Nano": true,
+        "Jev": false,
+        "Jev_accepted_gap": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-6",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Jsoup_6.json",
+          "N": 19,
+          "K": 19
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Jsoup_6.json",
+          "N": 19,
+          "K": 19
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-20",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Jsoup_20.json",
+          "N": 22,
+          "K": 22
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Jsoup_20.json",
+          "N": 22,
+          "K": 22
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-7",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/Jsoup_7.json",
+          "N": 19,
+          "K": 19
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/Jsoup_7.json",
+          "N": 19,
+          "K": 19
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-15",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/JacksonDatabind_15.json",
+          "N": 256,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/JacksonDatabind_15.json",
+          "N": 256,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-49",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/JacksonDatabind_49.json",
+          "N": 283,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/JacksonDatabind_49.json",
+          "N": 283,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-108",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/JacksonDatabind_108.json",
+          "N": 434,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/JacksonDatabind_108.json",
+          "N": 434,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-100",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/JacksonDatabind_100.json",
+          "N": 431,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/JacksonDatabind_100.json",
+          "N": 431,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-77",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/JacksonDatabind_77.json",
+          "N": 310,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/JacksonDatabind_77.json",
+          "N": 310,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-110",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/JacksonDatabind_110.json",
+          "N": 433,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/JacksonDatabind_110.json",
+          "N": 433,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-47",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/JacksonDatabind_47.json",
+          "N": 302,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/JacksonDatabind_47.json",
+          "N": 302,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-86",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/JacksonDatabind_86.json",
+          "N": 340,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/JacksonDatabind_86.json",
+          "N": 340,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-74",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/JacksonDatabind_74.json",
+          "N": 333,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/JacksonDatabind_74.json",
+          "N": 333,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-51",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/JacksonDatabind_51.json",
+          "N": 313,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/JacksonDatabind_51.json",
+          "N": 313,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-42",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/JacksonDatabind_42.json",
+          "N": 282,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/JacksonDatabind_42.json",
+          "N": 282,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-97",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/JacksonDatabind_97.json",
+          "N": 430,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/JacksonDatabind_97.json",
+          "N": 430,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-72",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/JacksonDatabind_72.json",
+          "N": 309,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/JacksonDatabind_72.json",
+          "N": 309,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-111",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/JacksonDatabind_111.json",
+          "N": 433,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/JacksonDatabind_111.json",
+          "N": 433,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-35",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/JacksonDatabind_35.json",
+          "N": 260,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/JacksonDatabind_35.json",
+          "N": 260,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-38",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/JacksonDatabind_38.json",
+          "N": 295,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/JacksonDatabind_38.json",
+          "N": 295,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-103",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/JacksonDatabind_103.json",
+          "N": 431,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/JacksonDatabind_103.json",
+          "N": 431,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-87",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/JacksonDatabind_87.json",
+          "N": 340,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/JacksonDatabind_87.json",
+          "N": 340,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-44",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/JacksonDatabind_44.json",
+          "N": 298,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/JacksonDatabind_44.json",
+          "N": 298,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-62",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/JacksonDatabind_62.json",
+          "N": 305,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/JacksonDatabind_62.json",
+          "N": 305,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-93",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/JacksonDatabind_93.json",
+          "N": 349,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/JacksonDatabind_93.json",
+          "N": 349,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-5",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/JacksonDatabind_5.json",
+          "N": 236,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/JacksonDatabind_5.json",
+          "N": 236,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-66",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/JacksonDatabind_66.json",
+          "N": 322,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/JacksonDatabind_66.json",
+          "N": 322,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-99",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/JacksonDatabind_99.json",
+          "N": 349,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/JacksonDatabind_99.json",
+          "N": 349,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-78",
+      "assembled": [
+        {
+          "method": "Jev",
+          "path": "results/semantic/jev/JacksonDatabind_78.json",
+          "N": 338,
+          "K": 200
+        },
+        {
+          "method": "GPT-Nano",
+          "path": "results/semantic/gpt_nano/JacksonDatabind_78.json",
+          "N": 338,
+          "K": 200
+        }
+      ],
+      "errors": [],
+      "accepted_jev_gap": null,
+      "five_systems": {
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": true,
+        "GPT-Nano": true
+      },
+      "ok": true
+    }
+  ],
+  "ok": true,
+  "notes": "Jev omitted (not invented) for 12 A-001 WAF bugs; GPT/BM25/Embedding/Random required for all 125."
+}

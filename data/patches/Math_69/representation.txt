@@ -1,0 +1,19 @@
+MODIFIED FILES:
+src/main/java/org/apache/commons/math/stat/correlation/PearsonsCorrelation.java
+
+MODIFIED CLASSES:
+org.apache.commons.math.stat.correlation.PearsonsCorrelation
+
+PROPOSED CODE CHANGE:
+
+--- src/main/java/org/apache/commons/math/stat/correlation/PearsonsCorrelation.java
++++ src/main/java/org/apache/commons/math/stat/correlation/PearsonsCorrelation.java
+@@ -168,7 +168,7 @@
+                 } else {
+                     double r = correlationMatrix.getEntry(i, j);
+                     double t = Math.abs(r * Math.sqrt((nObs - 2)/(1 - r * r)));
+-                    out[i][j] = 2 * tDistribution.cumulativeProbability(-t);
++                    out[i][j] = 2 * (1 - tDistribution.cumulativeProbability(t));
+                 }
+             }
+         }

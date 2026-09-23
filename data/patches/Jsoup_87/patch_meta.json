@@ -1,0 +1,63 @@
+{
+  "qualified_id": "Jsoup-87",
+  "example_id": "Jsoup_87",
+  "direction": "fixed_to_buggy",
+  "patch_truncated": true,
+  "original_patch_chars": 24607,
+  "representation_chars": 12000,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...PATCH TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "modified_files": [
+    "src/main/java/org/jsoup/nodes/Element.java",
+    "src/main/java/org/jsoup/parser/HtmlTreeBuilder.java",
+    "src/main/java/org/jsoup/parser/HtmlTreeBuilderState.java",
+    "src/main/java/org/jsoup/parser/Tag.java"
+  ],
+  "modified_classes": [
+    "org.jsoup.nodes.Element",
+    "org.jsoup.parser.HtmlTreeBuilder",
+    "org.jsoup.parser.HtmlTreeBuilderState",
+    "org.jsoup.parser.Tag"
+  ],
+  "file_resolutions": [
+    {
+      "fqcn": "org.jsoup.nodes.Element",
+      "outer_class": "org.jsoup.nodes.Element",
+      "path": "src/main/java/org/jsoup/nodes/Element.java",
+      "existence": "both",
+      "diff_empty": false
+    },
+    {
+      "fqcn": "org.jsoup.parser.HtmlTreeBuilder",
+      "outer_class": "org.jsoup.parser.HtmlTreeBuilder",
+      "path": "src/main/java/org/jsoup/parser/HtmlTreeBuilder.java",
+      "existence": "both",
+      "diff_empty": false
+    },
+    {
+      "fqcn": "org.jsoup.parser.HtmlTreeBuilderState",
+      "outer_class": "org.jsoup.parser.HtmlTreeBuilderState",
+      "path": "src/main/java/org/jsoup/parser/HtmlTreeBuilderState.java",
+      "existence": "both",
+      "diff_empty": false
+    },
+    {
+      "fqcn": "org.jsoup.parser.Tag",
+      "outer_class": "org.jsoup.parser.Tag",
+      "path": "src/main/java/org/jsoup/parser/Tag.java",
+      "existence": "both",
+      "diff_empty": false
+    }
+  ],
+  "dir_src_classes": {
+    "fixed": "src/main/java",
+    "buggy": "src/main/java"
+  },
+  "artifacts": {
+    "regression_patch": "data/patches/Jsoup_87/regression_patch.diff",
+    "representation": "data/patches/Jsoup_87/representation.txt",
+    "raw_classes_modified": "data/bugs/Jsoup_87/raw/classes.modified"
+  },
+  "extracted_at": "2026-09-23T04:39:13+00:00"
+}

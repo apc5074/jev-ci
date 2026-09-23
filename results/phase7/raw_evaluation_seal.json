@@ -1,0 +1,122 @@
+{
+  "schema_version": "jev-raw-evaluation-seal-v1",
+  "ok": true,
+  "sealed_at": "2026-09-23T15:24:01+00:00",
+  "freeze_tag": "experiment-v1",
+  "experiment_commit": "edc70bacd23f2fc5f511ef4d97a33376e7b20bf8",
+  "run_id": "eval-v1-20260923T035853+0000",
+  "seal_path": "results/phase7/raw_evaluation_seal.json",
+  "predictions": {
+    "path": "results/predictions.jsonl",
+    "sha256": "551094261bbc1c151964b2c3602ad84482816de73304c9257e2f7d7f1fcbe747",
+    "line_count": 72401,
+    "schema_version": "jev-predictions-v1"
+  },
+  "raw_result_index": {
+    "path": "results/phase7/raw_result_index.json",
+    "sha256": "27046f75b95a07630a14565691c6524f65ff3b482eae69e11536b2c08d0762ab",
+    "schema_version": "jev-raw-result-index-v1"
+  },
+  "audit_path": "results/phase7/evaluation_seal_audit.json",
+  "counts": {
+    "evaluation_bugs": 125,
+    "passed": 125,
+    "failed": 0,
+    "projects": {
+      "Cli": 25,
+      "Lang": 25,
+      "Math": 25,
+      "Jsoup": 25,
+      "JacksonDatabind": 25
+    },
+    "jev_rankings": 113,
+    "accepted_jev_gaps": 12,
+    "K_total": 13414
+  },
+  "accepted_jev_gaps": {
+    "Jsoup-33": {
+      "test_class": "org.jsoup.integration.UrlConnectTest",
+      "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+    },
+    "Jsoup-40": {
+      "test_class": "org.jsoup.integration.UrlConnectTest",
+      "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+    },
+    "Jsoup-47": {
+      "test_class": "org.jsoup.integration.UrlConnectTest",
+      "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+    },
+    "Jsoup-54": {
+      "test_class": "org.jsoup.integration.UrlConnectTest",
+      "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+    },
+    "Jsoup-69": {
+      "test_class": "org.jsoup.integration.ConnectTest",
+      "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+    },
+    "Jsoup-72": {
+      "test_class": "org.jsoup.integration.ConnectTest",
+      "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+    },
+    "Jsoup-75": {
+      "test_class": "org.jsoup.integration.ConnectTest",
+      "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+    },
+    "Jsoup-78": {
+      "test_class": "org.jsoup.integration.ConnectTest",
+      "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+    },
+    "Jsoup-81": {
+      "test_class": "org.jsoup.integration.ConnectTest",
+      "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+    },
+    "Jsoup-84": {
+      "test_class": "org.jsoup.integration.ConnectTest",
+      "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+    },
+    "Jsoup-85": {
+      "test_class": "org.jsoup.integration.ConnectTest",
+      "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+    },
+    "Jsoup-86": {
+      "test_class": "org.jsoup.integration.ConnectTest",
+      "reason": "OpenRouter WAF A-001 on file://etc/passwd"
+    }
+  },
+  "usage": {
+    "evaluation_rows_by_kind": {
+      "embedding": 4383,
+      "jev": 13402,
+      "gpt": 13414
+    },
+    "evaluation_list_price_inference_usd": 7.688744501999988,
+    "evaluation_platform_fee_usd": 0.4228809476100004,
+    "pricing_snapshot_sha256": "e300d66be9e18925b32bac7c32f09454b1aa82afaeccedd20dfb7ef56f4a0b92"
+  },
+  "phase8_inputs": [
+    "results/phase7/raw_evaluation_seal.json",
+    "results/phase7/raw_result_index.json",
+    "results/predictions.jsonl",
+    "results/rankings/",
+    "results/embeddings/",
+    "results/semantic/jev/",
+    "results/semantic/gpt_nano/",
+    "results/random/",
+    "data/candidates/",
+    "data/tests/*/labels.json",
+    "data/manifest.json",
+    "results/pricing_snapshot.json",
+    "results/usage_ledger.jsonl",
+    "EXPERIMENT.md",
+    "experiment.yaml"
+  ],
+  "forbidden_until_seal_verified": [
+    "aggregate FDR",
+    "candidate recall@200",
+    "method differences / significance tests",
+    "failure-case analysis",
+    "metrics.csv / statistics.json / figures"
+  ],
+  "offline_verify_command": "python -c \"from pathlib import Path; import json; from src.example_contract import sha256_file; s=json.loads(Path('results/phase7/raw_evaluation_seal.json').read_text()); assert sha256_file(Path(s['predictions']['path']))==s['predictions']['sha256']; print('seal-ok')\"",
+  "seal_sha256": "42ba0e4af46cde629d211f6834de18feec11fef86aae1c3746e61c06d2934386"
+}

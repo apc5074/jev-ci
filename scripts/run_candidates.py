@@ -242,6 +242,33 @@ def run_candidates(
         "counts": _summary_counts(rows),
         "examples": rows,
     }
+    if allow_evaluation and split == "evaluation":
+        try:
+            from src.evaluation_preflight import append_execution_log, load_preflight
+            from src.freeze_guard import assert_evaluation_allowed
+
+            lock = assert_evaluation_allowed()
+            summary["experiment_commit"] = lock.get("commit_sha")
+            pre = load_preflight()
+            if pre:
+                summary["run_id"] = pre.get("run_id")
+                summary["experiment_commit"] = pre.get("experiment_commit") or summary[
+                    "experiment_commit"
+                ]
+            append_execution_log(
+                {
+                    "event": "run_candidates",
+                    "split": split,
+                    "ok": summary["counts"]["failed"] == 0,
+                    "completed": summary["counts"]["completed"],
+                    "failed": summary["counts"]["failed"],
+                    "failed_ids": summary["counts"]["failed_ids"],
+                    "experiment_commit": summary.get("experiment_commit"),
+                    "run_id": summary.get("run_id"),
+                }
+            )
+        except Exception:  # noqa: BLE001
+            pass
     SUMMARY_DIR.mkdir(parents=True, exist_ok=True)
     out_path = SUMMARY_DIR / f"run_candidates-{split}.json"
     atomic_write_json(out_path, summary)

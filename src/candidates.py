@@ -172,6 +172,23 @@ def build_artifacts_from_ranking(
         **tokenizer_provenance(),
         **bm25_provenance(),
     }
+    if split == "evaluation":
+        from src.freeze_guard import assert_evaluation_allowed
+
+        lock = assert_evaluation_allowed()
+        provenance["experiment_commit"] = lock.get("commit_sha")
+        provenance["freeze_tag"] = lock.get("tag")
+        try:
+            from src.evaluation_preflight import load_preflight
+
+            pre = load_preflight()
+            if pre and pre.get("run_id"):
+                provenance["run_id"] = pre["run_id"]
+            if pre and pre.get("experiment_commit"):
+                provenance["experiment_commit"] = pre["experiment_commit"]
+        except Exception:  # noqa: BLE001
+            pass
+
     input_hashes = dict(ranking.input_hashes)
     input_hashes.update(tokenizer_provenance())
     input_hashes.update(bm25_provenance())
@@ -221,6 +238,9 @@ def build_artifacts_from_ranking(
         "input_hashes": input_hashes,
         "provenance": provenance,
     }
+    if provenance.get("experiment_commit"):
+        ranking_doc["experiment_commit"] = provenance["experiment_commit"]
+        ranking_doc["run_id"] = provenance.get("run_id")
 
     candidate_doc: dict[str, Any] = {
         "schema_version": CANDIDATES_SCHEMA_VERSION,
@@ -256,6 +276,9 @@ def build_artifacts_from_ranking(
         },
         "provenance": provenance,
     }
+    if provenance.get("experiment_commit"):
+        candidate_doc["experiment_commit"] = provenance["experiment_commit"]
+        candidate_doc["run_id"] = provenance.get("run_id")
 
     for doc, label in ((candidate_doc, "candidates"), (ranking_doc, "ranking")):
         assert_no_private_fields(doc, context=label)
@@ -305,6 +328,12 @@ def _artifacts_match_existing(
         return False
     if existing_r.get("input_hashes") != ranking_doc.get("input_hashes"):
         return False
+    # Evaluation seals must carry the freeze commit; rewrite if missing/stale.
+    for existing, built in ((existing_c, candidate_doc), (existing_r, ranking_doc)):
+        if built.get("experiment_commit") and existing.get("experiment_commit") != built.get(
+            "experiment_commit"
+        ):
+            return False
 
     ranking_ids = [e.get("test_class") for e in existing_r.get("ranking") or []]
     expected_ids = [e.get("test_class") for e in ranking_doc.get("ranking") or []]

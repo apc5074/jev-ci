@@ -1,0 +1,59 @@
+{
+  "qualified_id": "Lang-28",
+  "example_id": "Lang_28",
+  "project": "Lang",
+  "bug_id": "28",
+  "split": "evaluation",
+  "status": "ok",
+  "reused": false,
+  "checked_at": "2026-09-23T04:15:44+00:00",
+  "defects4j_version": "3.0.1",
+  "defects4j_commit": "6d54320e0db5a357f9ab38a8e4d2e5aead7e1c09",
+  "d4j_home": "D4J_HOME",
+  "fixed": {
+    "version_id": "28f",
+    "role": "base",
+    "work_dir": "data/bugs/Lang_28/checkouts/fixed",
+    "defects4j_config": {
+      "pid": "Lang",
+      "vid": "28f"
+    },
+    "command": [
+      "defects4j",
+      "checkout",
+      "-p",
+      "Lang",
+      "-v",
+      "28f",
+      "-w",
+      "data/bugs/Lang_28/checkouts/fixed"
+    ],
+    "exit_status": 0
+  },
+  "buggy": {
+    "version_id": "28b",
+    "role": "proposed_change",
+    "work_dir": "data/bugs/Lang_28/checkouts/buggy",
+    "defects4j_config": {
+      "pid": "Lang",
+      "vid": "28b"
+    },
+    "command": [
+      "defects4j",
+      "checkout",
+      "-p",
+      "Lang",
+      "-v",
+      "28b",
+      "-w",
+      "data/bugs/Lang_28/checkouts/buggy"
+    ],
+    "exit_status": 0
+  },
+  "logs": {
+    "fixed_stdout_tail": "",
+    "fixed_stderr_tail": "Checking out bef3eb6e to /workspace/data/bugs/Lang_28/checkouts/fixed...... OK\nInit local repository...................................................... OK\nTag post-fix revision...................................................... OK\nApply patch................................................................ OK\nCopy generated Ant build file.............................................. OK\nRun post-checkout hook..................................................... OK\nExcluding broken/flaky tests............................................... OK\nExcluding broken/flaky tests............................................... OK\nExcluding broken/flaky tests............................................... OK\nBacking up build file: /workspace/data/bugs/Lang_28/checkouts/fixed/maven-b OK\nInitialize fixed program version........................................... OK\nApply patch................................................................ OK\nInitialize buggy program version........................................... OK\nDiff bef3eb6e:c0041caf..................................................... OK\nApply patch................................................................ OK\nTag pre-fix revision....................................................... OK\nCheck out program version: Lang-28f........................................ OK\n",
+    "buggy_stdout_tail": "",
+    "buggy_stderr_tail": "Checking out bef3eb6e to /workspace/data/bugs/Lang_28/checkouts/buggy...... OK\nInit local repository...................................................... OK\nTag post-fix revision...................................................... OK\nApply patch................................................................ OK\nCopy generated Ant build file.............................................. OK\nRun post-checkout hook..................................................... OK\nExcluding broken/flaky tests............................................... OK\nExcluding broken/flaky tests............................................... OK\nExcluding broken/flaky tests............................................... OK\nBacking up build file: /workspace/data/bugs/Lang_28/checkouts/buggy/maven-b OK\nInitialize fixed program version........................................... OK\nApply patch................................................................ OK\nInitialize buggy program version........................................... OK\nDiff bef3eb6e:c0041caf..................................................... OK\nApply patch................................................................ OK\nTag pre-fix revision....................................................... OK\nCheck out program version: Lang-28b........................................ OK\n"
+  }
+}

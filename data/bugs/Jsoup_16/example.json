@@ -1,0 +1,138 @@
+{
+  "example_id": "Jsoup_16",
+  "qualified_id": "Jsoup-16",
+  "project": "Jsoup",
+  "bug_id": "16",
+  "split": "evaluation",
+  "status": "complete",
+  "revisions": {
+    "base": "Bf",
+    "proposed": "Bb",
+    "direction": "fixed_to_buggy",
+    "notes": "Fixed (Bf) is the working base for tests/source. Buggy (Bb) is the proposed production change."
+  },
+  "manifest": {
+    "path": "data/manifest.json",
+    "selection_seed": 20260922,
+    "defects4j_version": "3.0.1",
+    "defects4j_commit": "6d54320e0db5a357f9ab38a8e4d2e5aead7e1c09",
+    "manifest_created_at": "2026-09-22T23:16:15+00:00",
+    "manifest_git_commit": "784d3d84dd09ae7f53cb828eac65532370906c56"
+  },
+  "artifacts": {
+    "bugs": "data/bugs/Jsoup_16/",
+    "patches": "data/patches/Jsoup_16/",
+    "tests": "data/tests/Jsoup_16/"
+  },
+  "visibility": {
+    "model_visible": [
+      "data/patches/<id>/representation.txt",
+      "data/patches/<id>/patch_meta.json (truncation stats only)",
+      "data/tests/<id>/inventory.json (test class ids + source paths)",
+      "data/tests/<id>/representations/*.json (compact test source)"
+    ],
+    "private": [
+      "data/tests/<id>/labels.json",
+      "data/tests/<id>/raw/tests.trigger",
+      "data/bugs/<id>/error.json",
+      "checkout trees under data/bugs/<id>/checkouts/"
+    ]
+  },
+  "complete_requirements": [
+    "example_json",
+    "checkout_provenance",
+    "checkout_fixed",
+    "checkout_buggy",
+    "patch_meta",
+    "patch_diff",
+    "patch_representation",
+    "raw_tests_all",
+    "raw_tests_trigger",
+    "test_inventory",
+    "test_labels",
+    "representations_index"
+  ],
+  "error": null,
+  "checkouts": {
+    "fixed": "data/bugs/Jsoup_16/checkouts/fixed",
+    "buggy": "data/bugs/Jsoup_16/checkouts/buggy",
+    "provenance": "data/bugs/Jsoup_16/checkout_provenance.json"
+  },
+  "patch": {
+    "meta": "data/patches/Jsoup_16/patch_meta.json",
+    "diff": "data/patches/Jsoup_16/regression_patch.diff",
+    "representation": "data/patches/Jsoup_16/representation.txt",
+    "patch_truncated": false,
+    "original_patch_chars": 1251,
+    "representation_chars": 1251
+  },
+  "tests": {
+    "inventory": "data/tests/Jsoup_16/inventory.json",
+    "labels": "data/tests/Jsoup_16/labels.json",
+    "num_test_classes": 21,
+    "num_positive_classes": 1,
+    "num_trigger_methods": 2,
+    "source_resolved": 21,
+    "source_missing": 0,
+    "source_ambiguous": 0
+  },
+  "representations": {
+    "index": "data/tests/Jsoup_16/representations_index.json",
+    "dir": "data/tests/Jsoup_16/representations",
+    "num_representations": 21,
+    "source_missing": 0,
+    "representation_truncated": 0,
+    "window_compacted": 3
+  },
+  "content_hashes": {
+    "patch_representation": "7c52b631dcd718c43f938848d77368324f5560c6db3bffeca80b868935ce1e20",
+    "patch_meta": "2a23ff9de22f26809873e2df0784894b995f4a48947a158d24ae780c33e44e0e",
+    "test_inventory": "9b0908246c496055ad60427e908cd530c44b60981c4649f9f0f15b7304b17989",
+    "test_labels": "fa7feb10694e2cbb7701c591aa16b60eabe595cc28e41904e92ed16f5b846792",
+    "representations_index": "5781bb387ab2a37393d96a828f89c4e782fd8ee0f1ce8b40f1f549222c9f3d0f",
+    "checkout_provenance": "51ffe29e7491216bac2045230ad79b2ed500cfa6173baf92df9dc05a5c508be9",
+    "representation_json:org.jsoup.helper.DataUtilTest": "45866136b5190fe3fc37ef0506c2e6a286aa1b9e79755318af1d376aee56f8b0",
+    "representation_text:org.jsoup.helper.DataUtilTest": "84c1e630ef344707a227665daa6688f7d3a81108c7b3beab8901770f46891392",
+    "representation_json:org.jsoup.helper.HttpConnectionTest": "a816b449f0fe25c0e3bcbc1e94610c5f94b33b372b5b743e1abb0670c0d67d61",
+    "representation_text:org.jsoup.helper.HttpConnectionTest": "58a8d19d4450075030c6a848bf9a9a98f62c28517eb456bd1f794607eb48e1ca",
+    "representation_json:org.jsoup.helper.StringUtilTest": "70a7bb9eb460a0918425c63cc6daa3625fca813cac820f60a49baf43bbf33011",
+    "representation_text:org.jsoup.helper.StringUtilTest": "a0e9d406900f85b59009a98d901a9c4e36b193ed991265e5f455d3e665d30096",
+    "representation_json:org.jsoup.integration.ParseTest": "dc5a863a466580494779c4c6c5a9f5f157b89cc7b32a053477e67ab5b5d75504",
+    "representation_text:org.jsoup.integration.ParseTest": "265cd1cec5ebeff6153c0c8efbaf12ccf22b9f0c138ebbfef84bd15d4a19df18",
+    "representation_json:org.jsoup.integration.UrlConnectTest": "fca3b52f3f372f4f2bc71beacc61e8c0ce101779064e1f573a1aa27934fc7702",
+    "representation_text:org.jsoup.integration.UrlConnectTest": "7bb9c72bf298857e7224fbe6cb929f769d3c63d1ede51b53ed0d2c61523c719d",
+    "representation_json:org.jsoup.nodes.AttributeTest": "c87011031629fce35ac6df54fd0c874de62de837c0c91611f232b5ebc81462c1",
+    "representation_text:org.jsoup.nodes.AttributeTest": "94c2ce33fb76594d112941b8ca14d5ca31a65354d332f7a6bd1e89417757b8ff",
+    "representation_json:org.jsoup.nodes.AttributesTest": "3303080716f558f42c54b5387276def95c3e685f2f85023b6d8839989c6be34c",
+    "representation_text:org.jsoup.nodes.AttributesTest": "489afff1a83304517e5254c29ef92dad00ea0ae96555f20c1944c88c85c8c6c4",
+    "representation_json:org.jsoup.nodes.DocumentTest": "cae5c1444015f4bba0831ef5d85c99dfbe53842edb9b2e8f5f59b210b95259c7",
+    "representation_text:org.jsoup.nodes.DocumentTest": "77d5766d65106ad71444bb53d362fa11ae87ee579679cc391604e86da13bad55",
+    "representation_json:org.jsoup.nodes.DocumentTypeTest": "9789846b04d506864338e7a3e25623f2b96c4f386d731571ae672a3a90d5a70a",
+    "representation_text:org.jsoup.nodes.DocumentTypeTest": "cc74e51bbf6d6817bfb8eb40baddbe97cbb15019f7008c7afa77868b4cb084b0",
+    "representation_json:org.jsoup.nodes.ElementTest": "d9443d95bb051a3b25c78f736dbf1822a29a610aee3daeda2052b87853ffd2fe",
+    "representation_text:org.jsoup.nodes.ElementTest": "fe9d7efb0f31ebbd53c8b098919d2342494825143c8fcdb1faaffc0289d0110c",
+    "representation_json:org.jsoup.nodes.EntitiesTest": "57877dee9da4e41e0b0f01fb54a74a2836bfa5edded53d8350cc79eef7f9d5b9",
+    "representation_text:org.jsoup.nodes.EntitiesTest": "ce4a2dbd8c9e899bb2d1a9531ee222e0cfa5877cc2278873789c347c8aabcaa5",
+    "representation_json:org.jsoup.nodes.NodeTest": "4600c64db63d23d0b49e47c5cc282ac9535671eab95e40664c1e76a8c51772b8",
+    "representation_text:org.jsoup.nodes.NodeTest": "6a742098cd7a6871d87a36064e9c4a4ab3ce4560ee79b3e6ea64999c5882f016",
+    "representation_json:org.jsoup.nodes.TextNodeTest": "1e000cdee904b097f9e47d1f7ed1a28cc5d764916c554ca9d978211ae0fd6dee",
+    "representation_text:org.jsoup.nodes.TextNodeTest": "6e8f5ef7e8873bdb4633432a853023108e68db17232066318aabbfaa7ebfd272",
+    "representation_json:org.jsoup.parser.AttributeParseTest": "307c7275580632ce538c840773863a58e2db61de678185b86c1bd0dc090a619a",
+    "representation_text:org.jsoup.parser.AttributeParseTest": "cb9a2a7d990576e4fa7ae30ed54c07fb661ea585f8cd5a9ccb52e26052cc9b5e",
+    "representation_json:org.jsoup.parser.CharacterReaderTest": "46ca3c736b3c39eadf5a096897999c2268c12122c8a6863d1f2e4c43af0e66eb",
+    "representation_text:org.jsoup.parser.CharacterReaderTest": "f7c8ac40b2cc67d9498ae123a87f94d64420f2447da8a6f1a97407a2a2ccf021",
+    "representation_json:org.jsoup.parser.ParserTest": "d23478e48c2f4f88d7439aa5b69bfcfd878f53f6ef21f57834a1cf75540fc9b1",
+    "representation_text:org.jsoup.parser.ParserTest": "ac377740e678ab65ec128529d987c4225c1c5ec994fc07c67446abf2817d74a3",
+    "representation_json:org.jsoup.parser.TagTest": "dccb7fea238346ca0610487896a1ef714d429cc38b62924dc17d25ad6cb0bc2f",
+    "representation_text:org.jsoup.parser.TagTest": "7c4ccb0e4a000fe7ef2600906101d8c4760546a23a320fbf5a6012b65374d633",
+    "representation_json:org.jsoup.parser.TokenQueueTest": "eabb602df651527bc426e0b29de90be532363841eae366710989b5e1417dc938",
+    "representation_text:org.jsoup.parser.TokenQueueTest": "82d0172661d3815c9cb03422106c42fd72fc63ced938dc87c07c7e7f4f1cb57b",
+    "representation_json:org.jsoup.safety.CleanerTest": "672aa57af5fc844fd7b87eb4bfaf3d3977d2e3ea88c90f88c76e5130e06f3d5f",
+    "representation_text:org.jsoup.safety.CleanerTest": "4ab98c4e2a4b7dbc60a0d0a82335c09e15edd3048973ef5ce9e1a928a8d7307c",
+    "representation_json:org.jsoup.select.ElementsTest": "b8d93c807eee0e742f4fb65acc04cf89bc0a95e753f93f88b10dc719442f5f10",
+    "representation_text:org.jsoup.select.ElementsTest": "e44b3706882b7272a70138b62c1e10ffb42ef49eab33793abbf5d53d991db677",
+    "representation_json:org.jsoup.select.SelectorTest": "5c762a6f42f76cccf163437ca8c341ee68a512c87704dff9d26c01c1684ed0b4",
+    "representation_text:org.jsoup.select.SelectorTest": "ae1a0c317fc1295a3f94e0b7c3a1f70ba1391a6ce80ed01deaee5598959195dd",
+    "patch_diff": "54442971fab4f5527a88759800d533fe370e5c12b67918f36974b278e049c3d2"
+  }
+}

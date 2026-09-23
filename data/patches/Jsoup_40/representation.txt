@@ -1,0 +1,18 @@
+MODIFIED FILES:
+src/main/java/org/jsoup/nodes/DocumentType.java
+
+MODIFIED CLASSES:
+org.jsoup.nodes.DocumentType
+
+PROPOSED CODE CHANGE:
+
+--- src/main/java/org/jsoup/nodes/DocumentType.java
++++ src/main/java/org/jsoup/nodes/DocumentType.java
+@@ -19,6 +19,7 @@
+     public DocumentType(String name, String publicId, String systemId, String baseUri) {
+         super(baseUri);
+ 
++        Validate.notEmpty(name);
+         attr("name", name);
+         attr("publicId", publicId);
+         attr("systemId", systemId);

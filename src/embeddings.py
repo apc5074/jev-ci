@@ -596,7 +596,7 @@ def build_ranking_document(
     ids = [r["test_class"] for r in ranked]
     if len(ids) != len(set(ids)):
         raise EmbeddingError(f"{example.qualified}: duplicate classes in ranking")
-    return {
+    doc: dict[str, Any] = {
         "schema_version": RANKING_SCHEMA_VERSION,
         "embedding_baseline_version": EMBEDDING_BASELINE_VERSION,
         "example_id": example.slug,
@@ -632,6 +632,22 @@ def build_ranking_document(
             "vector_cache": "cache/embeddings/<sha256>.json",
         },
     }
+    if split == "evaluation":
+        from src.freeze_guard import assert_evaluation_allowed
+
+        lock = assert_evaluation_allowed()
+        doc["experiment_commit"] = lock.get("commit_sha")
+        try:
+            from src.evaluation_preflight import load_preflight
+
+            pre = load_preflight()
+            if pre:
+                doc["run_id"] = pre.get("run_id")
+                if pre.get("experiment_commit"):
+                    doc["experiment_commit"] = pre["experiment_commit"]
+        except Exception:  # noqa: BLE001
+            pass
+    return doc
 
 
 def generate_embedding_ranking(
@@ -676,6 +692,20 @@ def generate_embedding_ranking(
     }
 
     path = ranking_path(ex, results_root=results_root)
+    expected_commit = None
+    if split == "evaluation":
+        from src.freeze_guard import assert_evaluation_allowed
+
+        expected_commit = assert_evaluation_allowed().get("commit_sha")
+        try:
+            from src.evaluation_preflight import load_preflight
+
+            pre = load_preflight()
+            if pre and pre.get("experiment_commit"):
+                expected_commit = pre["experiment_commit"]
+        except Exception:  # noqa: BLE001
+            pass
+
     if path.is_file() and not force:
         existing = read_json(path)
         if (
@@ -685,6 +715,10 @@ def generate_embedding_ranking(
             and existing.get("N") == len(test_classes)
             and set(existing.get("ranked_ids") or []) == set(test_classes)
             and existing.get("settings", {}).get("uses_bm25") is False
+            and (
+                expected_commit is None
+                or existing.get("experiment_commit") == expected_commit
+            )
         ):
             return existing, SaveOutcome.REUSED
 

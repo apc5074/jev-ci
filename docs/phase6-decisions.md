@@ -66,7 +66,7 @@ credits as intrinsic zero inference cost.
 
 | ID | Kind | Detail |
 | --- | --- | --- |
-| A-001 | Availability | Jsoup-70 / `ConnectTest` Jev blocked by OpenRouter WAF (`file://etc/passwd`). Accepted for development continuation. **Must resolve or formally deviate before evaluation scoring.** |
+| A-001 | Availability | Jsoup-70 / `ConnectTest` Jev blocked by OpenRouter WAF (`file://etc/passwd`). Accepted for development continuation. **Evaluation (P7-05):** same WAF blocks 12 shortlist pairs across 12 Jsoup bugs (`ConnectTest` / `UrlConnectTest`); documented in [`phase7-jev.md`](phase7-jev.md). Do not rewrite representations. |
 | D-001 | Fixed (P6-02) | Ledger summary flat-cost fields — reporting only |
 | TypeSafe direct | Unavailable | OpenRouter selected; Cloudflare Jev rejected until pin+price verified |
 

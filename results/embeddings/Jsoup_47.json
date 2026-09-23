@@ -1,0 +1,220 @@
+{
+  "schema_version": "jev-embedding-ranking-v1",
+  "embedding_baseline_version": "jev-embedding-baseline-v1",
+  "example_id": "Jsoup_47",
+  "qualified_id": "Jsoup-47",
+  "split": "evaluation",
+  "N": 26,
+  "method": "Embedding",
+  "model_id": "text-embedding-3-small",
+  "provider": "openrouter",
+  "request_model": "openai/text-embedding-3-small",
+  "dimensions": 1536,
+  "over_limit_rule": "fail_closed_no_truncate_v1",
+  "max_input_tokens": 8192,
+  "ranking": [
+    {
+      "test_class": "org.jsoup.nodes.EntitiesTest",
+      "score": 0.7344009066627878,
+      "rank": 1
+    },
+    {
+      "test_class": "org.jsoup.parser.HtmlParserTest",
+      "score": 0.5682740699229958,
+      "rank": 2
+    },
+    {
+      "test_class": "org.jsoup.nodes.DocumentTest",
+      "score": 0.5638077142882458,
+      "rank": 3
+    },
+    {
+      "test_class": "org.jsoup.nodes.TextNodeTest",
+      "score": 0.5620148059541564,
+      "rank": 4
+    },
+    {
+      "test_class": "org.jsoup.parser.AttributeParseTest",
+      "score": 0.5608441584399442,
+      "rank": 5
+    },
+    {
+      "test_class": "org.jsoup.select.ElementsTest",
+      "score": 0.5583711313620907,
+      "rank": 6
+    },
+    {
+      "test_class": "org.jsoup.nodes.NodeTest",
+      "score": 0.5580652641152484,
+      "rank": 7
+    },
+    {
+      "test_class": "org.jsoup.nodes.AttributesTest",
+      "score": 0.5480875219579533,
+      "rank": 8
+    },
+    {
+      "test_class": "org.jsoup.nodes.AttributeTest",
+      "score": 0.5479122552449402,
+      "rank": 9
+    },
+    {
+      "test_class": "org.jsoup.nodes.ElementTest",
+      "score": 0.5346987323986756,
+      "rank": 10
+    },
+    {
+      "test_class": "org.jsoup.helper.StringUtilTest",
+      "score": 0.5331192116240382,
+      "rank": 11
+    },
+    {
+      "test_class": "org.jsoup.parser.XmlTreeBuilderTest",
+      "score": 0.5237513963876139,
+      "rank": 12
+    },
+    {
+      "test_class": "org.jsoup.nodes.FormElementTest",
+      "score": 0.5029124531497741,
+      "rank": 13
+    },
+    {
+      "test_class": "org.jsoup.helper.DataUtilTest",
+      "score": 0.5027099929987934,
+      "rank": 14
+    },
+    {
+      "test_class": "org.jsoup.parser.CharacterReaderTest",
+      "score": 0.49160286896897876,
+      "rank": 15
+    },
+    {
+      "test_class": "org.jsoup.select.CssTest",
+      "score": 0.4893844883337043,
+      "rank": 16
+    },
+    {
+      "test_class": "org.jsoup.select.SelectorTest",
+      "score": 0.48935109896494416,
+      "rank": 17
+    },
+    {
+      "test_class": "org.jsoup.helper.W3CDomTest",
+      "score": 0.48249249722496745,
+      "rank": 18
+    },
+    {
+      "test_class": "org.jsoup.safety.CleanerTest",
+      "score": 0.4824192472978887,
+      "rank": 19
+    },
+    {
+      "test_class": "org.jsoup.parser.TagTest",
+      "score": 0.4812845541887774,
+      "rank": 20
+    },
+    {
+      "test_class": "org.jsoup.integration.UrlConnectTest",
+      "score": 0.4803619868075785,
+      "rank": 21
+    },
+    {
+      "test_class": "org.jsoup.nodes.DocumentTypeTest",
+      "score": 0.47851161481921645,
+      "rank": 22
+    },
+    {
+      "test_class": "org.jsoup.integration.ParseTest",
+      "score": 0.47295464108980656,
+      "rank": 23
+    },
+    {
+      "test_class": "org.jsoup.select.QueryParserTest",
+      "score": 0.4560477942325032,
+      "rank": 24
+    },
+    {
+      "test_class": "org.jsoup.parser.TokenQueueTest",
+      "score": 0.44010357855430476,
+      "rank": 25
+    },
+    {
+      "test_class": "org.jsoup.helper.HttpConnectionTest",
+      "score": 0.42162920341497095,
+      "rank": 26
+    }
+  ],
+  "ranked_ids": [
+    "org.jsoup.nodes.EntitiesTest",
+    "org.jsoup.parser.HtmlParserTest",
+    "org.jsoup.nodes.DocumentTest",
+    "org.jsoup.nodes.TextNodeTest",
+    "org.jsoup.parser.AttributeParseTest",
+    "org.jsoup.select.ElementsTest",
+    "org.jsoup.nodes.NodeTest",
+    "org.jsoup.nodes.AttributesTest",
+    "org.jsoup.nodes.AttributeTest",
+    "org.jsoup.nodes.ElementTest",
+    "org.jsoup.helper.StringUtilTest",
+    "org.jsoup.parser.XmlTreeBuilderTest",
+    "org.jsoup.nodes.FormElementTest",
+    "org.jsoup.helper.DataUtilTest",
+    "org.jsoup.parser.CharacterReaderTest",
+    "org.jsoup.select.CssTest",
+    "org.jsoup.select.SelectorTest",
+    "org.jsoup.helper.W3CDomTest",
+    "org.jsoup.safety.CleanerTest",
+    "org.jsoup.parser.TagTest",
+    "org.jsoup.integration.UrlConnectTest",
+    "org.jsoup.nodes.DocumentTypeTest",
+    "org.jsoup.integration.ParseTest",
+    "org.jsoup.select.QueryParserTest",
+    "org.jsoup.parser.TokenQueueTest",
+    "org.jsoup.helper.HttpConnectionTest"
+  ],
+  "patch_cache_key": "fbfa55b4c1bfef3f76d361a317ba60d5b8da76894f06c44bee2ed24d1c040625",
+  "test_cache_keys": {
+    "org.jsoup.helper.DataUtilTest": "fa6da728e03f841504cfb0287d2861ab74661c35695e5114edf8023b4e720ab3",
+    "org.jsoup.helper.HttpConnectionTest": "f18f2c2d39e62e7160d6936834f7f55fe73a2f32acb82289817b72c7edb1e95b",
+    "org.jsoup.helper.StringUtilTest": "f112d7498d20f504a1919a519ddeff938ab6b17e95a33b922d32cb63886b4a4e",
+    "org.jsoup.helper.W3CDomTest": "0832816e8f885048acbefbf513d0eedaf7f2edceb9974515d24f1aab1837e232",
+    "org.jsoup.integration.ParseTest": "0fc089382dff12be51552bbc4f6622aeeaaad305e40d6b351982ef907a1bffaa",
+    "org.jsoup.integration.UrlConnectTest": "1e63b8bac5b66291c5683a442f06bd09723ba098c783a4577eb15062abbb0550",
+    "org.jsoup.nodes.AttributeTest": "e8769738d633701685c83718b488d55379f9da49c7cfbfe620f5f3f3394ce6b7",
+    "org.jsoup.nodes.AttributesTest": "8a3769703fff356be74fe8f849ee542f54bfcd70b89a05602528bedf4df3171b",
+    "org.jsoup.nodes.DocumentTest": "c5ef379b620b020cd9c298d175a3664fa298c87ec9be9ba071aeda7491edb67f",
+    "org.jsoup.nodes.DocumentTypeTest": "44d2946faf3c064b27e2251a534661cabb7d8c64df40e16f4fa99f37778afd05",
+    "org.jsoup.nodes.ElementTest": "c69bb860062e2e98c3e519a9f0c7847c65cf1fa90bdd896c892e8bca323827bb",
+    "org.jsoup.nodes.EntitiesTest": "fcff38dc9f6eaa4fc8845956d9452b5ad1d427a97fd7c3950ee63c28c33ae6f0",
+    "org.jsoup.nodes.FormElementTest": "62ed17cbed2bdf18d94c6fa757b0f2a6f23366ee620d0a55b889855f73d209b8",
+    "org.jsoup.nodes.NodeTest": "19a968331ccbbe6958cafe2b283f27334e2697669aa16401ed0b2d47cc64e3d3",
+    "org.jsoup.nodes.TextNodeTest": "5105cbad5c0bbe07c7391d7785116c1b8ab0efd6346a47447b6de1bc0cf4cae0",
+    "org.jsoup.parser.AttributeParseTest": "c7ff4baf4f9b622860d83bb2a491060b60b4786510ad20628262a146094776ad",
+    "org.jsoup.parser.CharacterReaderTest": "3271166b880776c5bb6398bee28ad8aa801d579a4438502cb0b3ead5c0d713bf",
+    "org.jsoup.parser.HtmlParserTest": "958e5457e08bd166075778fb333a48d54fd8cba1353dd26d65895d3bb01951fc",
+    "org.jsoup.parser.TagTest": "b6b02bc7216994c9e2ca48b757c28579c10764ef83417924d4923a842f6e1f21",
+    "org.jsoup.parser.TokenQueueTest": "edd58b8f42f15f0e2734fdda840c6d87c721d5ee61c38bc4bed863241a49ae35",
+    "org.jsoup.parser.XmlTreeBuilderTest": "616459579da60c3f98f94676521228959d18a6f65bd72f33e07e7b4dd189c73a",
+    "org.jsoup.safety.CleanerTest": "309bace3b176b85c2b05a15bef25aadd7e0befedecf61ec618da25328c9fc7f2",
+    "org.jsoup.select.CssTest": "92b25c85619d432e7c2e9c062b05b312f9e320395d1b34069ff1dfbee772a76c",
+    "org.jsoup.select.ElementsTest": "c23e99ccd88a1da5cbd85c488411fc3dc47ce0336f7d04e109bb859bef0d7fb8",
+    "org.jsoup.select.QueryParserTest": "f0fa2727898173e41a1ded15590bbbdfd92a2885bcd9d7d8331ea9aea0d60ff0",
+    "org.jsoup.select.SelectorTest": "5620fa8d428dc2d744cc418cf765a39a55b7ca1c38918140f7e72aa70c7c83d4"
+  },
+  "total_input_tokens": 36511,
+  "input_hashes": {
+    "patch_representation_sha256": "1c484c7448839bf8b0cee367beb0e38ebba800fa0f1cdc1b36ae7717adcc6a96",
+    "test_class_ids_sha256": "4c416609bcbd94cb7ae479e53d47f203a1c0b65e491de6070c885561d8a53233",
+    "test_representations_sha256": "402f9e05a3cae38d9fe892677cb19abc9c4ddcac579df855d5833c8887647e53"
+  },
+  "settings": {
+    "similarity": "cosine",
+    "tie_break": "fqcn_asc",
+    "uses_bm25": false,
+    "shortlist_restricted": false,
+    "stores_vectors_in_ranking": false,
+    "vector_cache": "cache/embeddings/<sha256>.json"
+  },
+  "experiment_commit": "edc70bacd23f2fc5f511ef4d97a33376e7b20bf8",
+  "run_id": "eval-v1-20260923T035853+0000"
+}

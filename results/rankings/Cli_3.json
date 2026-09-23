@@ -1,0 +1,198 @@
+{
+  "schema_version": "jev-bm25-ranking-v1",
+  "example_id": "Cli_3",
+  "qualified_id": "Cli-3",
+  "split": "evaluation",
+  "N": 19,
+  "K": 19,
+  "k_cap": 200,
+  "avgdl": 633.2631578947369,
+  "query_token_count": 78,
+  "distinct_query_terms": 36,
+  "source_missing_count": 0,
+  "candidate_ids": [
+    "org.apache.commons.cli.BugsTest",
+    "org.apache.commons.cli.PatternOptionBuilderTest",
+    "org.apache.commons.cli.ValuesTest",
+    "org.apache.commons.cli.OptionBuilderTest",
+    "org.apache.commons.cli.ValueTest",
+    "org.apache.commons.cli.TestHelpFormatter",
+    "org.apache.commons.cli.OptionGroupTest",
+    "org.apache.commons.cli.ParseRequiredTest",
+    "org.apache.commons.cli.GnuParseTest",
+    "org.apache.commons.cli.ParseTest",
+    "org.apache.commons.cli.ApplicationTest",
+    "org.apache.commons.cli.OptionsTest",
+    "org.apache.commons.cli.bug.BugCLI71Test",
+    "org.apache.commons.cli.ArgumentIsOptionTest",
+    "org.apache.commons.cli.bug.BugCLI18Test",
+    "org.apache.commons.cli.bug.BugCLI13Test",
+    "org.apache.commons.cli.bug.BugCLI51Test",
+    "org.apache.commons.cli.BuildTest",
+    "org.apache.commons.cli.OptionTest"
+  ],
+  "shortlist_sha256": "76352ea91b4199dda138fac82ac74cc9edf9ef923773940dad8fcdba2f05c134",
+  "ranking": [
+    {
+      "test_class": "org.apache.commons.cli.BugsTest",
+      "score": 14.470340777451083,
+      "rank": 1,
+      "source_missing": false
+    },
+    {
+      "test_class": "org.apache.commons.cli.PatternOptionBuilderTest",
+      "score": 13.146075084414413,
+      "rank": 2,
+      "source_missing": false
+    },
+    {
+      "test_class": "org.apache.commons.cli.ValuesTest",
+      "score": 12.829103825765237,
+      "rank": 3,
+      "source_missing": false
+    },
+    {
+      "test_class": "org.apache.commons.cli.OptionBuilderTest",
+      "score": 8.943082665750403,
+      "rank": 4,
+      "source_missing": false
+    },
+    {
+      "test_class": "org.apache.commons.cli.ValueTest",
+      "score": 7.721898964074106,
+      "rank": 5,
+      "source_missing": false
+    },
+    {
+      "test_class": "org.apache.commons.cli.TestHelpFormatter",
+      "score": 7.4971996641833485,
+      "rank": 6,
+      "source_missing": false
+    },
+    {
+      "test_class": "org.apache.commons.cli.OptionGroupTest",
+      "score": 7.160705450960118,
+      "rank": 7,
+      "source_missing": false
+    },
+    {
+      "test_class": "org.apache.commons.cli.ParseRequiredTest",
+      "score": 7.077035708102298,
+      "rank": 8,
+      "source_missing": false
+    },
+    {
+      "test_class": "org.apache.commons.cli.GnuParseTest",
+      "score": 6.361971769468511,
+      "rank": 9,
+      "source_missing": false
+    },
+    {
+      "test_class": "org.apache.commons.cli.ParseTest",
+      "score": 6.2574122993659955,
+      "rank": 10,
+      "source_missing": false
+    },
+    {
+      "test_class": "org.apache.commons.cli.ApplicationTest",
+      "score": 5.170829891113082,
+      "rank": 11,
+      "source_missing": false
+    },
+    {
+      "test_class": "org.apache.commons.cli.OptionsTest",
+      "score": 4.5281073766324305,
+      "rank": 12,
+      "source_missing": false
+    },
+    {
+      "test_class": "org.apache.commons.cli.bug.BugCLI71Test",
+      "score": 4.42702905912952,
+      "rank": 13,
+      "source_missing": false
+    },
+    {
+      "test_class": "org.apache.commons.cli.ArgumentIsOptionTest",
+      "score": 4.203455463372801,
+      "rank": 14,
+      "source_missing": false
+    },
+    {
+      "test_class": "org.apache.commons.cli.bug.BugCLI18Test",
+      "score": 2.846984753233529,
+      "rank": 15,
+      "source_missing": false
+    },
+    {
+      "test_class": "org.apache.commons.cli.bug.BugCLI13Test",
+      "score": 2.808494808998659,
+      "rank": 16,
+      "source_missing": false
+    },
+    {
+      "test_class": "org.apache.commons.cli.bug.BugCLI51Test",
+      "score": 2.4881133535376376,
+      "rank": 17,
+      "source_missing": false
+    },
+    {
+      "test_class": "org.apache.commons.cli.BuildTest",
+      "score": 1.2916694454847355,
+      "rank": 18,
+      "source_missing": false
+    },
+    {
+      "test_class": "org.apache.commons.cli.OptionTest",
+      "score": 0.8306613543737332,
+      "rank": 19,
+      "source_missing": false
+    }
+  ],
+  "manifest": {
+    "selection_seed": 20260922,
+    "defects4j_version": "3.0.1",
+    "defects4j_commit": "6d54320e0db5a357f9ab38a8e4d2e5aead7e1c09",
+    "manifest_created_at": "2026-09-22T23:16:15+00:00"
+  },
+  "settings": {
+    "bm25_version": "jev-bm25-v1",
+    "bm25_k1": 1.5,
+    "bm25_b": 0.75,
+    "tokenizer_version": "jev-code-tokenizer-v1",
+    "lexical_input_contract_version": "jev-bm25-lexical-v1",
+    "query_diff_source": "model_visible_representation"
+  },
+  "input_hashes": {
+    "lexical_input_contract_version": "jev-bm25-lexical-v1",
+    "query_diff_source": "model_visible_representation",
+    "test_class_ids_sha256": "8dfb7cbc0f29fb0e822552f4a371bc200ef37ff9c69f6386c2bd9afd78954ce3",
+    "query_sha256": "86d748efd686b33537ba92391d88b650ec752e90057649cf283b41581e669cb1",
+    "documents_sha256": "6303f2f4a5f9b6aded2f92258da36c30fa2bc3b595b767e269161e8d475a4ad8",
+    "inventory_sha256": "95d83fd16f645f67dd402c61f7f5fc64d1a1b3066d2a17c9dd73de6ccf9e6e71",
+    "patch_representation_sha256": "86d748efd686b33537ba92391d88b650ec752e90057649cf283b41581e669cb1",
+    "num_documents": 19,
+    "source_missing_count": 0,
+    "tokenizer_version": "jev-code-tokenizer-v1",
+    "tokenizer_config_sha256": "e8f04897083a9ecf43c92e6612d7b16882e7ac713a00bd1de57e63b5efaa7382",
+    "bm25_version": "jev-bm25-v1",
+    "bm25_k1": 1.5,
+    "bm25_b": 0.75
+  },
+  "provenance": {
+    "lexical_input_contract_version": "jev-bm25-lexical-v1",
+    "query_diff_source": "model_visible_representation",
+    "k_cap": 200,
+    "candidates_schema_version": "jev-candidates-v1",
+    "ranking_schema_version": "jev-bm25-ranking-v1",
+    "tokenizer_version": "jev-code-tokenizer-v1",
+    "tokenizer_config_sha256": "e8f04897083a9ecf43c92e6612d7b16882e7ac713a00bd1de57e63b5efaa7382",
+    "bm25_version": "jev-bm25-v1",
+    "bm25_k1": 1.5,
+    "bm25_b": 0.75,
+    "experiment_commit": "edc70bacd23f2fc5f511ef4d97a33376e7b20bf8",
+    "freeze_tag": "experiment-v1",
+    "run_id": "eval-v1-20260923T035853+0000"
+  },
+  "experiment_commit": "edc70bacd23f2fc5f511ef4d97a33376e7b20bf8",
+  "run_id": "eval-v1-20260923T035853+0000"
+}

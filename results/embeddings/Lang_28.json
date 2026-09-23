@@ -1,0 +1,668 @@
+{
+  "schema_version": "jev-embedding-ranking-v1",
+  "embedding_baseline_version": "jev-embedding-baseline-v1",
+  "example_id": "Lang_28",
+  "qualified_id": "Lang-28",
+  "split": "evaluation",
+  "N": 90,
+  "method": "Embedding",
+  "model_id": "text-embedding-3-small",
+  "provider": "openrouter",
+  "request_model": "openai/text-embedding-3-small",
+  "dimensions": 1536,
+  "over_limit_rule": "fail_closed_no_truncate_v1",
+  "max_input_tokens": 8192,
+  "ranking": [
+    {
+      "test_class": "org.apache.commons.lang3.text.translate.NumericEntityUnescaperTest",
+      "score": 0.712205749565778,
+      "rank": 1
+    },
+    {
+      "test_class": "org.apache.commons.lang3.text.translate.NumericEntityEscaperTest",
+      "score": 0.6706635128483323,
+      "rank": 2
+    },
+    {
+      "test_class": "org.apache.commons.lang3.text.translate.UnicodeUnescaperTest",
+      "score": 0.524925969418643,
+      "rank": 3
+    },
+    {
+      "test_class": "org.apache.commons.lang3.StringEscapeUtilsTest",
+      "score": 0.5166220951074256,
+      "rank": 4
+    },
+    {
+      "test_class": "org.apache.commons.lang3.CharUtilsTest",
+      "score": 0.48062281200689616,
+      "rank": 5
+    },
+    {
+      "test_class": "org.apache.commons.lang3.text.translate.UnicodeEscaperTest",
+      "score": 0.46713633091703616,
+      "rank": 6
+    },
+    {
+      "test_class": "org.apache.commons.lang3.math.NumberUtilsTest",
+      "score": 0.4620816803536683,
+      "rank": 7
+    },
+    {
+      "test_class": "org.apache.commons.lang3.mutable.MutableFloatTest",
+      "score": 0.4308988028841766,
+      "rank": 8
+    },
+    {
+      "test_class": "org.apache.commons.lang3.mutable.MutableDoubleTest",
+      "score": 0.42409306856573137,
+      "rank": 9
+    },
+    {
+      "test_class": "org.apache.commons.lang3.mutable.MutableByteTest",
+      "score": 0.42272279143652236,
+      "rank": 10
+    },
+    {
+      "test_class": "org.apache.commons.lang3.mutable.MutableIntTest",
+      "score": 0.4174894146224841,
+      "rank": 11
+    },
+    {
+      "test_class": "org.apache.commons.lang3.text.WordUtilsTest",
+      "score": 0.40864056706163115,
+      "rank": 12
+    },
+    {
+      "test_class": "org.apache.commons.lang3.StringUtilsTest",
+      "score": 0.4068714467894859,
+      "rank": 13
+    },
+    {
+      "test_class": "org.apache.commons.lang3.text.translate.EntityArraysTest",
+      "score": 0.40348336139508356,
+      "rank": 14
+    },
+    {
+      "test_class": "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest",
+      "score": 0.4024874033519427,
+      "rank": 15
+    },
+    {
+      "test_class": "org.apache.commons.lang3.StringUtilsIsTest",
+      "score": 0.4012724362083029,
+      "rank": 16
+    },
+    {
+      "test_class": "org.apache.commons.lang3.RandomStringUtilsTest",
+      "score": 0.39030749532171455,
+      "rank": 17
+    },
+    {
+      "test_class": "org.apache.commons.lang3.CharSetTest",
+      "score": 0.38622774063587106,
+      "rank": 18
+    },
+    {
+      "test_class": "org.apache.commons.lang3.mutable.MutableLongTest",
+      "score": 0.38502898208291114,
+      "rank": 19
+    },
+    {
+      "test_class": "org.apache.commons.lang3.math.IEEE754rUtilsTest",
+      "score": 0.38178664688816943,
+      "rank": 20
+    },
+    {
+      "test_class": "org.apache.commons.lang3.mutable.MutableShortTest",
+      "score": 0.3813730533184094,
+      "rank": 21
+    },
+    {
+      "test_class": "org.apache.commons.lang3.BitFieldTest",
+      "score": 0.3798554387565057,
+      "rank": 22
+    },
+    {
+      "test_class": "org.apache.commons.lang3.CharSetUtilsTest",
+      "score": 0.3788559553940761,
+      "rank": 23
+    },
+    {
+      "test_class": "org.apache.commons.lang3.text.StrBuilderTest",
+      "score": 0.3757444376506964,
+      "rank": 24
+    },
+    {
+      "test_class": "org.apache.commons.lang3.ArrayUtilsTest",
+      "score": 0.3742494467476299,
+      "rank": 25
+    },
+    {
+      "test_class": "org.apache.commons.lang3.CharSequenceUtilsTest",
+      "score": 0.37300791613132916,
+      "rank": 26
+    },
+    {
+      "test_class": "org.apache.commons.lang3.StringUtilsTrimEmptyTest",
+      "score": 0.3716055986762759,
+      "rank": 27
+    },
+    {
+      "test_class": "org.apache.commons.lang3.text.StrMatcherTest",
+      "score": 0.36860936778944153,
+      "rank": 28
+    },
+    {
+      "test_class": "org.apache.commons.lang3.CharEncodingTest",
+      "score": 0.3659382438944453,
+      "rank": 29
+    },
+    {
+      "test_class": "org.apache.commons.lang3.math.FractionTest",
+      "score": 0.3617356917507629,
+      "rank": 30
+    },
+    {
+      "test_class": "org.apache.commons.lang3.builder.CompareToBuilderTest",
+      "score": 0.3603676178386835,
+      "rank": 31
+    },
+    {
+      "test_class": "org.apache.commons.lang3.time.DateUtilsTest",
+      "score": 0.35908526220162584,
+      "rank": 32
+    },
+    {
+      "test_class": "org.apache.commons.lang3.CharRangeTest",
+      "score": 0.35864533879631094,
+      "rank": 33
+    },
+    {
+      "test_class": "org.apache.commons.lang3.ArrayUtilsRemoveTest",
+      "score": 0.35594491520151955,
+      "rank": 34
+    },
+    {
+      "test_class": "org.apache.commons.lang3.text.StrTokenizerTest",
+      "score": 0.3550300125349499,
+      "rank": 35
+    },
+    {
+      "test_class": "org.apache.commons.lang3.text.StrBuilderAppendInsertTest",
+      "score": 0.35377107194391394,
+      "rank": 36
+    },
+    {
+      "test_class": "org.apache.commons.lang3.ArrayUtilsAddTest",
+      "score": 0.3534544052843667,
+      "rank": 37
+    },
+    {
+      "test_class": "org.apache.commons.lang3.RangeTest",
+      "score": 0.3528456217303195,
+      "rank": 38
+    },
+    {
+      "test_class": "org.apache.commons.lang3.builder.MultiLineToStringStyleTest",
+      "score": 0.3511484696386079,
+      "rank": 39
+    },
+    {
+      "test_class": "org.apache.commons.lang3.SystemUtilsTest",
+      "score": 0.34927148108358913,
+      "rank": 40
+    },
+    {
+      "test_class": "org.apache.commons.lang3.ValidateTest",
+      "score": 0.34897537037952986,
+      "rank": 41
+    },
+    {
+      "test_class": "org.apache.commons.lang3.StringUtilsStartsEndsWithTest",
+      "score": 0.34853037635776274,
+      "rank": 42
+    },
+    {
+      "test_class": "org.apache.commons.lang3.time.DurationFormatUtilsTest",
+      "score": 0.34642591991752875,
+      "rank": 43
+    },
+    {
+      "test_class": "org.apache.commons.lang3.text.translate.LookupTranslatorTest",
+      "score": 0.3455594714197947,
+      "rank": 44
+    },
+    {
+      "test_class": "org.apache.commons.lang3.builder.NoFieldNamesToStringStyleTest",
+      "score": 0.3435654556088493,
+      "rank": 45
+    },
+    {
+      "test_class": "org.apache.commons.lang3.time.DateUtilsFragmentTest",
+      "score": 0.34265081775293954,
+      "rank": 46
+    },
+    {
+      "test_class": "org.apache.commons.lang3.builder.ShortPrefixToStringStyleTest",
+      "score": 0.3407948573452562,
+      "rank": 47
+    },
+    {
+      "test_class": "org.apache.commons.lang3.builder.StandardToStringStyleTest",
+      "score": 0.3403711393626592,
+      "rank": 48
+    },
+    {
+      "test_class": "org.apache.commons.lang3.mutable.MutableObjectTest",
+      "score": 0.3400701866618463,
+      "rank": 49
+    },
+    {
+      "test_class": "org.apache.commons.lang3.text.StrSubstitutorTest",
+      "score": 0.3395849234223072,
+      "rank": 50
+    },
+    {
+      "test_class": "org.apache.commons.lang3.ObjectUtilsTest",
+      "score": 0.33865796059435926,
+      "rank": 51
+    },
+    {
+      "test_class": "org.apache.commons.lang3.builder.DefaultToStringStyleTest",
+      "score": 0.3382391308957078,
+      "rank": 52
+    },
+    {
+      "test_class": "org.apache.commons.lang3.time.DateUtilsRoundingTest",
+      "score": 0.33653713127978335,
+      "rank": 53
+    },
+    {
+      "test_class": "org.apache.commons.lang3.time.FastDateFormatTest",
+      "score": 0.3342432160208944,
+      "rank": 54
+    },
+    {
+      "test_class": "org.apache.commons.lang3.text.ExtendedMessageFormatTest",
+      "score": 0.3326868647772841,
+      "rank": 55
+    },
+    {
+      "test_class": "org.apache.commons.lang3.reflect.FieldUtilsTest",
+      "score": 0.33201489284916924,
+      "rank": 56
+    },
+    {
+      "test_class": "org.apache.commons.lang3.builder.HashCodeBuilderAndEqualsBuilderTest",
+      "score": 0.33112205739397194,
+      "rank": 57
+    },
+    {
+      "test_class": "org.apache.commons.lang3.StringUtilsSubstringTest",
+      "score": 0.330570442470618,
+      "rank": 58
+    },
+    {
+      "test_class": "org.apache.commons.lang3.time.DateFormatUtilsTest",
+      "score": 0.3301264813393637,
+      "rank": 59
+    },
+    {
+      "test_class": "org.apache.commons.lang3.reflect.MethodUtilsTest",
+      "score": 0.32786784570724914,
+      "rank": 60
+    },
+    {
+      "test_class": "org.apache.commons.lang3.ClassUtilsTest",
+      "score": 0.3278555675269355,
+      "rank": 61
+    },
+    {
+      "test_class": "org.apache.commons.lang3.BooleanUtilsTest",
+      "score": 0.3275797050562159,
+      "rank": 62
+    },
+    {
+      "test_class": "org.apache.commons.lang3.exception.ContextedExceptionTest",
+      "score": 0.32694576847255286,
+      "rank": 63
+    },
+    {
+      "test_class": "org.apache.commons.lang3.builder.SimpleToStringStyleTest",
+      "score": 0.32422921971175345,
+      "rank": 64
+    },
+    {
+      "test_class": "org.apache.commons.lang3.SerializationUtilsTest",
+      "score": 0.3239166020303601,
+      "rank": 65
+    },
+    {
+      "test_class": "org.apache.commons.lang3.LocaleUtilsTest",
+      "score": 0.321317815214218,
+      "rank": 66
+    },
+    {
+      "test_class": "org.apache.commons.lang3.builder.ToStringStyleTest",
+      "score": 0.3211268690162403,
+      "rank": 67
+    },
+    {
+      "test_class": "org.apache.commons.lang3.exception.ContextedRuntimeExceptionTest",
+      "score": 0.320129761664641,
+      "rank": 68
+    },
+    {
+      "test_class": "org.apache.commons.lang3.EnumUtilsTest",
+      "score": 0.3196931005583919,
+      "rank": 69
+    },
+    {
+      "test_class": "org.apache.commons.lang3.builder.HashCodeBuilderTest",
+      "score": 0.31747731992503647,
+      "rank": 70
+    },
+    {
+      "test_class": "org.apache.commons.lang3.mutable.MutableBooleanTest",
+      "score": 0.31537002039073714,
+      "rank": 71
+    },
+    {
+      "test_class": "org.apache.commons.lang3.exception.ExceptionUtilsTest",
+      "score": 0.3140916526322105,
+      "rank": 72
+    },
+    {
+      "test_class": "org.apache.commons.lang3.builder.ReflectionToStringBuilderExcludeTest",
+      "score": 0.30373726093138037,
+      "rank": 73
+    },
+    {
+      "test_class": "org.apache.commons.lang3.reflect.ConstructorUtilsTest",
+      "score": 0.30135825845237013,
+      "rank": 74
+    },
+    {
+      "test_class": "org.apache.commons.lang3.PairTest",
+      "score": 0.2970387584734822,
+      "rank": 75
+    },
+    {
+      "test_class": "org.apache.commons.lang3.concurrent.ConcurrentUtilsTest",
+      "score": 0.2946218901854082,
+      "rank": 76
+    },
+    {
+      "test_class": "org.apache.commons.lang3.builder.EqualsBuilderTest",
+      "score": 0.28994903070504896,
+      "rank": 77
+    },
+    {
+      "test_class": "org.apache.commons.lang3.reflect.TypeUtilsTest",
+      "score": 0.2888024702546162,
+      "rank": 78
+    },
+    {
+      "test_class": "org.apache.commons.lang3.builder.ToStringBuilderTest",
+      "score": 0.28612273848690634,
+      "rank": 79
+    },
+    {
+      "test_class": "org.apache.commons.lang3.text.StrLookupTest",
+      "score": 0.278164069264175,
+      "rank": 80
+    },
+    {
+      "test_class": "org.apache.commons.lang3.exception.DefaultExceptionContextTest",
+      "score": 0.27778286144240233,
+      "rank": 81
+    },
+    {
+      "test_class": "org.apache.commons.lang3.text.CompositeFormatTest",
+      "score": 0.27221861526415575,
+      "rank": 82
+    },
+    {
+      "test_class": "org.apache.commons.lang3.concurrent.AtomicInitializerTest",
+      "score": 0.2553588194547641,
+      "rank": 83
+    },
+    {
+      "test_class": "org.apache.commons.lang3.time.StopWatchTest",
+      "score": 0.25113261987402596,
+      "rank": 84
+    },
+    {
+      "test_class": "org.apache.commons.lang3.concurrent.MultiBackgroundInitializerTest",
+      "score": 0.2423936207551874,
+      "rank": 85
+    },
+    {
+      "test_class": "org.apache.commons.lang3.concurrent.BackgroundInitializerTest",
+      "score": 0.23969267991612142,
+      "rank": 86
+    },
+    {
+      "test_class": "org.apache.commons.lang3.concurrent.CallableBackgroundInitializerTest",
+      "score": 0.2277671634174049,
+      "rank": 87
+    },
+    {
+      "test_class": "org.apache.commons.lang3.concurrent.TimedSemaphoreTest",
+      "score": 0.2253584890966597,
+      "rank": 88
+    },
+    {
+      "test_class": "org.apache.commons.lang3.concurrent.LazyInitializerTest",
+      "score": 0.21416984622522814,
+      "rank": 89
+    },
+    {
+      "test_class": "org.apache.commons.lang3.concurrent.BasicThreadFactoryTest",
+      "score": 0.2088934786403006,
+      "rank": 90
+    }
+  ],
+  "ranked_ids": [
+    "org.apache.commons.lang3.text.translate.NumericEntityUnescaperTest",
+    "org.apache.commons.lang3.text.translate.NumericEntityEscaperTest",
+    "org.apache.commons.lang3.text.translate.UnicodeUnescaperTest",
+    "org.apache.commons.lang3.StringEscapeUtilsTest",
+    "org.apache.commons.lang3.CharUtilsTest",
+    "org.apache.commons.lang3.text.translate.UnicodeEscaperTest",
+    "org.apache.commons.lang3.math.NumberUtilsTest",
+    "org.apache.commons.lang3.mutable.MutableFloatTest",
+    "org.apache.commons.lang3.mutable.MutableDoubleTest",
+    "org.apache.commons.lang3.mutable.MutableByteTest",
+    "org.apache.commons.lang3.mutable.MutableIntTest",
+    "org.apache.commons.lang3.text.WordUtilsTest",
+    "org.apache.commons.lang3.StringUtilsTest",
+    "org.apache.commons.lang3.text.translate.EntityArraysTest",
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest",
+    "org.apache.commons.lang3.StringUtilsIsTest",
+    "org.apache.commons.lang3.RandomStringUtilsTest",
+    "org.apache.commons.lang3.CharSetTest",
+    "org.apache.commons.lang3.mutable.MutableLongTest",
+    "org.apache.commons.lang3.math.IEEE754rUtilsTest",
+    "org.apache.commons.lang3.mutable.MutableShortTest",
+    "org.apache.commons.lang3.BitFieldTest",
+    "org.apache.commons.lang3.CharSetUtilsTest",
+    "org.apache.commons.lang3.text.StrBuilderTest",
+    "org.apache.commons.lang3.ArrayUtilsTest",
+    "org.apache.commons.lang3.CharSequenceUtilsTest",
+    "org.apache.commons.lang3.StringUtilsTrimEmptyTest",
+    "org.apache.commons.lang3.text.StrMatcherTest",
+    "org.apache.commons.lang3.CharEncodingTest",
+    "org.apache.commons.lang3.math.FractionTest",
+    "org.apache.commons.lang3.builder.CompareToBuilderTest",
+    "org.apache.commons.lang3.time.DateUtilsTest",
+    "org.apache.commons.lang3.CharRangeTest",
+    "org.apache.commons.lang3.ArrayUtilsRemoveTest",
+    "org.apache.commons.lang3.text.StrTokenizerTest",
+    "org.apache.commons.lang3.text.StrBuilderAppendInsertTest",
+    "org.apache.commons.lang3.ArrayUtilsAddTest",
+    "org.apache.commons.lang3.RangeTest",
+    "org.apache.commons.lang3.builder.MultiLineToStringStyleTest",
+    "org.apache.commons.lang3.SystemUtilsTest",
+    "org.apache.commons.lang3.ValidateTest",
+    "org.apache.commons.lang3.StringUtilsStartsEndsWithTest",
+    "org.apache.commons.lang3.time.DurationFormatUtilsTest",
+    "org.apache.commons.lang3.text.translate.LookupTranslatorTest",
+    "org.apache.commons.lang3.builder.NoFieldNamesToStringStyleTest",
+    "org.apache.commons.lang3.time.DateUtilsFragmentTest",
+    "org.apache.commons.lang3.builder.ShortPrefixToStringStyleTest",
+    "org.apache.commons.lang3.builder.StandardToStringStyleTest",
+    "org.apache.commons.lang3.mutable.MutableObjectTest",
+    "org.apache.commons.lang3.text.StrSubstitutorTest",
+    "org.apache.commons.lang3.ObjectUtilsTest",
+    "org.apache.commons.lang3.builder.DefaultToStringStyleTest",
+    "org.apache.commons.lang3.time.DateUtilsRoundingTest",
+    "org.apache.commons.lang3.time.FastDateFormatTest",
+    "org.apache.commons.lang3.text.ExtendedMessageFormatTest",
+    "org.apache.commons.lang3.reflect.FieldUtilsTest",
+    "org.apache.commons.lang3.builder.HashCodeBuilderAndEqualsBuilderTest",
+    "org.apache.commons.lang3.StringUtilsSubstringTest",
+    "org.apache.commons.lang3.time.DateFormatUtilsTest",
+    "org.apache.commons.lang3.reflect.MethodUtilsTest",
+    "org.apache.commons.lang3.ClassUtilsTest",
+    "org.apache.commons.lang3.BooleanUtilsTest",
+    "org.apache.commons.lang3.exception.ContextedExceptionTest",
+    "org.apache.commons.lang3.builder.SimpleToStringStyleTest",
+    "org.apache.commons.lang3.SerializationUtilsTest",
+    "org.apache.commons.lang3.LocaleUtilsTest",
+    "org.apache.commons.lang3.builder.ToStringStyleTest",
+    "org.apache.commons.lang3.exception.ContextedRuntimeExceptionTest",
+    "org.apache.commons.lang3.EnumUtilsTest",
+    "org.apache.commons.lang3.builder.HashCodeBuilderTest",
+    "org.apache.commons.lang3.mutable.MutableBooleanTest",
+    "org.apache.commons.lang3.exception.ExceptionUtilsTest",
+    "org.apache.commons.lang3.builder.ReflectionToStringBuilderExcludeTest",
+    "org.apache.commons.lang3.reflect.ConstructorUtilsTest",
+    "org.apache.commons.lang3.PairTest",
+    "org.apache.commons.lang3.concurrent.ConcurrentUtilsTest",
+    "org.apache.commons.lang3.builder.EqualsBuilderTest",
+    "org.apache.commons.lang3.reflect.TypeUtilsTest",
+    "org.apache.commons.lang3.builder.ToStringBuilderTest",
+    "org.apache.commons.lang3.text.StrLookupTest",
+    "org.apache.commons.lang3.exception.DefaultExceptionContextTest",
+    "org.apache.commons.lang3.text.CompositeFormatTest",
+    "org.apache.commons.lang3.concurrent.AtomicInitializerTest",
+    "org.apache.commons.lang3.time.StopWatchTest",
+    "org.apache.commons.lang3.concurrent.MultiBackgroundInitializerTest",
+    "org.apache.commons.lang3.concurrent.BackgroundInitializerTest",
+    "org.apache.commons.lang3.concurrent.CallableBackgroundInitializerTest",
+    "org.apache.commons.lang3.concurrent.TimedSemaphoreTest",
+    "org.apache.commons.lang3.concurrent.LazyInitializerTest",
+    "org.apache.commons.lang3.concurrent.BasicThreadFactoryTest"
+  ],
+  "patch_cache_key": "bc148e4e110d70aa74933879c0a95b1f8a77b7844d0fb42072aa228dd6a19f2b",
+  "test_cache_keys": {
+    "org.apache.commons.lang3.ArrayUtilsAddTest": "c15d43923f8d1c4f39e5d91fb0a5f5c2cf8693485b195469c6a5c19f7386797f",
+    "org.apache.commons.lang3.ArrayUtilsRemoveTest": "e5977cce953b38a50c5973191f04bd1fd6152e13ad4bc6eacd04dfafc59fa271",
+    "org.apache.commons.lang3.ArrayUtilsTest": "cd480469262ae0a11c6537e41f1f9d069434264707012546768ca54cec0262d4",
+    "org.apache.commons.lang3.BitFieldTest": "06fa6d455ce98d4bc0c425b3585ef0a4118a0f0b79240994ca7828914f1006c8",
+    "org.apache.commons.lang3.BooleanUtilsTest": "ef1ee0338ba1db1558ad0653dae3c9d5d59217e91b003d5991ca069107b57d0a",
+    "org.apache.commons.lang3.CharEncodingTest": "c4d0b1810454d146dda0fcc4fdfba203fbdf04bd681517d1bf7be3202cb8d09c",
+    "org.apache.commons.lang3.CharRangeTest": "e9d0342b58d3efee9a51c8fbf728f5c40da7d549d1d2adc825b7a116a4731f53",
+    "org.apache.commons.lang3.CharSequenceUtilsTest": "0ca6184f9ef903146bb681bd7a2679cf5ef15805b0f1dd34f8060e465454bc9f",
+    "org.apache.commons.lang3.CharSetTest": "1506087d59fbb0d77740cd2f00ed480b0d67a90cd177305ed0d676e65d15716c",
+    "org.apache.commons.lang3.CharSetUtilsTest": "7c3e971cde28d68770a930ba7d5e68673ea1f1e797cdd41a5cbb9ddad9db480d",
+    "org.apache.commons.lang3.CharUtilsTest": "9de09a2b71b1dd06c16ae38bc51a15b641c58ad2c9b8bc417f160f51a63f1798",
+    "org.apache.commons.lang3.ClassUtilsTest": "5501917e2c8deeab8275b9b3a9917ae723f66e2531bce7cbe1c2b79e478cd76a",
+    "org.apache.commons.lang3.EnumUtilsTest": "c4f736df38df9b7e45b8baf77725fa66af2b1fcd0b33d2fc32c475e584939930",
+    "org.apache.commons.lang3.LocaleUtilsTest": "8308bc57d9162b0f734b726a4f626a169b20a5dd4f9e9a146412d6e93c187cc9",
+    "org.apache.commons.lang3.ObjectUtilsTest": "c819a16da21159e325d5327eb389ad9e05af90a2cef2e06398dfa7f90cb9d6e0",
+    "org.apache.commons.lang3.PairTest": "81efc67e69f82537583d0bd0b8103c632958a1b6e8fa64e41ade4e8b1689290f",
+    "org.apache.commons.lang3.RandomStringUtilsTest": "4886a4faf7c658018a5656b7540de853965891e11c7af9ea77bd968c01e7b378",
+    "org.apache.commons.lang3.RangeTest": "369c8139f9fca4fdd757580a2667db6b440e0a5574f0ee6bcc1b0bfe6a0d3f84",
+    "org.apache.commons.lang3.SerializationUtilsTest": "5fc976377425d0b36d8089b92d249b302fcd03a7bd66c7427df7ee8f3d33e211",
+    "org.apache.commons.lang3.StringEscapeUtilsTest": "78eabe189d481cdeccba02731611b2b7a9761fc09d4dd1bd612d0037de102e69",
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest": "52281ffac322d9e14bb021e85e5169a63484b842f315a83a9eecf2ff95121505",
+    "org.apache.commons.lang3.StringUtilsIsTest": "6940e2f1c3741a80cc21f49ee93a8a18741ea54080192e6c51cc38a7a630c683",
+    "org.apache.commons.lang3.StringUtilsStartsEndsWithTest": "2cbf4eff9957af1bef63c00ec91f1ac114ea1521e6f3851fd25300648e4521de",
+    "org.apache.commons.lang3.StringUtilsSubstringTest": "85ec19c003140d194f475597e86151cea02b91d1d2e48e388721dc1a87a59c55",
+    "org.apache.commons.lang3.StringUtilsTest": "c8a74acc2118eeecaa2662a9f44af73d040b9b32e6d87c83046a5cc5a1a428b1",
+    "org.apache.commons.lang3.StringUtilsTrimEmptyTest": "866def539eff8b5470d62ff31d3786876bc4fad67f6675a1df0ff20b3472fc93",
+    "org.apache.commons.lang3.SystemUtilsTest": "b27356c9c27b54a0544bace613b3a2d50039943a0f8a5d32f24d1775cfd791c3",
+    "org.apache.commons.lang3.ValidateTest": "3c0a2607c78240248c97e8a5d8bf83bcd1a5d24e618b3490f861731cf3d7a2e8",
+    "org.apache.commons.lang3.builder.CompareToBuilderTest": "661336800081f202e39ac083926ba841bf06a69106ae2ff6915bab22f4632f48",
+    "org.apache.commons.lang3.builder.DefaultToStringStyleTest": "ed067c76b0ad40a80e44cbdfb63f8045ac8a170116613529db6fe1103f2c6353",
+    "org.apache.commons.lang3.builder.EqualsBuilderTest": "3317f2ffd25b93355c8169e08f1b8ed0d43e444ac417e580765bf1bc50285772",
+    "org.apache.commons.lang3.builder.HashCodeBuilderAndEqualsBuilderTest": "3e78d60b1d7fb18a82879df18ba674b0b1049d45c8f0655b7bbb60b48db9f930",
+    "org.apache.commons.lang3.builder.HashCodeBuilderTest": "b9d42d4db8423a9261435efacc15cb75f708c74a2fca436db6be29b7c209e9c8",
+    "org.apache.commons.lang3.builder.MultiLineToStringStyleTest": "1045ed199ee8401e677ff15362a04483411ae9211874f6a97461571b40938791",
+    "org.apache.commons.lang3.builder.NoFieldNamesToStringStyleTest": "64f6935e48bf438a661dd897bd530821e5fb34b10663325c3d7927e8442bf5de",
+    "org.apache.commons.lang3.builder.ReflectionToStringBuilderExcludeTest": "3522e55b5eeb21d73822331dcc8c75a62ac1a5cb1c9d0a2d41c13e62fc66f8fd",
+    "org.apache.commons.lang3.builder.ShortPrefixToStringStyleTest": "91895b18788aa4ccc23f800518256fab962561676cb7884028378a2b8ed8c1df",
+    "org.apache.commons.lang3.builder.SimpleToStringStyleTest": "9e3ca491c7660317e37ac4bb4d98e12d7a39ebdd160337b70c5017e17e7c3772",
+    "org.apache.commons.lang3.builder.StandardToStringStyleTest": "304808f03101045a4ca17b07bd2436181a82abcb6c175388d7e1275ba00cd662",
+    "org.apache.commons.lang3.builder.ToStringBuilderTest": "c73e974f137e558584518d595d4826f3e802f9e2d9846912bafc511544d38eb2",
+    "org.apache.commons.lang3.builder.ToStringStyleTest": "e59e9930fc0da3728c80e89b0a47d1a352536cd2e72cd76b89afc952c098e9be",
+    "org.apache.commons.lang3.concurrent.AtomicInitializerTest": "7035105f16120689363bc460c8ce06ae2fe431c8371b2c1aa15ca5abc51cd3c3",
+    "org.apache.commons.lang3.concurrent.BackgroundInitializerTest": "de1c452bec26ce8a0800168d9e0baa254e0c68fb271891159c72baefe970ccf2",
+    "org.apache.commons.lang3.concurrent.BasicThreadFactoryTest": "c147841b8675d4bc01bb4d90c03e3f5d605075d88d8273db887aa21aae29075b",
+    "org.apache.commons.lang3.concurrent.CallableBackgroundInitializerTest": "8cfaa2581f5f37167c6eea4c6c8ee037866c146b5029fd92245c08ef6aecbe50",
+    "org.apache.commons.lang3.concurrent.ConcurrentUtilsTest": "48fcdc7eba6995eddfaec6932c5d19fa3df850fcfba94658d6d3d20b37ef89cb",
+    "org.apache.commons.lang3.concurrent.LazyInitializerTest": "4bc0e91d84fa303a84a5fec37112425c527b526ed9649cb7240b1ff858dc3a84",
+    "org.apache.commons.lang3.concurrent.MultiBackgroundInitializerTest": "1444fea933fd2c0e404280805cdf9528b35ffbc01aeaafc7054108d971724292",
+    "org.apache.commons.lang3.concurrent.TimedSemaphoreTest": "3f262acd6d436f9905b87ca9233c9e58f9e399d505a14f96df67fc387e4772e8",
+    "org.apache.commons.lang3.exception.ContextedExceptionTest": "6e0210391e4b0d65c91a540a0cd89cbdf3704c9f3d14d4ccff75d9b4f78b7108",
+    "org.apache.commons.lang3.exception.ContextedRuntimeExceptionTest": "8b78dc365c5df7df3eee19172f255b4f3020d6e4e701a14789c7bec17016b1b1",
+    "org.apache.commons.lang3.exception.DefaultExceptionContextTest": "39351238b937437f7b4637866500f8d116e25906fc1d270fee991bbc149c0037",
+    "org.apache.commons.lang3.exception.ExceptionUtilsTest": "bd1938e086b4424301c83fed0ffa65d7ef65a6376dbe3f139f46ca8ba584100c",
+    "org.apache.commons.lang3.math.FractionTest": "216707443879f4886f9329b8f2834932b03c8c293912026b32f35f532f6ee521",
+    "org.apache.commons.lang3.math.IEEE754rUtilsTest": "eaabe7af9de46efd03d2c24d2183d10aedc20df71ecb3d2ddebb9cdf6e8b30a2",
+    "org.apache.commons.lang3.math.NumberUtilsTest": "e00a3bd7c982194816355166100f087e63f9d1e11ba974fd4df1b86bb7cbc580",
+    "org.apache.commons.lang3.mutable.MutableBooleanTest": "354a7346baee8fc6dd09220ce07a5ef4d4f8ef653538e41ec374b2444874dd88",
+    "org.apache.commons.lang3.mutable.MutableByteTest": "5f62cff1ee774cc587c4baa3e9e24fcc67d58e4d141abe8dc5500ac28515bbe4",
+    "org.apache.commons.lang3.mutable.MutableDoubleTest": "8324d03643e4a49eeac31a26061ee77f519a6237d421f905c5a99847c48281c2",
+    "org.apache.commons.lang3.mutable.MutableFloatTest": "fbf73ea9adf0064026f51e74db50137f5c4c90c7e05aa34560950916629e0d54",
+    "org.apache.commons.lang3.mutable.MutableIntTest": "92eac105098c9b92d32173693b05a433d156c36b3ee0071593d9469163ab4997",
+    "org.apache.commons.lang3.mutable.MutableLongTest": "59ea78250a38bda7c4c977710ffe34ef744c8e6334a3274627454aaae86828a8",
+    "org.apache.commons.lang3.mutable.MutableObjectTest": "bf5f816249afc24291f4951c0fbb98b918b6a7ea212a1a15f51fb0c714340fe2",
+    "org.apache.commons.lang3.mutable.MutableShortTest": "83a0cb390aed666042f94038c1c4807fe356a0af724e3a520df2cd91d3cf1578",
+    "org.apache.commons.lang3.reflect.ConstructorUtilsTest": "443b3ae4249e8b0085940893f180c6c000f50d37875a43bae2985b8c603325d8",
+    "org.apache.commons.lang3.reflect.FieldUtilsTest": "c06de70d7b0943df5cf694709a0ce56cf6a311eedc793762dc743572751d606b",
+    "org.apache.commons.lang3.reflect.MethodUtilsTest": "2a04661c18503993574038127ab235e09e03a4256b516130ec3afd87e1306fe0",
+    "org.apache.commons.lang3.reflect.TypeUtilsTest": "fe4474833360a540d08a823e2c121bb9651742c90ce586a4be983024359c27a0",
+    "org.apache.commons.lang3.text.CompositeFormatTest": "f57f9c0511625c0f6b849c9d9d1ade342b075d43d045a015d5576e5cd67dac33",
+    "org.apache.commons.lang3.text.ExtendedMessageFormatTest": "617e8434447b420d6527e96de50ad3c1891e6d8e72e1ec6ad1f7f30e82ad2528",
+    "org.apache.commons.lang3.text.StrBuilderAppendInsertTest": "bf045abaf55509a5f7a135c461f0e1e7c99a1e4d241d16fadd050ad530fad81e",
+    "org.apache.commons.lang3.text.StrBuilderTest": "bd94b3d52cd8809151cf53a4432295a5d12bf42d78ca7a3141072979089aa82b",
+    "org.apache.commons.lang3.text.StrLookupTest": "275c8f9c8178a9687f48b36b43998469ad20d922937bb90148c01aed11e15329",
+    "org.apache.commons.lang3.text.StrMatcherTest": "2f5956e0e73ce74e0ec7274587847a92d9101dd3374969a1343973370e287939",
+    "org.apache.commons.lang3.text.StrSubstitutorTest": "fb7a4aec5ccb844c34a643b824d0d8e9fda281706497e74a4547eb9a10b84748",
+    "org.apache.commons.lang3.text.StrTokenizerTest": "30ad610b944773de5c12b480d84645293b8880bfab34763d1dda87f053bbe62a",
+    "org.apache.commons.lang3.text.WordUtilsTest": "aed06f48e05e7b06e9e53ecef8fe87a0a41963e0b5bcc1891b1339bda7a1618e",
+    "org.apache.commons.lang3.text.translate.EntityArraysTest": "e62fa39feba0b1f6741ffcf933ebdd5f4d7546322c2c425063fabaa62674ca2f",
+    "org.apache.commons.lang3.text.translate.LookupTranslatorTest": "e9f02fe9440252727904b1f44db1a4a426f1d663a53aab0956f13b4a4286e195",
+    "org.apache.commons.lang3.text.translate.NumericEntityEscaperTest": "d3fde7aba08b793994c1af6ad2cd143f8a9b1230cda167dc1b81594994e263b5",
+    "org.apache.commons.lang3.text.translate.NumericEntityUnescaperTest": "befb83ae57e530fc7bd7c693a7866c8378b8503e4377193233491da498445e38",
+    "org.apache.commons.lang3.text.translate.UnicodeEscaperTest": "893cd4ce15aef9a009b343a627155aafdeeb48344698cf07de72f1d1f3a1a142",
+    "org.apache.commons.lang3.text.translate.UnicodeUnescaperTest": "6063b791c2abf51ad0972ed3741712a083400db13b5927c0ab780c03ae5c7050",
+    "org.apache.commons.lang3.time.DateFormatUtilsTest": "b32a1c8988b62892bcd07436b6c6bc650c7a365633cc26566fdcb151c3082427",
+    "org.apache.commons.lang3.time.DateUtilsFragmentTest": "34d1b0c0dcb46844d58bdedcbb4694656ab20a21ef5c21f2adb7caa42d53b648",
+    "org.apache.commons.lang3.time.DateUtilsRoundingTest": "b2c3b91db2cad759af6a42bb150ad6dfe54ea39cd18219dc0affeb6bf15d581f",
+    "org.apache.commons.lang3.time.DateUtilsTest": "48a5dd5ac4fb1115700b9ff2a3006718a75161181cc1d7895b092d62405e5da0",
+    "org.apache.commons.lang3.time.DurationFormatUtilsTest": "33f7af40ac58e7a5e3ef76291e711e92aca3f1535811f4e8e9ec13012e3a0cd2",
+    "org.apache.commons.lang3.time.FastDateFormatTest": "997f9e83215706b9fc78435e849c0c75345302533ac184dde61c02ca68a6dfd9",
+    "org.apache.commons.lang3.time.StopWatchTest": "0bc672ea7912b265d6ebe635f19cf8eed82739ebac4a2e4efd03dd5413dfa2ba"
+  },
+  "total_input_tokens": 143790,
+  "input_hashes": {
+    "patch_representation_sha256": "0d5ddca2bf9bfc1261c276be2c0f6cc6b040b142b95d0777cee8c1bd95bc5bdc",
+    "test_class_ids_sha256": "621f7254e707c46fd3b9c4d49f93be7468419ad0ec32575a3bed8cb59561485d",
+    "test_representations_sha256": "e47e3d7053ac973d207e624ce6dea8d1c3485fb07d82ade1499f7c090609f6c5"
+  },
+  "settings": {
+    "similarity": "cosine",
+    "tie_break": "fqcn_asc",
+    "uses_bm25": false,
+    "shortlist_restricted": false,
+    "stores_vectors_in_ranking": false,
+    "vector_cache": "cache/embeddings/<sha256>.json"
+  },
+  "experiment_commit": "edc70bacd23f2fc5f511ef4d97a33376e7b20bf8",
+  "run_id": "eval-v1-20260923T035853+0000"
+}

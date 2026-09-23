@@ -1,0 +1,140 @@
+{
+  "example_id": "Cli_27",
+  "qualified_id": "Cli-27",
+  "project": "Cli",
+  "bug_id": "27",
+  "split": "evaluation",
+  "status": "complete",
+  "revisions": {
+    "base": "Bf",
+    "proposed": "Bb",
+    "direction": "fixed_to_buggy",
+    "notes": "Fixed (Bf) is the working base for tests/source. Buggy (Bb) is the proposed production change."
+  },
+  "manifest": {
+    "path": "data/manifest.json",
+    "selection_seed": 20260922,
+    "defects4j_version": "3.0.1",
+    "defects4j_commit": "6d54320e0db5a357f9ab38a8e4d2e5aead7e1c09",
+    "manifest_created_at": "2026-09-22T23:16:15+00:00",
+    "manifest_git_commit": "784d3d84dd09ae7f53cb828eac65532370906c56"
+  },
+  "artifacts": {
+    "bugs": "data/bugs/Cli_27/",
+    "patches": "data/patches/Cli_27/",
+    "tests": "data/tests/Cli_27/"
+  },
+  "visibility": {
+    "model_visible": [
+      "data/patches/<id>/representation.txt",
+      "data/patches/<id>/patch_meta.json (truncation stats only)",
+      "data/tests/<id>/inventory.json (test class ids + source paths)",
+      "data/tests/<id>/representations/*.json (compact test source)"
+    ],
+    "private": [
+      "data/tests/<id>/labels.json",
+      "data/tests/<id>/raw/tests.trigger",
+      "data/bugs/<id>/error.json",
+      "checkout trees under data/bugs/<id>/checkouts/"
+    ]
+  },
+  "complete_requirements": [
+    "example_json",
+    "checkout_provenance",
+    "checkout_fixed",
+    "checkout_buggy",
+    "patch_meta",
+    "patch_diff",
+    "patch_representation",
+    "raw_tests_all",
+    "raw_tests_trigger",
+    "test_inventory",
+    "test_labels",
+    "representations_index"
+  ],
+  "error": null,
+  "checkouts": {
+    "fixed": "data/bugs/Cli_27/checkouts/fixed",
+    "buggy": "data/bugs/Cli_27/checkouts/buggy",
+    "provenance": "data/bugs/Cli_27/checkout_provenance.json"
+  },
+  "patch": {
+    "meta": "data/patches/Cli_27/patch_meta.json",
+    "diff": "data/patches/Cli_27/regression_patch.diff",
+    "representation": "data/patches/Cli_27/representation.txt",
+    "patch_truncated": false,
+    "original_patch_chars": 683,
+    "representation_chars": 683
+  },
+  "tests": {
+    "inventory": "data/tests/Cli_27/inventory.json",
+    "labels": "data/tests/Cli_27/labels.json",
+    "num_test_classes": 22,
+    "num_positive_classes": 3,
+    "num_trigger_methods": 3,
+    "source_resolved": 22,
+    "source_missing": 0,
+    "source_ambiguous": 0
+  },
+  "representations": {
+    "index": "data/tests/Cli_27/representations_index.json",
+    "dir": "data/tests/Cli_27/representations",
+    "num_representations": 22,
+    "source_missing": 0,
+    "representation_truncated": 0,
+    "window_compacted": 5
+  },
+  "content_hashes": {
+    "patch_representation": "81f72f5985cafb4ec13b6cb0e6502d44fb48ec38aca576ec4bdbec83389e94bb",
+    "patch_meta": "dfedef4169301bb3d8b6d112066b1502d65ca5646a5b03b7a2bc1154dcf17f9c",
+    "test_inventory": "3a2134d49b6e44c0e9c7d81bea83e89754b418715f8576597a582c67e6d0fd35",
+    "test_labels": "07c295dbefc7129c22a91e94e54fae5286711b172511dd16f016c120c211f75e",
+    "representations_index": "e5e708f395683632c2d4d8ccabe82bd6a5412f12361c351e99660598b4bce997",
+    "checkout_provenance": "c16612be1f68653c22697b5a0f1cc3794469375ccf8fff63303005168a2b1d3b",
+    "representation_json:org.apache.commons.cli.ApplicationTest": "1031b7ab323bf3ab575b71d37c42a8cc326011fdb61d50dc7c7c82a0e5aa685e",
+    "representation_text:org.apache.commons.cli.ApplicationTest": "7455283a68ea818afa872469785c11358f27744748732e9f2fe3e484e1488013",
+    "representation_json:org.apache.commons.cli.ArgumentIsOptionTest": "5d150659708e328292cfa836ec8b70ee150c2f2bf79648c01af0313b6008209a",
+    "representation_text:org.apache.commons.cli.ArgumentIsOptionTest": "2178a945fc9b646712dd5ee11d75649c4526ad2720fe1089b3565c704d9cfd44",
+    "representation_json:org.apache.commons.cli.BasicParserTest": "a560ed3732638a3ba1656938ca9fbafcad41e4c78fc94de0c822963bd56f0225",
+    "representation_text:org.apache.commons.cli.BasicParserTest": "725fbb26b8c9d4a823b37828c6804aa65b2578e9ea613b0ee63008f617db77e3",
+    "representation_json:org.apache.commons.cli.BugsTest": "53f34e5f07fad2d79419e86a7f6f889205d163b5514557eccb611dfb4cc59db0",
+    "representation_text:org.apache.commons.cli.BugsTest": "5628ce740d15ca1eb36a3a21bfa6d396b702f4dd9ce6f32f19c748389e28b6b3",
+    "representation_json:org.apache.commons.cli.CommandLineTest": "d8730ba8971a4607104a16b1f7e8cc0bac36df3a318f822db68eb44ea73f2613",
+    "representation_text:org.apache.commons.cli.CommandLineTest": "cf92f5e32fa18ba4b5c27ba04cdff672d5c65f9aa8479a09e4db8cce0a1e283b",
+    "representation_json:org.apache.commons.cli.GnuParserTest": "6b484229e59c2d1174f31074cf22b289e4ca458a80c284db6fd74a89119669bc",
+    "representation_text:org.apache.commons.cli.GnuParserTest": "4606ad43de5a09c0668e31397c20cf348d587f2e65d58633070b767cce4d75f6",
+    "representation_json:org.apache.commons.cli.HelpFormatterTest": "dcdd6d4b4c911d28eac866eaf3cb5162336b11dd3f464d6e1170c792bf907ddb",
+    "representation_text:org.apache.commons.cli.HelpFormatterTest": "ba66fa9315c885d13aaf8452771414b28a38852afb2b6ecd0c2388d3a3c0e201",
+    "representation_json:org.apache.commons.cli.OptionBuilderTest": "656b02365f262b13b651b4d74baec40059a53a57c558be9af77624866c274cda",
+    "representation_text:org.apache.commons.cli.OptionBuilderTest": "392a1cc9d2ebf9ea2ba9d13bbde768b8be9e3ffc19d1e649c1621c0cc52ab22e",
+    "representation_json:org.apache.commons.cli.OptionGroupTest": "967196f3098a10b0096c2caea126bb82d5a01146064d0572fabef580988d275f",
+    "representation_text:org.apache.commons.cli.OptionGroupTest": "8466d4431794d22b821b78bdeca93ac3e16c37ec8a35f4b3e28aea1238a273bb",
+    "representation_json:org.apache.commons.cli.OptionTest": "ce67c13ab4c7f8888ff0ada5ebc04ed8a8b154fb3db9b0e9a548781a025461ff",
+    "representation_text:org.apache.commons.cli.OptionTest": "a890d26ec57b7cf99c16b3018202903e8f5ff905ea154bafe1605c19726a9c08",
+    "representation_json:org.apache.commons.cli.OptionsTest": "5b5c7745eb1d147076b1f99b57b01c6f5e73870d3c17134eac7b43fbf6140e54",
+    "representation_text:org.apache.commons.cli.OptionsTest": "1e5132fa9386fed9a785680c14c2960ce8a877d55dd9502e6e2abf9fc318148a",
+    "representation_json:org.apache.commons.cli.PatternOptionBuilderTest": "28f710a5065d8c9933ae6ff7bc5c3fb6ca8d5340458f6d28c8029f6e53c014c3",
+    "representation_text:org.apache.commons.cli.PatternOptionBuilderTest": "408569c4455bac545f148f01b35f87d6dfa76f433c46f0bc5cdc796bcf889615",
+    "representation_json:org.apache.commons.cli.PosixParserTest": "9475323b3b4992a7bdc068eeafa73c248487e943d578d87009828da983211ba6",
+    "representation_text:org.apache.commons.cli.PosixParserTest": "c95d15f44483f006969b1bcd14b3b79edbcacbd300b6e157d9bacee5230cac30",
+    "representation_json:org.apache.commons.cli.UtilTest": "4a60095315b754ead89d963af66743feedbeca4515ba45f2b9d4311cee37cf6e",
+    "representation_text:org.apache.commons.cli.UtilTest": "323596a3fad40208de2b8a38d240854f50b86ca30bb839b83f53ccc94bdc6296",
+    "representation_json:org.apache.commons.cli.ValueTest": "1db4fd39ac90808b5bcc6e00344f893e7adb243009531c45f3b15076b46ba772",
+    "representation_text:org.apache.commons.cli.ValueTest": "d187a7ee51b5c697bd9ee2ebe564e839f766b63da575fc02915ace28c98b4e2d",
+    "representation_json:org.apache.commons.cli.ValuesTest": "1b8707c99da4d248623d4ce8b0a8958797d9f106eda038ab2a034981f86bdcd1",
+    "representation_text:org.apache.commons.cli.ValuesTest": "3fb72b0db2e9ecd5de55654e2d4f6c46909b374a98b45375f7237749a3488faf",
+    "representation_json:org.apache.commons.cli.bug.BugCLI133Test": "a9d261bd9dd1a8d1fa0b6453d259bbd510da9d47002f3b6483da5158286a4a09",
+    "representation_text:org.apache.commons.cli.bug.BugCLI133Test": "f68d9a924e0333000a20af6ab31bddfc9a0060ef0668a24da5de7f992531ef84",
+    "representation_json:org.apache.commons.cli.bug.BugCLI13Test": "493c91629346f61dc21a23aa8b56a0b7ee0388334dbd84e075ab5b0f4c4e8710",
+    "representation_text:org.apache.commons.cli.bug.BugCLI13Test": "9b1e892a30b48eded656e3b01c81f90b0bf3e7ce2e0a6c591d3b93bbda430941",
+    "representation_json:org.apache.commons.cli.bug.BugCLI148Test": "e8008e3b7fc745ac17e520f261d5fdeee4f5242e9d191b528e820beee4389b6f",
+    "representation_text:org.apache.commons.cli.bug.BugCLI148Test": "8b7f37a95398d799c1216662f4e6315d7de952973e22d152e8b3b1d346609242",
+    "representation_json:org.apache.commons.cli.bug.BugCLI162Test": "1ed805d590c4c1c1cfd7c0ae79f11ec8dc484fc5284b63a9fd1352eccd34b82e",
+    "representation_text:org.apache.commons.cli.bug.BugCLI162Test": "12247256534e16c019397e798683202f8af6a9387996e005c422aac01d1f089f",
+    "representation_json:org.apache.commons.cli.bug.BugCLI18Test": "d4e206c46216313d7ff061d8204e774a146ecd0338d3041db66a2d77de447edc",
+    "representation_text:org.apache.commons.cli.bug.BugCLI18Test": "d83323aa26e64cb77e1d5a39c7cb5498060e208b488eac936cc1f737059acbc9",
+    "representation_json:org.apache.commons.cli.bug.BugCLI71Test": "3f28e5901fd3f50faeff28dc48f26bb29c0ee081fd9434f116a564f2f75f11ff",
+    "representation_text:org.apache.commons.cli.bug.BugCLI71Test": "e04d59feee0dbe7cc6234ec448a2dff13a1ca3ccda218360f1d0df2d7fa785fa",
+    "patch_diff": "b73b5d974cb796bd56d8f8c2080445d4b0aa9f8f286687f7fdb3dfe1a3a0ec54"
+  }
+}

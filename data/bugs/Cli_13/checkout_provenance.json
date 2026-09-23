@@ -1,0 +1,59 @@
+{
+  "qualified_id": "Cli-13",
+  "example_id": "Cli_13",
+  "project": "Cli",
+  "bug_id": "13",
+  "split": "evaluation",
+  "status": "ok",
+  "reused": false,
+  "checked_at": "2026-09-23T04:00:03+00:00",
+  "defects4j_version": "3.0.1",
+  "defects4j_commit": "6d54320e0db5a357f9ab38a8e4d2e5aead7e1c09",
+  "d4j_home": "D4J_HOME",
+  "fixed": {
+    "version_id": "13f",
+    "role": "base",
+    "work_dir": "data/bugs/Cli_13/checkouts/fixed",
+    "defects4j_config": {
+      "pid": "Cli",
+      "vid": "13f"
+    },
+    "command": [
+      "defects4j",
+      "checkout",
+      "-p",
+      "Cli",
+      "-v",
+      "13f",
+      "-w",
+      "data/bugs/Cli_13/checkouts/fixed"
+    ],
+    "exit_status": 0
+  },
+  "buggy": {
+    "version_id": "13b",
+    "role": "proposed_change",
+    "work_dir": "data/bugs/Cli_13/checkouts/buggy",
+    "defects4j_config": {
+      "pid": "Cli",
+      "vid": "13b"
+    },
+    "command": [
+      "defects4j",
+      "checkout",
+      "-p",
+      "Cli",
+      "-v",
+      "13b",
+      "-w",
+      "data/bugs/Cli_13/checkouts/buggy"
+    ],
+    "exit_status": 0
+  },
+  "logs": {
+    "fixed_stdout_tail": "",
+    "fixed_stderr_tail": "Checking out 538fb688 to /workspace/data/bugs/Cli_13/checkouts/fixed....... OK\nInit local repository...................................................... OK\nTag post-fix revision...................................................... OK\nApply patch................................................................ OK\nRun post-checkout hook..................................................... OK\nExcluding broken/flaky tests............................................... OK\nInitialize fixed program version........................................... OK\nApply patch................................................................ OK\nInitialize buggy program version........................................... OK\nDiff 538fb688:e2ba946e..................................................... OK\nApply patch................................................................ OK\nTag pre-fix revision....................................................... OK\nCheck out program version: Cli-13f......................................... OK\n",
+    "buggy_stdout_tail": "",
+    "buggy_stderr_tail": "Checking out 538fb688 to /workspace/data/bugs/Cli_13/checkouts/buggy....... OK\nInit local repository...................................................... OK\nTag post-fix revision...................................................... OK\nApply patch................................................................ OK\nRun post-checkout hook..................................................... OK\nExcluding broken/flaky tests............................................... OK\nInitialize fixed program version........................................... OK\nApply patch................................................................ OK\nInitialize buggy program version........................................... OK\nDiff 538fb688:e2ba946e..................................................... OK\nApply patch................................................................ OK\nTag pre-fix revision....................................................... OK\nCheck out program version: Cli-13b......................................... OK\n"
+  }
+}

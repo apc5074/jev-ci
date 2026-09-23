@@ -1,0 +1,36 @@
+{
+  "qualified_id": "Cli-22",
+  "example_id": "Cli_22",
+  "direction": "fixed_to_buggy",
+  "patch_truncated": false,
+  "original_patch_chars": 2456,
+  "representation_chars": 2456,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...PATCH TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "modified_files": [
+    "src/java/org/apache/commons/cli/PosixParser.java"
+  ],
+  "modified_classes": [
+    "org.apache.commons.cli.PosixParser"
+  ],
+  "file_resolutions": [
+    {
+      "fqcn": "org.apache.commons.cli.PosixParser",
+      "outer_class": "org.apache.commons.cli.PosixParser",
+      "path": "src/java/org/apache/commons/cli/PosixParser.java",
+      "existence": "both",
+      "diff_empty": false
+    }
+  ],
+  "dir_src_classes": {
+    "fixed": "src/java",
+    "buggy": "src/java"
+  },
+  "artifacts": {
+    "regression_patch": "data/patches/Cli_22/regression_patch.diff",
+    "representation": "data/patches/Cli_22/representation.txt",
+    "raw_classes_modified": "data/bugs/Cli_22/raw/classes.modified"
+  },
+  "extracted_at": "2026-09-23T04:02:26+00:00"
+}

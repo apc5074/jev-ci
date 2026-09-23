@@ -1,0 +1,19 @@
+MODIFIED FILES:
+src/main/java/com/fasterxml/jackson/databind/deser/impl/InnerClassProperty.java
+
+MODIFIED CLASSES:
+com.fasterxml.jackson.databind.deser.impl.InnerClassProperty
+
+PROPOSED CODE CHANGE:
+
+--- src/main/java/com/fasterxml/jackson/databind/deser/impl/InnerClassProperty.java
++++ src/main/java/com/fasterxml/jackson/databind/deser/impl/InnerClassProperty.java
+@@ -90,8 +90,6 @@
+     @Override
+     public int getPropertyIndex() { return _delegate.getPropertyIndex(); }
+ 
+-    @Override
+-    public int getCreatorIndex() { return _delegate.getCreatorIndex(); }
+     
+     // // // BeanProperty impl
+     

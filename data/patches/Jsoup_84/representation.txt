@@ -1,0 +1,20 @@
+MODIFIED FILES:
+src/main/java/org/jsoup/helper/W3CDom.java
+
+MODIFIED CLASSES:
+org.jsoup.helper.W3CDom
+
+PROPOSED CODE CHANGE:
+
+--- src/main/java/org/jsoup/helper/W3CDom.java
++++ src/main/java/org/jsoup/helper/W3CDom.java
+@@ -88,8 +88,7 @@
+                 String namespace = namespacesStack.peek().get(prefix);
+                 String tagName = sourceEl.tagName();
+ 
+-                Element el = namespace == null && tagName.contains(":") ?
+-                    doc.createElementNS("", tagName) : // doesn't have a real namespace defined
++                Element el = 
+                     doc.createElementNS(namespace, tagName);
+                 copyAttributes(sourceEl, el);
+                 if (dest == null) { // sets up the root

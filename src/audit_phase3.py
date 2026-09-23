@@ -211,8 +211,9 @@ def audit_one_example(
     *,
     manifest: Mapping[str, Any] | None = None,
     data_root: Path | None = None,
+    allow_evaluation: bool = False,
 ) -> dict[str, Any]:
-    """Audit one complete development example; return a structured report row."""
+    """Audit one complete example; return a structured report row."""
     data = manifest if manifest is not None else load_manifest()
     ex = example if isinstance(example, ExampleId) else ExampleId.parse(example)
     problems: list[str] = []
@@ -223,13 +224,13 @@ def audit_one_example(
             data_root=data_root,
             manifest=data,
             require_complete=True,
-            allow_evaluation=False,
+            allow_evaluation=allow_evaluation,
         )
         validated = validate_example_artifacts(
             ex,
             data_root=data_root,
             manifest=data,
-            allow_evaluation=False,
+            allow_evaluation=allow_evaluation,
         )
     except ExampleContractError as exc:
         return {
@@ -410,7 +411,8 @@ def audit_development_set(
     ]
     failed = [r for r in rows if not r["ok"]]
 
-    # No evaluation example should be marked complete.
+    # No evaluation example should be marked complete *during Phase 3 development*.
+    # Phase 7 (P7-02) uses audit_evaluation_set instead.
     evaluation_complete: list[str] = []
     for raw in data.get("evaluation_bug_ids") or []:
         ex = ExampleId.parse(str(raw))
@@ -462,14 +464,94 @@ def audit_development_set(
     return report
 
 
+def audit_evaluation_set(
+    *,
+    manifest: Mapping[str, Any] | None = None,
+    data_root: Path | None = None,
+    experiment_commit: str | None = None,
+) -> dict[str, Any]:
+    """Audit all 125 evaluation examples (P7-02)."""
+    data = manifest if manifest is not None else load_manifest()
+    raw_ids = list(data.get("evaluation_bug_ids") or [])
+    targets = [ExampleId.parse(str(raw)) for raw in raw_ids]
+    rows = [
+        audit_one_example(
+            ex,
+            manifest=data,
+            data_root=data_root,
+            allow_evaluation=True,
+        )
+        for ex in targets
+    ]
+    failed = [r for r in rows if not r["ok"]]
+
+    # Truncation / missing-source tallies (no ranking outcomes).
+    trunc_patch = 0
+    trunc_rep = 0
+    missing_src = 0
+    for r in rows:
+        if not r.get("ok"):
+            continue
+        trunc_patch += int(bool(r.get("patch_truncated")))
+        trunc_rep += int(r.get("representation_truncated") or 0)
+        missing_src += int(r.get("source_missing") or 0)
+
+    direction_ok = True
+    direction_error = None
+    sample_id = targets[0].qualified if targets else None
+    if sample_id:
+        try:
+            verify_patch_direction_sample(sample_id)
+        except (AuditError, OSError, ExampleContractError) as exc:
+            direction_ok = False
+            direction_error = str(exc)
+
+    report = {
+        "schema_version": "jev-phase7-extraction-audit-v1",
+        "audited_at": _utcnow(),
+        "split": "evaluation",
+        "experiment_commit": experiment_commit,
+        "defects4j_commit": data.get("defects4j_commit"),
+        "selection_seed": data.get("selection_seed"),
+        "counts": {
+            "targets": len(rows),
+            "passed": len(rows) - len(failed),
+            "failed": len(failed),
+            "patch_truncated": trunc_patch,
+            "representation_truncated_total": trunc_rep,
+            "source_missing_total": missing_src,
+        },
+        "failed_ids": [r["qualified_id"] for r in failed],
+        "patch_direction_sample": {
+            "example": sample_id,
+            "ok": direction_ok,
+            "error": direction_error,
+        },
+        "defects4j_metadata_exceptions": [],
+        "examples": rows,
+        "ok": (
+            not failed
+            and direction_ok
+            and len(rows) == 125
+        ),
+    }
+    return report
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Audit Phase 3 development extraction integrity",
+        description="Audit Phase 3 extraction integrity",
+    )
+    parser.add_argument(
+        "--split",
+        choices=("development", "evaluation"),
+        default="development",
+        help="Manifest split to audit (evaluation requires freeze + preflight)",
     )
     parser.add_argument(
         "--write",
         type=Path,
-        default=WORKSPACE / "results" / "audit-phase3.json",
+        default=None,
         help="Where to write the JSON audit report",
     )
     return parser
@@ -477,21 +559,36 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    write_path = args.write
+    if write_path is None:
+        if args.split == "evaluation":
+            write_path = WORKSPACE / "results" / "phase7" / "extraction_audit.json"
+        else:
+            write_path = WORKSPACE / "results" / "audit-phase3.json"
+
     try:
-        report = audit_development_set()
+        if args.split == "evaluation":
+            from src.freeze_guard import assert_evaluation_allowed
+
+            lock = assert_evaluation_allowed()
+            report = audit_evaluation_set(
+                experiment_commit=lock.get("commit_sha"),
+            )
+        else:
+            report = audit_development_set()
     except ExampleContractError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
 
-    args.write.parent.mkdir(parents=True, exist_ok=True)
-    atomic_write_json(args.write, report)
+    write_path.parent.mkdir(parents=True, exist_ok=True)
+    atomic_write_json(write_path, report)
     counts = report["counts"]
     print(
-        f"audit phase3: passed={counts['passed']}/{counts['targets']} "
+        f"audit phase3 ({report['split']}): "
+        f"passed={counts['passed']}/{counts['targets']} "
         f"failed={counts['failed']} "
-        f"eval_complete={counts['evaluation_complete_forbidden']} "
         f"direction_sample_ok={report['patch_direction_sample']['ok']} "
-        f"report={args.write}"
+        f"report={write_path}"
     )
     if not report["ok"]:
         for row in report["examples"]:
@@ -499,7 +596,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 print(f"  FAIL {row['qualified_id']}:", file=sys.stderr)
                 for problem in row["problems"]:
                     print(f"    - {problem}", file=sys.stderr)
-        if report["evaluation_complete_ids"]:
+        if report.get("evaluation_complete_ids"):
             print(
                 "  evaluation examples marked complete: "
                 + ", ".join(report["evaluation_complete_ids"]),

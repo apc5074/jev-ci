@@ -224,8 +224,39 @@ def main(argv: Sequence[str] | None = None) -> int:
         "failures": failures,
         "bugs": rows,
     }
+    if args.split == "evaluation" and args.allow_evaluation:
+        try:
+            from src.evaluation_preflight import append_execution_log, load_preflight
+            from src.freeze_guard import assert_evaluation_allowed
+
+            lock = assert_evaluation_allowed()
+            summary["experiment_commit"] = lock.get("commit_sha")
+            pre = load_preflight()
+            if pre:
+                summary["run_id"] = pre.get("run_id")
+                summary["experiment_commit"] = pre.get("experiment_commit") or summary[
+                    "experiment_commit"
+                ]
+            append_execution_log(
+                {
+                    "event": "run_gpt",
+                    "split": args.split,
+                    "models": [m.key for m in models],
+                    "ok": failures == 0,
+                    "count": len(targets),
+                    "failures": failures,
+                    "experiment_commit": summary.get("experiment_commit"),
+                    "run_id": summary.get("run_id"),
+                }
+            )
+        except Exception:  # noqa: BLE001
+            pass
     SUMMARY_DIR.mkdir(parents=True, exist_ok=True)
-    summary_path = SUMMARY_DIR / "gpt_scoring_summary.json"
+    summary_path = SUMMARY_DIR / (
+        f"gpt_scoring_summary-{args.split}.json"
+        if args.split == "evaluation"
+        else "gpt_scoring_summary.json"
+    )
     atomic_write_json(summary_path, summary)
     print(f"summary: {summary_path.relative_to(WORKSPACE)} failures={failures}")
     return 1 if failures else 0

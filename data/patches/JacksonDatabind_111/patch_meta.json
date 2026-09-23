@@ -1,0 +1,90 @@
+{
+  "qualified_id": "JacksonDatabind-111",
+  "example_id": "JacksonDatabind_111",
+  "direction": "fixed_to_buggy",
+  "patch_truncated": false,
+  "original_patch_chars": 4886,
+  "representation_chars": 4886,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...PATCH TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "modified_files": [
+    "src/main/java/com/fasterxml/jackson/databind/deser/CreatorProperty.java",
+    "src/main/java/com/fasterxml/jackson/databind/deser/impl/FieldProperty.java",
+    "src/main/java/com/fasterxml/jackson/databind/deser/impl/MethodProperty.java",
+    "src/main/java/com/fasterxml/jackson/databind/deser/impl/ObjectIdReferenceProperty.java",
+    "src/main/java/com/fasterxml/jackson/databind/deser/impl/ObjectIdValueProperty.java",
+    "src/main/java/com/fasterxml/jackson/databind/deser/impl/SetterlessProperty.java",
+    "src/main/java/com/fasterxml/jackson/databind/deser/std/AtomicReferenceDeserializer.java"
+  ],
+  "modified_classes": [
+    "com.fasterxml.jackson.databind.deser.CreatorProperty",
+    "com.fasterxml.jackson.databind.deser.impl.FieldProperty",
+    "com.fasterxml.jackson.databind.deser.impl.MethodProperty",
+    "com.fasterxml.jackson.databind.deser.impl.ObjectIdReferenceProperty",
+    "com.fasterxml.jackson.databind.deser.impl.ObjectIdValueProperty",
+    "com.fasterxml.jackson.databind.deser.impl.SetterlessProperty",
+    "com.fasterxml.jackson.databind.deser.std.AtomicReferenceDeserializer"
+  ],
+  "file_resolutions": [
+    {
+      "fqcn": "com.fasterxml.jackson.databind.deser.CreatorProperty",
+      "outer_class": "com.fasterxml.jackson.databind.deser.CreatorProperty",
+      "path": "src/main/java/com/fasterxml/jackson/databind/deser/CreatorProperty.java",
+      "existence": "both",
+      "diff_empty": false
+    },
+    {
+      "fqcn": "com.fasterxml.jackson.databind.deser.impl.FieldProperty",
+      "outer_class": "com.fasterxml.jackson.databind.deser.impl.FieldProperty",
+      "path": "src/main/java/com/fasterxml/jackson/databind/deser/impl/FieldProperty.java",
+      "existence": "both",
+      "diff_empty": false
+    },
+    {
+      "fqcn": "com.fasterxml.jackson.databind.deser.impl.MethodProperty",
+      "outer_class": "com.fasterxml.jackson.databind.deser.impl.MethodProperty",
+      "path": "src/main/java/com/fasterxml/jackson/databind/deser/impl/MethodProperty.java",
+      "existence": "both",
+      "diff_empty": false
+    },
+    {
+      "fqcn": "com.fasterxml.jackson.databind.deser.impl.ObjectIdReferenceProperty",
+      "outer_class": "com.fasterxml.jackson.databind.deser.impl.ObjectIdReferenceProperty",
+      "path": "src/main/java/com/fasterxml/jackson/databind/deser/impl/ObjectIdReferenceProperty.java",
+      "existence": "both",
+      "diff_empty": false
+    },
+    {
+      "fqcn": "com.fasterxml.jackson.databind.deser.impl.ObjectIdValueProperty",
+      "outer_class": "com.fasterxml.jackson.databind.deser.impl.ObjectIdValueProperty",
+      "path": "src/main/java/com/fasterxml/jackson/databind/deser/impl/ObjectIdValueProperty.java",
+      "existence": "both",
+      "diff_empty": false
+    },
+    {
+      "fqcn": "com.fasterxml.jackson.databind.deser.impl.SetterlessProperty",
+      "outer_class": "com.fasterxml.jackson.databind.deser.impl.SetterlessProperty",
+      "path": "src/main/java/com/fasterxml/jackson/databind/deser/impl/SetterlessProperty.java",
+      "existence": "both",
+      "diff_empty": false
+    },
+    {
+      "fqcn": "com.fasterxml.jackson.databind.deser.std.AtomicReferenceDeserializer",
+      "outer_class": "com.fasterxml.jackson.databind.deser.std.AtomicReferenceDeserializer",
+      "path": "src/main/java/com/fasterxml/jackson/databind/deser/std/AtomicReferenceDeserializer.java",
+      "existence": "both",
+      "diff_empty": false
+    }
+  ],
+  "dir_src_classes": {
+    "fixed": "src/main/java",
+    "buggy": "src/main/java"
+  },
+  "artifacts": {
+    "regression_patch": "data/patches/JacksonDatabind_111/regression_patch.diff",
+    "representation": "data/patches/JacksonDatabind_111/representation.txt",
+    "raw_classes_modified": "data/bugs/JacksonDatabind_111/raw/classes.modified"
+  },
+  "extracted_at": "2026-09-23T04:56:22+00:00"
+}

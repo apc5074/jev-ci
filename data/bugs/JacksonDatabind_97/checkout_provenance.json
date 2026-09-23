@@ -1,0 +1,59 @@
+{
+  "qualified_id": "JacksonDatabind-97",
+  "example_id": "JacksonDatabind_97",
+  "project": "JacksonDatabind",
+  "bug_id": "97",
+  "split": "evaluation",
+  "status": "ok",
+  "reused": false,
+  "checked_at": "2026-09-23T04:54:43+00:00",
+  "defects4j_version": "3.0.1",
+  "defects4j_commit": "6d54320e0db5a357f9ab38a8e4d2e5aead7e1c09",
+  "d4j_home": "D4J_HOME",
+  "fixed": {
+    "version_id": "97f",
+    "role": "base",
+    "work_dir": "data/bugs/JacksonDatabind_97/checkouts/fixed",
+    "defects4j_config": {
+      "pid": "JacksonDatabind",
+      "vid": "97f"
+    },
+    "command": [
+      "defects4j",
+      "checkout",
+      "-p",
+      "JacksonDatabind",
+      "-v",
+      "97f",
+      "-w",
+      "data/bugs/JacksonDatabind_97/checkouts/fixed"
+    ],
+    "exit_status": 0
+  },
+  "buggy": {
+    "version_id": "97b",
+    "role": "proposed_change",
+    "work_dir": "data/bugs/JacksonDatabind_97/checkouts/buggy",
+    "defects4j_config": {
+      "pid": "JacksonDatabind",
+      "vid": "97b"
+    },
+    "command": [
+      "defects4j",
+      "checkout",
+      "-p",
+      "JacksonDatabind",
+      "-v",
+      "97b",
+      "-w",
+      "data/bugs/JacksonDatabind_97/checkouts/buggy"
+    ],
+    "exit_status": 0
+  },
+  "logs": {
+    "fixed_stdout_tail": "",
+    "fixed_stderr_tail": "Checking out 0e06d15b to /workspace/data/bugs/JacksonDatabind_97/checkouts/ OK\nInit local repository...................................................... OK\nTag post-fix revision...................................................... OK\nApply patch................................................................ OK\nApply patch................................................................ OK\nCorrect Module ambiguity 2................................................. OK\nCorrect Module ambiguity 3................................................. OK\nCopy generated Ant build file.............................................. OK\nRun post-checkout hook..................................................... OK\nExcluding broken/flaky tests............................................... OK\nBacking up build file: /workspace/data/bugs/JacksonDatabind_97/checkouts/fi OK\nBacking up build file: /workspace/data/bugs/JacksonDatabind_97/checkouts/fi OK\nInitialize fixed program version........................................... OK\nApply patch................................................................ OK\nInitialize buggy program version........................................... OK\nDiff 0e06d15b:dd57a2dd..................................................... OK\nApply patch................................................................ OK\nTag pre-fix revision....................................................... OK\nCheck out program version: JacksonDatabind-97f............................. OK\n",
+    "buggy_stdout_tail": "",
+    "buggy_stderr_tail": "Checking out 0e06d15b to /workspace/data/bugs/JacksonDatabind_97/checkouts/ OK\nInit local repository...................................................... OK\nTag post-fix revision...................................................... OK\nApply patch................................................................ OK\nApply patch................................................................ OK\nCorrect Module ambiguity 2................................................. OK\nCorrect Module ambiguity 3................................................. OK\nCopy generated Ant build file.............................................. OK\nRun post-checkout hook..................................................... OK\nExcluding broken/flaky tests............................................... OK\nBacking up build file: /workspace/data/bugs/JacksonDatabind_97/checkouts/bu OK\nBacking up build file: /workspace/data/bugs/JacksonDatabind_97/checkouts/bu OK\nInitialize fixed program version........................................... OK\nApply patch................................................................ OK\nInitialize buggy program version........................................... OK\nDiff 0e06d15b:dd57a2dd..................................................... OK\nApply patch................................................................ OK\nTag pre-fix revision....................................................... OK\nCheck out program version: JacksonDatabind-97b............................. OK\n"
+  }
+}

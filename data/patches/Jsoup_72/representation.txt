@@ -1,0 +1,19 @@
+MODIFIED FILES:
+src/main/java/org/jsoup/parser/CharacterReader.java
+
+MODIFIED CLASSES:
+org.jsoup.parser.CharacterReader
+
+PROPOSED CODE CHANGE:
+
+--- src/main/java/org/jsoup/parser/CharacterReader.java
++++ src/main/java/org/jsoup/parser/CharacterReader.java
+@@ -424,8 +424,6 @@
+         // limit (no cache):
+         if (count > maxStringCacheLen)
+             return new String(charBuf, start, count);
+-        if (count < 1)
+-            return "";
+ 
+         // calculate hash:
+         int hash = 0;

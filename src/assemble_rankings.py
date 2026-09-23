@@ -231,6 +231,20 @@ def assemble_from_scores(
         },
         "provenance": dict(provenance),
     }
+    if doc.get("split") == "evaluation":
+        try:
+            from src.freeze_guard import assert_evaluation_allowed
+            from src.evaluation_preflight import load_preflight
+
+            lock = assert_evaluation_allowed()
+            doc["experiment_commit"] = lock.get("commit_sha")
+            pre = load_preflight()
+            if pre:
+                doc["run_id"] = pre.get("run_id")
+                if pre.get("experiment_commit"):
+                    doc["experiment_commit"] = pre["experiment_commit"]
+        except Exception:  # noqa: BLE001
+            pass
     assert_no_private_fields(doc, context=f"semantic ranking {ex.qualified}")
     leaked = PRIVATE_LABEL_FIELDS.intersection(doc.keys())
     if leaked:

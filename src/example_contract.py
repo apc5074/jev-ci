@@ -266,10 +266,11 @@ def require_manifest_membership(
                 f"{ex.qualified} is an evaluation bug; Phase 3 may only extract "
                 "development examples until the design is frozen"
             )
-        # Even with --allow-evaluation, refuse until experiment-v1 freeze lock.
-        from src.freeze_guard import assert_evaluation_allowed
+        # Even with --allow-evaluation, refuse until experiment-v1 freeze lock
+        # and a passing Phase 7 preflight (P7-01).
+        from src.evaluation_preflight import assert_evaluation_run_ready
 
-        assert_evaluation_allowed()
+        assert_evaluation_run_ready()
         return "evaluation"
     raise ExampleContractError(f"{ex.qualified} is not in the locked manifest")
 

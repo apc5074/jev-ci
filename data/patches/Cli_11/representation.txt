@@ -1,0 +1,19 @@
+MODIFIED FILES:
+src/java/org/apache/commons/cli/HelpFormatter.java
+
+MODIFIED CLASSES:
+org.apache.commons.cli.HelpFormatter
+
+PROPOSED CODE CHANGE:
+
+--- src/java/org/apache/commons/cli/HelpFormatter.java
++++ src/java/org/apache/commons/cli/HelpFormatter.java
+@@ -629,7 +629,7 @@
+         }
+ 
+         // if the Option has a value
+-        if (option.hasArg() && option.hasArgName())
++        if (option.hasArg() && (option.getArgName() != null))
+         {
+             buff.append(" <").append(option.getArgName()).append(">");
+         }

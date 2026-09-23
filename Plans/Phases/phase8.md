@@ -6,9 +6,11 @@
 
 Tickets are ordered by dependency. Each produces a checkable artifact or calculation. Only the 125 evaluation bugs enter headline metrics; the 25 development bugs remain diagnostic.
 
-## P8-01 — Load and verify sealed inputs without network access
+## P8-01 — Load and verify sealed inputs without network access ✅ COMPLETE
 
 **Depends on:** Phase 7 completion gate.
+
+**Status:** Complete. Offline loader [`src/evaluation_inputs.py`](../../src/evaluation_inputs.py) / [`scripts/validate_evaluation_inputs.py`](../../scripts/validate_evaluation_inputs.py); report [`docs/phase8-inputs.md`](../../docs/phase8-inputs.md) + [`results/phase8/input_validation.json`](../../results/phase8/input_validation.json); tests [`tests/test_phase8_inputs.py`](../../tests/test_phase8_inputs.py). **PASS** — 125 bugs loaded; hashes/freeze commit verified; API keys cleared; tampered ranking/hash/commit rejected.
 
 **Work**
 
@@ -21,9 +23,11 @@ Tickets are ordered by dependency. Each produces a checkable artifact or calcula
 
 **Acceptance:** The evaluator runs with no API credentials or network access, accepts the sealed Phase 7 snapshot, and rejects a deliberately altered ranking, label, hash, or freeze commit.
 
-## P8-02 — Calculate exact per-bug ranking metrics
+## P8-02 — Calculate exact per-bug ranking metrics ✅ COMPLETE
 
 **Depends on:** P8-01.
+
+**Status:** Complete. [`src/metrics.py`](../../src/metrics.py) / [`scripts/compute_per_bug_metrics.py`](../../scripts/compute_per_bug_metrics.py); records [`results/phase8/per_bug_metrics.json`](../../results/phase8/per_bug_metrics.json) (500 bug×method rows); docs [`docs/phase8-metrics.md`](../../docs/phase8-metrics.md); tests [`tests/test_phase8_metrics.py`](../../tests/test_phase8_metrics.py). Hand-worked budget/rank/APFD cases pass. Jev rows for 12 A-001 gaps are `available=false` (no invented ranks).
 
 **Work**
 
@@ -37,9 +41,11 @@ Tickets are ordered by dependency. Each produces a checkable artifact or calcula
 
 **Acceptance:** Small hand-worked examples verify multiple triggers, rank 1, rank `N`, tiny suites where `k=1`, exact ceiling at budget boundaries, and APFD limits. Every nonrandom evaluation bug has one record per method.
 
-## P8-03 — Aggregate the 1,000-permutation Random baseline
+## P8-03 — Aggregate the 1,000-permutation Random baseline ✅ COMPLETE
 
 **Depends on:** P8-01 and P8-02.
+
+**Status:** Complete. [`src/random_metrics.py`](../../src/random_metrics.py) / [`scripts/compute_random_metrics.py`](../../scripts/compute_random_metrics.py); output [`results/phase8/random_metrics.json`](../../results/phase8/random_metrics.json); docs [`docs/phase8-random.md`](../../docs/phase8-random.md); tests [`tests/test_phase8_random_metrics.py`](../../tests/test_phase8_random_metrics.py). 125 Random rows (means over 1,000 perms); median NFTR via permutation replicates; synthetic N=2 exhaustive means verified.
 
 **Work**
 

@@ -1,0 +1,21 @@
+{
+  "example_id": "JacksonDatabind_47",
+  "qualified_id": "JacksonDatabind-47",
+  "visibility": "private",
+  "trigger_methods": [
+    "com.fasterxml.jackson.databind.ser.TestJsonSerialize::testBrokenAnnotation",
+    "com.fasterxml.jackson.databind.ser.TestJsonSerializeAs::testSpecializedAsIntermediate"
+  ],
+  "positive_classes": [
+    "com.fasterxml.jackson.databind.ser.TestJsonSerialize",
+    "com.fasterxml.jackson.databind.ser.TestJsonSerializeAs"
+  ],
+  "num_trigger_methods": 2,
+  "num_positive_classes": 2,
+  "consistency": {
+    "all_positives_in_inventory": true,
+    "anomalies": []
+  },
+  "notes": "Non-triggering test classes are unlabeled; do not treat them as negatives for accuracy/precision metrics.",
+  "extracted_at": "2026-09-23T04:51:22+00:00"
+}

@@ -244,7 +244,8 @@ def prepare_dataset(
             traceback.print_exc()
         rows.append(row)
 
-    summary = {
+    summary: dict[str, Any] = {
+        "schema_version": "jev-prepare-dataset-summary-v1",
         "split": split,
         "allow_evaluation": allow_evaluation,
         "force": force,
@@ -254,6 +255,35 @@ def prepare_dataset(
         "counts": _summary_counts(rows),
         "examples": rows,
     }
+    if allow_evaluation and split == "evaluation":
+        from src.freeze_guard import assert_evaluation_allowed
+
+        lock = assert_evaluation_allowed()
+        summary["experiment_commit"] = lock.get("commit_sha")
+        summary["run_id"] = None
+        try:
+            from src.evaluation_preflight import load_preflight, append_execution_log
+
+            pre = load_preflight()
+            if pre:
+                summary["run_id"] = pre.get("run_id")
+                summary["experiment_commit"] = pre.get("experiment_commit") or summary[
+                    "experiment_commit"
+                ]
+            append_execution_log(
+                {
+                    "event": "prepare_dataset",
+                    "split": split,
+                    "ok": summary["counts"]["failed"] == 0,
+                    "completed": summary["counts"]["completed"],
+                    "failed": summary["counts"]["failed"],
+                    "failed_ids": summary["counts"]["failed_ids"],
+                    "experiment_commit": summary.get("experiment_commit"),
+                    "run_id": summary.get("run_id"),
+                }
+            )
+        except Exception:  # noqa: BLE001 — logging must not fail the run
+            pass
     # Avoid putting trigger method IDs into the summary (counts only).
     SUMMARY_DIR.mkdir(parents=True, exist_ok=True)
     out_path = SUMMARY_DIR / f"prepare_dataset-{split}.json"

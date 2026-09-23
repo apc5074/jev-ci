@@ -1,0 +1,19 @@
+MODIFIED FILES:
+src/main/java/org/apache/commons/math/optimization/fitting/GaussianFitter.java
+
+MODIFIED CLASSES:
+org.apache.commons.math.optimization.fitting.GaussianFitter
+
+PROPOSED CODE CHANGE:
+
+--- src/main/java/org/apache/commons/math/optimization/fitting/GaussianFitter.java
++++ src/main/java/org/apache/commons/math/optimization/fitting/GaussianFitter.java
+@@ -118,7 +118,7 @@
+      */
+     public double[] fit() {
+         final double[] guess = (new ParameterGuesser(getObservations())).guess();
+-        return fit(guess);
++        return fit(new Gaussian.Parametric(), guess);
+     }
+ 
+     /**

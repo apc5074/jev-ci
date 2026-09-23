@@ -1,0 +1,59 @@
+{
+  "qualified_id": "Jsoup-54",
+  "example_id": "Jsoup_54",
+  "project": "Jsoup",
+  "bug_id": "54",
+  "split": "evaluation",
+  "status": "ok",
+  "reused": false,
+  "checked_at": "2026-09-23T04:37:45+00:00",
+  "defects4j_version": "3.0.1",
+  "defects4j_commit": "6d54320e0db5a357f9ab38a8e4d2e5aead7e1c09",
+  "d4j_home": "D4J_HOME",
+  "fixed": {
+    "version_id": "54f",
+    "role": "base",
+    "work_dir": "data/bugs/Jsoup_54/checkouts/fixed",
+    "defects4j_config": {
+      "pid": "Jsoup",
+      "vid": "54f"
+    },
+    "command": [
+      "defects4j",
+      "checkout",
+      "-p",
+      "Jsoup",
+      "-v",
+      "54f",
+      "-w",
+      "data/bugs/Jsoup_54/checkouts/fixed"
+    ],
+    "exit_status": 0
+  },
+  "buggy": {
+    "version_id": "54b",
+    "role": "proposed_change",
+    "work_dir": "data/bugs/Jsoup_54/checkouts/buggy",
+    "defects4j_config": {
+      "pid": "Jsoup",
+      "vid": "54b"
+    },
+    "command": [
+      "defects4j",
+      "checkout",
+      "-p",
+      "Jsoup",
+      "-v",
+      "54b",
+      "-w",
+      "data/bugs/Jsoup_54/checkouts/buggy"
+    ],
+    "exit_status": 0
+  },
+  "logs": {
+    "fixed_stdout_tail": "",
+    "fixed_stderr_tail": "Checking out f148f88d to /workspace/data/bugs/Jsoup_54/checkouts/fixed..... OK\nInit local repository...................................................... OK\nTag post-fix revision...................................................... OK\nCopy generated Ant build file.............................................. OK\nRun post-checkout hook..................................................... OK\nExcluding broken/flaky tests............................................... OK\nExcluding broken/flaky tests............................................... OK\nBacking up build file: /workspace/data/bugs/Jsoup_54/checkouts/fixed/maven- OK\nBacking up build file: /workspace/data/bugs/Jsoup_54/checkouts/fixed/pom.xm OK\nInitialize fixed program version........................................... OK\nApply patch................................................................ OK\nInitialize buggy program version........................................... OK\nDiff f148f88d:9e8ba013..................................................... OK\nApply patch................................................................ OK\nTag pre-fix revision....................................................... OK\nCheck out program version: Jsoup-54f....................................... OK\n",
+    "buggy_stdout_tail": "",
+    "buggy_stderr_tail": "Checking out f148f88d to /workspace/data/bugs/Jsoup_54/checkouts/buggy..... OK\nInit local repository...................................................... OK\nTag post-fix revision...................................................... OK\nCopy generated Ant build file.............................................. OK\nRun post-checkout hook..................................................... OK\nExcluding broken/flaky tests............................................... OK\nExcluding broken/flaky tests............................................... OK\nBacking up build file: /workspace/data/bugs/Jsoup_54/checkouts/buggy/maven- OK\nBacking up build file: /workspace/data/bugs/Jsoup_54/checkouts/buggy/pom.xm OK\nInitialize fixed program version........................................... OK\nApply patch................................................................ OK\nInitialize buggy program version........................................... OK\nDiff f148f88d:9e8ba013..................................................... OK\nApply patch................................................................ OK\nTag pre-fix revision....................................................... OK\nCheck out program version: Jsoup-54b....................................... OK\n"
+  }
+}

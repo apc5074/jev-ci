@@ -83,15 +83,20 @@ def audit_one_example(
     data_root: Path | None = None,
     results_root: Path | None = None,
     manifest: Mapping[str, Any] | None = None,
+    allow_evaluation: bool = False,
+    require_experiment_commit: bool = False,
 ) -> dict[str, Any]:
-    """Integrity-check one development ranking/shortlist pair."""
+    """Integrity-check one ranking/shortlist pair."""
     data = manifest if manifest is not None else load_manifest()
     ex = example if isinstance(example, ExampleId) else ExampleId.parse(example)
     data_root = data_root or (WORKSPACE / "data")
     results_root = results_root or (WORKSPACE / "results")
 
     validated = validate_example_artifacts(
-        ex, data_root=data_root, manifest=data, allow_evaluation=False
+        ex,
+        data_root=data_root,
+        manifest=data,
+        allow_evaluation=allow_evaluation,
     )
     inventory = validated["inventory"]
     labels = validated["labels"]
@@ -129,6 +134,10 @@ def audit_one_example(
             f"(missing={missing[:5]} extra={extra[:5]})"
         )
     assert_ranking_sorted(rank_entries)
+    for entry in rank_entries:
+        score = entry.get("score")
+        if score is None or not math.isfinite(float(score)):
+            raise AuditError(f"{ex.qualified}: non-finite BM25 score")
 
     # Provenance / hash consistency between artifacts.
     if candidates.get("shortlist_sha256") != ranking.get("shortlist_sha256"):
@@ -146,7 +155,26 @@ def audit_one_example(
                 f"(candidates={c_val!r}, ranking={r_val!r}, manifest={m_val!r})"
             )
 
-    current = build_lexical_inputs(ex, data_root=data_root, manifest=data)
+    if require_experiment_commit:
+        from src.freeze_guard import assert_evaluation_allowed
+
+        lock = assert_evaluation_allowed()
+        expected = lock.get("commit_sha")
+        for label, doc in (("candidates", candidates), ("ranking", ranking)):
+            if doc.get("experiment_commit") != expected:
+                raise AuditError(
+                    f"{ex.qualified}: {label} experiment_commit "
+                    f"{doc.get('experiment_commit')!r} != {expected!r}"
+                )
+            if doc.get("split") != "evaluation":
+                raise AuditError(f"{ex.qualified}: {label} split is not evaluation")
+
+    current = build_lexical_inputs(
+        ex,
+        data_root=data_root,
+        manifest=data,
+        allow_evaluation=allow_evaluation,
+    )
     expected_hashes = {**current.input_hashes, **bm25_provenance()}
     if ranking.get("input_hashes") != expected_hashes:
         raise AuditError(f"{ex.qualified}: ranking inputs are stale")
@@ -155,10 +183,11 @@ def audit_one_example(
         raise AuditError(f"{ex.qualified}: candidate inputs are stale")
 
     # Development diagnostic only — labels never enter candidate files.
+    # Evaluation audits omit trigger-in-shortlist metrics (Phase 8 owns recall).
     top_ids = candidates["candidate_ids"]
-    hits = [p for p in positives if p in top_ids]
+    hits = [p for p in positives if p in top_ids] if not allow_evaluation else []
     first_trigger_rank = None
-    if positives:
+    if positives and not allow_evaluation:
         first_trigger_rank = min(ranked_ids.index(p) + 1 for p in positives)
 
     # Ensure candidate file has no private label fields (already asserted by loader).
@@ -166,20 +195,21 @@ def audit_one_example(
         if field in candidates or field in ranking:
             raise AuditError(f"{ex.qualified}: private field leaked into artifacts")
 
-    return {
+    row = {
         "qualified_id": ex.qualified,
         "ok": True,
         "N": n,
         "K": k,
         "num_positive_classes": len(positives),
-        "trigger_in_top_k": bool(hits),
-        "num_triggers_in_top_k": len(hits),
-        "first_trigger_rank": first_trigger_rank,
         "shortlist_sha256": digest,
         "source_missing_count": ranking.get("source_missing_count", 0),
-        # Counts only in the public row; hit FQCNs stay out of the default report
-        # body used for Phase 5 (full detail available via --verbose path).
+        "experiment_commit": candidates.get("experiment_commit"),
     }
+    if not allow_evaluation:
+        row["trigger_in_top_k"] = bool(hits)
+        row["num_triggers_in_top_k"] = len(hits)
+        row["first_trigger_rank"] = first_trigger_rank
+    return row
 
 
 def retrieval_metrics(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
@@ -333,14 +363,93 @@ def audit_development_set(
     return report
 
 
+def audit_evaluation_set(
+    *,
+    data_root: Path | None = None,
+    results_root: Path | None = None,
+    manifest_path: Path | None = None,
+    experiment_commit: str | None = None,
+) -> dict[str, Any]:
+    """Audit all 125 evaluation rankings/shortlists (P7-03). No recall metrics."""
+    data = load_manifest(manifest_path)
+    try:
+        verify_manifest_integrity(data)
+    except ManifestError as exc:
+        raise ExampleContractError(f"manifest integrity failed: {exc}") from exc
+
+    data_root = data_root or (WORKSPACE / "data")
+    results_root = results_root or (WORKSPACE / "results")
+    raw_ids = list(data.get("evaluation_bug_ids") or [])
+    targets = [ExampleId.parse(str(raw)) for raw in raw_ids]
+
+    rows: list[dict[str, Any]] = []
+    failed: list[dict[str, Any]] = []
+    for ex in targets:
+        try:
+            row = audit_one_example(
+                ex,
+                data_root=data_root,
+                results_root=results_root,
+                manifest=data,
+                allow_evaluation=True,
+                require_experiment_commit=True,
+            )
+            rows.append(row)
+        except (
+            AuditError,
+            CandidatesError,
+            ExampleContractError,
+            LexicalInputError,
+            OSError,
+        ) as exc:
+            failed.append(
+                {"qualified_id": ex.qualified, "ok": False, "error": str(exc)}
+            )
+            rows.append(
+                {"qualified_id": ex.qualified, "ok": False, "error": str(exc)}
+            )
+
+    passed = [r for r in rows if r.get("ok")]
+    return {
+        "schema_version": "jev-phase7-candidates-audit-v1",
+        "audited_at": _utcnow(),
+        "split": "evaluation",
+        "metric_scope": "integrity_only_no_recall",
+        "experiment_commit": experiment_commit,
+        "defects4j_commit": data.get("defects4j_commit"),
+        "selection_seed": data.get("selection_seed"),
+        "k_cap": CANDIDATE_K_CAP,
+        "counts": {
+            "targets": len(targets),
+            "passed": len(passed),
+            "failed": len(failed),
+            "N_total": sum(int(r.get("N") or 0) for r in passed),
+            "K_total": sum(int(r.get("K") or 0) for r in passed),
+        },
+        "failed_ids": [r["qualified_id"] for r in failed],
+        "examples": rows,
+        "ok": not failed and len(passed) == 125,
+        "notes": (
+            "Shortlists sealed as BM25 ranking prefixes. Candidate trigger "
+            "recall is deferred to Phase 8; not computed here."
+        ),
+    }
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Audit Phase 4 development BM25 rankings and shortlists",
+        description="Audit Phase 4 BM25 rankings and candidate shortlists",
+    )
+    parser.add_argument(
+        "--split",
+        choices=("development", "evaluation"),
+        default="development",
+        help="Manifest split to audit",
     )
     parser.add_argument(
         "--write",
         type=Path,
-        default=WORKSPACE / "results" / "audit-phase4.json",
+        default=None,
         help="Where to write the JSON audit report",
     )
     return parser
@@ -348,26 +457,46 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    write_path = args.write
+    if write_path is None:
+        if args.split == "evaluation":
+            write_path = WORKSPACE / "results" / "phase7" / "candidates_audit.json"
+        else:
+            write_path = WORKSPACE / "results" / "audit-phase4.json"
+
     try:
-        report = audit_development_set()
+        if args.split == "evaluation":
+            from src.freeze_guard import assert_evaluation_allowed
+
+            lock = assert_evaluation_allowed()
+            report = audit_evaluation_set(
+                experiment_commit=lock.get("commit_sha"),
+            )
+        else:
+            report = audit_development_set()
     except ExampleContractError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
 
-    args.write.parent.mkdir(parents=True, exist_ok=True)
-    atomic_write_json(args.write, report)
+    write_path.parent.mkdir(parents=True, exist_ok=True)
+    atomic_write_json(write_path, report)
     counts = report["counts"]
-    recall = report["candidate_trigger_recall_at_k"]
     print(
-        f"audit phase4: passed={counts['passed']}/{counts['targets']} "
+        f"audit phase4 ({report['split']}): "
+        f"passed={counts['passed']}/{counts['targets']} "
         f"failed={counts['failed']} "
-        f"dev_candidate_recall@K="
-        f"{recall['bugs_with_trigger_in_top_k']}/{recall['bugs_audited']} "
-        f"({recall['recall']:.1%}) "
-        f"report={args.write}",
+        f"report={write_path}",
         flush=True,
     )
-    if report["case_inspection"]["misses"]:
+    if report.get("candidate_trigger_recall_at_k"):
+        recall = report["candidate_trigger_recall_at_k"]
+        print(
+            f"dev_candidate_recall@K="
+            f"{recall['bugs_with_trigger_in_top_k']}/{recall['bugs_audited']} "
+            f"({recall['recall']:.1%})",
+            flush=True,
+        )
+    if report.get("case_inspection", {}).get("misses"):
         print(
             "misses: " + ", ".join(report["case_inspection"]["misses"]),
             file=sys.stderr,

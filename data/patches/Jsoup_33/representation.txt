@@ -1,0 +1,18 @@
+MODIFIED FILES:
+src/main/java/org/jsoup/parser/HtmlTreeBuilder.java
+
+MODIFIED CLASSES:
+org.jsoup.parser.HtmlTreeBuilder
+
+PROPOSED CODE CHANGE:
+
+--- src/main/java/org/jsoup/parser/HtmlTreeBuilder.java
++++ src/main/java/org/jsoup/parser/HtmlTreeBuilder.java
+@@ -159,7 +159,6 @@
+         if (startTag.isSelfClosing()) {
+             Element el = insertEmpty(startTag);
+             stack.add(el);
+-            tokeniser.transition(TokeniserState.Data); // handles <script />, otherwise needs breakout steps from script data
+             tokeniser.emit(new Token.EndTag(el.tagName()));  // ensure we get out of whatever state we are in. emitted for yielded processing
+             return el;
+         }

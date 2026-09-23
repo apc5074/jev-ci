@@ -202,7 +202,37 @@ def main(argv: Sequence[str] | None = None) -> int:
         "bugs": rows,
     }
     SUMMARY_DIR.mkdir(parents=True, exist_ok=True)
-    summary_path = SUMMARY_DIR / "random_baseline_summary.json"
+    summary_path = SUMMARY_DIR / (
+        f"random_baseline_summary-{args.split}.json"
+        if args.split == "evaluation"
+        else "random_baseline_summary.json"
+    )
+    if args.split == "evaluation" and args.allow_evaluation:
+        try:
+            from src.evaluation_preflight import append_execution_log, load_preflight
+            from src.freeze_guard import assert_evaluation_allowed
+
+            lock = assert_evaluation_allowed()
+            summary["experiment_commit"] = lock.get("commit_sha")
+            pre = load_preflight()
+            if pre:
+                summary["run_id"] = pre.get("run_id")
+                summary["experiment_commit"] = pre.get("experiment_commit") or summary[
+                    "experiment_commit"
+                ]
+            append_execution_log(
+                {
+                    "event": "run_random_baseline",
+                    "split": args.split,
+                    "ok": failures == 0,
+                    "count": len(targets),
+                    "failures": failures,
+                    "experiment_commit": summary.get("experiment_commit"),
+                    "run_id": summary.get("run_id"),
+                }
+            )
+        except Exception:  # noqa: BLE001
+            pass
     atomic_write_json(summary_path, summary)
     print(f"summary: {summary_path.relative_to(WORKSPACE)} failures={failures}")
     return 1 if failures else 0

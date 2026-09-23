@@ -1,0 +1,36 @@
+{
+  "qualified_id": "JacksonDatabind-87",
+  "example_id": "JacksonDatabind_87",
+  "direction": "fixed_to_buggy",
+  "patch_truncated": false,
+  "original_patch_chars": 3831,
+  "representation_chars": 3831,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...PATCH TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "modified_files": [
+    "src/main/java/com/fasterxml/jackson/databind/util/StdDateFormat.java"
+  ],
+  "modified_classes": [
+    "com.fasterxml.jackson.databind.util.StdDateFormat"
+  ],
+  "file_resolutions": [
+    {
+      "fqcn": "com.fasterxml.jackson.databind.util.StdDateFormat",
+      "outer_class": "com.fasterxml.jackson.databind.util.StdDateFormat",
+      "path": "src/main/java/com/fasterxml/jackson/databind/util/StdDateFormat.java",
+      "existence": "both",
+      "diff_empty": false
+    }
+  ],
+  "dir_src_classes": {
+    "fixed": "src/main/java",
+    "buggy": "src/main/java"
+  },
+  "artifacts": {
+    "regression_patch": "data/patches/JacksonDatabind_87/regression_patch.diff",
+    "representation": "data/patches/JacksonDatabind_87/representation.txt",
+    "raw_classes_modified": "data/bugs/JacksonDatabind_87/raw/classes.modified"
+  },
+  "extracted_at": "2026-09-23T04:59:21+00:00"
+}

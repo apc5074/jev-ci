@@ -1,0 +1,278 @@
+MODIFIED FILES:
+src/main/java/org/jsoup/nodes/Element.java
+src/main/java/org/jsoup/parser/HtmlTreeBuilder.java
+src/main/java/org/jsoup/parser/HtmlTreeBuilderState.java
+src/main/java/org/jsoup/parser/Tag.java
+
+MODIFIED CLASSES:
+org.jsoup.nodes.Element
+org.jsoup.parser.HtmlTreeBuilder
+org.jsoup.parser.HtmlTreeBuilderState
+org.jsoup.parser.Tag
+
+PROPOSED CODE CHANGE:
+
+--- src/main/java/org/jsoup/nodes/Element.java
++++ src/main/java/org/jsoup/nodes/Element.java
+@@ -137,9 +137,6 @@
+      * of the tag case preserving setting of the parser.
+      * @return
+      */
+-    public String normalName() {
+-        return tag.normalName();
+-    }
+ 
+     /**
+      * Change the tag of this element. For example, convert a {@code <span>} to a {@code <div>} with
+--- src/main/java/org/jsoup/parser/HtmlTreeBuilder.java
++++ src/main/java/org/jsoup/parser/HtmlTreeBuilder.java
+@@ -312,7 +312,7 @@
+     Element getFromStack(String elName) {
+         for (int pos = stack.size() -1; pos >= 0; pos--) {
+             Element next = stack.get(pos);
+-            if (next.normalName().equals(elName)) {
++            if (next.nodeName().equals(elName)) {
+                 return next;
+             }
+         }
+@@ -334,7 +334,7 @@
+         for (int pos = stack.size() -1; pos >= 0; pos--) {
+             Element next = stack.get(pos);
+             stack.remove(pos);
+-            if (next.normalName().equals(elName))
++            if (next.nodeName().equals(elName))
+                 break;
+         }
+     }
+@@ -344,7 +344,7 @@
+         for (int pos = stack.size() -1; pos >= 0; pos--) {
+             Element next = stack.get(pos);
+             stack.remove(pos);
+-            if (inSorted(next.normalName(), elNames))
++            if (inSorted(next.nodeName(), elNames))
+                 break;
+         }
+     }
+@@ -352,7 +352,7 @@
+     void popStackToBefore(String elName) {
+         for (int pos = stack.size() -1; pos >= 0; pos--) {
+             Element next = stack.get(pos);
+-            if (next.normalName().equals(elName)) {
++            if (next.nodeName().equals(elName)) {
+                 break;
+             } else {
+                 stack.remove(pos);
+@@ -375,7 +375,7 @@
+     private void clearStackToContext(String... nodeNames) {
+         for (int pos = stack.size() -1; pos >= 0; pos--) {
+             Element next = stack.get(pos);
+-            if (StringUtil.in(next.normalName(), nodeNames) || next.normalName().equals("html"))
++            if (StringUtil.in(next.nodeName(), nodeNames) || next.nodeName().equals("html"))
+                 break;
+             else
+                 stack.remove(pos);
+@@ -417,7 +417,7 @@
+                 last = true;
+                 node = contextElement;
+             }
+-            String name = node.normalName();
++            String name = node.nodeName();
+             if ("select".equals(name)) {
+                 transition(HtmlTreeBuilderState.InSelect);
+                 break; // frag
+@@ -473,7 +473,7 @@
+         // don't walk too far up the tree
+ 
+         for (int pos = bottom; pos >= top; pos--) {
+-            final String elName = stack.get(pos).normalName();
++            final String elName = stack.get(pos).nodeName();
+             if (inSorted(elName, targetNames))
+                 return true;
+             if (inSorted(elName, baseTypes))
+@@ -514,7 +514,7 @@
+     boolean inSelectScope(String targetName) {
+         for (int pos = stack.size() -1; pos >= 0; pos--) {
+             Element el = stack.get(pos);
+-            String elName = el.normalName();
++            String elName = el.nodeName();
+             if (elName.equals(targetName))
+                 return true;
+             if (!inSorted(elName, TagSearchSelectScope)) // all elements except
+@@ -566,8 +566,8 @@
+      process, then the UA must perform the above steps as if that element was not in the above list.
+      */
+     void generateImpliedEndTags(String excludeTag) {
+-        while ((excludeTag != null && !currentElement().normalName().equals(excludeTag)) &&
+-                inSorted(currentElement().normalName(), TagSearchEndTags))
++        while ((excludeTag != null && !currentElement().nodeName().equals(excludeTag)) &&
++                inSorted(currentElement().nodeName(), TagSearchEndTags))
+             pop();
+     }
+ 
+@@ -578,7 +578,7 @@
+     boolean isSpecial(Element el) {
+         // todo: mathml's mi, mo, mn
+         // todo: svg's foreigObject, desc, title
+-        String name = el.normalName();
++        String name = el.nodeName();
+         return inSorted(name, TagSearchSpecial);
+     }
+ 
+@@ -615,7 +615,7 @@
+ 
+     private boolean isSameFormattingElement(Element a, Element b) {
+         // same if: same namespace, tag, and attributes. Element.equals only checks tag, might in future check children
+-        return a.normalName().equals(b.normalName()) &&
++        return a.nodeName().equals(b.nodeName()) &&
+                 // a.namespace().equals(b.namespace()) &&
+                 a.attributes().equals(b.attributes());
+         // todo: namespaces
+@@ -646,7 +646,7 @@
+ 
+             // 8. create new element from element, 9 insert into current node, onto stack
+             skip = false; // can only skip increment from 4.
+-            Element newEl = insertStartTag(entry.normalName()); // todo: avoid fostering here?
++            Element newEl = insertStartTag(entry.nodeName());
+             // newEl.namespace(entry.namespace()); // todo: namespaces
+             newEl.attributes().addAll(entry.attributes());
+ 
+@@ -686,7 +686,7 @@
+             Element next = formattingElements.get(pos);
+             if (next == null) // scope marker
+                 break;
+-            else if (next.normalName().equals(nodeName))
++            else if (next.nodeName().equals(nodeName))
+                 return next;
+         }
+         return null;
+--- src/main/java/org/jsoup/parser/HtmlTreeBuilderState.java
++++ src/main/java/org/jsoup/parser/HtmlTreeBuilderState.java
+@@ -312,11 +312,11 @@
+                         ArrayList<Elem[...PATCH TRUNCATED...]thingElse(t, tb);
+                     break;
+                 case EOF:
+-                    if (tb.currentElement().normalName().equals("html"))
++                    if (tb.currentElement().nodeName().equals("html"))
+                         return true; // stop parsing; frag case
+                     else
+                         return anythingElse(t, tb);
+@@ -1086,7 +1086,7 @@
+                 return false;
+             }
+             tb.clearStackToTableBodyContext();
+-            tb.processEndTag(tb.currentElement().normalName()); // tbody, tfoot, thead
++            tb.processEndTag(tb.currentElement().nodeName());
+             return tb.process(t);
+         }
+ 
+@@ -1170,7 +1170,7 @@
+                         return false;
+                     }
+                     tb.generateImpliedEndTags();
+-                    if (!tb.currentElement().normalName().equals(name))
++                    if (!tb.currentElement().nodeName().equals(name))
+                         tb.error(this);
+                     tb.popStackToClose(name);
+                     tb.clearFormattingElementsToLastMarker();
+@@ -1237,13 +1237,13 @@
+                     if (name.equals("html"))
+                         return tb.process(start, InBody);
+                     else if (name.equals("option")) {
+-                        if (tb.currentElement().normalName().equals("option"))
++                        if (tb.currentElement().nodeName().equals("option"))
+                             tb.processEndTag("option");
+                         tb.insert(start);
+                     } else if (name.equals("optgroup")) {
+-                        if (tb.currentElement().normalName().equals("option"))
++                        if (tb.currentElement().nodeName().equals("option"))
+                             tb.processEndTag("option");
+-                        else if (tb.currentElement().normalName().equals("optgroup"))
++                        else if (tb.currentElement().nodeName().equals("optgroup"))
+                             tb.processEndTag("optgroup");
+                         tb.insert(start);
+                     } else if (name.equals("select")) {
+@@ -1266,15 +1266,15 @@
+                     name = end.normalName();
+                     switch (name) {
+                         case "optgroup":
+-                            if (tb.currentElement().normalName().equals("option") && tb.aboveOnStack(tb.currentElement()) != null && tb.aboveOnStack(tb.currentElement()).normalName().equals("optgroup"))
++                            if (tb.currentElement().nodeName().equals("option") && tb.aboveOnStack(tb.currentElement()) != null && tb.aboveOnStack(tb.currentElement()).nodeName().equals("optgroup"))
+                                 tb.processEndTag("option");
+-                            if (tb.currentElement().normalName().equals("optgroup"))
++                            if (tb.currentElement().nodeName().equals("optgroup"))
+                                 tb.pop();
+                             else
+                                 tb.error(this);
+                             break;
+                         case "option":
+-                            if (tb.currentElement().normalName().equals("option"))
++                            if (tb.currentElement().nodeName().equals("option"))
+                                 tb.pop();
+                             else
+                                 tb.error(this);
+@@ -1293,7 +1293,7 @@
+                     }
+                     break;
+                 case EOF:
+-                    if (!tb.currentElement().normalName().equals("html"))
++                    if (!tb.currentElement().nodeName().equals("html"))
+                         tb.error(this);
+                     break;
+                 default:
+@@ -1380,17 +1380,17 @@
+                         return false;
+                 }
+             } else if (t.isEndTag() && t.asEndTag().normalName().equals("frameset")) {
+-                if (tb.currentElement().normalName().equals("html")) { // frag
++                if (tb.currentElement().nodeName().equals("html")) {
+                     tb.error(this);
+                     return false;
+                 } else {
+                     tb.pop();
+-                    if (!tb.isFragmentParsing() && !tb.currentElement().normalName().equals("frameset")) {
++                    if (!tb.isFragmentParsing() && !tb.currentElement().nodeName().equals("frameset")) {
+                         tb.transition(AfterFrameset);
+                     }
+                 }
+             } else if (t.isEOF()) {
+-                if (!tb.currentElement().normalName().equals("html")) {
++                if (!tb.currentElement().nodeName().equals("html")) {
+                     tb.error(this);
+                     return true;
+                 }
+--- src/main/java/org/jsoup/parser/Tag.java
++++ src/main/java/org/jsoup/parser/Tag.java
+@@ -1,7 +1,6 @@
+ package org.jsoup.parser;
+ 
+ import org.jsoup.helper.Validate;
+-import org.jsoup.internal.Normalizer;
+ 
+ import java.util.HashMap;
+ import java.util.Map;
+@@ -15,7 +14,6 @@
+     private static final Map<String, Tag> tags = new HashMap<>(); // map of known tags
+ 
+     private String tagName;
+-    private String normalName; // always the lower case version of this tag, regardless of case preservation mode
+     private boolean isBlock = true; // block or inline
+     private boolean formatAsBlock = true; // should be formatted as a block
+     private boolean canContainInline = true; // only pcdata if not
+@@ -27,7 +25,6 @@
+ 
+     private Tag(String tagName) {
+         this.tagName = tagName;
+-        normalName = Normalizer.lowerCase(tagName);
+     }
+ 
+     /**
+@@ -43,9 +40,6 @@
+      * Get this tag's normalized (lowercased) name.
+      * @return the tag's normal name.
+      */
+-    public String normalName() {
+-        return normalName;
+-    }
+ 
+     /**
+      * Get a Tag by name. If not previously defined (unknown), returns a new generic tag, that can do anything.

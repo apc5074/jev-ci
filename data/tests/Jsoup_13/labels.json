@@ -1,0 +1,23 @@
+{
+  "example_id": "Jsoup_13",
+  "qualified_id": "Jsoup-13",
+  "visibility": "private",
+  "trigger_methods": [
+    "org.jsoup.nodes.NodeTest::handlesAbsPrefixOnHasAttr",
+    "org.jsoup.nodes.NodeTest::handlesAbsPrefix",
+    "org.jsoup.select.ElementsTest::absAttr",
+    "org.jsoup.select.ElementsTest::hasAbsAttr"
+  ],
+  "positive_classes": [
+    "org.jsoup.nodes.NodeTest",
+    "org.jsoup.select.ElementsTest"
+  ],
+  "num_trigger_methods": 4,
+  "num_positive_classes": 2,
+  "consistency": {
+    "all_positives_in_inventory": true,
+    "anomalies": []
+  },
+  "notes": "Non-triggering test classes are unlabeled; do not treat them as negatives for accuracy/precision metrics.",
+  "extracted_at": "2026-09-23T04:38:19+00:00"
+}

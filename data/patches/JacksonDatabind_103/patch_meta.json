@@ -1,0 +1,171 @@
+{
+  "qualified_id": "JacksonDatabind-103",
+  "example_id": "JacksonDatabind_103",
+  "direction": "fixed_to_buggy",
+  "patch_truncated": true,
+  "original_patch_chars": 14825,
+  "representation_chars": 12000,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...PATCH TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "modified_files": [
+    "src/main/java/com/fasterxml/jackson/databind/DatabindContext.java",
+    "src/main/java/com/fasterxml/jackson/databind/DeserializationContext.java",
+    "src/main/java/com/fasterxml/jackson/databind/JsonMappingException.java",
+    "src/main/java/com/fasterxml/jackson/databind/SerializerProvider.java",
+    "src/main/java/com/fasterxml/jackson/databind/deser/BasicDeserializerFactory.java",
+    "src/main/java/com/fasterxml/jackson/databind/deser/BeanDeserializerFactory.java",
+    "src/main/java/com/fasterxml/jackson/databind/deser/DeserializerCache.java",
+    "src/main/java/com/fasterxml/jackson/databind/deser/SettableAnyProperty.java",
+    "src/main/java/com/fasterxml/jackson/databind/deser/SettableBeanProperty.java",
+    "src/main/java/com/fasterxml/jackson/databind/deser/std/StdDeserializer.java",
+    "src/main/java/com/fasterxml/jackson/databind/deser/std/StdKeyDeserializer.java",
+    "src/main/java/com/fasterxml/jackson/databind/deser/std/StdValueInstantiator.java",
+    "src/main/java/com/fasterxml/jackson/databind/introspect/BasicBeanDescription.java",
+    "src/main/java/com/fasterxml/jackson/databind/ser/DefaultSerializerProvider.java",
+    "src/main/java/com/fasterxml/jackson/databind/ser/PropertyBuilder.java",
+    "src/main/java/com/fasterxml/jackson/databind/util/ClassUtil.java"
+  ],
+  "modified_classes": [
+    "com.fasterxml.jackson.databind.DatabindContext",
+    "com.fasterxml.jackson.databind.DeserializationContext",
+    "com.fasterxml.jackson.databind.JsonMappingException",
+    "com.fasterxml.jackson.databind.SerializerProvider",
+    "com.fasterxml.jackson.databind.deser.BasicDeserializerFactory",
+    "com.fasterxml.jackson.databind.deser.BeanDeserializerFactory",
+    "com.fasterxml.jackson.databind.deser.DeserializerCache",
+    "com.fasterxml.jackson.databind.deser.SettableAnyProperty",
+    "com.fasterxml.jackson.databind.deser.SettableBeanProperty",
+    "com.fasterxml.jackson.databind.deser.std.StdDeserializer",
+    "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer",
+    "com.fasterxml.jackson.databind.deser.std.StdValueInstantiator",
+    "com.fasterxml.jackson.databind.introspect.BasicBeanDescription",
+    "com.fasterxml.jackson.databind.ser.DefaultSerializerProvider",
+    "com.fasterxml.jackson.databind.ser.PropertyBuilder",
+    "com.fasterxml.jackson.databind.util.ClassUtil"
+  ],
+  "file_resolutions": [
+    {
+      "fqcn": "com.fasterxml.jackson.databind.DatabindContext",
+      "outer_class": "com.fasterxml.jackson.databind.DatabindContext",
+      "path": "src/main/java/com/fasterxml/jackson/databind/DatabindContext.java",
+      "existence": "both",
+      "diff_empty": false
+    },
+    {
+      "fqcn": "com.fasterxml.jackson.databind.DeserializationContext",
+      "outer_class": "com.fasterxml.jackson.databind.DeserializationContext",
+      "path": "src/main/java/com/fasterxml/jackson/databind/DeserializationContext.java",
+      "existence": "both",
+      "diff_empty": false
+    },
+    {
+      "fqcn": "com.fasterxml.jackson.databind.JsonMappingException",
+      "outer_class": "com.fasterxml.jackson.databind.JsonMappingException",
+      "path": "src/main/java/com/fasterxml/jackson/databind/JsonMappingException.java",
+      "existence": "both",
+      "diff_empty": false
+    },
+    {
+      "fqcn": "com.fasterxml.jackson.databind.SerializerProvider",
+      "outer_class": "com.fasterxml.jackson.databind.SerializerProvider",
+      "path": "src/main/java/com/fasterxml/jackson/databind/SerializerProvider.java",
+      "existence": "both",
+      "diff_empty": false
+    },
+    {
+      "fqcn": "com.fasterxml.jackson.databind.deser.BasicDeserializerFactory",
+      "outer_class": "com.fasterxml.jackson.databind.deser.BasicDeserializerFactory",
+      "path": "src/main/java/com/fasterxml/jackson/databind/deser/BasicDeserializerFactory.java",
+      "existence": "both",
+      "diff_empty": false
+    },
+    {
+      "fqcn": "com.fasterxml.jackson.databind.deser.BeanDeserializerFactory",
+      "outer_class": "com.fasterxml.jackson.databind.deser.BeanDeserializerFactory",
+      "path": "src/main/java/com/fasterxml/jackson/databind/deser/BeanDeserializerFactory.java",
+      "existence": "both",
+      "diff_empty": false
+    },
+    {
+      "fqcn": "com.fasterxml.jackson.databind.deser.DeserializerCache",
+      "outer_class": "com.fasterxml.jackson.databind.deser.DeserializerCache",
+      "path": "src/main/java/com/fasterxml/jackson/databind/deser/DeserializerCache.java",
+      "existence": "both",
+      "diff_empty": false
+    },
+    {
+      "fqcn": "com.fasterxml.jackson.databind.deser.SettableAnyProperty",
+      "outer_class": "com.fasterxml.jackson.databind.deser.SettableAnyProperty",
+      "path": "src/main/java/com/fasterxml/jackson/databind/deser/SettableAnyProperty.java",
+      "existence": "both",
+      "diff_empty": false
+    },
+    {
+      "fqcn": "com.fasterxml.jackson.databind.deser.SettableBeanProperty",
+      "outer_class": "com.fasterxml.jackson.databind.deser.SettableBeanProperty",
+      "path": "src/main/java/com/fasterxml/jackson/databind/deser/SettableBeanProperty.java",
+      "existence": "both",
+      "diff_empty": false
+    },
+    {
+      "fqcn": "com.fasterxml.jackson.databind.deser.std.StdDeserializer",
+      "outer_class": "com.fasterxml.jackson.databind.deser.std.StdDeserializer",
+      "path": "src/main/java/com/fasterxml/jackson/databind/deser/std/StdDeserializer.java",
+      "existence": "both",
+      "diff_empty": false
+    },
+    {
+      "fqcn": "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer",
+      "outer_class": "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer",
+      "path": "src/main/java/com/fasterxml/jackson/databind/deser/std/StdKeyDeserializer.java",
+      "existence": "both",
+      "diff_empty": false
+    },
+    {
+      "fqcn": "com.fasterxml.jackson.databind.deser.std.StdValueInstantiator",
+      "outer_class": "com.fasterxml.jackson.databind.deser.std.StdValueInstantiator",
+      "path": "src/main/java/com/fasterxml/jackson/databind/deser/std/StdValueInstantiator.java",
+      "existence": "both",
+      "diff_empty": false
+    },
+    {
+      "fqcn": "com.fasterxml.jackson.databind.introspect.BasicBeanDescription",
+      "outer_class": "com.fasterxml.jackson.databind.introspect.BasicBeanDescription",
+      "path": "src/main/java/com/fasterxml/jackson/databind/introspect/BasicBeanDescription.java",
+      "existence": "both",
+      "diff_empty": false
+    },
+    {
+      "fqcn": "com.fasterxml.jackson.databind.ser.DefaultSerializerProvider",
+      "outer_class": "com.fasterxml.jackson.databind.ser.DefaultSerializerProvider",
+      "path": "src/main/java/com/fasterxml/jackson/databind/ser/DefaultSerializerProvider.java",
+      "existence": "both",
+      "diff_empty": false
+    },
+    {
+      "fqcn": "com.fasterxml.jackson.databind.ser.PropertyBuilder",
+      "outer_class": "com.fasterxml.jackson.databind.ser.PropertyBuilder",
+      "path": "src/main/java/com/fasterxml/jackson/databind/ser/PropertyBuilder.java",
+      "existence": "both",
+      "diff_empty": false
+    },
+    {
+      "fqcn": "com.fasterxml.jackson.databind.util.ClassUtil",
+      "outer_class": "com.fasterxml.jackson.databind.util.ClassUtil",
+      "path": "src/main/java/com/fasterxml/jackson/databind/util/ClassUtil.java",
+      "existence": "both",
+      "diff_empty": false
+    }
+  ],
+  "dir_src_classes": {
+    "fixed": "src/main/java",
+    "buggy": "src/main/java"
+  },
+  "artifacts": {
+    "regression_patch": "data/patches/JacksonDatabind_103/regression_patch.diff",
+    "representation": "data/patches/JacksonDatabind_103/representation.txt",
+    "raw_classes_modified": "data/bugs/JacksonDatabind_103/raw/classes.modified"
+  },
+  "extracted_at": "2026-09-23T04:58:36+00:00"
+}

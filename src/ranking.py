@@ -26,9 +26,10 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import json
 import math
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
@@ -37,6 +38,7 @@ if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 from src.example_contract import (
+    atomic_write_json,
     ExampleContractError,
     ExampleId,
     ExampleIncompleteError,
@@ -188,6 +190,37 @@ def rank_tokenized_corpus(
         )
         for rank, i in enumerate(order, start=1)
     ]
+
+
+def cached_rank_suite(inputs: LexicalInputs, *, cache_dir: Path) -> SuiteRanking:
+    """Reuse scoring by content, after callers re-read and hash source inputs."""
+    signature = {**inputs.input_hashes, **bm25_provenance(), "cache_version": 1}
+    key = _sha256_text(json.dumps(signature, sort_keys=True))
+    path = cache_dir / f"{key}.json"
+    if path.is_file():
+        try:
+            envelope = read_json(path)
+            payload = envelope["ranking"]
+            digest = _sha256_text(json.dumps(payload, sort_keys=True))
+            if envelope.get("sha256") != digest:
+                raise ValueError("cache content mismatch")
+            result = SuiteRanking(**{**payload, "ranked": tuple(
+                RankedTestClass(**row) for row in payload["ranked"])})
+            if (result.input_hashes != {**inputs.input_hashes, **bm25_provenance()}
+                    or result.qualified_id != inputs.qualified_id
+                    or result.n_docs != len(inputs.documents)
+                    or {r.test_class for r in result.ranked} != {d.test_class for d in inputs.documents}
+                    or len(result.ranked) != len(inputs.documents)
+                    or any(not math.isfinite(r.score) for r in result.ranked)):
+                raise ValueError("cache provenance mismatch")
+            return result
+        except (OSError, ValueError, KeyError, TypeError):
+            pass  # Corrupt cache is disposable; recompute from source inputs.
+    result = rank_suite(inputs)
+    payload = asdict(result)
+    atomic_write_json(path, {"ranking": payload,
+        "sha256": _sha256_text(json.dumps(payload, sort_keys=True))})
+    return result
 
 
 def rank_suite(inputs: LexicalInputs) -> SuiteRanking:

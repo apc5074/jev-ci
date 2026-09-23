@@ -176,20 +176,32 @@ def _assert_patch_direction(paths: Mapping[str, Path], ex: ExampleId) -> list[st
         problems.append("patch representation embeds checkout directory names")
     if not re.search(r"(?m)^--- ", rep) or not re.search(r"(?m)^\+\+\+ ", rep):
         problems.append("patch representation missing unified diff headers")
-    if not re.search(r"(?m)^-", rep) or not re.search(r"(?m)^\+", rep):
-        # Hunk markers ---/+++ also match ^- and ^+; require a content change line.
-        minus = [
-            ln
-            for ln in rep.splitlines()
-            if ln.startswith("-") and not ln.startswith("---")
-        ]
-        plus = [
-            ln
-            for ln in rep.splitlines()
-            if ln.startswith("+") and not ln.startswith("+++")
-        ]
-        if not minus and not plus:
-            problems.append("patch representation has no +/- change lines")
+    # Rebuild every production diff from both checkouts, not sampled lines.
+    from src.extract_patch import (parse_modified_classes, parse_src_dir,
+        resolve_class_sources, unified_diff_for_file, build_full_diff,
+        build_representation, truncate_to_cap)
+    try:
+        raw = paths["raw_exports"]
+        classes = parse_modified_classes((raw / "classes.modified").read_text())
+        fixed_dir = parse_src_dir((raw / "dir.src.classes").read_text())
+        buggy_dir = parse_src_dir((raw / "dir.src.classes.buggy").read_text())
+        diffs = {}
+        for fqcn in classes:
+            item = resolve_class_sources(fqcn, fixed_root=paths["checkout_fixed"],
+                buggy_root=paths["checkout_buggy"], fixed_src_dir=fixed_dir,
+                buggy_src_dir=buggy_dir)
+            diffs[item["header_path"]] = unified_diff_for_file(
+                header_path=item["header_path"], fixed_lines=item["fixed_lines"],
+                buggy_lines=item["buggy_lines"])
+        full = build_full_diff(diffs)
+        expected, _ = truncate_to_cap(build_representation(
+            modified_files=sorted(diffs), modified_classes=classes, full_diff=full))
+        if not full or paths["patch_diff"].read_text(encoding="utf-8") != full:
+            problems.append("full patch differs from reconstructed fixed-to-buggy diff")
+        if rep != expected:
+            problems.append("patch representation differs from reconstructed change")
+    except Exception as exc:
+        problems.append(f"patch reconstruction failed: {exc}")
 
     return problems
 

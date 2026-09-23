@@ -1,0 +1,145 @@
+{
+  "snapshot_date": "2026-09-23",
+  "created_at": "2026-09-23T00:34:31+00:00",
+  "currency": "USD",
+  "notes": "Published list prices from primary docs on snapshot_date. Confirm account-specific rates before paid scoring. Separate list-price inference, platform fees, and promotional cash.",
+  "jev": {
+    "openrouter_request_model": "typesafe/jev-1.13",
+    "typesafe_direct_model": "jev-1.13.0",
+    "forbidden_eval_aliases": [
+      "jev-latest",
+      "jev-preview",
+      "~typesafe/jev-latest"
+    ],
+    "routes": {
+      "typesafe_direct": {
+        "provider": "typesafe_direct",
+        "input_usd_per_mtok": 0.042,
+        "output_usd_per_mtok": 0.0,
+        "platform_fee_rate": 0.0,
+        "sources": [
+          "https://typesafe.ai/blog/introducing-system-one-models-and-jev",
+          "https://api.typesafe.ai/docs"
+        ]
+      },
+      "openrouter": {
+        "provider": "openrouter",
+        "input_usd_per_mtok": 0.042,
+        "output_usd_per_mtok": 0.0,
+        "platform_fee_rate": 0.055,
+        "model_slug": "typesafe/jev-1.13",
+        "sources": [
+          "https://openrouter.ai/typesafe/jev-1.13/api",
+          "https://openrouter.ai/pricing",
+          "https://openrouter.ai/docs/guides/community/typesafe-sdk"
+        ]
+      },
+      "cloudflare": {
+        "provider": "cloudflare",
+        "input_usd_per_mtok": null,
+        "output_usd_per_mtok": null,
+        "platform_fee_rate": 0.05,
+        "catalog_id": "typesafe/jev",
+        "pinning": "unverified",
+        "sources": [
+          "https://developers.cloudflare.com/ai/models/typesafe/jev/",
+          "https://developers.cloudflare.com/ai-gateway/features/unified-billing/"
+        ],
+        "notes": "Public docs send Jev pricing to the Cloudflare dashboard. AI Gateway core features being free does not imply free Jev inference. Catalog id typesafe/jev is not proven to pin jev-1.13.0 for all future calls."
+      }
+    }
+  },
+  "openai": {
+    "embedding": {
+      "provider": "openai",
+      "model": "text-embedding-3-small",
+      "input_usd_per_mtok": 0.02,
+      "output_usd_per_mtok": 0.0,
+      "sources": [
+        "https://developers.openai.com/api/docs/models/text-embedding-3-small"
+      ]
+    },
+    "gpt": {
+      "provider": "openai",
+      "model": "gpt-5.4-nano-2026-03-17",
+      "sources": [
+        "https://developers.openai.com/api/docs/models/gpt-5.4-nano"
+      ],
+      "notes": "Confirm live rates in pricing_snapshot when development GPT calls begin."
+    }
+  },
+  "workload_estimates": {
+    "assumptions": {
+      "development_bugs": 25,
+      "evaluation_bugs": 125,
+      "mean_candidates_per_bug": 150.0,
+      "mean_input_tokens_per_jev_call": 800.0,
+      "note": "Replace mean_input_tokens with measured probe usage when available."
+    },
+    "development": {
+      "typesafe_direct": {
+        "route": "typesafe_direct",
+        "estimable": true,
+        "n_bugs": 25,
+        "mean_candidates": 150.0,
+        "mean_input_tokens_per_call": 800.0,
+        "estimated_calls": 3750.0,
+        "estimated_input_tokens": 3000000.0,
+        "list_price_inference_usd": 0.126,
+        "platform_fee_usd": 0.0,
+        "effective_cash_if_prepaid_credits_usd": 0.126,
+        "input_usd_per_mtok": 0.042,
+        "platform_fee_rate": 0.0
+      },
+      "openrouter": {
+        "route": "openrouter",
+        "estimable": true,
+        "n_bugs": 25,
+        "mean_candidates": 150.0,
+        "mean_input_tokens_per_call": 800.0,
+        "estimated_calls": 3750.0,
+        "estimated_input_tokens": 3000000.0,
+        "list_price_inference_usd": 0.126,
+        "platform_fee_usd": 0.00693,
+        "effective_cash_if_prepaid_credits_usd": 0.13293,
+        "input_usd_per_mtok": 0.042,
+        "platform_fee_rate": 0.055
+      },
+      "cloudflare": {
+        "route": "cloudflare",
+        "estimable": false,
+        "reason": "published input rate unavailable (dashboard-only)"
+      }
+    },
+    "evaluation": {
+      "typesafe_direct": {
+        "route": "typesafe_direct",
+        "estimable": true,
+        "n_bugs": 125,
+        "mean_candidates": 150.0,
+        "mean_input_tokens_per_call": 800.0,
+        "estimated_calls": 18750.0,
+        "estimated_input_tokens": 15000000.0,
+        "list_price_inference_usd": 0.63,
+        "platform_fee_usd": 0.0,
+        "effective_cash_if_prepaid_credits_usd": 0.63,
+        "input_usd_per_mtok": 0.042,
+        "platform_fee_rate": 0.0
+      },
+      "openrouter": {
+        "route": "openrouter",
+        "estimable": true,
+        "n_bugs": 125,
+        "mean_candidates": 150.0,
+        "mean_input_tokens_per_call": 800.0,
+        "estimated_calls": 18750.0,
+        "estimated_input_tokens": 15000000.0,
+        "list_price_inference_usd": 0.63,
+        "platform_fee_usd": 0.03465,
+        "effective_cash_if_prepaid_credits_usd": 0.66465,
+        "input_usd_per_mtok": 0.042,
+        "platform_fee_rate": 0.055
+      }
+    }
+  }
+}

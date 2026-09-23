@@ -42,6 +42,8 @@ from src.example_contract import (
     validate_example_artifacts,
 )
 from src.select_bugs import ManifestError, verify_manifest_integrity
+from src.ranking import build_lexical_inputs, LexicalInputError
+from src.bm25 import bm25_provenance
 
 
 class AuditError(Exception):
@@ -144,12 +146,20 @@ def audit_one_example(
                 f"(candidates={c_val!r}, ranking={r_val!r}, manifest={m_val!r})"
             )
 
+    current = build_lexical_inputs(ex, data_root=data_root, manifest=data)
+    expected_hashes = {**current.input_hashes, **bm25_provenance()}
+    if ranking.get("input_hashes") != expected_hashes:
+        raise AuditError(f"{ex.qualified}: ranking inputs are stale")
+    if any(expected_hashes.get(key) != value
+           for key, value in candidates.get("input_hashes", {}).items()):
+        raise AuditError(f"{ex.qualified}: candidate inputs are stale")
+
     # Development diagnostic only — labels never enter candidate files.
     top_ids = candidates["candidate_ids"]
     hits = [p for p in positives if p in top_ids]
     first_trigger_rank = None
-    if hits:
-        first_trigger_rank = min(top_ids.index(p) + 1 for p in hits)
+    if positives:
+        first_trigger_rank = min(ranked_ids.index(p) + 1 for p in positives)
 
     # Ensure candidate file has no private label fields (already asserted by loader).
     for field in ("positive_classes", "trigger_methods"):
@@ -169,6 +179,19 @@ def audit_one_example(
         "source_missing_count": ranking.get("source_missing_count", 0),
         # Counts only in the public row; hit FQCNs stay out of the default report
         # body used for Phase 5 (full detail available via --verbose path).
+    }
+
+
+def retrieval_metrics(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    """Development diagnostics, using full-suite first-trigger ranks."""
+    n = len(rows)
+    return {
+        "bugs": n,
+        "fdr_at_10_percent": sum(r["first_trigger_rank"] <= max(1, math.ceil(.10 * r["N"])) for r in rows) / n if n else None,
+        "mrr": sum(1 / r["first_trigger_rank"] for r in rows) / n if n else None,
+        "mean_first_trigger_rank": sum(r["first_trigger_rank"] for r in rows) / n if n else None,
+        "candidate_recall": sum(r["trigger_in_top_k"] for r in rows) / n if n else None,
+        "whole_suite_shortlists": sum(r["K"] == r["N"] for r in rows),
     }
 
 
@@ -200,7 +223,7 @@ def audit_development_set(
                 manifest=data,
             )
             rows.append(row)
-        except (AuditError, CandidatesError, ExampleContractError, OSError) as exc:
+        except (AuditError, CandidatesError, ExampleContractError, LexicalInputError, OSError) as exc:
             failed.append({"qualified_id": ex.qualified, "ok": False, "error": str(exc)})
             rows.append(
                 {"qualified_id": ex.qualified, "ok": False, "error": str(exc)}
@@ -279,6 +302,15 @@ def audit_development_set(
             "bugs_with_trigger_in_top_k": recall_hits,
             "bugs_audited": recall_denom,
             "recall": candidate_trigger_recall,
+        },
+        "retrieval_metrics": {
+            "scope": "development_only",
+            "complete": not failed,
+            "all": retrieval_metrics(passed),
+            "suites_over_200": retrieval_metrics([r for r in passed if r["N"] > 200]),
+            "by_project": {project: retrieval_metrics([
+                r for r in passed if r["qualified_id"].split("-")[0] == project])
+                for project in sorted({r["qualified_id"].split("-")[0] for r in passed})},
         },
         "case_inspection": case_inspection,
         "phase5_contract": {

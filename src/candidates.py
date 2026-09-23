@@ -46,6 +46,7 @@ from src.ranking import (
     SuiteRanking,
     build_lexical_inputs,
     rank_suite,
+    cached_rank_suite,
 )
 from src.tokenize import TOKENIZER_VERSION, tokenizer_provenance
 
@@ -307,7 +308,7 @@ def _artifacts_match_existing(
 
     ranking_ids = [e.get("test_class") for e in existing_r.get("ranking") or []]
     expected_ids = [e.get("test_class") for e in ranking_doc.get("ranking") or []]
-    if ranking_ids != expected_ids:
+    if ranking_ids != expected_ids or existing_r.get("ranking") != ranking_doc.get("ranking"):
         return False
     k = existing_c.get("K")
     if not isinstance(k, int) or ranking_ids[:k] != existing_c.get("candidate_ids"):
@@ -415,7 +416,7 @@ def generate_and_save(
         manifest=data,
         allow_evaluation=allow_evaluation,
     )
-    ranking = rank_suite(inputs)
+    ranking = cached_rank_suite(inputs, cache_dir=(data_root or WORKSPACE / "data").parent / "cache" / "bm25")
     return save_ranking_and_candidates(
         ranking,
         split=split,

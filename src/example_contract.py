@@ -587,6 +587,31 @@ def compute_example_content_hashes(
     missing = [name for name, path in required.items() if not path.is_file()]
     if missing:
         raise ExampleIncompleteError(f"cannot hash; missing {missing}")
+    index = read_json(paths["representations_index"])
+    from src.representations import representation_settings, read_fixed_source
+    if index.get("representation_settings") != representation_settings():
+        raise ExampleIncompleteError("representation settings changed; refresh representations")
+    query_hash = hashlib.sha256(paths["patch_representation"].read_text(encoding="utf-8").encode("utf-8")).hexdigest()
+    if (index.get("query") or {}).get("query_sha256") != query_hash:
+        raise ExampleMismatchError("representation query changed; refresh representations")
+    for entry in index.get("representations", []):
+        json_path = paths["representations_dir"] / Path(entry["path"]).name
+        text_path = paths["representations_dir"] / Path(entry["text_path"]).name
+        if not json_path.is_file() or not text_path.is_file():
+            raise ExampleIncompleteError(f"missing representation for {entry['test_class']}")
+        doc = read_json(json_path)
+        if (doc.get("test_class") != entry["test_class"]
+                or doc.get("representation_settings") != representation_settings()
+                or doc.get("representation_text") != text_path.read_text(encoding="utf-8")):
+            raise ExampleMismatchError(f"representation mismatch for {entry['test_class']}")
+        if not doc.get("source_missing"):
+            source = paths["checkout_fixed"] / doc["source_file"]
+            digest = hashlib.sha256(read_fixed_source(source).encode("utf-8")).hexdigest()
+            if digest != doc.get("source_sha256"):
+                raise ExampleMismatchError(f"source changed for {entry['test_class']}")
+        required[f"representation_json:{entry['test_class']}"] = json_path
+        required[f"representation_text:{entry['test_class']}"] = text_path
+    required["patch_diff"] = paths["patch_diff"]
     return {name: sha256_file(path) for name, path in required.items()}
 
 
@@ -660,6 +685,9 @@ def validate_example_artifacts(
         )
 
     hashes = compute_example_content_hashes(ex, data_root=data_root)
+    if (record.get("status") == ExampleStatus.COMPLETE.value
+            and record.get("content_hashes") != hashes):
+        raise ExampleMismatchError(f"{ex.qualified}: completed artifact contents changed")
     return {
         "example_id": ex,
         "split": split,

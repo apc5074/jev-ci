@@ -1,14 +1,15 @@
 """Build compact, model-ready test-class representations (Phase 3).
 
-Long sources (>240 lines) use 80-line windows, stride 60, BM25-ranked against
-the proposed patch; top three windows are restored to source order with
-overlap lines removed. Shared tokenizer/BM25 live in ``tokenize.py`` /
+Long sources (>240 lines) reserve 40 header lines and use up to three
+80-line windows, stride 60, ranked by BM25 times their novel-line fraction.
+At most 240 source lines are retained, with explicit omission markers. Shared tokenizer/BM25 live in ``tokenize.py`` /
 ``bm25.py`` for Phase 4 reuse.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -46,6 +47,16 @@ WINDOW_LINE_LIMIT = 240
 WINDOW_SIZE = 80
 WINDOW_STRIDE = 60
 TOP_WINDOWS = 3
+REPRESENTATION_VERSION = "jev-test-context-v2"
+CONTEXT_HEADER_LINES = 40
+
+def representation_settings() -> dict[str, Any]:
+    return {"version": REPRESENTATION_VERSION, "line_limit": WINDOW_LINE_LIMIT,
+            "window_size": WINDOW_SIZE, "stride": WINDOW_STRIDE,
+            "top_windows": TOP_WINDOWS, "header_lines": CONTEXT_HEADER_LINES,
+            "char_cap": REPRESENTATION_CHAR_CAP, "tokenizer": TOKENIZER_VERSION,
+            "bm25": BM25_VERSION, "k1": BM25_K1, "b": BM25_B}
+
 
 TEST_TRUNCATION_MARKER = "[...TEST TRUNCATED...]"
 SOURCE_MISSING_PLACEHOLDER = "[SOURCE MISSING]"
@@ -160,7 +171,39 @@ def compact_source_lines(
     docs = [tokenize("\n".join(wlines)) for _s, _e, wlines in windows]
     scores = bm25_scores(query_tokens, docs, k1=BM25_K1, b=BM25_B)
     selected = select_top_windows(windows, scores, top_k=TOP_WINDOWS)
-    compact = concat_windows_dedupe(selected)
+    # Reserve file context, then spend the remaining line budget on lexical
+    # windows. Prefer windows contributing new lines over redundant overlap.
+    retained = set(range(min(CONTEXT_HEADER_LINES, n)))
+    chosen = []
+    remaining = list(range(len(windows)))
+    while remaining and len(chosen) < TOP_WINDOWS and len(retained) < WINDOW_LINE_LIMIT:
+        best = max(remaining, key=lambda i: (
+            scores[i] * len(set(range(windows[i][0], windows[i][1])) - retained)
+            / max(1, windows[i][1] - windows[i][0]), -windows[i][0]))
+        remaining.remove(best)
+        start, end, wlines = windows[best]
+        novel = sorted(set(range(start, end)) - retained)
+        if not novel:
+            continue
+        retained.update(novel[:WINDOW_LINE_LIMIT - len(retained)])
+        chosen.append((start, end, wlines, scores[best]))
+    selected = sorted(chosen, key=lambda w: w[0])
+    compact = []
+    previous = -1
+    for line_no in sorted(retained):
+        if line_no > previous + 1:
+            compact.append("// [...SOURCE LINES OMITTED...]")
+        compact.append(lines[line_no])
+        previous = line_no
+    if previous < n - 1:
+        compact.append("// [...SOURCE LINES OMITTED...]")
+    meta["retained_line_ranges"] = []
+    for line_no in sorted(retained):
+        ranges = meta["retained_line_ranges"]
+        if ranges and ranges[-1][1] == line_no:
+            ranges[-1][1] += 1
+        else:
+            ranges.append([line_no, line_no + 1])
     meta.update(
         {
             "mode": "windows",
@@ -221,6 +264,7 @@ def build_one_representation(
     """Build one model-ready representation document for a test class."""
     compaction: dict[str, Any]
     body = ""
+    source_digest = None
     effective_missing = source_missing or not source_file
 
     if effective_missing:
@@ -248,6 +292,7 @@ def build_one_representation(
             body = ""
         else:
             text = read_fixed_source(path)
+            source_digest = hashlib.sha256(text.encode("utf-8")).hexdigest()
             lines = text.splitlines()
             compact_lines, compaction = compact_source_lines(
                 lines, query_tokens=query_tokens
@@ -273,6 +318,8 @@ def build_one_representation(
         marker=TEST_TRUNCATION_MARKER,
     )
     return {
+        "representation_settings": representation_settings(),
+        "source_sha256": source_digest,
         "test_class": test_class,
         "source_file": None if effective_missing else source_file,
         "source_missing": effective_missing,
@@ -364,6 +411,10 @@ def build_representations_for_example(
         query_text = _load_patch_query_text(paths)
         query_tokens = tokenize(query_text)
 
+        if paths["example_json"].is_file():
+            record = read_json(paths["example_json"])
+            record["status"] = ExampleStatus.INCOMPLETE.value
+            write_example_record(record, data_root=data_root)
         rep_dir = paths["representations_dir"]
         if rep_dir.exists():
             for old in rep_dir.glob("*.json"):
@@ -426,10 +477,12 @@ def build_representations_for_example(
                 "representation_truncated": truncated_count,
                 "window_compacted": windowed_count,
             },
+            "representation_settings": representation_settings(),
             "query": {
                 "source": "data/patches/<id>/representation.txt",
                 "tokenizer_version": TOKENIZER_VERSION,
                 "query_token_count": len(query_tokens),
+                "query_sha256": hashlib.sha256(query_text.encode("utf-8")).hexdigest(),
             },
             "bm25": {
                 "version": BM25_VERSION,

@@ -1,0 +1,56 @@
+{
+  "created_at": "2026-09-23T00:34:32+00:00",
+  "pricing_snapshot": "results/pricing_snapshot.json",
+  "decision": "results/jev_provider_decision.json",
+  "typesafe_models": null,
+  "openrouter_probe": "results/openrouter_jev_probe.json",
+  "probes": {
+    "typesafe_direct": {
+      "provider": "typesafe_direct",
+      "ok": false,
+      "skipped": true,
+      "reason": "TYPESAFE_API_KEY not set / TypeSafe direct unavailable (waitlist or no account access)"
+    },
+    "openrouter": {
+      "provider": "openrouter",
+      "ok": true,
+      "request_headers_redacted": {
+        "Authorization": "Bearer ***",
+        "Accept": "application/json",
+        "HTTP-Referer": "https://github.com/jev-ci-test-selection",
+        "X-OpenRouter-Title": "jev-ci"
+      },
+      "endpoint": "https://openrouter.ai/api/v1/systemone",
+      "preflight_cost_estimate_usd": {
+        "list_price_inference_usd": 8.400000000000001e-06,
+        "platform_fee_usd": 4.6200000000000003e-07,
+        "effective_cash_if_prepaid_credits_usd": 8.862000000000001e-06
+      },
+      "systemone_http_status": 200,
+      "probe_path": "results/openrouter_jev_probe.json",
+      "observed_model": "typesafe/jev-1.13-20260917",
+      "requested_model": "typesafe/jev-1.13",
+      "noul": 0.87,
+      "usage": {
+        "input_tokens": 384,
+        "output_tokens": 24,
+        "cost": 1.6128e-05
+      },
+      "provider_response_id": "gen-dec-1790123672-YY3bLKqGE5BEovwt4MUf",
+      "upstream_provider": "TypeSafe",
+      "response_model_pinned_ok": true
+    },
+    "cloudflare": {
+      "provider": "cloudflare",
+      "ok": false,
+      "skipped": true,
+      "reason": "Rejected for evaluation until dashboard Jev price and immutable underlying model pin for typesafe/jev are verified on-account. Do not infer free inference from free Gateway features.",
+      "api_token_present": false,
+      "account_id_present": false
+    }
+  },
+  "selected_provider": "openrouter",
+  "selected_model_id": "typesafe/jev-1.13",
+  "observed_model_id": "typesafe/jev-1.13-20260917",
+  "ready_for_scoring": true
+}

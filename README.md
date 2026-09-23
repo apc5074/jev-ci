@@ -30,3 +30,9 @@ docker run --rm --platform linux/amd64 \
 | [docs/test-representations.md](docs/test-representations.md) | Test compaction, tokenizer/BM25 versions |
 | [docs/verification-phase3.md](docs/verification-phase3.md) | Phase 3 integrity audit record |
 | [docs/phase4-handoff.md](docs/phase4-handoff.md) | Artifacts and lexical primitives for Phase 4 |
+| [docs/bm25-lexical-contract.md](docs/bm25-lexical-contract.md) | Phase 4 BM25 query/document input contract |
+| [docs/tokenizer.md](docs/tokenizer.md) | Shared code tokenizer rules / version |
+| [docs/bm25-scoring.md](docs/bm25-scoring.md) | BM25 formula, corpus, suite ranking order |
+| [docs/candidates.md](docs/candidates.md) | Shortlist / full-ranking artifacts and Phase 5 reader |
+| [docs/verification-phase4.md](docs/verification-phase4.md) | Phase 4 BM25 retrieval audit record |
+| [docs/phase5-handoff.md](docs/phase5-handoff.md) | Fixed shortlist contract for Jev/GPT |

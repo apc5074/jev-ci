@@ -58,9 +58,11 @@ Tickets are ordered by dependency. Each produces a checkable artifact or calcula
 
 **Acceptance:** A synthetic suite with exhaustively known permutations yields the expected average detection and rank metrics. There is exactly one Random metrics row per evaluation bug, backed by 1,000 permutations.
 
-## P8-04 — Calculate measured cost and latency consistently
+## P8-04 — Calculate measured cost and latency consistently ✅ COMPLETE
 
 **Depends on:** P8-01.
+
+**Status:** Complete. [`src/cost_metrics.py`](../../src/cost_metrics.py) / [`scripts/compute_cost_latency.py`](../../scripts/compute_cost_latency.py); report [`docs/phase8-cost.md`](../../docs/phase8-cost.md) + [`results/phase8/cost_latency.json`](../../results/phase8/cost_latency.json); tests [`tests/test_phase8_cost.py`](../../tests/test_phase8_cost.py). Jev/GPT effective-cost ratio **0.247** (≤30% pass). Embedding equal-share attribution reconciles; shortlist walls reconstructed at concurrency 16.
 
 **Work**
 
@@ -73,9 +75,11 @@ Tickets are ordered by dependency. Each produces a checkable artifact or calcula
 
 **Acceptance:** Independent sums of the request ledger match the reported token and dollar totals; cost per bug/candidate reconciles to those totals; latency percentiles and shortlist wall times use the documented population.
 
-## P8-05 — Build cohort, project, and candidate-ceiling summaries
+## P8-05 — Build cohort, project, and candidate-ceiling summaries ✅ COMPLETE
 
 **Depends on:** P8-02 through P8-04.
+
+**Status:** Complete. [`src/cohort_summaries.py`](../../src/cohort_summaries.py) / [`scripts/compute_cohort_summaries.py`](../../scripts/compute_cohort_summaries.py); artifact [`results/phase8/cohort_summaries.json`](../../results/phase8/cohort_summaries.json); docs [`docs/phase8-cohort.md`](../../docs/phase8-cohort.md); tests [`tests/test_phase8_cohort.py`](../../tests/test_phase8_cohort.py). FDR@10% denom 125; BM25 recall@200 = 1.0; Jev 17 misses all classified as reranker; practical success **PASS** (+12.8 pp vs BM25).
 
 **Work**
 
@@ -89,9 +93,11 @@ Tickets are ordered by dependency. Each produces a checkable artifact or calcula
 
 **Acceptance:** Headline denominators equal 125, project denominators equal 25, candidate recall uses the frozen prefix, and every Jev miss receives exactly one candidate-vs-reranker classification.
 
-## P8-06 — Run the preregistered paired statistical comparisons
+## P8-06 — Run the preregistered paired statistical comparisons ✅ COMPLETE
 
 **Depends on:** P8-02 and P8-05.
+
+**Status:** Complete. [`src/statistics.py`](../../src/statistics.py) / [`scripts/compute_statistics.py`](../../scripts/compute_statistics.py); [`results/statistics.json`](../../results/statistics.json); docs [`docs/phase8-statistics.md`](../../docs/phase8-statistics.md); tests [`tests/test_phase8_statistics.py`](../../tests/test_phase8_statistics.py). Primary Jev–BM25: McNemar p≈0.0166; ΔFDR@10%=+0.128 CI [0.032, 0.224]. Bootstrap seed `20260922` (10,000 paired samples); rerun byte-identical.
 
 **Work**
 
@@ -104,9 +110,11 @@ Tickets are ordered by dependency. Each produces a checkable artifact or calcula
 
 **Acceptance:** Hand-worked discordant-pair and bootstrap fixtures match expected results; rerunning with the frozen seed produces byte-identical statistics from the same metrics inputs.
 
-## P8-07 — Write the required results and canonical display outputs
+## P8-07 — Write the required results and canonical display outputs ✅ COMPLETE
 
 **Depends on:** P8-02 through P8-06.
+
+**Status:** Complete. [`src/report_outputs.py`](../../src/report_outputs.py) / [`scripts/write_report_outputs.py`](../../scripts/write_report_outputs.py); [`results/metrics.csv`](../../results/metrics.csv) (625 rows); headline [`results/phase8/headline_table.md`](../../results/phase8/headline_table.md); figure data + SVGs under [`results/phase8/`](../../results/phase8/); docs [`docs/phase8-report.md`](../../docs/phase8-report.md); tests [`tests/test_phase8_report.py`](../../tests/test_phase8_report.py). `statistics.json` retained from P8-06.
 
 **Work**
 
@@ -120,9 +128,11 @@ Tickets are ordered by dependency. Each produces a checkable artifact or calcula
 
 **Acceptance:** The CSV has exactly 625 valid rows, required columns, five method values, and no development data. The table and figure generators read frozen result files rather than provider responses.
 
-## P8-08 — Make `evaluate.py` a complete offline regeneration command
+## P8-08 — Make `evaluate.py` a complete offline regeneration command ✅ COMPLETE
 
 **Depends on:** P8-01 through P8-07.
+
+**Status:** Complete. [`scripts/evaluate.py`](../../scripts/evaluate.py) / [`src/evaluate.py`](../../src/evaluate.py); checks [`src/evaluate_checks.py`](../../src/evaluate_checks.py); record [`results/phase8/evaluate_regeneration.json`](../../results/phase8/evaluate_regeneration.json); docs [`docs/phase8-evaluate.md`](../../docs/phase8-evaluate.md); tests [`tests/test_phase8_evaluate.py`](../../tests/test_phase8_evaluate.py). Runs under `--network=none`; tampered/missing seal fails closed; second run byte-identical for metrics/statistics/figures.
 
 **Work**
 
@@ -135,9 +145,11 @@ Tickets are ordered by dependency. Each produces a checkable artifact or calcula
 
 **Acceptance:** The command succeeds from frozen raw inputs without credentials/network and reproduces metrics, statistics, table, and figures. A missing or altered raw input causes a clear nonzero failure before any output is published.
 
-## P8-09 — Freeze analyzed results for interpretation
+## P8-09 — Freeze analyzed results for interpretation ✅ COMPLETE
 
 **Depends on:** P8-08.
+
+**Status:** Complete. [`src/seal_analysis.py`](../../src/seal_analysis.py) / [`scripts/seal_analysis.py`](../../scripts/seal_analysis.py); seal [`results/phase8/analysis_seal.json`](../../results/phase8/analysis_seal.json); audit [`results/phase8/analysis_audit.json`](../../results/phase8/analysis_audit.json); case20 [`results/phase8/case20_deltas.json`](../../results/phase8/case20_deltas.json); handoff [`docs/phase8-handoff.md`](../../docs/phase8-handoff.md); docs [`docs/phase8-seal.md`](../../docs/phase8-seal.md); tests [`tests/test_phase8_seal.py`](../../tests/test_phase8_seal.py). Audit **PASS**; practical success **PASS**; 20 distinct case IDs.
 
 **Work**
 
@@ -149,6 +161,8 @@ Tickets are ordered by dependency. Each produces a checkable artifact or calcula
 
 **Acceptance:** Another agent can trace every headline number to a per-bug row and each row to a sealed ranking. The results are ready for interpretation without rerunning providers or changing the analysis method.
 
-## Phase completion gate
+## Phase completion gate ✅ COMPLETE
 
 Phase 8 is implemented when all 625 evaluation `bug × method` rows, paired statistics, costs, project/candidate summaries, headline table, and four figure generators exist and reconcile to Phase 7's sealed raw inputs. `python scripts/evaluate.py` regenerates them offline and deterministically. Phase 9 can then explain and present the result without recalculating or selecting favorable metrics.
+
+**Sealed handoff:** [`docs/phase8-handoff.md`](../../docs/phase8-handoff.md) · [`docs/phase8-seal.md`](../../docs/phase8-seal.md) · commit `edc70bacd23f2fc5f511ef4d97a33376e7b20bf8` · tag `experiment-v1`.

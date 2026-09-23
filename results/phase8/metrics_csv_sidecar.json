@@ -1,0 +1,133 @@
+{
+  "schema_version": "jev-phase8-metrics-csv-sidecar-v1",
+  "created_at": "2026-09-23T15:24:01+00:00",
+  "metrics_csv": {
+    "path": "results/metrics.csv",
+    "sha256": "5db4b0a49f6261ebe1d158c642cf7ca1ba3fdea2f0252757d4d74a57ae07bd91",
+    "n_rows": 625,
+    "columns": [
+      "project",
+      "bug_id",
+      "split",
+      "method",
+      "num_test_classes",
+      "num_trigger_classes",
+      "first_trigger_rank",
+      "normalized_first_trigger_rank",
+      "detected_at_1pct",
+      "detected_at_2pct",
+      "detected_at_5pct",
+      "detected_at_10pct",
+      "detected_at_20pct",
+      "detected_at_50pct",
+      "detected_at_100pct",
+      "reciprocal_rank",
+      "apfd",
+      "candidate_trigger_in_top200",
+      "reranker_input_tokens",
+      "reranker_output_tokens",
+      "reranker_cost_usd",
+      "reranker_wall_ms",
+      "patch_truncated",
+      "missing_test_source_count",
+      "qualified_id",
+      "experiment_commit",
+      "run_id",
+      "available"
+    ]
+  },
+  "statistics_json": {
+    "path": "results/statistics.json",
+    "sha256": "44210263c95624cee2606aad91d693ec6b79f1e9654fc0d739b3254eefaf7138"
+  },
+  "headline_table": {
+    "path": "results/phase8/headline_table.md",
+    "sha256": "f00fed0f1bd5f2537045a6bbd4bf29e6a7e7e280facded9cbddcc6b3d57f1dc5"
+  },
+  "figure_data": {
+    "path": "results/phase8/figure_data.json",
+    "sha256": "0eb4ef4c28761c168c26f9a4e508d16c14065a27bb8f96fa07191079ec28b004"
+  },
+  "figures": {
+    "figure1": "results/phase8/figures/figure1_budget_curve.svg",
+    "figure2": "results/phase8/figures/figure2_nftr_cdf.svg",
+    "figure3": "results/phase8/figures/figure3_project_fdr10.svg",
+    "figure4": "results/phase8/figures/figure4_quality_vs_cost.svg"
+  },
+  "provenance": {
+    "experiment_commit": "edc70bacd23f2fc5f511ef4d97a33376e7b20bf8",
+    "run_id": "eval-v1-20260923T035853+0000",
+    "n_rows": 625,
+    "methods": [
+      "Random",
+      "BM25",
+      "Embedding",
+      "Jev",
+      "GPT-Nano"
+    ]
+  },
+  "headline": {
+    "methods": {
+      "Random": {
+        "fdr_at_5pct": 0.070032,
+        "fdr_at_10pct": 0.124032,
+        "fdr_at_20pct": 0.22852,
+        "mrr": 0.08836604919671748,
+        "apfd": 0.5206429837626279,
+        "median_nftr": 0.47861506079935195,
+        "cost_usd_per_bug": 0.0
+      },
+      "BM25": {
+        "fdr_at_5pct": 0.608,
+        "fdr_at_10pct": 0.736,
+        "fdr_at_20pct": 0.856,
+        "mrr": 0.49760916272832095,
+        "apfd": 0.8987108860253452,
+        "median_nftr": 0.045454545454545456,
+        "cost_usd_per_bug": 0.0
+      },
+      "Embedding": {
+        "fdr_at_5pct": 0.832,
+        "fdr_at_10pct": 0.88,
+        "fdr_at_20pct": 0.904,
+        "mrr": 0.690551360488092,
+        "apfd": 0.9376290168053428,
+        "median_nftr": 0.026923076923076925,
+        "cost_usd_per_bug": 0.0012607690568000038
+      },
+      "Jev": {
+        "fdr_at_5pct": 0.816,
+        "fdr_at_10pct": 0.864,
+        "fdr_at_20pct": 0.888,
+        "mrr": 0.7463919698189667,
+        "apfd": 0.880448958117087,
+        "median_nftr": 0.01694915254237288,
+        "cost_usd_per_bug": 0.012545399198640018
+      },
+      "GPT-Nano": {
+        "fdr_at_5pct": 0.912,
+        "fdr_at_10pct": 0.912,
+        "fdr_at_20pct": 0.96,
+        "mrr": 0.7953687070018104,
+        "apfd": 0.95950481003566,
+        "median_nftr": 0.013921113689095127,
+        "cost_usd_per_bug": 0.05077513790399995
+      }
+    },
+    "best_quality": {
+      "fdr_at_5pct": "GPT-Nano",
+      "fdr_at_10pct": "GPT-Nano",
+      "fdr_at_20pct": "GPT-Nano",
+      "mrr": "GPT-Nano",
+      "apfd": "GPT-Nano",
+      "median_nftr": "GPT-Nano"
+    },
+    "display_name": {
+      "Random": "Random",
+      "BM25": "BM25",
+      "Embedding": "Embedding",
+      "Jev": "Jev",
+      "GPT-Nano": "GPT-5.4 nano"
+    }
+  }
+}

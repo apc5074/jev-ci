@@ -1,0 +1,3898 @@
+{
+  "schema_version": "jev-phase8-cost-latency-v1",
+  "created_at": "2026-09-23T15:24:01+00:00",
+  "experiment_commit": "edc70bacd23f2fc5f511ef4d97a33376e7b20bf8",
+  "run_id": "eval-v1-20260923T035853+0000",
+  "freeze_tag": "experiment-v1",
+  "predictions_sha256": "551094261bbc1c151964b2c3602ad84482816de73304c9257e2f7d7f1fcbe747",
+  "usage_ledger_path": "results/usage_ledger.jsonl",
+  "usage_ledger_sha256": "9b07f891ea7ed771e2a0d90b3a33c2d230e4759084650284cd73ece23d5c9326",
+  "evaluation_ledger_totals_by_kind": {
+    "embedding": {
+      "rows": 4383,
+      "input_tokens": 7509081,
+      "output_tokens": 0,
+      "cached_input_tokens": 0,
+      "list_price_inference_usd": 0.15018162000000038,
+      "platform_fee_usd": 0.008259989100000016,
+      "effective_prepaid_credits_usd": 0.15844160910000038,
+      "provider_reported_cost_usd": 0.15018162000000002,
+      "actual_cash_usd": 0.0,
+      "actual_cash_rows": 0
+    },
+    "jev": {
+      "rows": 13402,
+      "input_tokens": 36251221,
+      "output_tokens": 321648,
+      "cached_input_tokens": 0,
+      "list_price_inference_usd": 1.5225512820000013,
+      "platform_fee_usd": 0.08374032050999995,
+      "effective_prepaid_credits_usd": 1.6062916025100002,
+      "provider_reported_cost_usd": 1.5225512820000013,
+      "actual_cash_usd": 0.0,
+      "actual_cash_rows": 0
+    },
+    "gpt": {
+      "rows": 13414,
+      "input_tokens": 28492533,
+      "output_tokens": 254004,
+      "cached_input_tokens": 0,
+      "list_price_inference_usd": 6.016011600000015,
+      "platform_fee_usd": 0.3308806379999982,
+      "effective_prepaid_credits_usd": 6.346892237999992,
+      "provider_reported_cost_usd": 5.90500488000002,
+      "actual_cash_usd": 0.0,
+      "actual_cash_rows": 0
+    }
+  },
+  "methods": {
+    "Embedding": {
+      "kind": "embedding",
+      "cost": {
+        "method": "Embedding",
+        "attribution": "equal_share_unique_cache_key",
+        "unique_cache_keys": {
+          "list_price_inference_usd": 0.1948638000000007,
+          "platform_fee_usd": 0.01071750900000004,
+          "effective_prepaid_credits_usd": 0.15759613210000048,
+          "input_tokens": 9743190,
+          "output_tokens": 0,
+          "unique_keys": 6216,
+          "shared_keys": 2971
+        },
+        "per_bug": {
+          "Cli-10": {
+            "list_price_inference_usd": 0.00029237766666666666,
+            "platform_fee_usd": 1.608077166666667e-05,
+            "effective_prepaid_credits_usd": 0.0003065256783333333,
+            "input_tokens": 14618.883333333333,
+            "output_tokens": 0.0,
+            "shared_keys": 15.0,
+            "exclusive_keys": 7.0
+          },
+          "Cli-11": {
+            "list_price_inference_usd": 0.0003594958333333334,
+            "platform_fee_usd": 1.9772270833333333e-05,
+            "effective_prepaid_credits_usd": 0.0003792681041666667,
+            "input_tokens": 17974.791666666668,
+            "output_tokens": 0.0,
+            "shared_keys": 13.0,
+            "exclusive_keys": 11.0
+          },
+          "Cli-12": {
+            "list_price_inference_usd": 0.00028697704545454546,
+            "platform_fee_usd": 1.5783737500000002e-05,
+            "effective_prepaid_credits_usd": 0.0003027607829545455,
+            "input_tokens": 14348.852272727274,
+            "output_tokens": 0.0,
+            "shared_keys": 16.0,
+            "exclusive_keys": 6.0
+          },
+          "Cli-13": {
+            "list_price_inference_usd": 0.0006893400000000003,
+            "platform_fee_usd": 3.7913700000000016e-05,
+            "effective_prepaid_credits_usd": 0.0002429876,
+            "input_tokens": 34467.0,
+            "output_tokens": 0.0,
+            "shared_keys": 33.0,
+            "exclusive_keys": 12.0
+          },
+          "Cli-17": {
+            "list_price_inference_usd": 0.00019777011688311687,
+            "platform_fee_usd": 1.0877356428571429e-05,
+            "effective_prepaid_credits_usd": 0.0002086474733116883,
+            "input_tokens": 9888.505844155843,
+            "output_tokens": 0.0,
+            "shared_keys": 21.0,
+            "exclusive_keys": 2.0
+          },
+          "Cli-19": {
+            "list_price_inference_usd": 0.0001982901168831169,
+            "platform_fee_usd": 1.0905956428571429e-05,
+            "effective_prepaid_credits_usd": 0.00020919607331168832,
+            "input_tokens": 9914.505844155843,
+            "output_tokens": 0.0,
+            "shared_keys": 21.0,
+            "exclusive_keys": 2.0
+          },
+          "Cli-21": {
+            "list_price_inference_usd": 0.0007801200000000001,
+            "platform_fee_usd": 4.290659999999999e-05,
+            "effective_prepaid_credits_usd": 0.00029930349999999996,
+            "input_tokens": 39006.0,
+            "output_tokens": 0.0,
+            "shared_keys": 33.0,
+            "exclusive_keys": 18.0
+          },
+          "Cli-22": {
+            "list_price_inference_usd": 0.00020052487878787878,
+            "platform_fee_usd": 1.1028868333333334e-05,
+            "effective_prepaid_credits_usd": 0.0002115537471212121,
+            "input_tokens": 10026.243939393938,
+            "output_tokens": 0.0,
+            "shared_keys": 18.0,
+            "exclusive_keys": 4.0
+          },
+          "Cli-23": {
+            "list_price_inference_usd": 0.0001725739264069264,
+            "platform_fee_usd": 9.491565952380952e-06,
+            "effective_prepaid_credits_usd": 0.00018206549235930735,
+            "input_tokens": 8628.69632034632,
+            "output_tokens": 0.0,
+            "shared_keys": 21.0,
+            "exclusive_keys": 2.0
+          },
+          "Cli-24": {
+            "list_price_inference_usd": 0.0001692739264069264,
+            "platform_fee_usd": 9.310065952380952e-06,
+            "effective_prepaid_credits_usd": 0.00017858399235930737,
+            "input_tokens": 8463.69632034632,
+            "output_tokens": 0.0,
+            "shared_keys": 21.0,
+            "exclusive_keys": 2.0
+          },
+          "Cli-25": {
+            "list_price_inference_usd": 0.0001683039264069264,
+            "platform_fee_usd": 9.256715952380952e-06,
+            "effective_prepaid_credits_usd": 0.00017756064235930735,
+            "input_tokens": 8415.19632034632,
+            "output_tokens": 0.0,
+            "shared_keys": 20.0,
+            "exclusive_keys": 3.0
+          },
+          "Cli-26": {
+            "list_price_inference_usd": 0.00016698809307359307,
+            "platform_fee_usd": 9.184345119047619e-06,
+            "effective_prepaid_credits_usd": 0.0001761724381926407,
+            "input_tokens": 8349.404653679654,
+            "output_tokens": 0.0,
+            "shared_keys": 21.0,
+            "exclusive_keys": 2.0
+          },
+          "Cli-27": {
+            "list_price_inference_usd": 0.00019500952164502167,
+            "platform_fee_usd": 1.0725523690476189e-05,
+            "effective_prepaid_credits_usd": 0.0002057350453354978,
+            "input_tokens": 9750.476082251082,
+            "output_tokens": 0.0,
+            "shared_keys": 18.0,
+            "exclusive_keys": 4.0
+          },
+          "Cli-28": {
+            "list_price_inference_usd": 0.00024154702164502163,
+            "platform_fee_usd": 1.328508619047619e-05,
+            "effective_prepaid_credits_usd": 0.0002548321078354978,
+            "input_tokens": 12077.351082251082,
+            "output_tokens": 0.0,
+            "shared_keys": 20.0,
+            "exclusive_keys": 3.0
+          },
+          "Cli-29": {
+            "list_price_inference_usd": 0.00026008559307359307,
+            "platform_fee_usd": 1.4304707619047619e-05,
+            "effective_prepaid_credits_usd": 0.00027439030069264066,
+            "input_tokens": 13004.27965367965,
+            "output_tokens": 0.0,
+            "shared_keys": 18.0,
+            "exclusive_keys": 5.0
+          },
+          "Cli-3": {
+            "list_price_inference_usd": 0.00036268600000000003,
+            "platform_fee_usd": 1.9947729999999997e-05,
+            "effective_prepaid_credits_usd": 0.00013037056999999999,
+            "input_tokens": 18134.3,
+            "output_tokens": 0.0,
+            "shared_keys": 4.0,
+            "exclusive_keys": 15.0
+          },
+          "Cli-32": {
+            "list_price_inference_usd": 0.00032325,
+            "platform_fee_usd": 1.7778749999999996e-05,
+            "effective_prepaid_credits_usd": 0.00016484375,
+            "input_tokens": 16162.5,
+            "output_tokens": 0.0,
+            "shared_keys": 18.0,
+            "exclusive_keys": 5.0
+          },
+          "Cli-34": {
+            "list_price_inference_usd": 0.00031596999999999994,
+            "platform_fee_usd": 1.737835e-05,
+            "effective_prepaid_credits_usd": 0.00016482265000000002,
+            "input_tokens": 15798.5,
+            "output_tokens": 0.0,
+            "shared_keys": 18.0,
+            "exclusive_keys": 5.0
+          },
+          "Cli-35": {
+            "list_price_inference_usd": 0.00030153666666666673,
+            "platform_fee_usd": 1.6584516666666667e-05,
+            "effective_prepaid_credits_usd": 0.00031458693333333336,
+            "input_tokens": 15076.833333333332,
+            "output_tokens": 0.0,
+            "shared_keys": 17.0,
+            "exclusive_keys": 7.0
+          },
+          "Cli-37": {
+            "list_price_inference_usd": 0.00022296666666666665,
+            "platform_fee_usd": 1.2263166666666666e-05,
+            "effective_prepaid_credits_usd": 0.0002142036833333333,
+            "input_tokens": 11148.333333333334,
+            "output_tokens": 0.0,
+            "shared_keys": 25.0,
+            "exclusive_keys": 1.0
+          },
+          "Cli-38": {
+            "list_price_inference_usd": 0.00022950666666666665,
+            "platform_fee_usd": 1.2622866666666666e-05,
+            "effective_prepaid_credits_usd": 0.00022110338333333334,
+            "input_tokens": 11475.333333333332,
+            "output_tokens": 0.0,
+            "shared_keys": 25.0,
+            "exclusive_keys": 1.0
+          },
+          "Cli-4": {
+            "list_price_inference_usd": 0.00024321100000000007,
+            "platform_fee_usd": 1.3376605e-05,
+            "effective_prepaid_credits_usd": 0.00025465484500000003,
+            "input_tokens": 12160.550000000001,
+            "output_tokens": 0.0,
+            "shared_keys": 13.0,
+            "exclusive_keys": 6.0
+          },
+          "Cli-40": {
+            "list_price_inference_usd": 0.00059409,
+            "platform_fee_usd": 3.267495e-05,
+            "effective_prepaid_credits_usd": 0.0001526163,
+            "input_tokens": 29704.5,
+            "output_tokens": 0.0,
+            "shared_keys": 5.0,
+            "exclusive_keys": 23.0
+          },
+          "Cli-8": {
+            "list_price_inference_usd": 0.00019751766666666667,
+            "platform_fee_usd": 1.0863471666666667e-05,
+            "effective_prepaid_credits_usd": 0.00020644837833333333,
+            "input_tokens": 9875.883333333333,
+            "output_tokens": 0.0,
+            "shared_keys": 20.0,
+            "exclusive_keys": 2.0
+          },
+          "Cli-9": {
+            "list_price_inference_usd": 0.00018928766666666665,
+            "platform_fee_usd": 1.0410821666666667e-05,
+            "effective_prepaid_credits_usd": 0.00019776572833333332,
+            "input_tokens": 9464.383333333331,
+            "output_tokens": 0.0,
+            "shared_keys": 20.0,
+            "exclusive_keys": 2.0
+          },
+          "JacksonDatabind-100": {
+            "list_price_inference_usd": 0.002247175514808368,
+            "platform_fee_usd": 0.00012359465331446018,
+            "effective_prepaid_credits_usd": 0.0013577413933333331,
+            "input_tokens": 112358.77574041835,
+            "output_tokens": 0.0,
+            "shared_keys": 400.0,
+            "exclusive_keys": 31.0
+          },
+          "JacksonDatabind-103": {
+            "list_price_inference_usd": 0.0022746896979585515,
+            "platform_fee_usd": 0.00012510793338772026,
+            "effective_prepaid_credits_usd": 0.0013679393750000005,
+            "input_tokens": 113734.48489792751,
+            "output_tokens": 0.0,
+            "shared_keys": 399.0,
+            "exclusive_keys": 32.0
+          },
+          "JacksonDatabind-108": {
+            "list_price_inference_usd": 0.003427283897263444,
+            "platform_fee_usd": 0.00018850061434948914,
+            "effective_prepaid_credits_usd": 0.0028250262500000007,
+            "input_tokens": 171364.19486317216,
+            "output_tokens": 0.0,
+            "shared_keys": 335.0,
+            "exclusive_keys": 99.0
+          },
+          "JacksonDatabind-110": {
+            "list_price_inference_usd": 0.0022191432290940816,
+            "platform_fee_usd": 0.00012205287760017454,
+            "effective_prepaid_credits_usd": 0.0012370877250000001,
+            "input_tokens": 110957.16145470404,
+            "output_tokens": 0.0,
+            "shared_keys": 405.0,
+            "exclusive_keys": 28.0
+          },
+          "JacksonDatabind-111": {
+            "list_price_inference_usd": 0.0022031299104127637,
+            "platform_fee_usd": 0.00012117214507270195,
+            "effective_prepaid_credits_usd": 0.0011841161749999998,
+            "input_tokens": 110156.49552063811,
+            "output_tokens": 0.0,
+            "shared_keys": 407.0,
+            "exclusive_keys": 26.0
+          },
+          "JacksonDatabind-15": {
+            "list_price_inference_usd": 0.0018117799119616203,
+            "platform_fee_usd": 9.964789515788916e-05,
+            "effective_prepaid_credits_usd": 0.0013598886700000002,
+            "input_tokens": 90588.99559808108,
+            "output_tokens": 0.0,
+            "shared_keys": 229.0,
+            "exclusive_keys": 27.0
+          },
+          "JacksonDatabind-35": {
+            "list_price_inference_usd": 0.0018217874713153104,
+            "platform_fee_usd": 0.00010019831092234208,
+            "effective_prepaid_credits_usd": 0.0012844508949999998,
+            "input_tokens": 91089.37356576552,
+            "output_tokens": 0.0,
+            "shared_keys": 231.0,
+            "exclusive_keys": 29.0
+          },
+          "JacksonDatabind-38": {
+            "list_price_inference_usd": 0.0011540799076742733,
+            "platform_fee_usd": 6.347439492208503e-05,
+            "effective_prepaid_credits_usd": 0.0006286896216666667,
+            "input_tokens": 57703.99538371366,
+            "output_tokens": 0.0,
+            "shared_keys": 282.0,
+            "exclusive_keys": 13.0
+          },
+          "JacksonDatabind-42": {
+            "list_price_inference_usd": 0.0014811927536440934,
+            "platform_fee_usd": 8.146560145042514e-05,
+            "effective_prepaid_credits_usd": 0.00092534472,
+            "input_tokens": 74059.63768220466,
+            "output_tokens": 0.0,
+            "shared_keys": 260.0,
+            "exclusive_keys": 22.0
+          },
+          "JacksonDatabind-44": {
+            "list_price_inference_usd": 0.0012755943581594608,
+            "platform_fee_usd": 7.015768969877034e-05,
+            "effective_prepaid_credits_usd": 0.00089250046,
+            "input_tokens": 63779.717907973034,
+            "output_tokens": 0.0,
+            "shared_keys": 281.0,
+            "exclusive_keys": 17.0
+          },
+          "JacksonDatabind-47": {
+            "list_price_inference_usd": 0.0012402022427193454,
+            "platform_fee_usd": 6.821112334956399e-05,
+            "effective_prepaid_credits_usd": 0.0008314025966666667,
+            "input_tokens": 62010.11213596726,
+            "output_tokens": 0.0,
+            "shared_keys": 284.0,
+            "exclusive_keys": 18.0
+          },
+          "JacksonDatabind-49": {
+            "list_price_inference_usd": 0.0014721697524785926,
+            "platform_fee_usd": 8.096933638632249e-05,
+            "effective_prepaid_credits_usd": 0.0009500384016666666,
+            "input_tokens": 73608.4876239296,
+            "output_tokens": 0.0,
+            "shared_keys": 262.0,
+            "exclusive_keys": 21.0
+          },
+          "JacksonDatabind-5": {
+            "list_price_inference_usd": 0.003009819455661883,
+            "platform_fee_usd": 0.0001655400700614035,
+            "effective_prepaid_credits_usd": 0.0011637071999999998,
+            "input_tokens": 150490.9727830941,
+            "output_tokens": 0.0,
+            "shared_keys": 109.0,
+            "exclusive_keys": 127.0
+          },
+          "JacksonDatabind-51": {
+            "list_price_inference_usd": 0.0014925170421801186,
+            "platform_fee_usd": 8.20884373199065e-05,
+            "effective_prepaid_credits_usd": 0.0010233791883333333,
+            "input_tokens": 74625.85210900592,
+            "output_tokens": 0.0,
+            "shared_keys": 286.0,
+            "exclusive_keys": 27.0
+          },
+          "JacksonDatabind-62": {
+            "list_price_inference_usd": 0.0012132416160959684,
+            "platform_fee_usd": 6.672828888527825e-05,
+            "effective_prepaid_credits_usd": 0.0007407893499999998,
+            "input_tokens": 60662.08080479843,
+            "output_tokens": 0.0,
+            "shared_keys": 289.0,
+            "exclusive_keys": 16.0
+          },
+          "JacksonDatabind-66": {
+            "list_price_inference_usd": 0.0013696579144467406,
+            "platform_fee_usd": 7.533118529457073e-05,
+            "effective_prepaid_credits_usd": 0.00098213748,
+            "input_tokens": 68482.89572233704,
+            "output_tokens": 0.0,
+            "shared_keys": 303.0,
+            "exclusive_keys": 19.0
+          },
+          "JacksonDatabind-72": {
+            "list_price_inference_usd": 0.0013129004897223424,
+            "platform_fee_usd": 7.220952693472883e-05,
+            "effective_prepaid_credits_usd": 0.0009516019116666667,
+            "input_tokens": 65645.0244861171,
+            "output_tokens": 0.0,
+            "shared_keys": 286.0,
+            "exclusive_keys": 23.0
+          },
+          "JacksonDatabind-74": {
+            "list_price_inference_usd": 0.0012996613971307236,
+            "platform_fee_usd": 7.148137684218978e-05,
+            "effective_prepaid_credits_usd": 0.0008590689166666666,
+            "input_tokens": 64983.06985653617,
+            "output_tokens": 0.0,
+            "shared_keys": 318.0,
+            "exclusive_keys": 15.0
+          },
+          "JacksonDatabind-77": {
+            "list_price_inference_usd": 0.00122449135779871,
+            "platform_fee_usd": 6.734702467892908e-05,
+            "effective_prepaid_credits_usd": 0.00073323977,
+            "input_tokens": 61224.56788993553,
+            "output_tokens": 0.0,
+            "shared_keys": 296.0,
+            "exclusive_keys": 14.0
+          },
+          "JacksonDatabind-78": {
+            "list_price_inference_usd": 0.0015061793376901639,
+            "platform_fee_usd": 8.283986357295899e-05,
+            "effective_prepaid_credits_usd": 0.0010253172233333336,
+            "input_tokens": 75308.9668845082,
+            "output_tokens": 0.0,
+            "shared_keys": 316.0,
+            "exclusive_keys": 22.0
+          },
+          "JacksonDatabind-86": {
+            "list_price_inference_usd": 0.0013228608950217214,
+            "platform_fee_usd": 7.275734922619463e-05,
+            "effective_prepaid_credits_usd": 0.0009457083300000002,
+            "input_tokens": 66143.04475108607,
+            "output_tokens": 0.0,
+            "shared_keys": 323.0,
+            "exclusive_keys": 17.0
+          },
+          "JacksonDatabind-87": {
+            "list_price_inference_usd": 0.001586848326701153,
+            "platform_fee_usd": 8.72766579685634e-05,
+            "effective_prepaid_credits_usd": 0.001088300723333333,
+            "input_tokens": 79342.41633505766,
+            "output_tokens": 0.0,
+            "shared_keys": 316.0,
+            "exclusive_keys": 24.0
+          },
+          "JacksonDatabind-93": {
+            "list_price_inference_usd": 0.001509962600278453,
+            "platform_fee_usd": 8.304794301531492e-05,
+            "effective_prepaid_credits_usd": 0.0008725525200000003,
+            "input_tokens": 75498.13001392265,
+            "output_tokens": 0.0,
+            "shared_keys": 334.0,
+            "exclusive_keys": 15.0
+          },
+          "JacksonDatabind-97": {
+            "list_price_inference_usd": 0.0021643672767131293,
+            "platform_fee_usd": 0.00011904020021922215,
+            "effective_prepaid_credits_usd": 0.0012485436183333328,
+            "input_tokens": 108218.36383565643,
+            "output_tokens": 0.0,
+            "shared_keys": 403.0,
+            "exclusive_keys": 27.0
+          },
+          "JacksonDatabind-99": {
+            "list_price_inference_usd": 0.0015368236430689953,
+            "platform_fee_usd": 8.452530036879476e-05,
+            "effective_prepaid_credits_usd": 0.0009174353849999998,
+            "input_tokens": 76841.18215344979,
+            "output_tokens": 0.0,
+            "shared_keys": 328.0,
+            "exclusive_keys": 21.0
+          },
+          "Jsoup-13": {
+            "list_price_inference_usd": 0.00030720259523809527,
+            "platform_fee_usd": 1.689614273809524e-05,
+            "effective_prepaid_credits_usd": 0.0003107309083333333,
+            "input_tokens": 15360.129761904762,
+            "output_tokens": 0.0,
+            "shared_keys": 13.0,
+            "exclusive_keys": 6.0
+          },
+          "Jsoup-16": {
+            "list_price_inference_usd": 0.00031006497619047625,
+            "platform_fee_usd": 1.7053573690476188e-05,
+            "effective_prepaid_credits_usd": 0.00030819890833333333,
+            "input_tokens": 15503.24880952381,
+            "output_tokens": 0.0,
+            "shared_keys": 14.0,
+            "exclusive_keys": 7.0
+          },
+          "Jsoup-20": {
+            "list_price_inference_usd": 0.00025229964285714284,
+            "platform_fee_usd": 1.3876480357142859e-05,
+            "effective_prepaid_credits_usd": 0.0002449217666666666,
+            "input_tokens": 12614.982142857143,
+            "output_tokens": 0.0,
+            "shared_keys": 19.0,
+            "exclusive_keys": 3.0
+          },
+          "Jsoup-21": {
+            "list_price_inference_usd": 0.00021342964285714285,
+            "platform_fee_usd": 1.1738630357142859e-05,
+            "effective_prepaid_credits_usd": 0.0002039139166666666,
+            "input_tokens": 10671.482142857143,
+            "output_tokens": 0.0,
+            "shared_keys": 20.0,
+            "exclusive_keys": 2.0
+          },
+          "Jsoup-23": {
+            "list_price_inference_usd": 0.00022301464285714287,
+            "platform_fee_usd": 1.2265805357142859e-05,
+            "effective_prepaid_credits_usd": 0.00019154404166666668,
+            "input_tokens": 11150.732142857143,
+            "output_tokens": 0.0,
+            "shared_keys": 21.0,
+            "exclusive_keys": 2.0
+          },
+          "Jsoup-24": {
+            "list_price_inference_usd": 0.00019608464285714286,
+            "platform_fee_usd": 1.0784655357142857e-05,
+            "effective_prepaid_credits_usd": 0.00016313289166666666,
+            "input_tokens": 9804.232142857143,
+            "output_tokens": 0.0,
+            "shared_keys": 22.0,
+            "exclusive_keys": 1.0
+          },
+          "Jsoup-33": {
+            "list_price_inference_usd": 0.0005196266483516483,
+            "platform_fee_usd": 2.857946565934066e-05,
+            "effective_prepaid_credits_usd": 0.0004664788,
+            "input_tokens": 25981.332417582416,
+            "output_tokens": 0.0,
+            "shared_keys": 12.0,
+            "exclusive_keys": 13.0
+          },
+          "Jsoup-40": {
+            "list_price_inference_usd": 0.0005115399816849817,
+            "platform_fee_usd": 2.8134698992674e-05,
+            "effective_prepaid_credits_usd": 0.0005230162500000001,
+            "input_tokens": 25576.999084249084,
+            "output_tokens": 0.0,
+            "shared_keys": 12.0,
+            "exclusive_keys": 13.0
+          },
+          "Jsoup-47": {
+            "list_price_inference_usd": 0.00042042341025641023,
+            "platform_fee_usd": 2.3123287564102564e-05,
+            "effective_prepaid_credits_usd": 0.00034923664999999995,
+            "input_tokens": 21021.170512820514,
+            "output_tokens": 0.0,
+            "shared_keys": 19.0,
+            "exclusive_keys": 7.0
+          },
+          "Jsoup-48": {
+            "list_price_inference_usd": 0.0003898234102564103,
+            "platform_fee_usd": 2.1440287564102564e-05,
+            "effective_prepaid_credits_usd": 0.00032293549999999995,
+            "input_tokens": 19491.170512820514,
+            "output_tokens": 0.0,
+            "shared_keys": 21.0,
+            "exclusive_keys": 5.0
+          },
+          "Jsoup-5": {
+            "list_price_inference_usd": 0.0002740486666666667,
+            "platform_fee_usd": 1.5072676666666668e-05,
+            "effective_prepaid_credits_usd": 0.00013475515,
+            "input_tokens": 13702.433333333334,
+            "output_tokens": 0.0,
+            "shared_keys": 5.0,
+            "exclusive_keys": 11.0
+          },
+          "Jsoup-50": {
+            "list_price_inference_usd": 0.0004486634102564103,
+            "platform_fee_usd": 2.4676487564102558e-05,
+            "effective_prepaid_credits_usd": 0.00035364654999999997,
+            "input_tokens": 22433.170512820514,
+            "output_tokens": 0.0,
+            "shared_keys": 19.0,
+            "exclusive_keys": 7.0
+          },
+          "Jsoup-54": {
+            "list_price_inference_usd": 0.0004362800769230769,
+            "platform_fee_usd": 2.3995404230769232e-05,
+            "effective_prepaid_credits_usd": 0.00039766115,
+            "input_tokens": 21814.003846153846,
+            "output_tokens": 0.0,
+            "shared_keys": 18.0,
+            "exclusive_keys": 8.0
+          },
+          "Jsoup-6": {
+            "list_price_inference_usd": 0.0002208425952380953,
+            "platform_fee_usd": 1.2146342738095238e-05,
+            "effective_prepaid_credits_usd": 0.00021271965,
+            "input_tokens": 11042.129761904762,
+            "output_tokens": 0.0,
+            "shared_keys": 15.0,
+            "exclusive_keys": 4.0
+          },
+          "Jsoup-64": {
+            "list_price_inference_usd": 0.0004573904816849817,
+            "platform_fee_usd": 2.5156476492673996e-05,
+            "effective_prepaid_credits_usd": 0.00036011370000000003,
+            "input_tokens": 22869.524084249086,
+            "output_tokens": 0.0,
+            "shared_keys": 18.0,
+            "exclusive_keys": 9.0
+          },
+          "Jsoup-69": {
+            "list_price_inference_usd": 0.00044220010866910867,
+            "platform_fee_usd": 2.432100597680098e-05,
+            "effective_prepaid_credits_usd": 0.00032991168749999997,
+            "input_tokens": 22110.005433455433,
+            "output_tokens": 0.0,
+            "shared_keys": 28.0,
+            "exclusive_keys": 6.0
+          },
+          "Jsoup-7": {
+            "list_price_inference_usd": 0.00026074592857142857,
+            "platform_fee_usd": 1.434102607142857e-05,
+            "effective_prepaid_credits_usd": 0.00025996606666666664,
+            "input_tokens": 13037.29642857143,
+            "output_tokens": 0.0,
+            "shared_keys": 14.0,
+            "exclusive_keys": 5.0
+          },
+          "Jsoup-72": {
+            "list_price_inference_usd": 0.0005036992753357754,
+            "platform_fee_usd": 2.7703460143467643e-05,
+            "effective_prepaid_credits_usd": 0.00044108494999999995,
+            "input_tokens": 25184.963766788765,
+            "output_tokens": 0.0,
+            "shared_keys": 25.0,
+            "exclusive_keys": 9.0
+          },
+          "Jsoup-75": {
+            "list_price_inference_usd": 0.0005140634420024421,
+            "platform_fee_usd": 2.8273489310134317e-05,
+            "effective_prepaid_credits_usd": 0.00047113398749999995,
+            "input_tokens": 25703.1721001221,
+            "output_tokens": 0.0,
+            "shared_keys": 25.0,
+            "exclusive_keys": 9.0
+          },
+          "Jsoup-78": {
+            "list_price_inference_usd": 0.0005020251086691087,
+            "platform_fee_usd": 2.7611380976800983e-05,
+            "effective_prepaid_credits_usd": 0.0004256142541666666,
+            "input_tokens": 25101.255433455437,
+            "output_tokens": 0.0,
+            "shared_keys": 26.0,
+            "exclusive_keys": 8.0
+          },
+          "Jsoup-81": {
+            "list_price_inference_usd": 0.00042545344200244203,
+            "platform_fee_usd": 2.339993931013431e-05,
+            "effective_prepaid_credits_usd": 0.0003987152708333333,
+            "input_tokens": 21272.6721001221,
+            "output_tokens": 0.0,
+            "shared_keys": 29.0,
+            "exclusive_keys": 5.0
+          },
+          "Jsoup-84": {
+            "list_price_inference_usd": 0.000472208442002442,
+            "platform_fee_usd": 2.597146431013431e-05,
+            "effective_prepaid_credits_usd": 0.0004595676708333333,
+            "input_tokens": 23610.4221001221,
+            "output_tokens": 0.0,
+            "shared_keys": 27.0,
+            "exclusive_keys": 7.0
+          },
+          "Jsoup-85": {
+            "list_price_inference_usd": 0.0005441253650793651,
+            "platform_fee_usd": 2.992689507936508e-05,
+            "effective_prepaid_credits_usd": 0.0005487327541666666,
+            "input_tokens": 27206.268253968254,
+            "output_tokens": 0.0,
+            "shared_keys": 25.0,
+            "exclusive_keys": 9.0
+          },
+          "Jsoup-86": {
+            "list_price_inference_usd": 0.0005039945317460318,
+            "platform_fee_usd": 2.7719699246031747e-05,
+            "effective_prepaid_credits_usd": 0.0004880667375,
+            "input_tokens": 25199.726587301586,
+            "output_tokens": 0.0,
+            "shared_keys": 28.0,
+            "exclusive_keys": 7.0
+          },
+          "Jsoup-87": {
+            "list_price_inference_usd": 0.0005070095317460318,
+            "platform_fee_usd": 2.7885524246031743e-05,
+            "effective_prepaid_credits_usd": 0.0005024674875,
+            "input_tokens": 25350.476587301582,
+            "output_tokens": 0.0,
+            "shared_keys": 28.0,
+            "exclusive_keys": 7.0
+          },
+          "Lang-10": {
+            "list_price_inference_usd": 0.001910331495726496,
+            "platform_fee_usd": 0.00010506823226495729,
+            "effective_prepaid_credits_usd": 0.0014664482416666665,
+            "input_tokens": 95516.57478632478,
+            "output_tokens": 0.0,
+            "shared_keys": 80.0,
+            "exclusive_keys": 31.0
+          },
+          "Lang-12": {
+            "list_price_inference_usd": 0.0020183266061161065,
+            "platform_fee_usd": 0.00011100796333638584,
+            "effective_prepaid_credits_usd": 0.0016220499404761904,
+            "input_tokens": 100916.33030580531,
+            "output_tokens": 0.0,
+            "shared_keys": 72.0,
+            "exclusive_keys": 39.0
+          },
+          "Lang-13": {
+            "list_price_inference_usd": 0.0019362672727827733,
+            "platform_fee_usd": 0.00010649470000305254,
+            "effective_prepaid_credits_usd": 0.00137432539047619,
+            "input_tokens": 96813.36363913865,
+            "output_tokens": 0.0,
+            "shared_keys": 72.0,
+            "exclusive_keys": 39.0
+          },
+          "Lang-16": {
+            "list_price_inference_usd": 0.0021602791775446775,
+            "platform_fee_usd": 0.00011881535476495729,
+            "effective_prepaid_credits_usd": 0.00190555155,
+            "input_tokens": 108013.95887723389,
+            "output_tokens": 0.0,
+            "shared_keys": 58.0,
+            "exclusive_keys": 47.0
+          },
+          "Lang-17": {
+            "list_price_inference_usd": 0.0017070786775446776,
+            "platform_fee_usd": 9.388932726495728e-05,
+            "effective_prepaid_credits_usd": 0.0015094517999999998,
+            "input_tokens": 85353.93387723388,
+            "output_tokens": 0.0,
+            "shared_keys": 73.0,
+            "exclusive_keys": 27.0
+          },
+          "Lang-19": {
+            "list_price_inference_usd": 0.0018774553442113442,
+            "platform_fee_usd": 0.00010326004393162395,
+            "effective_prepaid_credits_usd": 0.0017615264666666671,
+            "input_tokens": 93872.76721056721,
+            "output_tokens": 0.0,
+            "shared_keys": 67.0,
+            "exclusive_keys": 33.0
+          },
+          "Lang-21": {
+            "list_price_inference_usd": 0.0017607013283383287,
+            "platform_fee_usd": 9.683857305860809e-05,
+            "effective_prepaid_credits_usd": 0.0016448449738095242,
+            "input_tokens": 88035.06641691641,
+            "output_tokens": 0.0,
+            "shared_keys": 66.0,
+            "exclusive_keys": 31.0
+          },
+          "Lang-23": {
+            "list_price_inference_usd": 0.0016801089950049949,
+            "platform_fee_usd": 9.24059947252747e-05,
+            "effective_prepaid_credits_usd": 0.0013824524071428573,
+            "input_tokens": 84005.44975024975,
+            "output_tokens": 0.0,
+            "shared_keys": 65.0,
+            "exclusive_keys": 30.0
+          },
+          "Lang-26": {
+            "list_price_inference_usd": 0.0016803479950049949,
+            "platform_fee_usd": 9.241913972527472e-05,
+            "effective_prepaid_credits_usd": 0.0013031058571428573,
+            "input_tokens": 84017.39975024975,
+            "output_tokens": 0.0,
+            "shared_keys": 60.0,
+            "exclusive_keys": 32.0
+          },
+          "Lang-28": {
+            "list_price_inference_usd": 0.0016796228283383278,
+            "platform_fee_usd": 9.237925555860808e-05,
+            "effective_prepaid_credits_usd": 0.0013695392071428573,
+            "input_tokens": 83981.14141691642,
+            "output_tokens": 0.0,
+            "shared_keys": 57.0,
+            "exclusive_keys": 33.0
+          },
+          "Lang-30": {
+            "list_price_inference_usd": 0.0015350341103896102,
+            "platform_fee_usd": 8.442687607142857e-05,
+            "effective_prepaid_credits_usd": 0.0011295724238095238,
+            "input_tokens": 76751.70551948051,
+            "output_tokens": 0.0,
+            "shared_keys": 65.0,
+            "exclusive_keys": 23.0
+          },
+          "Lang-33": {
+            "list_price_inference_usd": 0.0015490100151515148,
+            "platform_fee_usd": 8.519555083333335e-05,
+            "effective_prepaid_credits_usd": 0.0010433492833333328,
+            "input_tokens": 77450.50075757576,
+            "output_tokens": 0.0,
+            "shared_keys": 59.0,
+            "exclusive_keys": 26.0
+          },
+          "Lang-36": {
+            "list_price_inference_usd": 0.0027266599999999997,
+            "platform_fee_usd": 0.00014996629999999993,
+            "effective_prepaid_credits_usd": 0.0028766263000000007,
+            "input_tokens": 136333.0,
+            "output_tokens": 0.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 84.0
+          },
+          "Lang-40": {
+            "list_price_inference_usd": 0.0019100911111111115,
+            "platform_fee_usd": 0.0001050550111111111,
+            "effective_prepaid_credits_usd": 0.002015146122222223,
+            "input_tokens": 95504.55555555556,
+            "output_tokens": 0.0,
+            "shared_keys": 55.0,
+            "exclusive_keys": 32.0
+          },
+          "Lang-41": {
+            "list_price_inference_usd": 0.0019287111111111115,
+            "platform_fee_usd": 0.00010607911111111113,
+            "effective_prepaid_credits_usd": 0.0020347902222222223,
+            "input_tokens": 96435.55555555556,
+            "output_tokens": 0.0,
+            "shared_keys": 54.0,
+            "exclusive_keys": 33.0
+          },
+          "Lang-43": {
+            "list_price_inference_usd": 0.0016351837777777774,
+            "platform_fee_usd": 8.993510777777778e-05,
+            "effective_prepaid_credits_usd": 0.0017251188855555556,
+            "input_tokens": 81759.18888888891,
+            "output_tokens": 0.0,
+            "shared_keys": 63.0,
+            "exclusive_keys": 27.0
+          },
+          "Lang-47": {
+            "list_price_inference_usd": 0.0013030987777777779,
+            "platform_fee_usd": 7.167043277777779e-05,
+            "effective_prepaid_credits_usd": 0.0013747692105555555,
+            "input_tokens": 65154.938888888886,
+            "output_tokens": 0.0,
+            "shared_keys": 68.0,
+            "exclusive_keys": 18.0
+          },
+          "Lang-49": {
+            "list_price_inference_usd": 0.001417862111111111,
+            "platform_fee_usd": 7.798241611111109e-05,
+            "effective_prepaid_credits_usd": 0.0014958445272222226,
+            "input_tokens": 70893.10555555555,
+            "output_tokens": 0.0,
+            "shared_keys": 61.0,
+            "exclusive_keys": 23.0
+          },
+          "Lang-5": {
+            "list_price_inference_usd": 0.0020422564957264964,
+            "platform_fee_usd": 0.00011232410726495724,
+            "effective_prepaid_credits_usd": 0.0016458685749999999,
+            "input_tokens": 102112.82478632478,
+            "output_tokens": 0.0,
+            "shared_keys": 76.0,
+            "exclusive_keys": 37.0
+          },
+          "Lang-50": {
+            "list_price_inference_usd": 0.0015177954444444439,
+            "platform_fee_usd": 8.347874944444443e-05,
+            "effective_prepaid_credits_usd": 0.0016012741938888889,
+            "input_tokens": 75889.77222222222,
+            "output_tokens": 0.0,
+            "shared_keys": 58.0,
+            "exclusive_keys": 26.0
+          },
+          "Lang-6": {
+            "list_price_inference_usd": 0.001762679829059829,
+            "platform_fee_usd": 9.694739059829059e-05,
+            "effective_prepaid_credits_usd": 0.001501977125,
+            "input_tokens": 88133.99145299145,
+            "output_tokens": 0.0,
+            "shared_keys": 91.0,
+            "exclusive_keys": 22.0
+          },
+          "Lang-60": {
+            "list_price_inference_usd": 0.001238288777777778,
+            "platform_fee_usd": 6.810588277777778e-05,
+            "effective_prepaid_credits_usd": 0.0013063946605555554,
+            "input_tokens": 61914.438888888886,
+            "output_tokens": 0.0,
+            "shared_keys": 65.0,
+            "exclusive_keys": 17.0
+          },
+          "Lang-61": {
+            "list_price_inference_usd": 0.0011778344444444444,
+            "platform_fee_usd": 6.478089444444444e-05,
+            "effective_prepaid_credits_usd": 0.0012426153388888893,
+            "input_tokens": 58891.72222222223,
+            "output_tokens": 0.0,
+            "shared_keys": 70.0,
+            "exclusive_keys": 12.0
+          },
+          "Lang-63": {
+            "list_price_inference_usd": 0.0013405544444444444,
+            "platform_fee_usd": 7.373049444444444e-05,
+            "effective_prepaid_credits_usd": 0.001414284938888889,
+            "input_tokens": 67027.72222222222,
+            "output_tokens": 0.0,
+            "shared_keys": 62.0,
+            "exclusive_keys": 20.0
+          },
+          "Lang-7": {
+            "list_price_inference_usd": 0.001810699829059829,
+            "platform_fee_usd": 9.958849059829061e-05,
+            "effective_prepaid_credits_usd": 0.0013286265583333334,
+            "input_tokens": 90534.99145299145,
+            "output_tokens": 0.0,
+            "shared_keys": 86.0,
+            "exclusive_keys": 27.0
+          },
+          "Math-10": {
+            "list_price_inference_usd": 0.005339141571428566,
+            "platform_fee_usd": 0.0002936527864285713,
+            "effective_prepaid_credits_usd": 0.003502405528333333,
+            "input_tokens": 266957.07857142854,
+            "output_tokens": 0.0,
+            "shared_keys": 274.0,
+            "exclusive_keys": 78.0
+          },
+          "Math-104": {
+            "list_price_inference_usd": 0.0024413384285714283,
+            "platform_fee_usd": 0.00013427361357142852,
+            "effective_prepaid_credits_usd": 0.0020091103500000005,
+            "input_tokens": 122066.92142857143,
+            "output_tokens": 0.0,
+            "shared_keys": 50.0,
+            "exclusive_keys": 77.0
+          },
+          "Math-13": {
+            "list_price_inference_usd": 0.003478381904761906,
+            "platform_fee_usd": 0.00019131100476190482,
+            "effective_prepaid_credits_usd": 0.001867736833333333,
+            "input_tokens": 173919.09523809532,
+            "output_tokens": 0.0,
+            "shared_keys": 334.0,
+            "exclusive_keys": 16.0
+          },
+          "Math-14": {
+            "list_price_inference_usd": 0.0035565469047619046,
+            "platform_fee_usd": 0.00019561007976190463,
+            "effective_prepaid_credits_usd": 0.0019356085000000003,
+            "input_tokens": 177827.34523809515,
+            "output_tokens": 0.0,
+            "shared_keys": 332.0,
+            "exclusive_keys": 18.0
+          },
+          "Math-17": {
+            "list_price_inference_usd": 0.0032184145714285704,
+            "platform_fee_usd": 0.00017701280142857142,
+            "effective_prepaid_credits_usd": 0.0017323064833333326,
+            "input_tokens": 160920.7285714286,
+            "output_tokens": 0.0,
+            "shared_keys": 288.0,
+            "exclusive_keys": 26.0
+          },
+          "Math-19": {
+            "list_price_inference_usd": 0.0035268375714285704,
+            "platform_fee_usd": 0.00019397606642857136,
+            "effective_prepaid_credits_usd": 0.0019424220416666672,
+            "input_tokens": 176341.8785714286,
+            "output_tokens": 0.0,
+            "shared_keys": 274.0,
+            "exclusive_keys": 38.0
+          },
+          "Math-28": {
+            "list_price_inference_usd": 0.0043670599047619055,
+            "platform_fee_usd": 0.00024018829476190484,
+            "effective_prepaid_credits_usd": 0.0016933727633333335,
+            "input_tokens": 218352.99523809526,
+            "output_tokens": 0.0,
+            "shared_keys": 245.0,
+            "exclusive_keys": 56.0
+          },
+          "Math-33": {
+            "list_price_inference_usd": 0.005300657571428574,
+            "platform_fee_usd": 0.00029153616642857135,
+            "effective_prepaid_credits_usd": 0.004181144350000001,
+            "input_tokens": 265032.87857142853,
+            "output_tokens": 0.0,
+            "shared_keys": 193.0,
+            "exclusive_keys": 95.0
+          },
+          "Math-41": {
+            "list_price_inference_usd": 0.005028442181818177,
+            "platform_fee_usd": 0.00027656432,
+            "effective_prepaid_credits_usd": 0.005305006501818183,
+            "input_tokens": 251422.10909090907,
+            "output_tokens": 0.0,
+            "shared_keys": 224.0,
+            "exclusive_keys": 60.0
+          },
+          "Math-42": {
+            "list_price_inference_usd": 0.004962232181818181,
+            "platform_fee_usd": 0.00027292277,
+            "effective_prepaid_credits_usd": 0.005235154951818181,
+            "input_tokens": 248111.60909090907,
+            "output_tokens": 0.0,
+            "shared_keys": 226.0,
+            "exclusive_keys": 58.0
+          },
+          "Math-43": {
+            "list_price_inference_usd": 0.005619652181818182,
+            "platform_fee_usd": 0.00030908087000000004,
+            "effective_prepaid_credits_usd": 0.005928733051818185,
+            "input_tokens": 280982.60909090895,
+            "output_tokens": 0.0,
+            "shared_keys": 179.0,
+            "exclusive_keys": 105.0
+          },
+          "Math-58": {
+            "list_price_inference_usd": 0.00571607275324675,
+            "platform_fee_usd": 0.0003143840014285713,
+            "effective_prepaid_credits_usd": 0.006030456754675328,
+            "input_tokens": 285803.6376623377,
+            "output_tokens": 0.0,
+            "shared_keys": 85.0,
+            "exclusive_keys": 155.0
+          },
+          "Math-62": {
+            "list_price_inference_usd": 0.004639444086580086,
+            "platform_fee_usd": 0.0002551694247619048,
+            "effective_prepaid_credits_usd": 0.004894613511341988,
+            "input_tokens": 231972.20432900434,
+            "output_tokens": 0.0,
+            "shared_keys": 142.0,
+            "exclusive_keys": 103.0
+          },
+          "Math-64": {
+            "list_price_inference_usd": 0.0027854557532467536,
+            "platform_fee_usd": 0.00015320006642857137,
+            "effective_prepaid_credits_usd": 0.002938655819675324,
+            "input_tokens": 139272.78766233765,
+            "output_tokens": 0.0,
+            "shared_keys": 210.0,
+            "exclusive_keys": 30.0
+          },
+          "Math-67": {
+            "list_price_inference_usd": 0.002726764753246752,
+            "platform_fee_usd": 0.00014997206142857152,
+            "effective_prepaid_credits_usd": 0.0028767368146753254,
+            "input_tokens": 136338.23766233766,
+            "output_tokens": 0.0,
+            "shared_keys": 199.0,
+            "exclusive_keys": 36.0
+          },
+          "Math-69": {
+            "list_price_inference_usd": 0.0029061857532467535,
+            "platform_fee_usd": 0.00015984021642857142,
+            "effective_prepaid_credits_usd": 0.003066025969675323,
+            "input_tokens": 145309.28766233765,
+            "output_tokens": 0.0,
+            "shared_keys": 188.0,
+            "exclusive_keys": 38.0
+          },
+          "Math-71": {
+            "list_price_inference_usd": 0.002579808753246753,
+            "platform_fee_usd": 0.0001418894814285714,
+            "effective_prepaid_credits_usd": 0.002721698234675325,
+            "input_tokens": 128990.43766233767,
+            "output_tokens": 0.0,
+            "shared_keys": 191.0,
+            "exclusive_keys": 31.0
+          },
+          "Math-72": {
+            "list_price_inference_usd": 0.0023750714199134203,
+            "platform_fee_usd": 0.00013062892809523812,
+            "effective_prepaid_credits_usd": 0.0025057003480086597,
+            "input_tokens": 118753.57099567098,
+            "output_tokens": 0.0,
+            "shared_keys": 196.0,
+            "exclusive_keys": 23.0
+          },
+          "Math-77": {
+            "list_price_inference_usd": 0.0037869701818181796,
+            "platform_fee_usd": 0.00020828336000000005,
+            "effective_prepaid_credits_usd": 0.0039952535418181796,
+            "input_tokens": 189348.50909090904,
+            "output_tokens": 0.0,
+            "shared_keys": 124.0,
+            "exclusive_keys": 94.0
+          },
+          "Math-85": {
+            "list_price_inference_usd": 0.004087030095238097,
+            "platform_fee_usd": 0.00022478665523809535,
+            "effective_prepaid_credits_usd": 0.0034071812283333336,
+            "input_tokens": 204351.50476190474,
+            "output_tokens": 0.0,
+            "shared_keys": 111.0,
+            "exclusive_keys": 93.0
+          },
+          "Math-86": {
+            "list_price_inference_usd": 0.0033776167619047628,
+            "platform_fee_usd": 0.00018576892190476192,
+            "effective_prepaid_credits_usd": 0.0012928891366666665,
+            "input_tokens": 168880.83809523802,
+            "output_tokens": 0.0,
+            "shared_keys": 125.0,
+            "exclusive_keys": 59.0
+          },
+          "Math-89": {
+            "list_price_inference_usd": 0.0029297840952380943,
+            "platform_fee_usd": 0.00016113812523809525,
+            "effective_prepaid_credits_usd": 0.0022991200033333336,
+            "input_tokens": 146489.20476190475,
+            "output_tokens": 0.0,
+            "shared_keys": 126.0,
+            "exclusive_keys": 48.0
+          },
+          "Math-92": {
+            "list_price_inference_usd": 0.002034074428571429,
+            "platform_fee_usd": 0.00011187409357142857,
+            "effective_prepaid_credits_usd": 0.0018014940866666665,
+            "input_tokens": 101703.72142857141,
+            "output_tokens": 0.0,
+            "shared_keys": 140.0,
+            "exclusive_keys": 19.0
+          },
+          "Math-93": {
+            "list_price_inference_usd": 0.0020500787619047623,
+            "platform_fee_usd": 0.00011275433190476189,
+            "effective_prepaid_credits_usd": 0.0017361888833333332,
+            "input_tokens": 102503.9380952381,
+            "output_tokens": 0.0,
+            "shared_keys": 138.0,
+            "exclusive_keys": 20.0
+          },
+          "Math-96": {
+            "list_price_inference_usd": 0.002331937428571429,
+            "platform_fee_usd": 0.00012825655857142863,
+            "effective_prepaid_credits_usd": 0.001726288411666667,
+            "input_tokens": 116596.87142857144,
+            "output_tokens": 0.0,
+            "shared_keys": 93.0,
+            "exclusive_keys": 50.0
+          }
+        },
+        "cohort": {
+          "list_price_inference_usd": 0.1948638000000007,
+          "platform_fee_usd": 0.01071750900000004,
+          "effective_prepaid_credits_usd": 0.15759613210000048,
+          "mean_effective_usd_per_bug": 0.0012607690568000038,
+          "mean_effective_usd_per_scored_candidate": 8.66198373639664e-06,
+          "scored_candidate_pairs": 18194,
+          "bugs_with_cost": 125
+        }
+      },
+      "latency": {
+        "method": "Embedding",
+        "request_latency_ms": {
+          "population": "cache_backed_send_to_full_response",
+          "n": 18194,
+          "mean": 55.11010321696083,
+          "p50": 47.29273621887842,
+          "p95": 106.39707990594616
+        },
+        "shortlist_wall_ms": {
+          "population": "reconstructed_from_request_latencies_concurrency_16",
+          "concurrency": 16,
+          "n_bugs": 125,
+          "mean": 983.956244862527,
+          "p50": 663.4493857784817,
+          "p95": 2787.112595091335,
+          "per_bug": {
+            "Cli-10": 178.05556124949362,
+            "Cli-11": 66.8465248029679,
+            "Cli-12": 125.09418830785546,
+            "Cli-13": 277.18981408928386,
+            "Cli-17": 203.47094182008215,
+            "Cli-19": 226.4455315723483,
+            "Cli-21": 353.2834370554559,
+            "Cli-22": 223.60003182742125,
+            "Cli-23": 275.53520626194467,
+            "Cli-24": 225.09435050693963,
+            "Cli-25": 252.32182949548587,
+            "Cli-26": 284.18885824891424,
+            "Cli-27": 173.36807651140373,
+            "Cli-28": 289.839878998464,
+            "Cli-29": 183.34185181274302,
+            "Cli-3": 181.16808802245515,
+            "Cli-32": 272.890507010743,
+            "Cli-34": 154.26073800439812,
+            "Cli-35": 248.77809775352944,
+            "Cli-37": 85.4479410401028,
+            "Cli-38": 200.9628095288968,
+            "Cli-4": 103.90411382259934,
+            "Cli-40": 201.68593166939294,
+            "Cli-8": 295.278737321496,
+            "Cli-9": 166.334713379351,
+            "JacksonDatabind-100": 3056.164864572929,
+            "JacksonDatabind-103": 3602.52948569796,
+            "JacksonDatabind-108": 2935.4398166378814,
+            "JacksonDatabind-110": 3392.8534799502813,
+            "JacksonDatabind-111": 3038.1503555752715,
+            "JacksonDatabind-15": 1478.9844600345532,
+            "JacksonDatabind-35": 1525.2154914189305,
+            "JacksonDatabind-38": 1898.0878116599342,
+            "JacksonDatabind-42": 1672.5814286888635,
+            "JacksonDatabind-44": 1836.548443050439,
+            "JacksonDatabind-47": 1839.7128409138531,
+            "JacksonDatabind-49": 1776.0565982647677,
+            "JacksonDatabind-5": 1487.2551045336877,
+            "JacksonDatabind-51": 2409.121148100894,
+            "JacksonDatabind-62": 2012.46933936903,
+            "JacksonDatabind-66": 2244.8225128620834,
+            "JacksonDatabind-72": 1909.3790288876603,
+            "JacksonDatabind-74": 2243.8241896717955,
+            "JacksonDatabind-77": 2389.697633923788,
+            "JacksonDatabind-78": 2398.727119369626,
+            "JacksonDatabind-86": 2313.585197656721,
+            "JacksonDatabind-87": 2873.796009174839,
+            "JacksonDatabind-93": 2440.3789387573247,
+            "JacksonDatabind-97": 3213.650532714018,
+            "JacksonDatabind-99": 2437.453041565325,
+            "Jsoup-13": 235.83350621823533,
+            "Jsoup-16": 235.83350621823533,
+            "Jsoup-20": 252.24908601376228,
+            "Jsoup-21": 213.75020350096747,
+            "Jsoup-23": 213.75020350096747,
+            "Jsoup-24": 401.62845323211513,
+            "Jsoup-33": 213.75020350096747,
+            "Jsoup-40": 213.75020350096747,
+            "Jsoup-47": 287.61882171966136,
+            "Jsoup-48": 225.94950866833744,
+            "Jsoup-5": 206.1589102522703,
+            "Jsoup-50": 167.61556550045498,
+            "Jsoup-54": 149.66607288698907,
+            "Jsoup-6": 278.709012341675,
+            "Jsoup-64": 149.66607288698907,
+            "Jsoup-69": 403.75602853030915,
+            "Jsoup-7": 203.79144091124613,
+            "Jsoup-72": 226.64421066110663,
+            "Jsoup-75": 284.4218263305569,
+            "Jsoup-78": 298.322219599504,
+            "Jsoup-81": 542.6988396600791,
+            "Jsoup-84": 607.9603240985307,
+            "Jsoup-85": 397.05955431127853,
+            "Jsoup-86": 286.0153929729547,
+            "Jsoup-87": 286.0153929729547,
+            "Lang-10": 634.6959749372378,
+            "Lang-12": 945.5047367162825,
+            "Lang-13": 750.7828823238793,
+            "Lang-16": 640.4096340206922,
+            "Lang-17": 818.111169596315,
+            "Lang-19": 722.7881214426557,
+            "Lang-21": 976.8348124944167,
+            "Lang-23": 715.3928794099816,
+            "Lang-26": 670.2199132840698,
+            "Lang-28": 663.4493857784817,
+            "Lang-30": 665.670112191687,
+            "Lang-33": 663.4493857784817,
+            "Lang-36": 373.8192727942944,
+            "Lang-40": 383.8653307883879,
+            "Lang-41": 1065.9098899422647,
+            "Lang-43": 333.86745219598953,
+            "Lang-47": 699.9635113238604,
+            "Lang-49": 396.01618042399434,
+            "Lang-5": 660.4021291532263,
+            "Lang-50": 385.7374585639137,
+            "Lang-6": 926.721923668083,
+            "Lang-60": 302.96676940069074,
+            "Lang-61": 345.74406394335597,
+            "Lang-63": 338.9214662507479,
+            "Lang-7": 724.6037868771964,
+            "Math-10": 2321.7396940948224,
+            "Math-104": 1041.8215808235254,
+            "Math-13": 2194.7738222848884,
+            "Math-14": 2288.305689143415,
+            "Math-17": 1730.4587951700673,
+            "Math-19": 1910.532034418984,
+            "Math-28": 1626.992380534603,
+            "Math-33": 1554.6300711063877,
+            "Math-41": 1922.0111698161054,
+            "Math-42": 1786.3838582235621,
+            "Math-43": 1330.2684264167005,
+            "Math-58": 1210.3116493290145,
+            "Math-62": 1375.1760886265401,
+            "Math-64": 1052.4276993801323,
+            "Math-67": 1092.39769803753,
+            "Math-69": 1404.2833626917854,
+            "Math-71": 1106.9462976368313,
+            "Math-72": 1515.6891313286906,
+            "Math-77": 1130.7367669469386,
+            "Math-85": 1377.9356696354807,
+            "Math-86": 1636.4073130489123,
+            "Math-89": 1381.0347947788978,
+            "Math-92": 850.8561522767836,
+            "Math-93": 972.858354715645,
+            "Math-96": 716.2166708920995
+          },
+          "note": "Phase 7 scoring did not persist end-to-end shortlist wall clocks; values are deterministic reconstructions (sum of per-wave maxima)."
+        }
+      },
+      "evaluation_ledger_kind_totals": {
+        "rows": 4383,
+        "input_tokens": 7509081,
+        "output_tokens": 0,
+        "cached_input_tokens": 0,
+        "list_price_inference_usd": 0.15018162000000038,
+        "platform_fee_usd": 0.008259989100000016,
+        "effective_prepaid_credits_usd": 0.15844160910000038,
+        "provider_reported_cost_usd": 0.15018162000000002,
+        "actual_cash_usd": 0.0,
+        "actual_cash_rows": 0
+      }
+    },
+    "Jev": {
+      "kind": "jev",
+      "cost": {
+        "method": "Jev",
+        "attribution": "equal_share_unique_cache_key",
+        "unique_cache_keys": {
+          "list_price_inference_usd": 1.486421706000003,
+          "platform_fee_usd": 0.08175319382999995,
+          "effective_prepaid_credits_usd": 1.5681748998300022,
+          "input_tokens": 35390993,
+          "output_tokens": 312936,
+          "unique_keys": 13039,
+          "shared_keys": 0
+        },
+        "per_bug": {
+          "Cli-10": {
+            "list_price_inference_usd": 0.0017207400000000001,
+            "platform_fee_usd": 9.464070000000002e-05,
+            "effective_prepaid_credits_usd": 0.0018153807000000001,
+            "input_tokens": 40970.0,
+            "output_tokens": 528.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 22.0
+          },
+          "Cli-11": {
+            "list_price_inference_usd": 0.0018340980000000002,
+            "platform_fee_usd": 0.00010087539000000001,
+            "effective_prepaid_credits_usd": 0.0019349733899999997,
+            "input_tokens": 43669.0,
+            "output_tokens": 576.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 24.0
+          },
+          "Cli-12": {
+            "list_price_inference_usd": 0.0018353160000000002,
+            "platform_fee_usd": 0.00010094238000000002,
+            "effective_prepaid_credits_usd": 0.0019362583800000002,
+            "input_tokens": 43698.0,
+            "output_tokens": 528.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 22.0
+          },
+          "Cli-13": {
+            "list_price_inference_usd": 0.00460845,
+            "platform_fee_usd": 0.00025346475,
+            "effective_prepaid_credits_usd": 0.00486191475,
+            "input_tokens": 109725.0,
+            "output_tokens": 1080.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 45.0
+          },
+          "Cli-17": {
+            "list_price_inference_usd": 0.0018130559999999997,
+            "platform_fee_usd": 9.971808e-05,
+            "effective_prepaid_credits_usd": 0.00191277408,
+            "input_tokens": 43168.0,
+            "output_tokens": 552.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 23.0
+          },
+          "Cli-19": {
+            "list_price_inference_usd": 0.0018632460000000005,
+            "platform_fee_usd": 0.00010247853000000003,
+            "effective_prepaid_credits_usd": 0.0019657245300000003,
+            "input_tokens": 44363.0,
+            "output_tokens": 552.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 23.0
+          },
+          "Cli-21": {
+            "list_price_inference_usd": 0.005855682000000001,
+            "platform_fee_usd": 0.00032206251000000004,
+            "effective_prepaid_credits_usd": 0.006177744510000001,
+            "input_tokens": 139421.0,
+            "output_tokens": 1224.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 51.0
+          },
+          "Cli-22": {
+            "list_price_inference_usd": 0.0021947940000000003,
+            "platform_fee_usd": 0.00012071367000000003,
+            "effective_prepaid_credits_usd": 0.002315507669999999,
+            "input_tokens": 52257.0,
+            "output_tokens": 528.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 22.0
+          },
+          "Cli-23": {
+            "list_price_inference_usd": 0.0020188560000000003,
+            "platform_fee_usd": 0.00011103708,
+            "effective_prepaid_credits_usd": 0.0021298930800000004,
+            "input_tokens": 48068.0,
+            "output_tokens": 552.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 23.0
+          },
+          "Cli-24": {
+            "list_price_inference_usd": 0.00191373,
+            "platform_fee_usd": 0.00010525514999999999,
+            "effective_prepaid_credits_usd": 0.0020189851500000003,
+            "input_tokens": 45565.0,
+            "output_tokens": 552.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 23.0
+          },
+          "Cli-25": {
+            "list_price_inference_usd": 0.0018485460000000002,
+            "platform_fee_usd": 0.00010167003,
+            "effective_prepaid_credits_usd": 0.00195021603,
+            "input_tokens": 44013.0,
+            "output_tokens": 552.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 23.0
+          },
+          "Cli-26": {
+            "list_price_inference_usd": 0.0019920180000000003,
+            "platform_fee_usd": 0.00010956099,
+            "effective_prepaid_credits_usd": 0.00210157899,
+            "input_tokens": 47429.0,
+            "output_tokens": 552.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 23.0
+          },
+          "Cli-27": {
+            "list_price_inference_usd": 0.0018366599999999997,
+            "platform_fee_usd": 0.00010101630000000002,
+            "effective_prepaid_credits_usd": 0.0019376762999999998,
+            "input_tokens": 43730.0,
+            "output_tokens": 528.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 22.0
+          },
+          "Cli-28": {
+            "list_price_inference_usd": 0.0018615660000000003,
+            "platform_fee_usd": 0.00010238613000000001,
+            "effective_prepaid_credits_usd": 0.00196395213,
+            "input_tokens": 44323.0,
+            "output_tokens": 552.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 23.0
+          },
+          "Cli-29": {
+            "list_price_inference_usd": 0.0019313279999999997,
+            "platform_fee_usd": 0.00010622304,
+            "effective_prepaid_credits_usd": 0.0020375510399999993,
+            "input_tokens": 45984.0,
+            "output_tokens": 552.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 23.0
+          },
+          "Cli-3": {
+            "list_price_inference_usd": 0.0015148980000000002,
+            "platform_fee_usd": 8.331938999999999e-05,
+            "effective_prepaid_credits_usd": 0.0015982173899999996,
+            "input_tokens": 36069.0,
+            "output_tokens": 456.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 19.0
+          },
+          "Cli-32": {
+            "list_price_inference_usd": 0.0018713099999999997,
+            "platform_fee_usd": 0.00010292205000000002,
+            "effective_prepaid_credits_usd": 0.00197423205,
+            "input_tokens": 44555.0,
+            "output_tokens": 552.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 23.0
+          },
+          "Cli-34": {
+            "list_price_inference_usd": 0.001955436000000001,
+            "platform_fee_usd": 0.00010754898000000002,
+            "effective_prepaid_credits_usd": 0.0020629849800000003,
+            "input_tokens": 46558.0,
+            "output_tokens": 552.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 23.0
+          },
+          "Cli-35": {
+            "list_price_inference_usd": 0.0020085660000000003,
+            "platform_fee_usd": 0.00011047113000000003,
+            "effective_prepaid_credits_usd": 0.00211903713,
+            "input_tokens": 47823.0,
+            "output_tokens": 576.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 24.0
+          },
+          "Cli-37": {
+            "list_price_inference_usd": 0.00225456,
+            "platform_fee_usd": 0.00012400080000000003,
+            "effective_prepaid_credits_usd": 0.0023785608,
+            "input_tokens": 53680.0,
+            "output_tokens": 624.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 26.0
+          },
+          "Cli-38": {
+            "list_price_inference_usd": 0.0022258319999999996,
+            "platform_fee_usd": 0.00012242076,
+            "effective_prepaid_credits_usd": 0.0023482527600000008,
+            "input_tokens": 52996.0,
+            "output_tokens": 624.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 26.0
+          },
+          "Cli-4": {
+            "list_price_inference_usd": 0.0014782740000000001,
+            "platform_fee_usd": 8.130507e-05,
+            "effective_prepaid_credits_usd": 0.0015595790699999997,
+            "input_tokens": 35197.0,
+            "output_tokens": 456.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 19.0
+          },
+          "Cli-40": {
+            "list_price_inference_usd": 0.002301978,
+            "platform_fee_usd": 0.00012660879000000002,
+            "effective_prepaid_credits_usd": 0.00242858679,
+            "input_tokens": 54809.0,
+            "output_tokens": 672.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 28.0
+          },
+          "Cli-8": {
+            "list_price_inference_usd": 0.0016435860000000003,
+            "platform_fee_usd": 9.039723e-05,
+            "effective_prepaid_credits_usd": 0.0017339832300000003,
+            "input_tokens": 39133.0,
+            "output_tokens": 528.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 22.0
+          },
+          "Cli-9": {
+            "list_price_inference_usd": 0.001646568,
+            "platform_fee_usd": 9.056124e-05,
+            "effective_prepaid_credits_usd": 0.0017371292400000001,
+            "input_tokens": 39204.0,
+            "output_tokens": 528.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 22.0
+          },
+          "JacksonDatabind-100": {
+            "list_price_inference_usd": 0.019559357999999992,
+            "platform_fee_usd": 0.0010757646900000004,
+            "effective_prepaid_credits_usd": 0.020635122690000014,
+            "input_tokens": 465699.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-103": {
+            "list_price_inference_usd": 0.04665670800000003,
+            "platform_fee_usd": 0.0025661189400000015,
+            "effective_prepaid_credits_usd": 0.04922282694,
+            "input_tokens": 1110874.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-108": {
+            "list_price_inference_usd": 0.022661142000000013,
+            "platform_fee_usd": 0.0012463628100000007,
+            "effective_prepaid_credits_usd": 0.023907504809999997,
+            "input_tokens": 539551.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-110": {
+            "list_price_inference_usd": 0.02173206000000001,
+            "platform_fee_usd": 0.0011952633000000008,
+            "effective_prepaid_credits_usd": 0.022927323300000003,
+            "input_tokens": 517430.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-111": {
+            "list_price_inference_usd": 0.030096780000000004,
+            "platform_fee_usd": 0.0016553228999999997,
+            "effective_prepaid_credits_usd": 0.0317521029,
+            "input_tokens": 716590.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-15": {
+            "list_price_inference_usd": 0.03197392800000001,
+            "platform_fee_usd": 0.0017585660400000003,
+            "effective_prepaid_credits_usd": 0.03373249404000001,
+            "input_tokens": 761284.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-35": {
+            "list_price_inference_usd": 0.019258385999999995,
+            "platform_fee_usd": 0.00105921123,
+            "effective_prepaid_credits_usd": 0.020317597229999994,
+            "input_tokens": 458533.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-38": {
+            "list_price_inference_usd": 0.025395384000000017,
+            "platform_fee_usd": 0.0013967461200000014,
+            "effective_prepaid_credits_usd": 0.026792130119999997,
+            "input_tokens": 604652.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-42": {
+            "list_price_inference_usd": 0.017531514000000005,
+            "platform_fee_usd": 0.0009642332700000003,
+            "effective_prepaid_credits_usd": 0.018495747270000005,
+            "input_tokens": 417417.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-44": {
+            "list_price_inference_usd": 0.021814632,
+            "platform_fee_usd": 0.0011998047600000003,
+            "effective_prepaid_credits_usd": 0.023014436760000003,
+            "input_tokens": 519396.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-47": {
+            "list_price_inference_usd": 0.019230665999999987,
+            "platform_fee_usd": 0.0010576866300000003,
+            "effective_prepaid_credits_usd": 0.02028835263,
+            "input_tokens": 457873.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-49": {
+            "list_price_inference_usd": 0.017563727999999997,
+            "platform_fee_usd": 0.0009660050400000002,
+            "effective_prepaid_credits_usd": 0.018529733040000006,
+            "input_tokens": 418184.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-5": {
+            "list_price_inference_usd": 0.016734311999999994,
+            "platform_fee_usd": 0.0009203871600000005,
+            "effective_prepaid_credits_usd": 0.017654699159999995,
+            "input_tokens": 398436.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-51": {
+            "list_price_inference_usd": 0.018152694000000007,
+            "platform_fee_usd": 0.0009983981699999997,
+            "effective_prepaid_credits_usd": 0.019151092170000005,
+            "input_tokens": 432207.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-62": {
+            "list_price_inference_usd": 0.019404965999999996,
+            "platform_fee_usd": 0.0010672731299999998,
+            "effective_prepaid_credits_usd": 0.02047223912999999,
+            "input_tokens": 462023.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-66": {
+            "list_price_inference_usd": 0.020271299999999996,
+            "platform_fee_usd": 0.0011149214999999998,
+            "effective_prepaid_credits_usd": 0.021386221499999993,
+            "input_tokens": 482650.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-72": {
+            "list_price_inference_usd": 0.016790634,
+            "platform_fee_usd": 0.0009234848699999997,
+            "effective_prepaid_credits_usd": 0.017714118870000007,
+            "input_tokens": 399777.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-74": {
+            "list_price_inference_usd": 0.019750206,
+            "platform_fee_usd": 0.0010862613299999998,
+            "effective_prepaid_credits_usd": 0.020836467330000007,
+            "input_tokens": 470243.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-77": {
+            "list_price_inference_usd": 0.019879482000000004,
+            "platform_fee_usd": 0.0010933715099999998,
+            "effective_prepaid_credits_usd": 0.020972853509999983,
+            "input_tokens": 473321.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-78": {
+            "list_price_inference_usd": 0.022936955999999998,
+            "platform_fee_usd": 0.0012615325800000004,
+            "effective_prepaid_credits_usd": 0.02419848858,
+            "input_tokens": 546118.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-86": {
+            "list_price_inference_usd": 0.01801552200000001,
+            "platform_fee_usd": 0.0009908537099999999,
+            "effective_prepaid_credits_usd": 0.019006375709999992,
+            "input_tokens": 428941.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-87": {
+            "list_price_inference_usd": 0.026674914000000004,
+            "platform_fee_usd": 0.0014671202699999997,
+            "effective_prepaid_credits_usd": 0.028142034270000008,
+            "input_tokens": 635117.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-93": {
+            "list_price_inference_usd": 0.019383084,
+            "platform_fee_usd": 0.0010660696199999997,
+            "effective_prepaid_credits_usd": 0.020449153620000004,
+            "input_tokens": 461502.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-97": {
+            "list_price_inference_usd": 0.018408431999999992,
+            "platform_fee_usd": 0.0010124637600000001,
+            "effective_prepaid_credits_usd": 0.019420895760000004,
+            "input_tokens": 438296.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-99": {
+            "list_price_inference_usd": 0.017088246,
+            "platform_fee_usd": 0.0009398535299999998,
+            "effective_prepaid_credits_usd": 0.018028099530000008,
+            "input_tokens": 406863.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Jsoup-13": {
+            "list_price_inference_usd": 0.001622712,
+            "platform_fee_usd": 8.924916e-05,
+            "effective_prepaid_credits_usd": 0.0017119611600000001,
+            "input_tokens": 38636.0,
+            "output_tokens": 456.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 19.0
+          },
+          "Jsoup-16": {
+            "list_price_inference_usd": 0.0018764760000000002,
+            "platform_fee_usd": 0.00010320618000000004,
+            "effective_prepaid_credits_usd": 0.00197968218,
+            "input_tokens": 44678.0,
+            "output_tokens": 504.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 21.0
+          },
+          "Jsoup-20": {
+            "list_price_inference_usd": 0.001920366,
+            "platform_fee_usd": 0.00010562013000000002,
+            "effective_prepaid_credits_usd": 0.00202598613,
+            "input_tokens": 45723.0,
+            "output_tokens": 528.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 22.0
+          },
+          "Jsoup-21": {
+            "list_price_inference_usd": 0.0022306200000000004,
+            "platform_fee_usd": 0.0001226841,
+            "effective_prepaid_credits_usd": 0.0023533040999999997,
+            "input_tokens": 53110.0,
+            "output_tokens": 528.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 22.0
+          },
+          "Jsoup-23": {
+            "list_price_inference_usd": 0.00219723,
+            "platform_fee_usd": 0.00012084765000000001,
+            "effective_prepaid_credits_usd": 0.0023180776500000004,
+            "input_tokens": 52315.0,
+            "output_tokens": 552.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 23.0
+          },
+          "Jsoup-24": {
+            "list_price_inference_usd": 0.0018941580000000002,
+            "platform_fee_usd": 0.00010417869,
+            "effective_prepaid_credits_usd": 0.0019983366899999997,
+            "input_tokens": 45099.0,
+            "output_tokens": 552.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 23.0
+          },
+          "Jsoup-48": {
+            "list_price_inference_usd": 0.0026751480000000005,
+            "platform_fee_usd": 0.00014713314000000004,
+            "effective_prepaid_credits_usd": 0.00282228114,
+            "input_tokens": 63694.0,
+            "output_tokens": 624.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 26.0
+          },
+          "Jsoup-5": {
+            "list_price_inference_usd": 0.0012443340000000002,
+            "platform_fee_usd": 6.843837e-05,
+            "effective_prepaid_credits_usd": 0.0013127723699999999,
+            "input_tokens": 29627.0,
+            "output_tokens": 384.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 16.0
+          },
+          "Jsoup-50": {
+            "list_price_inference_usd": 0.0032101020000000003,
+            "platform_fee_usd": 0.00017655561000000004,
+            "effective_prepaid_credits_usd": 0.0033866576100000005,
+            "input_tokens": 76431.0,
+            "output_tokens": 624.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 26.0
+          },
+          "Jsoup-6": {
+            "list_price_inference_usd": 0.0015070440000000001,
+            "platform_fee_usd": 8.288742e-05,
+            "effective_prepaid_credits_usd": 0.0015899314199999996,
+            "input_tokens": 35882.0,
+            "output_tokens": 456.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 19.0
+          },
+          "Jsoup-64": {
+            "list_price_inference_usd": 0.0028615439999999997,
+            "platform_fee_usd": 0.00015738491999999998,
+            "effective_prepaid_credits_usd": 0.003018928920000001,
+            "input_tokens": 68132.0,
+            "output_tokens": 648.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 27.0
+          },
+          "Jsoup-7": {
+            "list_price_inference_usd": 0.0017582040000000002,
+            "platform_fee_usd": 9.670122000000001e-05,
+            "effective_prepaid_credits_usd": 0.00185490522,
+            "input_tokens": 41862.0,
+            "output_tokens": 456.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 19.0
+          },
+          "Jsoup-87": {
+            "list_price_inference_usd": 0.007814436,
+            "platform_fee_usd": 0.00042979397999999997,
+            "effective_prepaid_credits_usd": 0.00824422998,
+            "input_tokens": 186058.0,
+            "output_tokens": 840.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 35.0
+          },
+          "Lang-10": {
+            "list_price_inference_usd": 0.012945827999999996,
+            "platform_fee_usd": 0.0007120205399999999,
+            "effective_prepaid_credits_usd": 0.013657848539999998,
+            "input_tokens": 308234.0,
+            "output_tokens": 2664.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 111.0
+          },
+          "Lang-12": {
+            "list_price_inference_usd": 0.013057632000000007,
+            "platform_fee_usd": 0.0007181697599999996,
+            "effective_prepaid_credits_usd": 0.013775801759999994,
+            "input_tokens": 310896.0,
+            "output_tokens": 2664.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 111.0
+          },
+          "Lang-13": {
+            "list_price_inference_usd": 0.013801241999999998,
+            "platform_fee_usd": 0.0007590683100000001,
+            "effective_prepaid_credits_usd": 0.014560310309999994,
+            "input_tokens": 328601.0,
+            "output_tokens": 2664.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 111.0
+          },
+          "Lang-16": {
+            "list_price_inference_usd": 0.012138252,
+            "platform_fee_usd": 0.0006676038599999998,
+            "effective_prepaid_credits_usd": 0.012805855860000003,
+            "input_tokens": 289006.0,
+            "output_tokens": 2520.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 105.0
+          },
+          "Lang-17": {
+            "list_price_inference_usd": 0.012143963999999997,
+            "platform_fee_usd": 0.0006679180199999999,
+            "effective_prepaid_credits_usd": 0.012811882019999998,
+            "input_tokens": 289142.0,
+            "output_tokens": 2400.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 100.0
+          },
+          "Lang-19": {
+            "list_price_inference_usd": 0.013167882000000007,
+            "platform_fee_usd": 0.0007242335100000005,
+            "effective_prepaid_credits_usd": 0.013892115510000006,
+            "input_tokens": 313521.0,
+            "output_tokens": 2400.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 100.0
+          },
+          "Lang-21": {
+            "list_price_inference_usd": 0.011539961999999994,
+            "platform_fee_usd": 0.00063469791,
+            "effective_prepaid_credits_usd": 0.012174659910000005,
+            "input_tokens": 274761.0,
+            "output_tokens": 2328.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 97.0
+          },
+          "Lang-23": {
+            "list_price_inference_usd": 0.012374796000000002,
+            "platform_fee_usd": 0.0006806137800000002,
+            "effective_prepaid_credits_usd": 0.013055409779999997,
+            "input_tokens": 294638.0,
+            "output_tokens": 2280.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 95.0
+          },
+          "Lang-26": {
+            "list_price_inference_usd": 0.010889759999999998,
+            "platform_fee_usd": 0.0005989367999999998,
+            "effective_prepaid_credits_usd": 0.011488696800000005,
+            "input_tokens": 259280.0,
+            "output_tokens": 2208.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 92.0
+          },
+          "Lang-28": {
+            "list_price_inference_usd": 0.010703111999999999,
+            "platform_fee_usd": 0.0005886711600000001,
+            "effective_prepaid_credits_usd": 0.011291783160000004,
+            "input_tokens": 254836.0,
+            "output_tokens": 2160.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 90.0
+          },
+          "Lang-30": {
+            "list_price_inference_usd": 0.014798741999999997,
+            "platform_fee_usd": 0.0008139308100000002,
+            "effective_prepaid_credits_usd": 0.015612672809999997,
+            "input_tokens": 352351.0,
+            "output_tokens": 2112.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 88.0
+          },
+          "Lang-33": {
+            "list_price_inference_usd": 0.009958200000000006,
+            "platform_fee_usd": 0.0005477009999999998,
+            "effective_prepaid_credits_usd": 0.010505901,
+            "input_tokens": 237100.0,
+            "output_tokens": 2040.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 85.0
+          },
+          "Lang-36": {
+            "list_price_inference_usd": 0.010430489999999994,
+            "platform_fee_usd": 0.0005736769500000003,
+            "effective_prepaid_credits_usd": 0.011004166949999998,
+            "input_tokens": 248345.0,
+            "output_tokens": 2016.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 84.0
+          },
+          "Lang-40": {
+            "list_price_inference_usd": 0.010220490000000007,
+            "platform_fee_usd": 0.00056212695,
+            "effective_prepaid_credits_usd": 0.01078261695,
+            "input_tokens": 243345.0,
+            "output_tokens": 2088.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 87.0
+          },
+          "Lang-41": {
+            "list_price_inference_usd": 0.011609555999999998,
+            "platform_fee_usd": 0.00063852558,
+            "effective_prepaid_credits_usd": 0.012248081579999995,
+            "input_tokens": 276418.0,
+            "output_tokens": 2088.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 87.0
+          },
+          "Lang-43": {
+            "list_price_inference_usd": 0.010863888000000002,
+            "platform_fee_usd": 0.0005975138399999999,
+            "effective_prepaid_credits_usd": 0.011461401840000007,
+            "input_tokens": 258664.0,
+            "output_tokens": 2160.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 90.0
+          },
+          "Lang-47": {
+            "list_price_inference_usd": 0.010588032,
+            "platform_fee_usd": 0.0005823417600000001,
+            "effective_prepaid_credits_usd": 0.011170373760000005,
+            "input_tokens": 252096.0,
+            "output_tokens": 2064.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 86.0
+          },
+          "Lang-49": {
+            "list_price_inference_usd": 0.009994530000000001,
+            "platform_fee_usd": 0.0005496991499999999,
+            "effective_prepaid_credits_usd": 0.01054422915,
+            "input_tokens": 237965.0,
+            "output_tokens": 2016.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 84.0
+          },
+          "Lang-5": {
+            "list_price_inference_usd": 0.014365680000000004,
+            "platform_fee_usd": 0.0007901123999999997,
+            "effective_prepaid_credits_usd": 0.015155792399999993,
+            "input_tokens": 342040.0,
+            "output_tokens": 2712.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 113.0
+          },
+          "Lang-50": {
+            "list_price_inference_usd": 0.010970735999999998,
+            "platform_fee_usd": 0.00060339048,
+            "effective_prepaid_credits_usd": 0.011574126479999999,
+            "input_tokens": 261208.0,
+            "output_tokens": 2016.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 84.0
+          },
+          "Lang-6": {
+            "list_price_inference_usd": 0.013011600000000005,
+            "platform_fee_usd": 0.0007156379999999999,
+            "effective_prepaid_credits_usd": 0.013727238,
+            "input_tokens": 309800.0,
+            "output_tokens": 2712.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 113.0
+          },
+          "Lang-60": {
+            "list_price_inference_usd": 0.009900281999999998,
+            "platform_fee_usd": 0.0005445155100000001,
+            "effective_prepaid_credits_usd": 0.01044479751,
+            "input_tokens": 235721.0,
+            "output_tokens": 1968.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 82.0
+          },
+          "Lang-61": {
+            "list_price_inference_usd": 0.009671088000000001,
+            "platform_fee_usd": 0.00053190984,
+            "effective_prepaid_credits_usd": 0.01020299784,
+            "input_tokens": 230264.0,
+            "output_tokens": 1968.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 82.0
+          },
+          "Lang-63": {
+            "list_price_inference_usd": 0.011274690000000004,
+            "platform_fee_usd": 0.00062010795,
+            "effective_prepaid_credits_usd": 0.011894797950000001,
+            "input_tokens": 268445.0,
+            "output_tokens": 1968.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 82.0
+          },
+          "Lang-7": {
+            "list_price_inference_usd": 0.013836102,
+            "platform_fee_usd": 0.00076098561,
+            "effective_prepaid_credits_usd": 0.014597087610000004,
+            "input_tokens": 329431.0,
+            "output_tokens": 2712.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 113.0
+          },
+          "Math-10": {
+            "list_price_inference_usd": 0.024430307999999998,
+            "platform_fee_usd": 0.0013436669399999998,
+            "effective_prepaid_credits_usd": 0.02577397494000001,
+            "input_tokens": 581674.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-104": {
+            "list_price_inference_usd": 0.011254529999999993,
+            "platform_fee_usd": 0.0006189991500000001,
+            "effective_prepaid_credits_usd": 0.011873529150000004,
+            "input_tokens": 267965.0,
+            "output_tokens": 3048.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 127.0
+          },
+          "Math-13": {
+            "list_price_inference_usd": 0.02655219000000001,
+            "platform_fee_usd": 0.0014603704500000003,
+            "effective_prepaid_credits_usd": 0.028012560450000012,
+            "input_tokens": 632195.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-14": {
+            "list_price_inference_usd": 0.02840451600000002,
+            "platform_fee_usd": 0.0015622483800000007,
+            "effective_prepaid_credits_usd": 0.029966764379999983,
+            "input_tokens": 676298.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-17": {
+            "list_price_inference_usd": 0.024698058000000012,
+            "platform_fee_usd": 0.0013583931900000004,
+            "effective_prepaid_credits_usd": 0.026056451189999986,
+            "input_tokens": 588049.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-19": {
+            "list_price_inference_usd": 0.025270727999999996,
+            "platform_fee_usd": 0.00138989004,
+            "effective_prepaid_credits_usd": 0.026660618040000014,
+            "input_tokens": 601684.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-28": {
+            "list_price_inference_usd": 0.026137566,
+            "platform_fee_usd": 0.0014375661299999998,
+            "effective_prepaid_credits_usd": 0.027575132129999992,
+            "input_tokens": 622323.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-33": {
+            "list_price_inference_usd": 0.023811227999999983,
+            "platform_fee_usd": 0.0013096175399999997,
+            "effective_prepaid_credits_usd": 0.025120845539999995,
+            "input_tokens": 566934.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-41": {
+            "list_price_inference_usd": 0.022329215999999995,
+            "platform_fee_usd": 0.0012281068800000002,
+            "effective_prepaid_credits_usd": 0.02355732287999998,
+            "input_tokens": 531648.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-42": {
+            "list_price_inference_usd": 0.024750180000000017,
+            "platform_fee_usd": 0.0013612599,
+            "effective_prepaid_credits_usd": 0.026111439899999995,
+            "input_tokens": 589290.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-43": {
+            "list_price_inference_usd": 0.023728908000000007,
+            "platform_fee_usd": 0.0013050899400000003,
+            "effective_prepaid_credits_usd": 0.02503399793999999,
+            "input_tokens": 564974.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-58": {
+            "list_price_inference_usd": 0.020564753999999998,
+            "platform_fee_usd": 0.0011310614699999993,
+            "effective_prepaid_credits_usd": 0.021695815469999997,
+            "input_tokens": 489637.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-62": {
+            "list_price_inference_usd": 0.024353867999999994,
+            "platform_fee_usd": 0.00133946274,
+            "effective_prepaid_credits_usd": 0.025693330740000006,
+            "input_tokens": 579854.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-64": {
+            "list_price_inference_usd": 0.030408336,
+            "platform_fee_usd": 0.0016724584799999995,
+            "effective_prepaid_credits_usd": 0.03208079447999998,
+            "input_tokens": 724008.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-67": {
+            "list_price_inference_usd": 0.021894515999999985,
+            "platform_fee_usd": 0.00120419838,
+            "effective_prepaid_credits_usd": 0.02309871438,
+            "input_tokens": 521298.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-69": {
+            "list_price_inference_usd": 0.02147208,
+            "platform_fee_usd": 0.0011809644000000002,
+            "effective_prepaid_credits_usd": 0.022653044399999996,
+            "input_tokens": 511240.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-71": {
+            "list_price_inference_usd": 0.023853353999999997,
+            "platform_fee_usd": 0.001311934469999999,
+            "effective_prepaid_credits_usd": 0.02516528847000001,
+            "input_tokens": 567937.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-72": {
+            "list_price_inference_usd": 0.021215417999999996,
+            "platform_fee_usd": 0.00116684799,
+            "effective_prepaid_credits_usd": 0.02238226599000001,
+            "input_tokens": 505129.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-77": {
+            "list_price_inference_usd": 0.021935088000000002,
+            "platform_fee_usd": 0.0012064298400000003,
+            "effective_prepaid_credits_usd": 0.023141517840000018,
+            "input_tokens": 522264.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-85": {
+            "list_price_inference_usd": 0.021092778,
+            "platform_fee_usd": 0.001160102789999999,
+            "effective_prepaid_credits_usd": 0.022252880790000002,
+            "input_tokens": 502209.0,
+            "output_tokens": 4800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-86": {
+            "list_price_inference_usd": 0.020084525999999995,
+            "platform_fee_usd": 0.0011046489300000001,
+            "effective_prepaid_credits_usd": 0.021189174929999978,
+            "input_tokens": 478203.0,
+            "output_tokens": 4416.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 184.0
+          },
+          "Math-89": {
+            "list_price_inference_usd": 0.017772846000000012,
+            "platform_fee_usd": 0.0009775065300000006,
+            "effective_prepaid_credits_usd": 0.018750352530000007,
+            "input_tokens": 423163.0,
+            "output_tokens": 4176.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 174.0
+          },
+          "Math-92": {
+            "list_price_inference_usd": 0.02208423000000001,
+            "platform_fee_usd": 0.0012146326499999991,
+            "effective_prepaid_credits_usd": 0.02329886264999998,
+            "input_tokens": 525815.0,
+            "output_tokens": 3816.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 159.0
+          },
+          "Math-93": {
+            "list_price_inference_usd": 0.017002356,
+            "platform_fee_usd": 0.0009351295800000002,
+            "effective_prepaid_credits_usd": 0.017937485580000002,
+            "input_tokens": 404818.0,
+            "output_tokens": 3792.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 158.0
+          },
+          "Math-96": {
+            "list_price_inference_usd": 0.013257090000000003,
+            "platform_fee_usd": 0.0007291399500000001,
+            "effective_prepaid_credits_usd": 0.013986229950000002,
+            "input_tokens": 315645.0,
+            "output_tokens": 3432.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 143.0
+          }
+        },
+        "cohort": {
+          "list_price_inference_usd": 1.486421706000003,
+          "platform_fee_usd": 0.08175319382999995,
+          "effective_prepaid_credits_usd": 1.5681748998300022,
+          "mean_effective_usd_per_bug": 0.012545399198640018,
+          "mean_effective_usd_per_scored_candidate": 0.00012026803434542544,
+          "scored_candidate_pairs": 13039,
+          "bugs_with_cost": 113
+        }
+      },
+      "latency": {
+        "method": "Jev",
+        "request_latency_ms": {
+          "population": "cache_backed_send_to_full_response",
+          "n": 13039,
+          "mean": 542.0057674579388,
+          "p50": 411.8139850324951,
+          "p95": 821.1828959640113
+        },
+        "shortlist_wall_ms": {
+          "population": "reconstructed_from_request_latencies_concurrency_16",
+          "concurrency": 16,
+          "n_bugs": 113,
+          "mean": 13969.562228648012,
+          "p50": 6952.23439799156,
+          "p95": 62095.99825993643,
+          "per_bug": {
+            "Cli-10": 1615.7674429705366,
+            "Cli-11": 1938.8387980288826,
+            "Cli-12": 1279.4714139890857,
+            "Cli-13": 2934.349629038479,
+            "Cli-17": 856.5493049682118,
+            "Cli-19": 777.2265849635005,
+            "Cli-21": 2096.338397008367,
+            "Cli-22": 1061.6659999941476,
+            "Cli-23": 762.3366949846968,
+            "Cli-24": 1404.6270970138721,
+            "Cli-25": 943.5293829883449,
+            "Cli-26": 1591.3872700184584,
+            "Cli-27": 1063.058880972676,
+            "Cli-28": 823.1108420295641,
+            "Cli-29": 1444.4908739533275,
+            "Cli-3": 1189.0980679891072,
+            "Cli-32": 874.2399530601688,
+            "Cli-34": 1037.6059919362888,
+            "Cli-35": 753.5192440263927,
+            "Cli-37": 1720.8777599735186,
+            "Cli-38": 1883.2940449938178,
+            "Cli-4": 1969.189497991465,
+            "Cli-40": 1919.7516029817052,
+            "Cli-8": 1196.624847012572,
+            "Cli-9": 2855.9568320051767,
+            "JacksonDatabind-100": 10966.196218098048,
+            "JacksonDatabind-103": 12614.466131082736,
+            "JacksonDatabind-108": 45930.67991314456,
+            "JacksonDatabind-110": 11496.943557052873,
+            "JacksonDatabind-111": 47065.895116189495,
+            "JacksonDatabind-15": 11957.282764895353,
+            "JacksonDatabind-35": 11584.949237992987,
+            "JacksonDatabind-38": 81414.54451688332,
+            "JacksonDatabind-42": 13018.190771108493,
+            "JacksonDatabind-44": 10749.670068151318,
+            "JacksonDatabind-47": 10897.96473714523,
+            "JacksonDatabind-49": 12021.120244986378,
+            "JacksonDatabind-5": 47554.49211091036,
+            "JacksonDatabind-51": 60944.99801995698,
+            "JacksonDatabind-62": 48117.2658521682,
+            "JacksonDatabind-66": 11113.881031051278,
+            "JacksonDatabind-72": 11767.18253805302,
+            "JacksonDatabind-74": 45785.48334806692,
+            "JacksonDatabind-77": 12224.131106981076,
+            "JacksonDatabind-78": 28911.036536854226,
+            "JacksonDatabind-86": 10992.282135994174,
+            "JacksonDatabind-87": 11146.898011036683,
+            "JacksonDatabind-93": 12045.829088950995,
+            "JacksonDatabind-97": 9448.013745888602,
+            "JacksonDatabind-99": 63822.49861990567,
+            "Jsoup-13": 761.9674479938112,
+            "Jsoup-16": 960.559764993377,
+            "Jsoup-20": 1215.8275309484452,
+            "Jsoup-21": 37087.59348501917,
+            "Jsoup-23": 1607.0596299832687,
+            "Jsoup-24": 2710.5860369629227,
+            "Jsoup-48": 839.441463991534,
+            "Jsoup-5": 792.8261639899574,
+            "Jsoup-50": 1202.297826006543,
+            "Jsoup-6": 1670.755249040667,
+            "Jsoup-64": 1375.6557830492966,
+            "Jsoup-7": 2174.3324699928053,
+            "Jsoup-87": 1529.0501849958673,
+            "Lang-10": 111358.72790397843,
+            "Lang-12": 6547.0883991220035,
+            "Lang-13": 7214.449017017614,
+            "Lang-16": 5925.573363085277,
+            "Lang-17": 6044.555111904629,
+            "Lang-19": 6335.599801037461,
+            "Lang-21": 5930.62734400155,
+            "Lang-23": 3866.2615999928676,
+            "Lang-26": 4891.435712983366,
+            "Lang-28": 4765.312857052777,
+            "Lang-30": 7148.253849125467,
+            "Lang-33": 2497.735805925913,
+            "Lang-36": 4735.968038032297,
+            "Lang-40": 3122.370556986425,
+            "Lang-41": 40466.870397969615,
+            "Lang-43": 3894.7380460449494,
+            "Lang-47": 2866.2641699193045,
+            "Lang-49": 4793.203467037529,
+            "Lang-5": 5069.997517974116,
+            "Lang-50": 5067.657556908671,
+            "Lang-6": 6952.23439799156,
+            "Lang-60": 7409.842679044232,
+            "Lang-61": 4738.373463973403,
+            "Lang-63": 3152.5395908975042,
+            "Lang-7": 7049.0079739829525,
+            "Math-10": 10464.655031159054,
+            "Math-104": 4886.688572005369,
+            "Math-13": 84450.03254205221,
+            "Math-14": 10437.344457954168,
+            "Math-17": 10371.242931927554,
+            "Math-19": 9194.141068961471,
+            "Math-28": 9168.032805959228,
+            "Math-33": 14782.840347848833,
+            "Math-41": 12726.374275109265,
+            "Math-42": 11612.710676970892,
+            "Math-43": 9822.585577960126,
+            "Math-58": 10119.71537192585,
+            "Math-62": 9564.686831028666,
+            "Math-64": 11036.76979005104,
+            "Math-67": 44992.53451509867,
+            "Math-69": 10013.885273016058,
+            "Math-71": 9134.211188997142,
+            "Math-72": 10795.053268957417,
+            "Math-77": 80639.00239992654,
+            "Math-85": 71392.5287250895,
+            "Math-86": 45766.50228194194,
+            "Math-89": 9152.317191939801,
+            "Math-92": 46098.756238934584,
+            "Math-93": 8360.393188078888,
+            "Math-96": 8220.083747932222
+          },
+          "note": "Phase 7 scoring did not persist end-to-end shortlist wall clocks; values are deterministic reconstructions (sum of per-wave maxima)."
+        }
+      },
+      "evaluation_ledger_kind_totals": {
+        "rows": 13402,
+        "input_tokens": 36251221,
+        "output_tokens": 321648,
+        "cached_input_tokens": 0,
+        "list_price_inference_usd": 1.5225512820000013,
+        "platform_fee_usd": 0.08374032050999995,
+        "effective_prepaid_credits_usd": 1.6062916025100002,
+        "provider_reported_cost_usd": 1.5225512820000013,
+        "actual_cash_usd": 0.0,
+        "actual_cash_rows": 0
+      }
+    },
+    "GPT-Nano": {
+      "kind": "gpt",
+      "cost": {
+        "method": "GPT-Nano",
+        "attribution": "equal_share_unique_cache_key",
+        "unique_cache_keys": {
+          "list_price_inference_usd": 6.016011600000016,
+          "platform_fee_usd": 0.3308806379999983,
+          "effective_prepaid_credits_usd": 6.3468922379999935,
+          "input_tokens": 28492533,
+          "output_tokens": 254004,
+          "unique_keys": 13414,
+          "shared_keys": 0
+        },
+        "per_bug": {
+          "Cli-10": {
+            "list_price_inference_usd": 0.0071489000000000014,
+            "platform_fee_usd": 0.0003931895,
+            "effective_prepaid_credits_usd": 0.0075420895000000016,
+            "input_tokens": 33132.0,
+            "output_tokens": 418.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 22.0
+          },
+          "Cli-11": {
+            "list_price_inference_usd": 0.0076418,
+            "platform_fee_usd": 0.000420299,
+            "effective_prepaid_credits_usd": 0.008062099000000001,
+            "input_tokens": 35359.0,
+            "output_tokens": 456.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 24.0
+          },
+          "Cli-12": {
+            "list_price_inference_usd": 0.007654700000000001,
+            "platform_fee_usd": 0.0004210085,
+            "effective_prepaid_credits_usd": 0.0080757085,
+            "input_tokens": 35661.0,
+            "output_tokens": 418.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 22.0
+          },
+          "Cli-13": {
+            "list_price_inference_usd": 0.018638449999999994,
+            "platform_fee_usd": 0.00102511475,
+            "effective_prepaid_credits_usd": 0.01966356475,
+            "input_tokens": 87861.0,
+            "output_tokens": 853.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 45.0
+          },
+          "Cli-17": {
+            "list_price_inference_usd": 0.0075074500000000014,
+            "platform_fee_usd": 0.00041290974999999997,
+            "effective_prepaid_credits_usd": 0.00792035975,
+            "input_tokens": 34806.0,
+            "output_tokens": 437.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 23.0
+          },
+          "Cli-19": {
+            "list_price_inference_usd": 0.00771685,
+            "platform_fee_usd": 0.00042442675000000003,
+            "effective_prepaid_credits_usd": 0.008141276749999999,
+            "input_tokens": 35853.0,
+            "output_tokens": 437.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 23.0
+          },
+          "Cli-21": {
+            "list_price_inference_usd": 0.023584449999999993,
+            "platform_fee_usd": 0.0012971447500000001,
+            "effective_prepaid_credits_usd": 0.02488159475,
+            "input_tokens": 111866.0,
+            "output_tokens": 969.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 51.0
+          },
+          "Cli-22": {
+            "list_price_inference_usd": 0.0090089,
+            "platform_fee_usd": 0.0004954895000000001,
+            "effective_prepaid_credits_usd": 0.0095043895,
+            "input_tokens": 42432.0,
+            "output_tokens": 418.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 22.0
+          },
+          "Cli-23": {
+            "list_price_inference_usd": 0.00839685,
+            "platform_fee_usd": 0.00046182675,
+            "effective_prepaid_credits_usd": 0.008858676749999999,
+            "input_tokens": 39253.0,
+            "output_tokens": 437.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 23.0
+          },
+          "Cli-24": {
+            "list_price_inference_usd": 0.007944250000000002,
+            "platform_fee_usd": 0.0004369337500000001,
+            "effective_prepaid_credits_usd": 0.00838118375,
+            "input_tokens": 36990.0,
+            "output_tokens": 437.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 23.0
+          },
+          "Cli-25": {
+            "list_price_inference_usd": 0.007671250000000002,
+            "platform_fee_usd": 0.00042191875,
+            "effective_prepaid_credits_usd": 0.008093168750000001,
+            "input_tokens": 35625.0,
+            "output_tokens": 437.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 23.0
+          },
+          "Cli-26": {
+            "list_price_inference_usd": 0.008199050000000001,
+            "platform_fee_usd": 0.0004509477500000001,
+            "effective_prepaid_credits_usd": 0.008649997750000001,
+            "input_tokens": 38264.0,
+            "output_tokens": 437.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 23.0
+          },
+          "Cli-27": {
+            "list_price_inference_usd": 0.0076229,
+            "platform_fee_usd": 0.0004192594999999999,
+            "effective_prepaid_credits_usd": 0.0080421595,
+            "input_tokens": 35502.0,
+            "output_tokens": 418.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 22.0
+          },
+          "Cli-28": {
+            "list_price_inference_usd": 0.007720250000000001,
+            "platform_fee_usd": 0.00042461375000000016,
+            "effective_prepaid_credits_usd": 0.00814486375,
+            "input_tokens": 35870.0,
+            "output_tokens": 437.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 23.0
+          },
+          "Cli-29": {
+            "list_price_inference_usd": 0.00803805,
+            "platform_fee_usd": 0.00044209275,
+            "effective_prepaid_credits_usd": 0.008480142750000001,
+            "input_tokens": 37459.0,
+            "output_tokens": 437.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 23.0
+          },
+          "Cli-3": {
+            "list_price_inference_usd": 0.006280249999999999,
+            "platform_fee_usd": 0.00034541374999999997,
+            "effective_prepaid_credits_usd": 0.006625663750000001,
+            "input_tokens": 29145.0,
+            "output_tokens": 361.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 19.0
+          },
+          "Cli-32": {
+            "list_price_inference_usd": 0.0077709499999999996,
+            "platform_fee_usd": 0.00042740225000000004,
+            "effective_prepaid_credits_usd": 0.008198352249999999,
+            "input_tokens": 36136.0,
+            "output_tokens": 435.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 23.0
+          },
+          "Cli-34": {
+            "list_price_inference_usd": 0.008091049999999999,
+            "platform_fee_usd": 0.00044500774999999996,
+            "effective_prepaid_credits_usd": 0.00853605775,
+            "input_tokens": 37724.0,
+            "output_tokens": 437.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 23.0
+          },
+          "Cli-35": {
+            "list_price_inference_usd": 0.008341,
+            "platform_fee_usd": 0.0004587550000000001,
+            "effective_prepaid_credits_usd": 0.008799755,
+            "input_tokens": 38855.0,
+            "output_tokens": 456.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 24.0
+          },
+          "Cli-37": {
+            "list_price_inference_usd": 0.009370900000000001,
+            "platform_fee_usd": 0.0005153994999999999,
+            "effective_prepaid_credits_usd": 0.009886299500000001,
+            "input_tokens": 43767.0,
+            "output_tokens": 494.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 26.0
+          },
+          "Cli-38": {
+            "list_price_inference_usd": 0.009223700000000001,
+            "platform_fee_usd": 0.0005073034999999999,
+            "effective_prepaid_credits_usd": 0.009731003500000002,
+            "input_tokens": 43031.0,
+            "output_tokens": 494.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 26.0
+          },
+          "Cli-4": {
+            "list_price_inference_usd": 0.00613745,
+            "platform_fee_usd": 0.00033755975,
+            "effective_prepaid_credits_usd": 0.006475009750000001,
+            "input_tokens": 28431.0,
+            "output_tokens": 361.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 19.0
+          },
+          "Cli-40": {
+            "list_price_inference_usd": 0.0095198,
+            "platform_fee_usd": 0.0005235890000000001,
+            "effective_prepaid_credits_usd": 0.010043389,
+            "input_tokens": 44274.0,
+            "output_tokens": 532.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 28.0
+          },
+          "Cli-8": {
+            "list_price_inference_usd": 0.0068495,
+            "platform_fee_usd": 0.0003767225,
+            "effective_prepaid_credits_usd": 0.0072262225,
+            "input_tokens": 31635.0,
+            "output_tokens": 418.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 22.0
+          },
+          "Cli-9": {
+            "list_price_inference_usd": 0.006834900000000002,
+            "platform_fee_usd": 0.00037591950000000007,
+            "effective_prepaid_credits_usd": 0.0072108195,
+            "input_tokens": 31562.0,
+            "output_tokens": 418.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 22.0
+          },
+          "JacksonDatabind-100": {
+            "list_price_inference_usd": 0.07692909999999999,
+            "platform_fee_usd": 0.0042311005,
+            "effective_prepaid_credits_usd": 0.08116020050000002,
+            "input_tokens": 360908.0,
+            "output_tokens": 3798.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-103": {
+            "list_price_inference_usd": 0.17873760000000008,
+            "platform_fee_usd": 0.009830568,
+            "effective_prepaid_credits_usd": 0.18856816799999998,
+            "input_tokens": 869938.0,
+            "output_tokens": 3800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-108": {
+            "list_price_inference_usd": 0.08821779999999997,
+            "platform_fee_usd": 0.004851978999999997,
+            "effective_prepaid_credits_usd": 0.09306977899999999,
+            "input_tokens": 417339.0,
+            "output_tokens": 3800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-110": {
+            "list_price_inference_usd": 0.08535420000000003,
+            "platform_fee_usd": 0.004694481,
+            "effective_prepaid_credits_usd": 0.09004868099999999,
+            "input_tokens": 403046.0,
+            "output_tokens": 3796.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-111": {
+            "list_price_inference_usd": 0.11633760000000007,
+            "platform_fee_usd": 0.006398568000000002,
+            "effective_prepaid_credits_usd": 0.12273616799999998,
+            "input_tokens": 557938.0,
+            "output_tokens": 3800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-15": {
+            "list_price_inference_usd": 0.12137519999999993,
+            "platform_fee_usd": 0.006675635999999998,
+            "effective_prepaid_credits_usd": 0.12805083599999986,
+            "input_tokens": 583126.0,
+            "output_tokens": 3800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-35": {
+            "list_price_inference_usd": 0.07541799999999997,
+            "platform_fee_usd": 0.004147989999999999,
+            "effective_prepaid_credits_usd": 0.07956598999999995,
+            "input_tokens": 353340.0,
+            "output_tokens": 3800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-38": {
+            "list_price_inference_usd": 0.10079380000000003,
+            "platform_fee_usd": 0.005543659000000002,
+            "effective_prepaid_credits_usd": 0.10633745900000002,
+            "input_tokens": 480219.0,
+            "output_tokens": 3800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-42": {
+            "list_price_inference_usd": 0.06836359999999995,
+            "platform_fee_usd": 0.003759998,
+            "effective_prepaid_credits_usd": 0.072123598,
+            "input_tokens": 318068.0,
+            "output_tokens": 3800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-44": {
+            "list_price_inference_usd": 0.08669359999999997,
+            "platform_fee_usd": 0.004768148,
+            "effective_prepaid_credits_usd": 0.0914617480000001,
+            "input_tokens": 409718.0,
+            "output_tokens": 3800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-47": {
+            "list_price_inference_usd": 0.07515820000000006,
+            "platform_fee_usd": 0.004133701000000003,
+            "effective_prepaid_credits_usd": 0.07929190099999996,
+            "input_tokens": 352041.0,
+            "output_tokens": 3800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-49": {
+            "list_price_inference_usd": 0.06910200000000001,
+            "platform_fee_usd": 0.0038006099999999994,
+            "effective_prepaid_credits_usd": 0.07290261000000002,
+            "input_tokens": 321760.0,
+            "output_tokens": 3800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-5": {
+            "list_price_inference_usd": 0.06558419999999998,
+            "platform_fee_usd": 0.003607131000000001,
+            "effective_prepaid_credits_usd": 0.06919133100000001,
+            "input_tokens": 304171.0,
+            "output_tokens": 3800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-51": {
+            "list_price_inference_usd": 0.07119419999999999,
+            "platform_fee_usd": 0.003915681000000002,
+            "effective_prepaid_credits_usd": 0.07510988099999998,
+            "input_tokens": 332221.0,
+            "output_tokens": 3800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-62": {
+            "list_price_inference_usd": 0.07492620000000003,
+            "platform_fee_usd": 0.004120941000000001,
+            "effective_prepaid_credits_usd": 0.079047141,
+            "input_tokens": 350906.0,
+            "output_tokens": 3796.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-66": {
+            "list_price_inference_usd": 0.07942669999999999,
+            "platform_fee_usd": 0.004368468499999999,
+            "effective_prepaid_credits_usd": 0.08379516850000004,
+            "input_tokens": 373396.0,
+            "output_tokens": 3798.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-72": {
+            "list_price_inference_usd": 0.0655832,
+            "platform_fee_usd": 0.0036070760000000016,
+            "effective_prepaid_credits_usd": 0.06919027600000004,
+            "input_tokens": 304191.0,
+            "output_tokens": 3796.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-74": {
+            "list_price_inference_usd": 0.07711110000000006,
+            "platform_fee_usd": 0.004241110500000001,
+            "effective_prepaid_credits_usd": 0.0813522105,
+            "input_tokens": 361818.0,
+            "output_tokens": 3798.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-77": {
+            "list_price_inference_usd": 0.07755880000000001,
+            "platform_fee_usd": 0.004265734000000001,
+            "effective_prepaid_credits_usd": 0.08182453400000002,
+            "input_tokens": 364044.0,
+            "output_tokens": 3800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-78": {
+            "list_price_inference_usd": 0.08976100000000005,
+            "platform_fee_usd": 0.004936855,
+            "effective_prepaid_credits_usd": 0.09469785500000004,
+            "input_tokens": 425055.0,
+            "output_tokens": 3800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-86": {
+            "list_price_inference_usd": 0.0701741,
+            "platform_fee_usd": 0.003859575500000003,
+            "effective_prepaid_credits_usd": 0.07403367550000006,
+            "input_tokens": 327133.0,
+            "output_tokens": 3798.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-87": {
+            "list_price_inference_usd": 0.10478250000000006,
+            "platform_fee_usd": 0.005763037499999998,
+            "effective_prepaid_credits_usd": 0.11054553750000001,
+            "input_tokens": 500200.0,
+            "output_tokens": 3794.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-93": {
+            "list_price_inference_usd": 0.07589129999999994,
+            "platform_fee_usd": 0.004174021500000001,
+            "effective_prepaid_credits_usd": 0.08006532150000002,
+            "input_tokens": 355719.0,
+            "output_tokens": 3798.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-97": {
+            "list_price_inference_usd": 0.07191399999999999,
+            "platform_fee_usd": 0.00395527,
+            "effective_prepaid_credits_usd": 0.07586926999999996,
+            "input_tokens": 335820.0,
+            "output_tokens": 3800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "JacksonDatabind-99": {
+            "list_price_inference_usd": 0.06691739999999997,
+            "platform_fee_usd": 0.0036804570000000007,
+            "effective_prepaid_credits_usd": 0.07059785700000004,
+            "input_tokens": 310837.0,
+            "output_tokens": 3800.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Jsoup-13": {
+            "list_price_inference_usd": 0.006748250000000001,
+            "platform_fee_usd": 0.00037115375,
+            "effective_prepaid_credits_usd": 0.007119403750000001,
+            "input_tokens": 31485.0,
+            "output_tokens": 361.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 19.0
+          },
+          "Jsoup-16": {
+            "list_price_inference_usd": 0.00777825,
+            "platform_fee_usd": 0.00042780375,
+            "effective_prepaid_credits_usd": 0.008206053750000001,
+            "input_tokens": 36410.0,
+            "output_tokens": 397.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 21.0
+          },
+          "Jsoup-20": {
+            "list_price_inference_usd": 0.007943300000000002,
+            "platform_fee_usd": 0.0004368815,
+            "effective_prepaid_credits_usd": 0.0083801815,
+            "input_tokens": 37104.0,
+            "output_tokens": 418.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 22.0
+          },
+          "Jsoup-21": {
+            "list_price_inference_usd": 0.009169500000000002,
+            "platform_fee_usd": 0.0005043225,
+            "effective_prepaid_credits_usd": 0.0096738225,
+            "input_tokens": 43235.0,
+            "output_tokens": 418.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 22.0
+          },
+          "Jsoup-23": {
+            "list_price_inference_usd": 0.009131950000000003,
+            "platform_fee_usd": 0.00050225725,
+            "effective_prepaid_credits_usd": 0.009634207249999999,
+            "input_tokens": 42941.0,
+            "output_tokens": 435.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 23.0
+          },
+          "Jsoup-24": {
+            "list_price_inference_usd": 0.007816650000000003,
+            "platform_fee_usd": 0.00042991575000000005,
+            "effective_prepaid_credits_usd": 0.00824656575,
+            "input_tokens": 36352.0,
+            "output_tokens": 437.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 23.0
+          },
+          "Jsoup-33": {
+            "list_price_inference_usd": 0.009524349999999997,
+            "platform_fee_usd": 0.0005238392500000001,
+            "effective_prepaid_credits_usd": 0.010048189249999999,
+            "input_tokens": 44653.0,
+            "output_tokens": 475.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 25.0
+          },
+          "Jsoup-40": {
+            "list_price_inference_usd": 0.00960355,
+            "platform_fee_usd": 0.0005281952500000002,
+            "effective_prepaid_credits_usd": 0.010131745250000003,
+            "input_tokens": 45049.0,
+            "output_tokens": 475.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 25.0
+          },
+          "Jsoup-47": {
+            "list_price_inference_usd": 0.010437299999999998,
+            "platform_fee_usd": 0.0005740515000000001,
+            "effective_prepaid_credits_usd": 0.0110113515,
+            "input_tokens": 49099.0,
+            "output_tokens": 494.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 26.0
+          },
+          "Jsoup-48": {
+            "list_price_inference_usd": 0.011000000000000001,
+            "platform_fee_usd": 0.0006050000000000002,
+            "effective_prepaid_credits_usd": 0.011604999999999999,
+            "input_tokens": 51925.0,
+            "output_tokens": 492.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 26.0
+          },
+          "Jsoup-5": {
+            "list_price_inference_usd": 0.005198400000000001,
+            "platform_fee_usd": 0.00028591200000000004,
+            "effective_prepaid_credits_usd": 0.005484312,
+            "input_tokens": 24092.0,
+            "output_tokens": 304.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 16.0
+          },
+          "Jsoup-50": {
+            "list_price_inference_usd": 0.013409500000000003,
+            "platform_fee_usd": 0.0007375225000000001,
+            "effective_prepaid_credits_usd": 0.0141470225,
+            "input_tokens": 63960.0,
+            "output_tokens": 494.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 26.0
+          },
+          "Jsoup-54": {
+            "list_price_inference_usd": 0.0107951,
+            "platform_fee_usd": 0.0005937305,
+            "effective_prepaid_credits_usd": 0.0113888305,
+            "input_tokens": 50888.0,
+            "output_tokens": 494.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 26.0
+          },
+          "Jsoup-6": {
+            "list_price_inference_usd": 0.006262250000000002,
+            "platform_fee_usd": 0.00034442375000000004,
+            "effective_prepaid_credits_usd": 0.00660667375,
+            "input_tokens": 29055.0,
+            "output_tokens": 361.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 19.0
+          },
+          "Jsoup-64": {
+            "list_price_inference_usd": 0.011688450000000001,
+            "platform_fee_usd": 0.00064286475,
+            "effective_prepaid_credits_usd": 0.012331314749999999,
+            "input_tokens": 55236.0,
+            "output_tokens": 513.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 27.0
+          },
+          "Jsoup-69": {
+            "list_price_inference_usd": 0.013561700000000005,
+            "platform_fee_usd": 0.0007458935,
+            "effective_prepaid_credits_usd": 0.014307593499999993,
+            "input_tokens": 63771.0,
+            "output_tokens": 646.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 34.0
+          },
+          "Jsoup-7": {
+            "list_price_inference_usd": 0.00736275,
+            "platform_fee_usd": 0.00040495125,
+            "effective_prepaid_credits_usd": 0.00776770125,
+            "input_tokens": 34570.0,
+            "output_tokens": 359.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 19.0
+          },
+          "Jsoup-72": {
+            "list_price_inference_usd": 0.013327100000000007,
+            "platform_fee_usd": 0.0007329904999999999,
+            "effective_prepaid_credits_usd": 0.014060090499999999,
+            "input_tokens": 62598.0,
+            "output_tokens": 646.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 34.0
+          },
+          "Jsoup-75": {
+            "list_price_inference_usd": 0.0142181,
+            "platform_fee_usd": 0.0007819955000000001,
+            "effective_prepaid_credits_usd": 0.0150000955,
+            "input_tokens": 67053.0,
+            "output_tokens": 646.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 34.0
+          },
+          "Jsoup-78": {
+            "list_price_inference_usd": 0.0144779,
+            "platform_fee_usd": 0.0007962845000000001,
+            "effective_prepaid_credits_usd": 0.015274184499999998,
+            "input_tokens": 68352.0,
+            "output_tokens": 646.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 34.0
+          },
+          "Jsoup-81": {
+            "list_price_inference_usd": 0.014663899999999995,
+            "platform_fee_usd": 0.0008065145,
+            "effective_prepaid_credits_usd": 0.015470414499999998,
+            "input_tokens": 69282.0,
+            "output_tokens": 646.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 34.0
+          },
+          "Jsoup-84": {
+            "list_price_inference_usd": 0.014417000000000003,
+            "platform_fee_usd": 0.000792935,
+            "effective_prepaid_credits_usd": 0.015209934999999999,
+            "input_tokens": 68060.0,
+            "output_tokens": 644.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 34.0
+          },
+          "Jsoup-85": {
+            "list_price_inference_usd": 0.014337699999999998,
+            "platform_fee_usd": 0.0007885734999999999,
+            "effective_prepaid_credits_usd": 0.0151262735,
+            "input_tokens": 67651.0,
+            "output_tokens": 646.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 34.0
+          },
+          "Jsoup-86": {
+            "list_price_inference_usd": 0.01470285,
+            "platform_fee_usd": 0.0008086567499999998,
+            "effective_prepaid_credits_usd": 0.015511506749999994,
+            "input_tokens": 69358.0,
+            "output_tokens": 665.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 35.0
+          },
+          "Jsoup-87": {
+            "list_price_inference_usd": 0.032121649999999995,
+            "platform_fee_usd": 0.00176669075,
+            "effective_prepaid_credits_usd": 0.033888340749999996,
+            "input_tokens": 156452.0,
+            "output_tokens": 665.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 35.0
+          },
+          "Lang-10": {
+            "list_price_inference_usd": 0.05037105000000001,
+            "platform_fee_usd": 0.002770407749999999,
+            "effective_prepaid_credits_usd": 0.05314145775000002,
+            "input_tokens": 238749.0,
+            "output_tokens": 2097.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 111.0
+          },
+          "Lang-12": {
+            "list_price_inference_usd": 0.05097054999999999,
+            "platform_fee_usd": 0.0028033802500000015,
+            "effective_prepaid_credits_usd": 0.05377393025000001,
+            "input_tokens": 241734.0,
+            "output_tokens": 2099.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 111.0
+          },
+          "Lang-13": {
+            "list_price_inference_usd": 0.05367575,
+            "platform_fee_usd": 0.0029521662500000007,
+            "effective_prepaid_credits_usd": 0.05662791625000001,
+            "input_tokens": 255260.0,
+            "output_tokens": 2099.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 111.0
+          },
+          "Lang-16": {
+            "list_price_inference_usd": 0.04694035,
+            "platform_fee_usd": 0.002581719250000001,
+            "effective_prepaid_credits_usd": 0.04952206925,
+            "input_tokens": 222258.0,
+            "output_tokens": 1991.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 105.0
+          },
+          "Lang-17": {
+            "list_price_inference_usd": 0.047490199999999996,
+            "platform_fee_usd": 0.0026119610000000003,
+            "effective_prepaid_credits_usd": 0.05010216099999998,
+            "input_tokens": 225676.0,
+            "output_tokens": 1884.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 100.0
+          },
+          "Lang-19": {
+            "list_price_inference_usd": 0.05200749999999999,
+            "platform_fee_usd": 0.0028604125000000003,
+            "effective_prepaid_credits_usd": 0.0548679125,
+            "input_tokens": 248250.0,
+            "output_tokens": 1886.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 100.0
+          },
+          "Lang-21": {
+            "list_price_inference_usd": 0.04496544999999999,
+            "platform_fee_usd": 0.00247309975,
+            "effective_prepaid_credits_usd": 0.04743854975,
+            "input_tokens": 213421.0,
+            "output_tokens": 1825.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 97.0
+          },
+          "Lang-23": {
+            "list_price_inference_usd": 0.04820884999999999,
+            "platform_fee_usd": 0.00265148675,
+            "effective_prepaid_credits_usd": 0.05086033675,
+            "input_tokens": 229863.0,
+            "output_tokens": 1789.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 95.0
+          },
+          "Lang-26": {
+            "list_price_inference_usd": 0.041951500000000023,
+            "platform_fee_usd": 0.0023073325000000007,
+            "effective_prepaid_credits_usd": 0.044258832500000005,
+            "input_tokens": 198920.0,
+            "output_tokens": 1734.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 92.0
+          },
+          "Lang-28": {
+            "list_price_inference_usd": 0.04153669999999999,
+            "platform_fee_usd": 0.0022845185000000007,
+            "effective_prepaid_credits_usd": 0.043821218500000016,
+            "input_tokens": 197096.0,
+            "output_tokens": 1694.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 90.0
+          },
+          "Lang-30": {
+            "list_price_inference_usd": 0.05927400000000001,
+            "platform_fee_usd": 0.00326007,
+            "effective_prepaid_credits_usd": 0.06253407000000001,
+            "input_tokens": 285970.0,
+            "output_tokens": 1664.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 88.0
+          },
+          "Lang-33": {
+            "list_price_inference_usd": 0.038699950000000025,
+            "platform_fee_usd": 0.0021284972500000003,
+            "effective_prepaid_credits_usd": 0.040828447250000004,
+            "input_tokens": 183431.0,
+            "output_tokens": 1611.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 85.0
+          },
+          "Lang-36": {
+            "list_price_inference_usd": 0.0405699,
+            "platform_fee_usd": 0.0022313445000000007,
+            "effective_prepaid_credits_usd": 0.04280124449999999,
+            "input_tokens": 192937.0,
+            "output_tokens": 1586.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 84.0
+          },
+          "Lang-40": {
+            "list_price_inference_usd": 0.03978135000000001,
+            "platform_fee_usd": 0.002187974249999999,
+            "effective_prepaid_credits_usd": 0.04196932425000001,
+            "input_tokens": 188688.0,
+            "output_tokens": 1635.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 87.0
+          },
+          "Lang-41": {
+            "list_price_inference_usd": 0.045426350000000004,
+            "platform_fee_usd": 0.002498449250000001,
+            "effective_prepaid_credits_usd": 0.047924799250000004,
+            "input_tokens": 216813.0,
+            "output_tokens": 1651.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 87.0
+          },
+          "Lang-43": {
+            "list_price_inference_usd": 0.04200310000000002,
+            "platform_fee_usd": 0.0023101705,
+            "effective_prepaid_credits_usd": 0.04431327049999999,
+            "input_tokens": 199353.0,
+            "output_tokens": 1706.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 90.0
+          },
+          "Lang-47": {
+            "list_price_inference_usd": 0.041457600000000004,
+            "platform_fee_usd": 0.0022801680000000004,
+            "effective_prepaid_credits_usd": 0.043737767999999996,
+            "input_tokens": 197113.0,
+            "output_tokens": 1628.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 86.0
+          },
+          "Lang-49": {
+            "list_price_inference_usd": 0.038936500000000006,
+            "platform_fee_usd": 0.0021415074999999997,
+            "effective_prepaid_credits_usd": 0.041078007500000006,
+            "input_tokens": 184795.0,
+            "output_tokens": 1582.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 84.0
+          },
+          "Lang-5": {
+            "list_price_inference_usd": 0.05635115000000002,
+            "platform_fee_usd": 0.00309931325,
+            "effective_prepaid_credits_usd": 0.059450463249999995,
+            "input_tokens": 268437.0,
+            "output_tokens": 2131.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 113.0
+          },
+          "Lang-50": {
+            "list_price_inference_usd": 0.042847,
+            "platform_fee_usd": 0.002356584999999999,
+            "effective_prepaid_credits_usd": 0.045203584999999984,
+            "input_tokens": 204335.0,
+            "output_tokens": 1584.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 84.0
+          },
+          "Lang-6": {
+            "list_price_inference_usd": 0.05064495000000001,
+            "platform_fee_usd": 0.002785472250000001,
+            "effective_prepaid_credits_usd": 0.053430422250000005,
+            "input_tokens": 239906.0,
+            "output_tokens": 2131.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 113.0
+          },
+          "Lang-60": {
+            "list_price_inference_usd": 0.038849700000000015,
+            "platform_fee_usd": 0.0021367335,
+            "effective_prepaid_credits_usd": 0.04098643349999999,
+            "input_tokens": 184561.0,
+            "output_tokens": 1550.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 82.0
+          },
+          "Lang-61": {
+            "list_price_inference_usd": 0.03781709999999999,
+            "platform_fee_usd": 0.0020799405000000003,
+            "effective_prepaid_credits_usd": 0.039897040499999994,
+            "input_tokens": 179398.0,
+            "output_tokens": 1550.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 82.0
+          },
+          "Lang-63": {
+            "list_price_inference_usd": 0.04444930000000002,
+            "platform_fee_usd": 0.0024447114999999993,
+            "effective_prepaid_credits_usd": 0.046894011500000006,
+            "input_tokens": 212659.0,
+            "output_tokens": 1534.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 82.0
+          },
+          "Lang-7": {
+            "list_price_inference_usd": 0.053934349999999985,
+            "platform_fee_usd": 0.0029663892499999993,
+            "effective_prepaid_credits_usd": 0.05690073925,
+            "input_tokens": 256378.0,
+            "output_tokens": 2127.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 113.0
+          },
+          "Math-10": {
+            "list_price_inference_usd": 0.09752220000000004,
+            "platform_fee_usd": 0.005363721000000001,
+            "effective_prepaid_credits_usd": 0.102885921,
+            "input_tokens": 463911.0,
+            "output_tokens": 3792.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-104": {
+            "list_price_inference_usd": 0.04536005000000002,
+            "platform_fee_usd": 0.002494802750000001,
+            "effective_prepaid_credits_usd": 0.04785485274999998,
+            "input_tokens": 211769.0,
+            "output_tokens": 2405.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 127.0
+          },
+          "Math-13": {
+            "list_price_inference_usd": 0.10364110000000008,
+            "platform_fee_usd": 0.0057002604999999975,
+            "effective_prepaid_credits_usd": 0.10934136049999996,
+            "input_tokens": 494593.0,
+            "output_tokens": 3778.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-14": {
+            "list_price_inference_usd": 0.11117009999999992,
+            "platform_fee_usd": 0.0061143555000000025,
+            "effective_prepaid_credits_usd": 0.11728445549999995,
+            "input_tokens": 532263.0,
+            "output_tokens": 3774.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-17": {
+            "list_price_inference_usd": 0.09779010000000005,
+            "platform_fee_usd": 0.005378455499999996,
+            "effective_prepaid_credits_usd": 0.10316855549999994,
+            "input_tokens": 465263.0,
+            "output_tokens": 3790.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-19": {
+            "list_price_inference_usd": 0.10011039999999997,
+            "platform_fee_usd": 0.0055060720000000025,
+            "effective_prepaid_credits_usd": 0.105616472,
+            "input_tokens": 476927.0,
+            "output_tokens": 3780.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-28": {
+            "list_price_inference_usd": 0.10436990000000003,
+            "platform_fee_usd": 0.005740344500000001,
+            "effective_prepaid_credits_usd": 0.1101102445,
+            "input_tokens": 498312.0,
+            "output_tokens": 3766.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-33": {
+            "list_price_inference_usd": 0.09445930000000001,
+            "platform_fee_usd": 0.005195261499999998,
+            "effective_prepaid_credits_usd": 0.0996545615,
+            "input_tokens": 448709.0,
+            "output_tokens": 3774.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-41": {
+            "list_price_inference_usd": 0.08841970000000005,
+            "platform_fee_usd": 0.004863083499999999,
+            "effective_prepaid_credits_usd": 0.09328278349999995,
+            "input_tokens": 418436.0,
+            "output_tokens": 3786.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-42": {
+            "list_price_inference_usd": 0.0989499,
+            "platform_fee_usd": 0.0054422444999999995,
+            "effective_prepaid_credits_usd": 0.10439214449999998,
+            "input_tokens": 471162.0,
+            "output_tokens": 3774.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-43": {
+            "list_price_inference_usd": 0.09351329999999997,
+            "platform_fee_usd": 0.005143231500000001,
+            "effective_prepaid_credits_usd": 0.09865653149999996,
+            "input_tokens": 443979.0,
+            "output_tokens": 3774.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-58": {
+            "list_price_inference_usd": 0.08168930000000002,
+            "platform_fee_usd": 0.004492911500000003,
+            "effective_prepaid_credits_usd": 0.08618221149999998,
+            "input_tokens": 384834.0,
+            "output_tokens": 3778.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-62": {
+            "list_price_inference_usd": 0.09660950000000001,
+            "platform_fee_usd": 0.0053135225000000025,
+            "effective_prepaid_credits_usd": 0.10192302249999999,
+            "input_tokens": 459485.0,
+            "output_tokens": 3770.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-64": {
+            "list_price_inference_usd": 0.1225526000000001,
+            "platform_fee_usd": 0.006740393000000002,
+            "effective_prepaid_credits_usd": 0.12929299299999994,
+            "input_tokens": 589213.0,
+            "output_tokens": 3768.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-67": {
+            "list_price_inference_usd": 0.08611390000000005,
+            "platform_fee_usd": 0.004736264499999999,
+            "effective_prepaid_credits_usd": 0.09085016450000004,
+            "input_tokens": 407082.0,
+            "output_tokens": 3758.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-69": {
+            "list_price_inference_usd": 0.08437610000000008,
+            "platform_fee_usd": 0.004640685500000001,
+            "effective_prepaid_credits_usd": 0.08901678549999997,
+            "input_tokens": 398293.0,
+            "output_tokens": 3774.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-71": {
+            "list_price_inference_usd": 0.09541290000000004,
+            "platform_fee_usd": 0.005247709500000001,
+            "effective_prepaid_credits_usd": 0.10066060950000007,
+            "input_tokens": 453527.0,
+            "output_tokens": 3766.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-72": {
+            "list_price_inference_usd": 0.08470590000000004,
+            "platform_fee_usd": 0.0046588245,
+            "effective_prepaid_credits_usd": 0.08936472449999999,
+            "input_tokens": 399992.0,
+            "output_tokens": 3766.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-77": {
+            "list_price_inference_usd": 0.08751759999999997,
+            "platform_fee_usd": 0.0048134680000000004,
+            "effective_prepaid_credits_usd": 0.09233106800000003,
+            "input_tokens": 413888.0,
+            "output_tokens": 3792.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-85": {
+            "list_price_inference_usd": 0.08373560000000004,
+            "platform_fee_usd": 0.004605458,
+            "effective_prepaid_credits_usd": 0.088341058,
+            "input_tokens": 395003.0,
+            "output_tokens": 3788.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 200.0
+          },
+          "Math-86": {
+            "list_price_inference_usd": 0.07995229999999999,
+            "platform_fee_usd": 0.004397376500000001,
+            "effective_prepaid_credits_usd": 0.08434967649999994,
+            "input_tokens": 377999.0,
+            "output_tokens": 3482.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 184.0
+          },
+          "Math-89": {
+            "list_price_inference_usd": 0.07027599999999998,
+            "platform_fee_usd": 0.0038651800000000015,
+            "effective_prepaid_credits_usd": 0.07414118,
+            "input_tokens": 330855.0,
+            "output_tokens": 3284.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 174.0
+          },
+          "Math-92": {
+            "list_price_inference_usd": 0.09108375000000006,
+            "platform_fee_usd": 0.005009606250000001,
+            "effective_prepaid_credits_usd": 0.09609335624999998,
+            "input_tokens": 436600.0,
+            "output_tokens": 3011.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 159.0
+          },
+          "Math-93": {
+            "list_price_inference_usd": 0.06809619999999998,
+            "platform_fee_usd": 0.003745291000000001,
+            "effective_prepaid_credits_usd": 0.07184149100000002,
+            "input_tokens": 321756.0,
+            "output_tokens": 2996.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 158.0
+          },
+          "Math-96": {
+            "list_price_inference_usd": 0.053507250000000034,
+            "platform_fee_usd": 0.0029428987500000016,
+            "effective_prepaid_credits_usd": 0.05645014874999999,
+            "input_tokens": 250605.0,
+            "output_tokens": 2709.0,
+            "shared_keys": 0.0,
+            "exclusive_keys": 143.0
+          }
+        },
+        "cohort": {
+          "list_price_inference_usd": 6.016011600000016,
+          "platform_fee_usd": 0.3308806379999983,
+          "effective_prepaid_credits_usd": 6.3468922379999935,
+          "mean_effective_usd_per_bug": 0.05077513790399995,
+          "mean_effective_usd_per_scored_candidate": 0.00047315433412852193,
+          "scored_candidate_pairs": 13414,
+          "bugs_with_cost": 125
+        }
+      },
+      "latency": {
+        "method": "GPT-Nano",
+        "request_latency_ms": {
+          "population": "cache_backed_send_to_full_response",
+          "n": 13414,
+          "mean": 1358.8183201835689,
+          "p50": 1240.2731190086342,
+          "p95": 1968.9522438769925
+        },
+        "shortlist_wall_ms": {
+          "population": "reconstructed_from_request_latencies_concurrency_16",
+          "concurrency": 16,
+          "n_bugs": 125,
+          "mean": 20472.35986735765,
+          "p50": 14475.794513942674,
+          "p95": 67156.60200688288,
+          "per_bug": {
+            "Cli-10": 2472.8393040131778,
+            "Cli-11": 3388.9294829568826,
+            "Cli-12": 3804.265835962724,
+            "Cli-13": 7628.427272080444,
+            "Cli-17": 3478.127091017086,
+            "Cli-19": 3222.3526039742865,
+            "Cli-21": 8384.747809031978,
+            "Cli-22": 3083.021216967609,
+            "Cli-23": 2682.7128729783,
+            "Cli-24": 3169.5334509713575,
+            "Cli-25": 4561.052304983605,
+            "Cli-26": 3826.2400109670125,
+            "Cli-27": 3498.3026609988883,
+            "Cli-28": 4572.444198012818,
+            "Cli-29": 3661.4383700070903,
+            "Cli-3": 2933.8692000019364,
+            "Cli-32": 2839.914501993917,
+            "Cli-34": 3765.111319022253,
+            "Cli-35": 3562.737716943957,
+            "Cli-37": 4727.645882056095,
+            "Cli-38": 3090.884239994921,
+            "Cli-4": 4498.617694072891,
+            "Cli-40": 3580.2569029619917,
+            "Cli-8": 3048.9730020053685,
+            "Cli-9": 4029.667358030565,
+            "JacksonDatabind-100": 34246.112548979,
+            "JacksonDatabind-103": 26989.98663603561,
+            "JacksonDatabind-108": 25863.935962028336,
+            "JacksonDatabind-110": 25577.26637396263,
+            "JacksonDatabind-111": 27041.104611824267,
+            "JacksonDatabind-15": 41845.65040102461,
+            "JacksonDatabind-35": 83059.7072331002,
+            "JacksonDatabind-38": 30615.95674691489,
+            "JacksonDatabind-42": 69877.03489215346,
+            "JacksonDatabind-44": 27638.376654067542,
+            "JacksonDatabind-47": 29170.89374200441,
+            "JacksonDatabind-49": 62341.36307792505,
+            "JacksonDatabind-5": 89736.1800109502,
+            "JacksonDatabind-51": 63435.1760999416,
+            "JacksonDatabind-62": 67875.64142310293,
+            "JacksonDatabind-66": 27926.099982869346,
+            "JacksonDatabind-72": 75294.83781207819,
+            "JacksonDatabind-74": 26825.33457898535,
+            "JacksonDatabind-77": 59238.81956876721,
+            "JacksonDatabind-78": 32386.766609852202,
+            "JacksonDatabind-86": 61101.050427008886,
+            "JacksonDatabind-87": 28228.95667987177,
+            "JacksonDatabind-93": 34466.71047993004,
+            "JacksonDatabind-97": 32488.11906290939,
+            "JacksonDatabind-99": 26869.340448989533,
+            "Jsoup-13": 2483.970010012854,
+            "Jsoup-16": 2478.9730129996315,
+            "Jsoup-20": 5246.087383013219,
+            "Jsoup-21": 4167.489016021136,
+            "Jsoup-23": 3899.732760968618,
+            "Jsoup-24": 6028.093314031139,
+            "Jsoup-33": 4104.202591988724,
+            "Jsoup-40": 3598.7057619495317,
+            "Jsoup-47": 18214.913327014074,
+            "Jsoup-48": 2693.5837870114483,
+            "Jsoup-5": 2066.9869279954582,
+            "Jsoup-50": 3152.26091403747,
+            "Jsoup-54": 3619.2647759453394,
+            "Jsoup-6": 3219.745496986434,
+            "Jsoup-64": 2921.2098619318567,
+            "Jsoup-69": 6083.526138972957,
+            "Jsoup-7": 4691.504874965176,
+            "Jsoup-72": 4927.235522016417,
+            "Jsoup-75": 5829.369282000698,
+            "Jsoup-78": 5613.046338025015,
+            "Jsoup-81": 4238.317657029256,
+            "Jsoup-84": 5994.408534956165,
+            "Jsoup-85": 5602.768073033076,
+            "Jsoup-86": 4976.743581995834,
+            "Jsoup-87": 5436.090947012417,
+            "Lang-10": 16760.616074025165,
+            "Lang-12": 15363.664261007216,
+            "Lang-13": 16228.995507990476,
+            "Lang-16": 15507.704200979788,
+            "Lang-17": 14314.0621840721,
+            "Lang-19": 14475.794513942674,
+            "Lang-21": 14874.628913064953,
+            "Lang-23": 11765.47258591745,
+            "Lang-26": 10578.063248947728,
+            "Lang-28": 15170.2507630107,
+            "Lang-30": 11230.941204936244,
+            "Lang-33": 50754.612828895915,
+            "Lang-36": 11079.165385919623,
+            "Lang-40": 16347.715027048253,
+            "Lang-41": 10111.97628104128,
+            "Lang-43": 13078.147561929654,
+            "Lang-47": 11744.098711991683,
+            "Lang-49": 11381.014050042722,
+            "Lang-5": 13590.8150220057,
+            "Lang-50": 15738.354180997703,
+            "Lang-6": 50230.03415501444,
+            "Lang-60": 22506.9343749783,
+            "Lang-61": 10967.157754057553,
+            "Lang-63": 9161.050371010788,
+            "Lang-7": 14111.449569929391,
+            "Math-10": 25839.8819839349,
+            "Math-104": 14602.689693856519,
+            "Math-13": 22503.435715916567,
+            "Math-14": 110284.92775408085,
+            "Math-17": 33781.316323031206,
+            "Math-19": 25297.436207940336,
+            "Math-28": 23848.004010040313,
+            "Math-33": 26690.385841066018,
+            "Math-41": 64280.44434200274,
+            "Math-42": 27013.069361040834,
+            "Math-43": 23128.206072957255,
+            "Math-58": 22601.29741189303,
+            "Math-62": 28711.496416013688,
+            "Math-64": 24629.715583927464,
+            "Math-67": 31418.84245898109,
+            "Math-69": 31705.810557003133,
+            "Math-71": 71189.11766406382,
+            "Math-72": 31126.016857044306,
+            "Math-77": 24055.397406802513,
+            "Math-85": 28393.228414061014,
+            "Math-86": 29840.704267087858,
+            "Math-89": 20996.213699050713,
+            "Math-92": 23040.474356967025,
+            "Math-93": 24218.825126066804,
+            "Math-96": 23834.56290292088
+          },
+          "note": "Phase 7 scoring did not persist end-to-end shortlist wall clocks; values are deterministic reconstructions (sum of per-wave maxima)."
+        }
+      },
+      "evaluation_ledger_kind_totals": {
+        "rows": 13414,
+        "input_tokens": 28492533,
+        "output_tokens": 254004,
+        "cached_input_tokens": 0,
+        "list_price_inference_usd": 6.016011600000015,
+        "platform_fee_usd": 0.3308806379999982,
+        "effective_prepaid_credits_usd": 6.346892237999992,
+        "provider_reported_cost_usd": 5.90500488000002,
+        "actual_cash_usd": 0.0,
+        "actual_cash_rows": 0
+      }
+    },
+    "BM25": {
+      "kind": null,
+      "cost": {
+        "cohort": {
+          "effective_prepaid_credits_usd": 0.0,
+          "mean_effective_usd_per_bug": 0.0
+        }
+      },
+      "latency": null
+    },
+    "Random": {
+      "kind": null,
+      "cost": {
+        "cohort": {
+          "effective_prepaid_credits_usd": 0.0,
+          "mean_effective_usd_per_bug": 0.0
+        }
+      },
+      "latency": null
+    }
+  },
+  "jev_vs_gpt_cost_criterion": {
+    "basis": "effective_prepaid_credits_usd",
+    "definition": "list_price_inference_usd + platform_fee_usd (dated snapshot rates)",
+    "numerator_jev_usd": 1.5681748998300022,
+    "denominator_gpt_usd": 6.3468922379999935,
+    "ratio": 0.24707759971739476,
+    "threshold": 0.3,
+    "jev_leq_30pct_of_gpt": true,
+    "pricing_snapshot_path": "results/pricing_snapshot.json",
+    "pricing_snapshot_sha256": "e300d66be9e18925b32bac7c32f09454b1aa82afaeccedd20dfb7ef56f4a0b92",
+    "pricing_snapshot_date": "2026-09-23",
+    "notes": [
+      "Do not treat promotional actual_cash_usd or free-tier credits as zero inference cost",
+      "Embedding vectors reused across bugs are equal-share attributed; cohort totals use unique cache keys",
+      "Random and BM25 have zero measured inference cost"
+    ]
+  },
+  "concurrency_cap": 16
+}

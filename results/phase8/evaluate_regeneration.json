@@ -1,0 +1,111 @@
+{
+  "schema_version": "jev-phase8-evaluate-regeneration-v1",
+  "ok": true,
+  "created_at": "2026-09-23T15:24:01+00:00",
+  "regenerated_at_source": "phase7_seal.sealed_at",
+  "experiment_commit": "edc70bacd23f2fc5f511ef4d97a33376e7b20bf8",
+  "run_id": "eval-v1-20260923T035853+0000",
+  "freeze_tag": "experiment-v1",
+  "environment": {
+    "credentials_were_present": [],
+    "credentials_cleared": {
+      "OPENROUTER_API_KEY": false,
+      "OPENAI_API_KEY": false,
+      "TYPESAFE_API_KEY": false,
+      "ANTHROPIC_API_KEY": false
+    },
+    "offline": true
+  },
+  "steps": [
+    {
+      "step": "per_bug_metrics",
+      "ok": true
+    },
+    {
+      "step": "random_metrics",
+      "ok": true
+    },
+    {
+      "step": "cost_latency",
+      "ok": true
+    },
+    {
+      "step": "cohort_summaries",
+      "ok": true
+    },
+    {
+      "step": "statistics",
+      "ok": true
+    },
+    {
+      "step": "report_outputs",
+      "ok": true
+    }
+  ],
+  "checks": {
+    "ok": true,
+    "n_checks": 16,
+    "n_passed": 16,
+    "n_failed": 0,
+    "passed": [
+      "metrics_csv_625",
+      "metrics_methods",
+      "metrics_split",
+      "budget_k_ceiling",
+      "apfd_rank1",
+      "apfd_rank_n",
+      "multi_trigger_min_rank",
+      "mcnemar_zero_discordance",
+      "random_125_rows",
+      "random_median_nftr_present",
+      "bootstrap_10000",
+      "bootstrap_seed",
+      "mcnemar_table_125",
+      "cohort_denom_125",
+      "candidate_recall_range",
+      "figures_present"
+    ],
+    "failures": []
+  },
+  "artifacts": {
+    "metrics_csv": {
+      "path": "results/metrics.csv",
+      "sha256": "5db4b0a49f6261ebe1d158c642cf7ca1ba3fdea2f0252757d4d74a57ae07bd91"
+    },
+    "statistics_json": {
+      "path": "results/statistics.json",
+      "sha256": "44210263c95624cee2606aad91d693ec6b79f1e9654fc0d739b3254eefaf7138"
+    },
+    "headline_table": {
+      "path": "results/phase8/headline_table.md",
+      "sha256": "f00fed0f1bd5f2537045a6bbd4bf29e6a7e7e280facded9cbddcc6b3d57f1dc5"
+    },
+    "figure_data": {
+      "path": "results/phase8/figure_data.json",
+      "sha256": "0eb4ef4c28761c168c26f9a4e508d16c14065a27bb8f96fa07191079ec28b004"
+    },
+    "figures": {
+      "figure1_budget_curve.svg": {
+        "path": "results/phase8/figures/figure1_budget_curve.svg",
+        "sha256": "29a926cf4fd3297596c8e6843acb41940815291effab0f5caad5bdcb94b68f4f"
+      },
+      "figure2_nftr_cdf.svg": {
+        "path": "results/phase8/figures/figure2_nftr_cdf.svg",
+        "sha256": "ab2abc4b50dc73dcec4cc289a28c8e210383d0dd75682239aa539fd3322bb054"
+      },
+      "figure3_project_fdr10.svg": {
+        "path": "results/phase8/figures/figure3_project_fdr10.svg",
+        "sha256": "61174209e8164049da7e8606e5bf9d697d0d74202a4654111a670b71ff5cafd8"
+      },
+      "figure4_quality_vs_cost.svg": {
+        "path": "results/phase8/figures/figure4_quality_vs_cost.svg",
+        "sha256": "cb8c712fed4900b58b870b6ba4a210217cbb2286984993241a28a1f4b353f843"
+      }
+    }
+  },
+  "notes": [
+    "Zero provider calls; API credentials cleared",
+    "Timestamps normalized to Phase 7 sealed_at for byte-stable JSON",
+    "SVG figures and metrics.csv are timestamp-free and hash-stable"
+  ]
+}

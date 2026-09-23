@@ -1,0 +1,37 @@
+{
+  "schema_version": "jev-phase8-analysis-audit-v1",
+  "created_at": "2026-09-23T15:24:01+00:00",
+  "ok": true,
+  "errors": [],
+  "notes": [
+    "Embedding: cost rows with values=125",
+    "Jev: cost rows with values=113",
+    "GPT-Nano: cost rows with values=125"
+  ],
+  "evaluate_checks": {
+    "ok": true,
+    "n_checks": 16,
+    "n_passed": 16,
+    "n_failed": 0,
+    "passed": [
+      "metrics_csv_625",
+      "metrics_methods",
+      "metrics_split",
+      "budget_k_ceiling",
+      "apfd_rank1",
+      "apfd_rank_n",
+      "multi_trigger_min_rank",
+      "mcnemar_zero_discordance",
+      "random_125_rows",
+      "random_median_nftr_present",
+      "bootstrap_10000",
+      "bootstrap_seed",
+      "mcnemar_table_125",
+      "cohort_denom_125",
+      "candidate_recall_range",
+      "figures_present"
+    ],
+    "failures": []
+  },
+  "n_metrics_rows": 625
+}

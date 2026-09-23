@@ -1,0 +1,481 @@
+{
+  "schema_version": "jev-phase8-cohort-summaries-v1",
+  "created_at": "2026-09-23T15:24:01+00:00",
+  "experiment_commit": "edc70bacd23f2fc5f511ef4d97a33376e7b20bf8",
+  "run_id": "eval-v1-20260923T035853+0000",
+  "inputs": {
+    "per_bug_metrics": "results/phase8/per_bug_metrics.json",
+    "random_metrics": "results/phase8/random_metrics.json",
+    "cost_latency": "results/phase8/cost_latency.json"
+  },
+  "input_hashes": {
+    "per_bug_metrics": "645b9ee7beaf99b7d5d169f6988828b2adbaf69b13071d5452f027499c06de40",
+    "random_metrics": "3da8ac909c0e2c20e004ed1c5220228e98f891655182829183c73eb0060d5ab8",
+    "cost_latency": "e2ee4beb48c0acdb8ee5519f50e0487cab65f8cc57f92f75bb31986f9bb5d1b3"
+  },
+  "counts": {
+    "evaluation_bugs": 125,
+    "projects": {
+      "Cli": 25,
+      "Lang": 25,
+      "Math": 25,
+      "Jsoup": 25,
+      "JacksonDatabind": 25
+    },
+    "methods": [
+      "Random",
+      "BM25",
+      "Embedding",
+      "Jev",
+      "GPT-Nano"
+    ],
+    "jev_imputed_worst_case": 12
+  },
+  "cohort": {
+    "Random": {
+      "method": "Random",
+      "denominator": 125,
+      "fdr_at_1pct": 0.027512,
+      "fdr_at_2pct": 0.033872,
+      "fdr_at_5pct": 0.070032,
+      "fdr_at_10pct": 0.124032,
+      "fdr_at_20pct": 0.22852,
+      "fdr_at_50pct": 0.537208,
+      "fdr_at_100pct": 1.0,
+      "primary_fdr_at_10pct": 0.124032,
+      "mrr": 0.08836604919671748,
+      "mean_apfd": 0.5206429837626279,
+      "mean_nftr": 0.4892957724313171,
+      "median_nftr": 0.47861506079935195,
+      "cost_usd_per_bug": 0.0,
+      "request_latency_ms": null,
+      "median_nftr_rule": "mean_of_cohort_medians_across_permutation_replicates"
+    },
+    "BM25": {
+      "method": "BM25",
+      "denominator": 125,
+      "fdr_at_1pct": 0.408,
+      "fdr_at_2pct": 0.448,
+      "fdr_at_5pct": 0.608,
+      "fdr_at_10pct": 0.736,
+      "fdr_at_20pct": 0.856,
+      "fdr_at_50pct": 0.968,
+      "fdr_at_100pct": 1.0,
+      "primary_fdr_at_10pct": 0.736,
+      "mrr": 0.49760916272832095,
+      "mean_apfd": 0.8987108860253452,
+      "mean_nftr": 0.11122787016859974,
+      "median_nftr": 0.045454545454545456,
+      "cost_usd_per_bug": 0.0,
+      "request_latency_ms": null
+    },
+    "Embedding": {
+      "method": "Embedding",
+      "denominator": 125,
+      "fdr_at_1pct": 0.704,
+      "fdr_at_2pct": 0.728,
+      "fdr_at_5pct": 0.832,
+      "fdr_at_10pct": 0.88,
+      "fdr_at_20pct": 0.904,
+      "fdr_at_50pct": 0.96,
+      "fdr_at_100pct": 1.0,
+      "primary_fdr_at_10pct": 0.88,
+      "mrr": 0.690551360488092,
+      "mean_apfd": 0.9376290168053428,
+      "mean_nftr": 0.07230973938860212,
+      "median_nftr": 0.026923076923076925,
+      "cost_usd_per_bug": 0.0012607690568000038,
+      "request_latency_ms": {
+        "mean": 55.11010321696083,
+        "p50": 47.29273621887842,
+        "p95": 106.39707990594616
+      }
+    },
+    "Jev": {
+      "method": "Jev",
+      "denominator": 125,
+      "fdr_at_1pct": 0.728,
+      "fdr_at_2pct": 0.768,
+      "fdr_at_5pct": 0.816,
+      "fdr_at_10pct": 0.864,
+      "fdr_at_20pct": 0.888,
+      "fdr_at_50pct": 0.896,
+      "fdr_at_100pct": 0.904,
+      "primary_fdr_at_10pct": 0.864,
+      "mrr": 0.7463919698189667,
+      "mean_apfd": 0.880448958117087,
+      "mean_nftr": 0.12948979807685787,
+      "median_nftr": 0.01694915254237288,
+      "cost_usd_per_bug": 0.012545399198640018,
+      "request_latency_ms": {
+        "mean": 542.0057674579388,
+        "p50": 411.8139850324951,
+        "p95": 821.1828959640113
+      }
+    },
+    "GPT-Nano": {
+      "method": "GPT-Nano",
+      "denominator": 125,
+      "fdr_at_1pct": 0.784,
+      "fdr_at_2pct": 0.816,
+      "fdr_at_5pct": 0.912,
+      "fdr_at_10pct": 0.912,
+      "fdr_at_20pct": 0.96,
+      "fdr_at_50pct": 0.976,
+      "fdr_at_100pct": 1.0,
+      "primary_fdr_at_10pct": 0.912,
+      "mrr": 0.7953687070018104,
+      "mean_apfd": 0.95950481003566,
+      "mean_nftr": 0.05043394615828488,
+      "median_nftr": 0.013921113689095127,
+      "cost_usd_per_bug": 0.05077513790399995,
+      "request_latency_ms": {
+        "mean": 1358.8183201835689,
+        "p50": 1240.2731190086342,
+        "p95": 1968.9522438769925
+      }
+    }
+  },
+  "projects": {
+    "Cli": {
+      "denominator": 25,
+      "significance": "descriptive_only_no_inference",
+      "methods": {
+        "Random": {
+          "primary_fdr_at_10pct": 0.15136,
+          "mrr": 0.17409708862042061,
+          "median_nftr": 0.5201818181818189
+        },
+        "BM25": {
+          "primary_fdr_at_10pct": 0.48,
+          "mrr": 0.40381055452484027,
+          "median_nftr": 0.17391304347826086
+        },
+        "Embedding": {
+          "primary_fdr_at_10pct": 0.76,
+          "mrr": 0.7137435897435896,
+          "median_nftr": 0.045454545454545456
+        },
+        "Jev": {
+          "primary_fdr_at_10pct": 0.88,
+          "mrr": 0.8255555555555556,
+          "median_nftr": 0.045454545454545456
+        },
+        "GPT-Nano": {
+          "primary_fdr_at_10pct": 0.84,
+          "mrr": 0.8233793103448277,
+          "median_nftr": 0.043478260869565216
+        }
+      }
+    },
+    "Lang": {
+      "denominator": 25,
+      "significance": "descriptive_only_no_inference",
+      "methods": {
+        "Random": {
+          "primary_fdr_at_10pct": 0.10728,
+          "mrr": 0.055991585556621676,
+          "median_nftr": 0.5055567010309276
+        },
+        "BM25": {
+          "primary_fdr_at_10pct": 0.92,
+          "mrr": 0.6536190476190477,
+          "median_nftr": 0.012195121951219513
+        },
+        "Embedding": {
+          "primary_fdr_at_10pct": 0.96,
+          "mrr": 0.8858181818181818,
+          "median_nftr": 0.011494252873563218
+        },
+        "Jev": {
+          "primary_fdr_at_10pct": 0.96,
+          "mrr": 0.8844102564102565,
+          "median_nftr": 0.011363636363636364
+        },
+        "GPT-Nano": {
+          "primary_fdr_at_10pct": 0.96,
+          "mrr": 0.9082051282051282,
+          "median_nftr": 0.011111111111111112
+        }
+      }
+    },
+    "Math": {
+      "denominator": 25,
+      "significance": "descriptive_only_no_inference",
+      "methods": {
+        "Random": {
+          "primary_fdr_at_10pct": 0.11443999999999999,
+          "mrr": 0.028239321062145023,
+          "median_nftr": 0.499024647887324
+        },
+        "BM25": {
+          "primary_fdr_at_10pct": 0.88,
+          "mrr": 0.6666614718614718,
+          "median_nftr": 0.006329113924050633
+        },
+        "Embedding": {
+          "primary_fdr_at_10pct": 0.88,
+          "mrr": 0.7092957272837325,
+          "median_nftr": 0.006289308176100629
+        },
+        "Jev": {
+          "primary_fdr_at_10pct": 0.96,
+          "mrr": 0.8191528822055137,
+          "median_nftr": 0.0045662100456621
+        },
+        "GPT-Nano": {
+          "primary_fdr_at_10pct": 0.96,
+          "mrr": 0.8161416361416362,
+          "median_nftr": 0.0045871559633027525
+        }
+      }
+    },
+    "Jsoup": {
+      "denominator": 25,
+      "significance": "descriptive_only_no_inference",
+      "methods": {
+        "Random": {
+          "primary_fdr_at_10pct": 0.13656000000000001,
+          "mrr": 0.16248447668364988,
+          "median_nftr": 0.5184285714285719
+        },
+        "BM25": {
+          "primary_fdr_at_10pct": 0.72,
+          "mrr": 0.446,
+          "median_nftr": 0.09090909090909091
+        },
+        "Embedding": {
+          "primary_fdr_at_10pct": 0.8,
+          "mrr": 0.7466666666666667,
+          "median_nftr": 0.045454545454545456
+        },
+        "Jev": {
+          "primary_fdr_at_10pct": 0.52,
+          "mrr": 0.4956550743374273,
+          "median_nftr": 0.125
+        },
+        "GPT-Nano": {
+          "primary_fdr_at_10pct": 0.88,
+          "mrr": 0.818,
+          "median_nftr": 0.045454545454545456
+        }
+      }
+    },
+    "JacksonDatabind": {
+      "denominator": 25,
+      "significance": "descriptive_only_no_inference",
+      "methods": {
+        "Random": {
+          "primary_fdr_at_10pct": 0.11052,
+          "mrr": 0.021017774060750262,
+          "median_nftr": 0.5025672131147546
+        },
+        "BM25": {
+          "primary_fdr_at_10pct": 0.68,
+          "mrr": 0.31795473963624504,
+          "median_nftr": 0.053117782909930716
+        },
+        "Embedding": {
+          "primary_fdr_at_10pct": 1.0,
+          "mrr": 0.3972326369282891,
+          "median_nftr": 0.008875739644970414
+        },
+        "Jev": {
+          "primary_fdr_at_10pct": 1.0,
+          "mrr": 0.7071860805860806,
+          "median_nftr": 0.0033112582781456954
+        },
+        "GPT-Nano": {
+          "primary_fdr_at_10pct": 0.92,
+          "mrr": 0.6111174603174603,
+          "median_nftr": 0.004608294930875576
+        }
+      }
+    }
+  },
+  "candidate_ceiling": {
+    "metric": "bm25_trigger_recall_at_min_200_N",
+    "denominator": 125,
+    "numerator": 125,
+    "recall": 1.0,
+    "source": "sealed_candidate_ids_prefix"
+  },
+  "jev_miss_classification": {
+    "budget": "10pct",
+    "denominator": 125,
+    "detections": [
+      "Cli-10",
+      "Cli-11",
+      "Cli-12",
+      "Cli-17",
+      "Cli-19",
+      "Cli-21",
+      "Cli-22",
+      "Cli-23",
+      "Cli-24",
+      "Cli-25",
+      "Cli-26",
+      "Cli-29",
+      "Cli-3",
+      "Cli-32",
+      "Cli-34",
+      "Cli-35",
+      "Cli-37",
+      "Cli-38",
+      "Cli-4",
+      "Cli-40",
+      "Cli-8",
+      "Cli-9",
+      "JacksonDatabind-100",
+      "JacksonDatabind-103",
+      "JacksonDatabind-108",
+      "JacksonDatabind-110",
+      "JacksonDatabind-111",
+      "JacksonDatabind-15",
+      "JacksonDatabind-35",
+      "JacksonDatabind-38",
+      "JacksonDatabind-42",
+      "JacksonDatabind-44",
+      "JacksonDatabind-47",
+      "JacksonDatabind-49",
+      "JacksonDatabind-5",
+      "JacksonDatabind-51",
+      "JacksonDatabind-62",
+      "JacksonDatabind-66",
+      "JacksonDatabind-72",
+      "JacksonDatabind-74",
+      "JacksonDatabind-77",
+      "JacksonDatabind-78",
+      "JacksonDatabind-86",
+      "JacksonDatabind-87",
+      "JacksonDatabind-93",
+      "JacksonDatabind-97",
+      "JacksonDatabind-99",
+      "Jsoup-13",
+      "Jsoup-16",
+      "Jsoup-20",
+      "Jsoup-21",
+      "Jsoup-23",
+      "Jsoup-24",
+      "Jsoup-48",
+      "Jsoup-5",
+      "Jsoup-50",
+      "Jsoup-6",
+      "Jsoup-64",
+      "Jsoup-7",
+      "Jsoup-87",
+      "Lang-10",
+      "Lang-12",
+      "Lang-13",
+      "Lang-16",
+      "Lang-17",
+      "Lang-19",
+      "Lang-21",
+      "Lang-23",
+      "Lang-26",
+      "Lang-28",
+      "Lang-30",
+      "Lang-33",
+      "Lang-36",
+      "Lang-40",
+      "Lang-41",
+      "Lang-43",
+      "Lang-47",
+      "Lang-49",
+      "Lang-5",
+      "Lang-50",
+      "Lang-60",
+      "Lang-61",
+      "Lang-63",
+      "Lang-7",
+      "Math-10",
+      "Math-13",
+      "Math-14",
+      "Math-17",
+      "Math-19",
+      "Math-28",
+      "Math-33",
+      "Math-41",
+      "Math-42",
+      "Math-43",
+      "Math-58",
+      "Math-62",
+      "Math-64",
+      "Math-67",
+      "Math-69",
+      "Math-71",
+      "Math-72",
+      "Math-77",
+      "Math-85",
+      "Math-86",
+      "Math-89",
+      "Math-92",
+      "Math-93",
+      "Math-96"
+    ],
+    "n_detections": 108,
+    "candidate_generation_misses": {
+      "count": 0,
+      "bug_ids": [],
+      "rule": "no_trigger_in_bm25_shortlist"
+    },
+    "reranker_misses": {
+      "count": 17,
+      "bug_ids": [
+        "Cli-13",
+        "Cli-27",
+        "Cli-28",
+        "Jsoup-33",
+        "Jsoup-40",
+        "Jsoup-47",
+        "Jsoup-54",
+        "Jsoup-69",
+        "Jsoup-72",
+        "Jsoup-75",
+        "Jsoup-78",
+        "Jsoup-81",
+        "Jsoup-84",
+        "Jsoup-85",
+        "Jsoup-86",
+        "Lang-6",
+        "Math-104"
+      ],
+      "rule": "trigger_in_bm25_shortlist_but_jev_not_detected_at_10pct (includes unavailable A-001 gaps imputed as non-detections)"
+    },
+    "n_misses": 17
+  },
+  "practical_success": {
+    "criterion": "Jev practically successful if (FDR10 >= BM25 + 5pp) OR (within 2pp of GPT-Nano AND cost <= 30% of GPT)",
+    "fdr_at_10pct": {
+      "Jev": 0.864,
+      "BM25": 0.736,
+      "GPT-Nano": 0.912,
+      "Embedding": 0.88,
+      "Random": 0.124032
+    },
+    "alternative_1_beat_bm25_by_5pp": {
+      "delta_pp_jev_minus_bm25": 12.8,
+      "threshold_pp": 5.0,
+      "passed": true
+    },
+    "alternative_2_near_gpt_and_cheap": {
+      "delta_pp_jev_minus_gpt": -4.800000000000004,
+      "abs_delta_pp": 4.800000000000004,
+      "within_2pp": false,
+      "jev_gpt_cost_ratio": 0.24707759971739476,
+      "cost_ratio_threshold": 0.3,
+      "cost_ratio_passed": true,
+      "numerator_jev_usd": 1.5681748998300022,
+      "denominator_gpt_usd": 6.3468922379999935,
+      "passed": false
+    },
+    "practically_successful": true,
+    "winning_alternative": "alt1"
+  },
+  "notes": [
+    "Headline FDR denominators are 125 for every method",
+    "Unavailable Jev A-001 bugs imputed as non-detections with r=N",
+    "Random median NFTR uses P8-03 replicate rule",
+    "Project tables are descriptive only (no significance claims)"
+  ]
+}

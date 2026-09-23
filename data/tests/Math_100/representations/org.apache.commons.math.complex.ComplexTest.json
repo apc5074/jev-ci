@@ -1,0 +1,116 @@
+{
+  "test_class": "org.apache.commons.math.complex.ComplexTest",
+  "source_file": "src/test/org/apache/commons/math/complex/ComplexTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math.complex.ComplexTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/math/complex/ComplexTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math.complex;\n\nimport org.apache.commons.math.TestUtils;\n\nimport junit.framework.TestCase;\n\n/**\n * @version $Revision$ $Date$\n */\npublic class ComplexTest extends TestCase {\n    \n    private double inf = Double.POSITIVE_INFINITY;\n    private double neginf = Double.NEGATIVE_INFINITY;\n    private double nan = Double.NaN;\n    private double pi = Math.PI;\n    private Complex oneInf = new Complex(1, inf);\n    private Complex oneNegInf = new Complex(1, neginf);\n    private Complex infOne = new Complex(inf, 1);\n    private Complex infZero = new Complex(inf, 0);\n    private Complex infNaN = new Complex(inf, nan);\n    private Complex infNegInf = new Complex(inf, neginf);\n    private Complex infInf = new Complex(inf, inf);\n    private Complex negInfInf = new Complex(neginf, inf);\n    private Complex negInfZero = new Complex(neginf, 0);\n    private Complex negInfOne = new Complex(neginf, 1);\n    private Complex negInfNaN = new Complex(neginf, nan);\n    private Complex negInfNegInf = new Complex(neginf, neginf);\n    private Complex oneNaN = new Complex(1, nan);\n    private Complex zeroInf = new Complex(0, inf);\n    private Complex zeroNaN = new Complex(0, nan);\n    private Complex nanInf = new Complex(nan, inf);\n    private Complex nanNegInf = new Complex(nan, neginf);\n    private Complex nanZero = new Complex(nan, 0);\n    \n    public void testConstructor() {\n        Complex z = new Complex(3.0, 4.0);\n        assertEquals(3.0, z.getReal(), 1.0e-5);\n        assertEquals(4.0, z.getImaginary(), 1.0e-5);\n    }\n    \n    public void testConstructorNaN() {\n        Complex z = new Complex(3.0, Double.NaN);\n        assertTrue(z.isNaN());\n\n        z = new Complex(nan, 4.0);\n        assertTrue(z.isNaN());\n\n        z = new Complex(3.0, 4.0);\n        assertFalse(z.isNaN());\n    }\n    \n    public void testAbs() {\n        Complex z = new Complex(3.0, 4.0);\n        assertEquals(5.0, z.abs(), 1.0e-5);\n    }\n    \n    public void testAbsNaN() {\n        assertTrue(Double.isNaN(Complex.NaN.abs()));\n        Complex z = new Complex(inf, nan);\n        assertTrue(Double.isNaN(z.abs()));\n    }\n    \n    public void testAbsInfinite() {\n        TestUtils.assertSame(Complex.NaN, infOne.sin());\n        TestUtils.assertSame(Complex.NaN, negInfOne.sin());\n        TestUtils.assertSame(Complex.NaN, infInf.sin());\n        TestUtils.assertSame(Complex.NaN, infNegInf.sin());\n        TestUtils.assertSame(Complex.NaN, negInfInf.sin());\n        TestUtils.assertSame(Complex.NaN, negInfNegInf.sin());\n    }\n    \n    public void testSinNaN() {\n        assertTrue(Complex.NaN.sin().isNaN());\n    }\n    \n    public void testSinh() {\n        Complex z = new Complex(3, 4);\n        Complex expected = new Complex(-6.54812, -7.61923);\n        TestUtils.assertEquals(expected, z.sinh(), 1.0e-5);\n    }\n    \n    public void testSinhNaN() {\n        assertTrue(Complex.NaN.sinh().isNaN());\n    }\n    \n    public void testSinhInf() {\n        TestUtils.assertSame(Complex.NaN, oneInf.sinh());\n        TestUtils.assertSame(Complex.NaN, oneNegInf.sinh());\n        TestUtils.assertSame(infInf, infOne.sinh());\n        TestUtils.assertSame(negInfInf, negInfOne.sinh());\n        TestUtils.assertSame(Complex.NaN, infInf.sinh());\n        TestUtils.assertSame(Complex.NaN, infNegInf.sinh());\n        TestUtils.assertSame(Complex.NaN, negInfInf.sinh());\n        TestUtils.assertSame(Complex.NaN, negInfNegInf.sinh());\n    }\n    \n    public void testSqrtRealPositive() {\n        Complex z = new Complex(3, 4);\n        Complex expected = new Complex(2, 1);\n        TestUtils.assertEquals(expected, z.sqrt(), 1.0e-5);\n    }\n    \n    public void testSqrtRealZero() {\n        Complex z = new Complex(0.0, 4);\n        Complex expected = new Complex(1.41421, 1.41421);\n        TestUtils.assertEquals(expected, z.sqrt(), 1.0e-5);\n    }\n    \n    public void testSqrtRealNegative() {\n        Complex z = new Complex(-3.0, 4);\n        Complex expected = new Complex(1, 2);\n        TestUtils.assertEquals(expected, z.sqrt(), 1.0e-5);\n    }\n    \n    public void testSqrtImaginaryZero() {\n        Complex z = new Complex(-3.0, 0.0);\n        Complex expected = new Complex(0.0, 1.73205);\n        TestUtils.assertEquals(expected, z.sqrt(), 1.0e-5);\n    }\n    \n    public void testSqrtImaginaryNegative() {\n        Complex z = new Complex(-3.0, -4.0);\n        Complex expected = new Complex(1.0, -2.0);\n        TestUtils.assertEquals(expected, z.sqrt(), 1.0e-5);\n    }\n    \n    public void testSqrtPolar() {\n        double r = 1;\n        for (int i = 0; i < 5; i++) {\n            r += i;\n            double theta = 0;\n            for (int j =0; j < 11; j++) {\n                theta += pi /12;\n                Complex z = ComplexUtils.polar2Complex(r, theta);\n                Complex sqrtz = ComplexUtils.polar2Complex(Math.sqrt(r), theta / 2);\n                TestUtils.assertEquals(sqrtz, z.sqrt(), 10e-12);\n            }\n        }       \n    }\n    \n    public void testSqrtNaN() {\n        assertTrue(Complex.NaN.sqrt().isNaN());\n    }\n      \n    public void testSqrtInf() {\n        TestUtils.assertSame(infNaN, oneInf.sqrt());\n        TestUtils.assertSame(infNaN, oneNegInf.sqrt());\n        TestUtils.assertSame(infZero, infOne.sqrt());\n        TestUtils.assertSame(zeroInf, negInfOne.sqrt());\n        TestUtils.assertSame(infNaN, infInf.sqrt());\n        TestUtils.assertSame(infNaN, infNegInf.sqrt());\n        TestUtils.assertSame(nanInf, negInfInf.sqrt());\n        TestUtils.assertSame(nanNegInf, negInfNegInf.sqrt());\n    }\n    \n    public void testSqrt1z() {\n        Complex z = new Complex(3, 4);\n        Complex expected = new Complex(4.08033, -2.94094);\n        TestUtils.assertEquals(expected, z.sqrt1z(), 1.0e-5);\n    }\n    \n    public void testSqrt1zNaN() {\n        assertTrue(Complex.NaN.sqrt1z().isNaN());\n    }\n    \n    public void testTan() {\n        Complex z = new Complex(3, 4);\n        Complex expected = new Complex(-0.000187346, 0.999356);\n        TestUtils.assertEquals(expected, z.tan(), 1.0e-5);\n    }\n    \n    public void testTanNaN() {\n        assertTrue(Complex.NaN.tan().isNaN());\n    }\n    \n    public void testTanInf() {\n        TestUtils.assertSame(zeroNaN, oneInf.tan());\n        TestUtils.assertSame(zeroNaN, oneNegInf.tan());\n        TestUtils.assertSame(Complex.NaN, infOne.tan());\n        TestUtils.assertSame(Complex.NaN, negInfOne.tan());\n        TestUtils.assertSame(Complex.NaN, infInf.tan());\n        TestUtils.assertSame(Complex.NaN, infNegInf.tan());\n        TestUtils.assertSame(Complex.NaN, negInfInf.tan());\n        TestUtils.assertSame(Complex.NaN, negInfNegInf.tan());\n    }\n    \n   public void testTanCritical() {\n        TestUtils.assertSame(infNaN, new Complex(pi/2, 0).tan());\n        TestUtils.assertSame(negInfNaN, new Complex(-pi/2, 0).tan());\n    }\n    \n    public void testTanh() {\n        Complex z = new Complex(3, 4);\n        Complex expected = new Complex(1.00071, 0.00490826);\n        TestUtils.assertEquals(expected, z.tanh(), 1.0e-5);\n    }\n    \n    public void testTanhNaN() {\n        assertTrue(Complex.NaN.tanh().isNaN());\n    }\n    \n    public void testTanhInf() {\n        TestUtils.assertSame(Complex.NaN, oneInf.tanh());\n",
+  "compaction": {
+    "source_lines": 693,
+    "mode": "windows",
+    "windows_total": 12,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        540,
+        620
+      ],
+      [
+        600,
+        680
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 19.251461751927216
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 10.483496938729651
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 10.340235305098487
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 19.251461751927216
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 3.339762855474044
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 3.6029056734792446
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.260595246661971
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 7.274716020880077
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 1.2880188753410968
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 0.9055790520124785
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 1.263614464995659
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 3.639215278536182
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 10.483496938729651
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 10.340235305098487
+      },
+      {
+        "start": 660,
+        "end": 693,
+        "score": 0.16589035605147257
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8120,
+  "representation_chars": 8120,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

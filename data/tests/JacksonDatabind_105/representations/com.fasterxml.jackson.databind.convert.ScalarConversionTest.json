@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.convert.ScalarConversionTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/convert/ScalarConversionTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.convert.ScalarConversionTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/convert/ScalarConversionTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.convert;\n\nimport com.fasterxml.jackson.databind.*;\n\npublic class ScalarConversionTest extends BaseMapTest\n{\n    private final ObjectMapper MAPPER = new ObjectMapper();\n    \n    // [databind#1433]\n    public void testConvertValueNullPrimitive() throws Exception\n    {\n        assertEquals(Byte.valueOf((byte) 0), MAPPER.convertValue(null, Byte.TYPE));\n        assertEquals(Short.valueOf((short) 0), MAPPER.convertValue(null, Short.TYPE));\n        assertEquals(Integer.valueOf(0), MAPPER.convertValue(null, Integer.TYPE));\n        assertEquals(Long.valueOf(0L), MAPPER.convertValue(null, Long.TYPE));\n        assertEquals(Float.valueOf(0f), MAPPER.convertValue(null, Float.TYPE));\n        assertEquals(Double.valueOf(0d), MAPPER.convertValue(null, Double.TYPE));\n        assertEquals(Character.valueOf('\\0'), MAPPER.convertValue(null, Character.TYPE));\n        assertEquals(Boolean.FALSE, MAPPER.convertValue(null, Boolean.TYPE));\n    }\n    \n    // [databind#1433]\n    public void testConvertValueNullBoxed() throws Exception\n    {\n        assertNull(MAPPER.convertValue(null, Byte.class));\n        assertNull(MAPPER.convertValue(null, Short.class));\n        assertNull(MAPPER.convertValue(null, Integer.class));\n        assertNull(MAPPER.convertValue(null, Long.class));\n        assertNull(MAPPER.convertValue(null, Float.class));\n        assertNull(MAPPER.convertValue(null, Double.class));\n        assertNull(MAPPER.convertValue(null, Character.class));\n        assertNull(MAPPER.convertValue(null, Boolean.class));\n    }\n}\n",
+  "compaction": {
+    "source_lines": 34,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1743,
+  "representation_chars": 1743,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.node.TestObjectNode",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/node/TestObjectNode.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.node.TestObjectNode\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/node/TestObjectNode.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.node;\n\nimport java.math.BigDecimal;\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.JsonCreator;\nimport com.fasterxml.jackson.annotation.JsonInclude;\nimport com.fasterxml.jackson.annotation.JsonValue;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\n\n/**\n * Additional tests for {@link ObjectNode} container class.\n */\npublic class TestObjectNode\n    extends BaseMapTest\n{\n    @JsonDeserialize(as = DataImpl.class)\n    public interface Data {\n    }\n\n    public static class DataImpl implements Data\n    {\n        protected JsonNode root;\n\n        @JsonCreator\n        public DataImpl(JsonNode n) {\n            root = n;\n        }\n        \n        @JsonValue\n        public JsonNode value() { return root; }\n        \n        /*\n        public Wrapper(ObjectNode n) { root = n; }\n        \n        @JsonValue\n        public ObjectNode value() { return root; }\n        */\n    }\n\n    static class ObNodeWrapper {\n        @JsonInclude(JsonInclude.Include.NON_EMPTY)\n        public ObjectNode node;\n\n        public ObNodeWrapper(ObjectNode n) {\n            node = n;\n        }\n    }\n\n    // [databind#941]\n    static class MyValue\n    {\n        private final ObjectNode object;\n\n        @JsonCreator\n        public MyValue(ObjectNode object) { this.object = object; }\n\n        @JsonValue\n        public ObjectNode getObject() { return object; }\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n\n    private final ObjectMapper MAPPER = objectMapper();\n\n    public void testSimpleObject() throws Exception\n    {\n        String JSON = \"{ \\\"key\\\" : 1, \\\"b\\\" : \\\"x\\\" }\";\n        JsonNode root = MAPPER.readTree(JSON);\n\n        // basic properties first:\n        assertFalse(root.isValueNode());\n        assertTrue(root.isContainerNode());\n        assertFalse(root.isArray());\n        assertTrue(root.isObject());\n        assertEquals(2, root.size());\n\n        // Related to [JACKSON-50]:\n        Iterator<JsonNode> it = root.iterator();\n        assertNotNull(it);\n        assertTrue(it.hasNext());\n        JsonNode n = it.next();\n        assertNotNull(n);\n        assertEquals(IntNode.valueOf(1), n);\n\n        assertTrue(it.hasNext());\n        n = it.next();\n        assertNotNull(n);\n        assertEquals(TextNode.valueOf(\"x\"), n);\n\n        assertFalse(it.hasNext());\n\n        // Ok, then, let's traverse via extended interface\n        ObjectNode obNode = (ObjectNode) root;\n        Iterator<Map.Entry<String,JsonNode>> fit = obNode.fields();\n        // we also know that LinkedHashMap is used, i.e. order preserved\n        assertTrue(fit.hasNext());\n        Map.Entry<String,JsonNode> en = fit.next();\n        assertEquals(\"key\", en.getKey());\n        assertEquals(IntNode.valueOf(1), en.getValue());\n\n        assertTrue(fit.hasNext());\n        en = fit.next();\n        assertEquals(\"b\", en.getKey());\n        assertEquals(TextNode.valueOf(\"x\"), en.getValue());\n\n        // Plus: we should be able to modify the node via iterator too:\n        fit.remove();\n        assertEquals(1, obNode.size());\n        assertEquals(IntNode.valueOf(1), root.get(\"key\"));\n        assertNull(root.get(\"b\"));\n    }    \n    // for [Issue#346]\n    public void testEmptyNodeAsValue() throws Exception\n    {\n        Data w = MAPPER.readValue(\"{}\", Data.class);\n        assertNotNull(w);\n    }\n    \n    public void testBasics()\n    {\n        ObjectNode n = new ObjectNode(JsonNodeFactory.instance);\n        assertStandardEquals(n);\n\n        assertFalse(n.elements().hasNext());\n        assertFalse(n.fields().hasNext());\n        assertFalse(n.fieldNames().hasNext());\n        assertNull(n.get(\"a\"));\n        assertTrue(n.path(\"a\").isMissingNode());\n\n        TextNode text = TextNode.valueOf(\"x\");\n        assertSame(n, n.set(\"a\", text));\n        \n        assertEquals(1, n.size());\n        assertTrue(n.elements().hasNext());\n        assertEquals(2, ob.size());\n        assertEquals(\"a\", ob.get(\"a\").textValue());\n        assertNull(ob.get(\"b\"));\n        assertEquals(\"c\", ob.get(\"c\").textValue());\n    }\n\n    public void testValidWith() throws Exception\n    {\n        ObjectNode root = MAPPER.createObjectNode();\n        assertEquals(\"{}\", MAPPER.writeValueAsString(root));\n        JsonNode child = root.with(\"prop\");\n        assertTrue(child instanceof ObjectNode);\n        assertEquals(\"{\\\"prop\\\":{}}\", MAPPER.writeValueAsString(root));\n    }\n\n    public void testValidWithArray() throws Exception\n    {\n        ObjectNode root = MAPPER.createObjectNode();\n        assertEquals(\"{}\", MAPPER.writeValueAsString(root));\n        JsonNode child = root.withArray(\"arr\");\n        assertTrue(child instanceof ArrayNode);\n        assertEquals(\"{\\\"arr\\\":[]}\", MAPPER.writeValueAsString(root));\n    }\n\n    public void testInvalidWith() throws Exception\n    {\n        JsonNode root = MAPPER.createArrayNode();\n        try { // should not work for non-ObjectNode nodes:\n            root.with(\"prop\");\n            fail(\"Expected exception\");\n        } catch (UnsupportedOperationException e) {\n            verifyException(e, \"not of type ObjectNode\");\n        }\n        // also: should fail of we already have non-object property\n        ObjectNode root2 = MAPPER.createObjectNode();\n        root2.put(\"prop\", 13);\n        try { // should not work for non-ObjectNode nodes:\n            root2.with(\"prop\");\n            fail(\"Expected exception\");\n        } catch (UnsupportedOperationException e) {\n            verifyException(e, \"has value that is not\");\n        }\n    }\n\n    public void testInvalidWithArray() throws Exception\n    {\n        JsonNode root = MAPPER.createArrayNode();\n        try { // should not work for non-ObjectNode nodes:\n            root.withArray(\"prop\");\n            fail(\"Expected exception\");\n        } catch (UnsupportedOperationException e) {\n            verifyException(e, \"not of type ObjectNode\");\n        }\n        // also: should fail of we already have non-Array property\n        ObjectNode root2 = MAPPER.createObjectNode();\n        root2.put(\"prop\", 13);\n        try { // should not work for non-ObjectNode nodes:\n            root2.withArray(\"prop\");\n            fail(\"Expected exception\");\n        } catch (UnsupportedOperationException e) {\n            verifyException(e, \"has value that is not\");\n        }\n    }\n\n    // [Issue#93]\n    public void testSetAll() throws Exception\n    {\n        ObjectNode root = MAPPER.createObjectNode();\n        assertEquals(0, root.size());\n        HashMap<String,JsonNode> map = new HashMap<String,JsonNode>();\n        map.put(\"a\", root.numberNode(1));\n        root.setAll(map);\n        assertEquals(1, root.size());\n        assertTrue(root.has(\"a\"));\n        assertFalse(root.has(\"b\"));\n\n        map.put(\"b\", root.numberNode(2));\n        root.setAll(map);\n        assertEquals(2, root.size());\n        assertTrue(root.has(\"a\"));\n",
+  "compaction": {
+    "source_lines": 416,
+    "mode": "windows",
+    "windows_total": 7,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        240,
+        320
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 26.301533347159058
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 17.86402853292788
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 12.93553437422178
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 26.301533347159058
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 17.86402853292788
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 12.60489197070637
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 11.503877059592948
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 12.93553437422178
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 7.26941092197882
+      },
+      {
+        "start": 360,
+        "end": 416,
+        "score": 7.838860823501225
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7153,
+  "representation_chars": 7153,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

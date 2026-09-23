@@ -1,0 +1,232 @@
+TEST CLASS:
+com.fasterxml.jackson.databind.introspect.TestPOJOPropertiesCollector
+
+SOURCE FILE:
+src/test/java/com/fasterxml/jackson/databind/introspect/TestPOJOPropertiesCollector.java
+
+TEST SOURCE:
+package com.fasterxml.jackson.databind.introspect;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.math.BigDecimal;
+import java.util.*;
+
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+public class TestPOJOPropertiesCollector
+    extends BaseMapTest
+{
+    static class Simple {
+        public int value;
+        
+        @JsonProperty("value")
+        public void valueSetter(int v) { value = v; }
+
+        @JsonProperty("value")
+        public int getFoobar() { return value; }
+    }
+
+    static class SimpleFieldDeser
+    {
+        @JsonDeserialize String[] values;
+    }
+    
+    static class SimpleGetterVisibility {
+        public int getA() { return 0; }
+        protected int getB() { return 1; }
+        @SuppressWarnings("unused")
+        private int getC() { return 2; }
+    }
+    
+    // Class for testing 'shared ignore'
+    static class Empty {
+        public int value;
+        
+        public void setValue(int v) { value = v; }
+
+        @JsonIgnore
+        public int getValue() { return value; }
+    }
+
+    static class IgnoredSetter {
+        @JsonProperty
+        public int value;
+        
+        @JsonIgnore
+        public void setValue(int v) { value = v; }
+
+        public int getValue() { return value; }
+    }
+
+    static class ImplicitIgnores {
+        @JsonIgnore public int a;
+        @JsonIgnore public void setB(int b) { }
+        public int c;
+    }
+    
+    // Should find just one setter for "y", due to partial ignore
+    static class IgnoredRenamedSetter {
+        @JsonIgnore public void setY(int value) { }
+        @JsonProperty("y") void foobar(int value) { }
+    }
+    
+    // should produce a single property, "x"
+    static class RenamedProperties {
+        @JsonProperty("x")
+        public int value;
+        
+        public void setValue(int v) { value = v; }
+
+        public int getX() { return value; }
+    }
+
+
+        @JsonIgnore
+        public String getName() {
+           return (String) additionalProperties.get("name");
+        }
+    }
+
+    static class PropDescBean
+    {
+        public final static String A_DESC = "That's A!";
+        public final static int B_INDEX = 3;
+
+        @JsonPropertyDescription(A_DESC)
+        public String a;
+
+        protected int b;
+        
+        public String getA() { return a; }
+
+        public void setA(String a) { this.a = a; }
+
+        @JsonProperty(required=true, index=B_INDEX, defaultValue="13")
+        public int getB() { return b; }
+    }
+
+    @Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
+    @Retention(RetentionPolicy.RUNTIME)
+    @JacksonAnnotation
+    @interface A {}
+
+    @Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
+    @Retention(RetentionPolicy.RUNTIME)
+    @JacksonAnnotation
+    @interface B {}
+
+    static class DuplicateGetterBean
+    {
+        @A
+        public boolean isBloop() { return true; }
+
+        @B
+        public boolean getBloop() { return true; }
+    }
+
+    static class DuplicateGetterCreatorBean
+    {
+        public DuplicateGetterCreatorBean(@JsonProperty("bloop") @A boolean bloop) {}
+
+        public boolean isBloop() { return true; }
+
+        public boolean getBloop() { return true; }
+    }
+
+    /*
+    /**********************************************************
+    /* Unit tests
+    /**********************************************************
+     */
+
+    private final ObjectMapper MAPPER = objectMapper();
+
+    public void testSimple()
+    {
+        POJOPropertiesCollector coll = collector(MAPPER,
+        		Simple.class, true);
+        Map<String, POJOPropertyBuilder> props = coll.getPropertyMap();
+        assertEquals(1, props.size());
+        POJOPropertyBuilder prop = props.get("value");
+        assertNotNull(prop);
+        assertTrue(prop.hasSetter());
+        assertTrue(prop.hasGetter());
+        assertTrue(prop.hasField());
+    }
+
+    public void testSimpleFieldVisibility()
+    {
+        // false -> deserialization
+        POJOPropertiesCollector coll = collector(MAPPER,
+        		SimpleFieldDeser.class, false);
+        Map<String, POJOPropertyBuilder> props = coll.getPropertyMap();
+        List<BeanPropertyDefinition> props = coll.getProperties();
+        assertEquals(1, props.size());
+        POJOPropertyBuilder prop = (POJOPropertyBuilder) props.get(0);
+        assertEquals("bloop", prop.getName());
+        // Can't call getGetter or the duplicate will be removed
+        assertTrue(prop._getters.value.hasAnnotation(A.class));
+        assertNotNull(prop._getters.next);
+        assertTrue(prop._getters.next.value.hasAnnotation(A.class));
+    }
+
+    private void _verifyProperty(BeanDescription beanDesc,
+    		boolean verifyDesc, boolean verifyIndex, String expDefaultValue)
+    {
+        assertNotNull(beanDesc);
+        List<BeanPropertyDefinition> props = beanDesc.findProperties();
+        assertEquals(2, props.size());
+        for (BeanPropertyDefinition prop : props) {
+            String name = prop.getName();
+            final PropertyMetadata md = prop.getMetadata();
+            if ("a".equals(name)) {
+                assertFalse(md.isRequired());
+                assertNull(md.getRequired());
+                if (verifyDesc) {
+                	assertEquals(PropDescBean.A_DESC, md.getDescription());
+                }
+                if (verifyIndex) {
+                	assertNull(md.getIndex());
+                }
+            } else if ("b".equals(name)) {
+                assertTrue(md.isRequired());
+                assertEquals(Boolean.TRUE, md.getRequired());
+                if (verifyDesc) {
+                	assertNull(md.getDescription());
+                }
+                if (verifyIndex) {
+                	assertEquals(Integer.valueOf(PropDescBean.B_INDEX), md.getIndex());
+                }
+                if (expDefaultValue != null) {
+                    assertEquals(expDefaultValue, md.getDefaultValue());
+                }
+            } else {
+                fail("Unrecognized property '"+name+"'");
+            }
+        }
+    }
+
+    /*
+    /**********************************************************
+    /* Helper methods
+    /**********************************************************
+     */
+
+    protected POJOPropertiesCollector collector(ObjectMapper m0,
+            Class<?> cls, boolean forSerialization)
+    {
+        BasicClassIntrospector bci = new BasicClassIntrospector();
+        // no real difference between serialization, deserialization, at least here
+        if (forSerialization) {
+            return bci.collectProperties(m0.getSerializationConfig(),
+                    m0.constructType(cls), null, true, "set");
+        }
+        return bci.collectProperties(m0.getDeserializationConfig(),
+                m0.constructType(cls), null, false, "set");
+    }
+}

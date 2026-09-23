@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.format.CollectionFormatShapeTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/format/CollectionFormatShapeTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.format.CollectionFormatShapeTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/format/CollectionFormatShapeTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.format;\n\nimport java.util.ArrayList;\nimport java.util.List;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.annotation.JsonFormat.Shape;\n\nimport com.fasterxml.jackson.databind.*;\n\npublic class CollectionFormatShapeTest extends BaseMapTest\n{\n    // [databind#40]: Allow serialization 'as POJO' (resulting in JSON Object) \n    @JsonPropertyOrder({ \"size\", \"value\" })\n    @JsonFormat(shape=Shape.OBJECT)\n    @JsonIgnoreProperties({ \"empty\" }) // from 'isEmpty()'\n    static class CollectionAsPOJO\n        extends ArrayList<String>\n    {\n        private static final long serialVersionUID = 1L;\n\n        @JsonProperty(\"size\")\n        public int foo() { return size(); }\n        \n        public List<String> getValues() {\n            return new ArrayList<String>(this);\n        }\n\n        public void setValues(List<String> v) {\n            addAll(v);\n        }\n        \n        // bogus setter to handle \"size\" property\n        public void setSize(int i) { }\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n\n    private final static ObjectMapper MAPPER = newObjectMapper();    \n\n    public void testListAsObjectRoundtrip() throws Exception\n    {\n        // First, serialize a \"POJO-List\"\n        CollectionAsPOJO list = new CollectionAsPOJO();\n        list.add(\"a\");\n        list.add(\"b\");\n        String json = MAPPER.writeValueAsString(list);\n        assertEquals(\"{\\\"size\\\":2,\\\"values\\\":[\\\"a\\\",\\\"b\\\"]}\", json);\n\n        // and then bring it back!\n        CollectionAsPOJO result = MAPPER.readValue(json, CollectionAsPOJO.class);\n        assertEquals(2, result.size());\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 59,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1950,
+  "representation_chars": 1950,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

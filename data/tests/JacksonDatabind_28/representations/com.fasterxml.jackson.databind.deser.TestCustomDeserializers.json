@@ -1,0 +1,91 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.TestCustomDeserializers",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/TestCustomDeserializers.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.TestCustomDeserializers\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/TestCustomDeserializers.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser;\n\nimport java.io.*;\nimport java.lang.annotation.*;\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.JsonCreator;\nimport com.fasterxml.jackson.annotation.JsonProperty;\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.*;\nimport com.fasterxml.jackson.databind.deser.std.*;\nimport com.fasterxml.jackson.databind.module.SimpleModule;\nimport com.fasterxml.jackson.databind.util.StdConverter;\n\n/**\n * Test to check that customizations work as expected.\n */\n@SuppressWarnings(\"serial\")\npublic class TestCustomDeserializers\n    extends BaseMapTest\n{\n    /*\n    /**********************************************************\n    /* Helper classes\n    /**********************************************************\n     */\n\n    static class DummyDeserializer<T>\n        extends StdDeserializer<T>\n    {\n        final T value;\n\n        public DummyDeserializer(T v, Class<T> cls) {\n            super(cls);\n            value = v;\n        }\n\n        @Override\n        public T deserialize(JsonParser jp, DeserializationContext ctxt)\n            throws IOException, JsonProcessingException\n        {\n            // need to skip, if structured...\n            jp.skipChildren();\n            return value;\n        }\n    }\n\n    static class TestBeans {\n        public List<TestBean> beans;\n    }\n    static class TestBean {\n        public CustomBean c;\n        public String d;\n    }\n    @JsonDeserialize(using=CustomBeanDeserializer.class)\n    static class CustomBean {\n        protected final int a, b;\n        public CustomBean(int a, int b) {\n            this.a = a;\n            this.b = b;\n        }\n    }\n\n    static class CustomBeanDeserializer extends JsonDeserializer<CustomBean>\n    {\n        @Override\n        public CustomBean deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException\n        {\n            int a = 0, b = 0;\n            JsonToken t = jp.getCurrentToken();\n            if (t == JsonToken.START_OBJECT) {\n                t = jp.nextToken();\n            } else if (t != JsonToken.FIELD_NAME) {\n                throw new Error();\n            }\n            while(t == JsonToken.FIELD_NAME) {\n                final String fieldName = jp.getCurrentName();\n                t = jp.nextToken();\n                if (t != JsonToken.VALUE_NUMBER_INT) {\n                    throw new JsonParseException(\"expecting number got \"+ t, jp.getCurrentLocation());\n                }\n                if (fieldName.equals(\"a\")) {\n                    a = jp.getIntValue();\n                } else if (fieldName.equals(\"b\")) {\n                    b = jp.getIntValue();\n                } else {\n                    throw new Error();\n                }\n                t = jp.nextToken();\n            }\n            return new CustomBean(a, b);\n        }\n    }\n\n    public static class Immutable {\n        protected int x, y;\n        \n        public Immutable(int x0, int y0) {\n            x = x0;\n            y = y0;\n        }\n    }\n\n    // [JACKSON-882]\n    public static class CustomKey {\n        private final int id;\n\n        public CustomKey(int id) {this.id = id;}\n\n        public int getId() { return id; }\n    }\n    \n    public static class Model\n    {\n        protected final Map<CustomKey, String> map;\n\n        @JsonCreator\n        public Model(@JsonProperty(\"map\") @JsonDeserialize(keyUsing = CustomKeyDeserializer.class) Map<CustomKey, String> map)\n        {\n            this.map = new HashMap<CustomKey, String>(map);\n        }\n\n        @JsonProperty\n        @JsonSerialize(keyUsing = CustomKeySerializer.class)\n        public Map<CustomKey, String> getMap() {\n            return map;\n        }\n    }\n     \n    static class CustomKeySerializer extends JsonSerializer<CustomKey> {\n        @Override\n        public void serialize(CustomKey value, JsonGenerator jgen, SerializerProvider provider) throws IOException {\n            jgen.writeFieldName(String.valueOf(value.getId()));\n        }\n    }\n\n    static class CustomKeyDeserializer extends KeyDeserializer {\n        @Override\n        public CustomKey deserializeKey(String key, DeserializationContext ctxt) throws IOException {\n                JsonProcessingException {\n            Object ob = ctxt.readPropertyValue(p, prop, Bean375Inner.class);\n            return new Bean375Outer((Bean375Inner) ob);\n        }\n        @Override\n        public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property)\n                throws JsonMappingException {\n            return new Bean375OuterDeserializer(property);\n        }\n    }\n\n    static class Bean375InnerDeserializer extends StdDeserializer<Bean375Inner>\n        implements ContextualDeserializer\n    {\n        protected boolean negative;\n        \n        protected Bean375InnerDeserializer() { this(false); }\n        protected Bean375InnerDeserializer(boolean n) {\n            super(Bean375Inner.class);\n            negative = n;\n        }\n\n        @Override\n        public Bean375Inner deserialize(JsonParser jp, DeserializationContext ctxt)\n                throws IOException, JsonProcessingException {\n            int x = jp.getIntValue();\n            if (negative) {\n                x = -x;\n            } else {\n                x += x;\n            }\n            return new Bean375Inner(x);\n        }\n\n        @Override\n        public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property)\n                throws JsonMappingException {\n            if (property != null) {\n                Negative n = property.getAnnotation(Negative.class);\n                if (n != null) {\n                    return new Bean375InnerDeserializer(true);\n                }\n            }\n            return this;\n        }\n    }\n\n    // for [databind#631]\n    static class Issue631Bean\n    {\n        @JsonDeserialize(using=ParentClassDeserializer.class)\n        public Object prop;\n    }\n\n    static class ParentClassDeserializer\n        extends StdScalarDeserializer<Object>\n    {\n        protected ParentClassDeserializer() {\n            super(Object.class);\n        }\n\n        @Override\n        public Object deserialize(JsonParser p, DeserializationContext ctxt)\n                throws IOException {\n            Object parent = p.getCurrentValue();\n            String desc = (parent == null) ? \"NULL\" : parent.getClass().getSimpleName();\n            return \"prop/\"+ desc;\n        }\n    }\n\n    static class UCStringDeserializer extends StdDeserializer<String> {\n        public UCStringDeserializer() { super(String.class); }\n\n        @Override\n        public String deserialize(JsonParser p, DeserializationContext ctxt)\n                throws IOException {\n            return p.getText().toUpperCase();\n        }\n    }\n    \n",
+  "compaction": {
+    "source_lines": 402,
+    "mode": "windows",
+    "windows_total": 7,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 35.40154397863855
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 18.631245146143712
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 11.78032901614092
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 35.40154397863855
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 18.631245146143712
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 9.180780016087665
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 11.78032901614092
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 10.20353209518832
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 9.800783310959975
+      },
+      {
+        "start": 360,
+        "end": 402,
+        "score": 7.477197677002002
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7004,
+  "representation_chars": 7004,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

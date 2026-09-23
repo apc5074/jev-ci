@@ -1,0 +1,106 @@
+{
+  "test_class": "org.jsoup.integration.UrlConnectTest",
+  "source_file": "src/test/java/org/jsoup/integration/UrlConnectTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.jsoup.integration.UrlConnectTest\n\nSOURCE FILE:\nsrc/test/java/org/jsoup/integration/UrlConnectTest.java\n\nTEST SOURCE:\npackage org.jsoup.integration;\n\nimport org.jsoup.Connection;\nimport org.jsoup.HttpStatusException;\nimport org.jsoup.Jsoup;\nimport org.jsoup.UnsupportedMimeTypeException;\nimport org.jsoup.helper.StringUtil;\nimport org.jsoup.helper.W3CDom;\nimport org.jsoup.nodes.Document;\nimport org.jsoup.nodes.FormElement;\nimport org.jsoup.parser.HtmlTreeBuilder;\nimport org.jsoup.parser.Parser;\nimport org.jsoup.parser.XmlTreeBuilder;\nimport org.junit.Ignore;\nimport org.junit.Test;\n\nimport java.io.File;\nimport java.io.FileInputStream;\nimport java.io.IOException;\nimport java.net.*;\nimport java.util.Map;\n\nimport static org.hamcrest.core.Is.is;\nimport static org.junit.Assert.*;\n\n/**\n Tests the URL connection. Not enabled by default, so tests don't require network connection.\n\n @author Jonathan Hedley, jonathan@hedley.net */\n@Ignore // ignored by default so tests don't require network access. comment out to enable.\npublic class UrlConnectTest {\n    private static final String WEBSITE_WITH_INVALID_CERTIFICATE = \"https://certs.cac.washington.edu/CAtest/\";\n    private static final String WEBSITE_WITH_SNI = \"https://jsoup.org/\";\n    private static String echoURL = \"http://direct.infohound.net/tools/q.pl\";\n\n    @Test\n    public void fetchURl() throws IOException {\n        String url = \"http://jsoup.org\"; // no trailing / to force redir\n        Document doc = Jsoup.parse(new URL(url), 10*1000);\n        assertTrue(doc.title().contains(\"jsoup\"));\n    }\n\n    @Test\n    public void fetchURIWithWihtespace() throws IOException {\n        Connection con = Jsoup.connect(\"http://try.jsoup.org/#with whitespaces\");\n        Document doc = con.get();\n        assertTrue(doc.title().contains(\"jsoup\"));\n    }\n\n    @Test\n    public void fetchBaidu() throws IOException {\n        Connection.Response res = Jsoup.connect(\"http://www.baidu.com/\").timeout(10*1000).execute();\n        Document doc = res.parse();\n\n        assertEquals(\"GBK\", doc.outputSettings().charset().displayName());\n        assertEquals(\"GBK\", res.charset());\n        assert(res.hasCookie(\"BAIDUID\"));\n        assertEquals(\"text/html;charset=gbk\", res.contentType());\n    }\n    \n    @Test\n    public void exceptOnUnknownContentType() {\n        String url = \"http://direct.jsoup.org/rez/osi_logo.png\"; // not text/* but image/png, should throw\n        boolean threw = false;\n        try {\n            Document doc = Jsoup.parse(new URL(url), 3000);\n        } catch (UnsupportedMimeTypeException e) {\n            threw = true;\n            assertEquals(\"org.jsoup.UnsupportedMimeTypeException: Unhandled content type. Must be text/*, application/xml, or application/xhtml+xml. Mimetype=image/png, URL=http://direct.jsoup.org/rez/osi_logo.png\", e.toString());\n            assertEquals(url, e.getUrl());\n            assertEquals(\"image/png\", e.getMimeType());\n        } catch (IOException e) {\n        }\n        assertTrue(threw);\n    }\n\n    @Test\n    public void exceptOnUnsupportedProtocol(){\n        String url = \"file://etc/passwd\";\n        boolean threw = false;\n        Jsoup.connect(url).execute();\n    }\n\n\n    /**\n     * Verify that requests to websites with SNI fail on jdk 1.6\n     * <p/>\n     * read for more details:\n     * http://en.wikipedia.org/wiki/Server_Name_Indication\n     *\n     * Test is ignored independent from others as it requires JDK 1.6\n     * @throws Exception\n     */\n    @Test(expected = IOException.class)\n    public void testSNIFail() throws Exception {\n        String url = WEBSITE_WITH_SNI;\n        Jsoup.connect(url).execute();\n    }\n\n    /**\n     * Verify that requests to websites with SNI pass\n     * <p/>\n     * <b>NB!</b> this test is FAILING right now on jdk 1.6\n     *\n     * @throws Exception\n     */\n    @Test\n    public void testSNIPass() throws Exception {\n        String url = WEBSITE_WITH_SNI;\n        Connection.Response defaultRes = Jsoup.connect(url).validateTLSCertificates(false).execute();\n        assertThat(defaultRes.statusCode(), is(200));\n    }\n\n    /**\n     * Verify that security disabling feature works properly.\n     * <p/>\n     * 1. disable security checks and call the same url to verify that content is consumed correctly\n     *\n     * @throws Exception\n     */\n    @Test\n    public void testUnsafePass() throws Exception {\n        String url = WEBSITE_WITH_INVALID_CERTIFICATE;\n        Connection.Response defaultRes = Jsoup.connect(url).validateTLSCertificates(false).execute();\n        assertThat(defaultRes.statusCode(), is(200));\n    }\n\n    @Test\n    public void shouldWorkForCharsetInExtraAttribute() throws IOException {\n        Connection.Response res = Jsoup.connect(\"https://www.creditmutuel.com/groupe/fr/\").execute();\n        Document doc = res.parse(); // would throw an error if charset unsupported\n        assertEquals(\"ISO-8859-1\", res.charset());\n    }\n\n    // The following tests were added to test specific domains if they work. All code paths\n    // which make the following test green are tested in other unit or integration tests, so the following lines\n    // could be deleted\n\n    @Test\n    public void shouldSelectFirstCharsetOnWeirdMultileCharsetsInMetaTags() throws IOException {\n        Connection.Response res = Jsoup.connect(\"http://aamo.info/\").execute();\n        res.parse(); // would throw an error if charset unsupported\n        assertEquals(\"ISO-8859-1\", res.charset());\n    }\n\n    @Test\n    public void shouldParseBrokenHtml5MetaCharsetTagCorrectly() throws IOException {\n        Connection.Response res = Jsoup.connect(\"http://9kuhkep.net\").execute();\n        res.parse(); // would throw an error if charset unsupported\n        assertEquals(\"UTF-8\", res.charset());\n    }\n\n    @Test\n    public void shouldEmptyMetaCharsetCorrectly() throws IOException {\n        Connection.Response res = Jsoup.connect(\"http://aastmultimedia.com\").execute();\n        res.parse(); // would throw an error if charset unsupported\n        assertEquals(\"UTF-8\", res.charset());\n    }\n\n    @Test\n    public void shouldWorkForDuplicateCharsetInTag() throws IOException {\n        Connection.Response res = Jsoup.connect(\"http://aaptsdassn.org\").execute();\n        Document doc = res.parse(); // would throw an error if charset unsupported\n        assertEquals(\"ISO-8859-1\", res.charset());\n    }\n\n    @Test\n    public void baseHrefCorrectAfterHttpEquiv() throws IOException {\n        // https://github.com/jhy/jsoup/issues/440\n        Connection.Response res = Jsoup.connect(\"http://direct.infohound.net/tools/charset-base.html\").execute();\n        Document doc = res.parse();\n        assertEquals(\"http://example.com/foo.jpg\", doc.select(\"img\").first().absUrl(\"src\"));\n    }\n\n    /**\n     * Test fetching a form, and submitting it with a file attached.\n     */\n    @Test\n    public void postHtmlFile() throws IOException {\n        Document index = Jsoup.connect(\"http://direct.infohound.net/tidy/\").get();\n        FormElement form = index.select(\"[name=tidy]\").forms().get(0);\n        Connection post = form.submit();\n\n        File uploadFile = ParseTest.getFile(\"/htmltests/google-ipod.html\");\n        FileInputStream stream = new FileInputStream(uploadFile);\n\n        // todo: need to add a better way to get an existing data field\n        for (Connection.KeyVal keyVal : post.request().data()) {\n            if (keyVal.key().equals(\"_file\")) {\n                keyVal.value(\"check.html\");\n                keyVal.inputStream(stream);\n            }\n        }\n\n        Connection.Response res;\n        try {\n            res = post.execute();\n        } finally {\n            stream.close();\n        }\n\n        Document out = res.parse();\n        assertTrue(out.text().contains(\"HTML Tidy Complete\"));\n    }\n\n    /**\n     * Tests upload of binary content to a remote service.\n     */\n    @Test\n    public void postJpeg() throws IOException {\n        File thumb = ParseTest.getFile(\"/htmltests/thumb.jpg\");\n        Document result = Jsoup\n                .connect(\"http://regex.info/exif.cgi\")\n                .data(\"f\", thumb.getName(), new FileInputStream(thumb))\n                .post();\n\n        assertEquals(\"Baseline DCT, Huffman coding\", result.select(\"td:contains(Process) + td\").text());\n    }\n\n    @Test\n",
+  "compaction": {
+    "source_lines": 605,
+    "mode": "windows",
+    "windows_total": 10,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        360,
+        440
+      ],
+      [
+        420,
+        500
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 9.6062352517029
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 6.558674620692876
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 6.66139102829397
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 9.6062352517029
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 3.8257500566806555
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 2.1351342078300255
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 3.9976065966200673
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.86541877804542
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 1.6383042983887046
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 6.558674620692876
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 6.66139102829397
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 4.48907426451504
+      },
+      {
+        "start": 540,
+        "end": 605,
+        "score": 2.76146939479503
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8268,
+  "representation_chars": 8268,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

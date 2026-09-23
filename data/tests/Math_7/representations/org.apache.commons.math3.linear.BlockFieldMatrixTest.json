@@ -1,0 +1,171 @@
+{
+  "test_class": "org.apache.commons.math3.linear.BlockFieldMatrixTest",
+  "source_file": "src/test/java/org/apache/commons/math3/linear/BlockFieldMatrixTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.linear.BlockFieldMatrixTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/linear/BlockFieldMatrixTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.linear;\n\nimport java.util.Arrays;\nimport java.util.Random;\n\nimport org.junit.Test;\nimport org.junit.Assert;\n\nimport org.apache.commons.math3.TestUtils;\nimport org.apache.commons.math3.fraction.Fraction;\nimport org.apache.commons.math3.fraction.FractionField;\nimport org.apache.commons.math3.exception.NoDataException;\nimport org.apache.commons.math3.exception.NullArgumentException;\nimport org.apache.commons.math3.exception.OutOfRangeException;\nimport org.apache.commons.math3.exception.NumberIsTooSmallException;\nimport org.apache.commons.math3.exception.NotStrictlyPositiveException;\nimport org.apache.commons.math3.exception.MathIllegalArgumentException;\n\n/**\n * Test cases for the {@link BlockFieldMatrix} class.\n *\n * @version $Id$\n */\n\npublic final class BlockFieldMatrixTest {\n\n    // 3 x 3 identity matrix\n    protected Fraction[][] id = {\n            {new Fraction(1),new Fraction(0),new Fraction(0)},\n            {new Fraction(0),new Fraction(1),new Fraction(0)},\n            {new Fraction(0),new Fraction(0),new Fraction(1)}\n    };\n\n    // Test data for group operations\n    protected Fraction[][] testData = {\n            {new Fraction(1),new Fraction(2),new Fraction(3)},\n            {new Fraction(2),new Fraction(5),new Fraction(3)},\n            {new Fraction(1),new Fraction(0),new Fraction(8)}\n    };\n    protected Fraction[][] testDataLU = {\n            {new Fraction(2), new Fraction(5), new Fraction(3)},\n            {new Fraction(1, 2), new Fraction(-5, 2), new Fraction(13, 2)},\n            {new Fraction(1, 2), new Fraction(1, 5), new Fraction(1, 5)}\n    };\n    protected Fraction[][] testDataPlus2 = {\n            {new Fraction(3),new Fraction(4),new Fraction(5)},\n            {new Fraction(4),new Fraction(7),new Fraction(5)},\n            {new Fraction(3),new Fraction(2),new Fraction(10)}\n    };\n    protected Fraction[][] testDataMinus = {\n            {new Fraction(-1),new Fraction(-2),new Fraction(-3)},\n            {new Fraction(-2),new Fraction(-5),new Fraction(-3)},\n            {new Fraction(-1),new Fraction(0),new Fraction(-8)}\n    };\n    protected Fraction[] testDataRow1 = {new Fraction(1),new Fraction(2),new Fraction(3)};\n    protected Fraction[] testDataCol3 = {new Fraction(3),new Fraction(3),new Fraction(8)};\n    protected Fraction[][] testDataInv = {\n            {new Fraction(-40),new Fraction(16),new Fraction(9)},\n            {new Fraction(13),new Fraction(-5),new Fraction(-3)},\n            {new Fraction(5),new Fraction(-2),new Fraction(-1)}\n    };\n    protected Fraction[] preMultTest = {new Fraction(8), new Fraction(12), new Fraction(33)};\n    protected Fraction[][] testData2 = {\n            {new Fraction(1),new Fraction(2),new Fraction(3)},\n            m.setColumnVector(-1, mColumn3);\n            Assert.fail(\"Expecting OutOfRangeException\");\n        } catch (OutOfRangeException ex) {\n            // expected\n        }\n        try {\n            m.setColumnVector(0, new ArrayFieldVector<Fraction>(FractionField.getInstance(), 5));\n            Assert.fail(\"Expecting MatrixDimensionMismatchException\");\n        } catch (MatrixDimensionMismatchException ex) {\n            // expected\n        }\n    }\n\n    @Test\n    public void testGetSetColumnVectorLarge() {\n        int n = 3 * BlockFieldMatrix.BLOCK_SIZE;\n        FieldMatrix<Fraction> m = new BlockFieldMatrix<Fraction>(FractionField.getInstance(), n, n);\n        FieldVector<Fraction> sub = new ArrayFieldVector<Fraction>(n, new Fraction(1));\n\n        m.setColumnVector(2, sub);\n        for (int i = 0; i < n; ++i) {\n            for (int j = 0; j < n; ++j) {\n                if (j != 2) {\n                    Assert.assertEquals(new Fraction(0), m.getEntry(i, j));\n                } else {\n                    Assert.assertEquals(new Fraction(1), m.getEntry(i, j));\n                }\n            }\n        }\n        Assert.assertEquals(sub, m.getColumnVector(2));\n\n    }\n\n    private FieldVector<Fraction> columnToVector(Fraction[][] column) {\n        Fraction[] data = new Fraction[column.length];\n        for (int i = 0; i < data.length; ++i) {\n            data[i] = column[i][0];\n        }\n        return new ArrayFieldVector<Fraction>(data, false);\n    }\n\n    @Test\n    public void testGetRow() {\n        FieldMatrix<Fraction> m = new BlockFieldMatrix<Fraction>(subTestData);\n        checkArrays(subRow0[0], m.getRow(0));\n        checkArrays(subRow3[0], m.getRow(3));\n        try {\n            m.getRow(-1);\n            Assert.fail(\"Expecting OutOfRangeException\");\n        } catch (OutOfRangeException ex) {\n            // expected\n        }\n        try {\n            m.getRow(4);\n            Assert.fail(\"Expecting OutOfRangeException\");\n        } catch (OutOfRangeException ex) {\n            // expected\n        }\n    }\n\n    @Test\n    public void testSetRow() {\n        FieldMatrix<Fraction> m = new BlockFieldMatrix<Fraction>(subTestData);\n        Assert.assertTrue(subRow3[0][0] != m.getRow(0)[0]);\n        m.setRow(0, subRow3[0]);\n        checkArrays(subRow3[0], m.getRow(0));\n        try {\n            m.setRow(-1, subRow3[0]);\n            Assert.fail(\"Expecting OutOfRangeException\");\n        } catch (OutOfRangeException ex) {\n            // expected\n        }\n        try {\n            m.setRow(0, new Fraction[5]);\n            Assert.fail(\"Expecting MatrixDimensionMismatchException\");\n        } catch (MatrixDimensionMismatchException ex) {\n            // expected\n        }\n    }\n\n    }\n\n    @Test\n    public void testSetColumn() {\n        FieldMatrix<Fraction> m = new BlockFieldMatrix<Fraction>(subTestData);\n        Fraction[] mColumn3 = columnToArray(subColumn3);\n        Assert.assertTrue(mColumn3[0] != m.getColumn(1)[0]);\n        m.setColumn(1, mColumn3);\n        checkArrays(mColumn3, m.getColumn(1));\n        try {\n            m.setColumn(-1, mColumn3);\n            Assert.fail(\"Expecting OutOfRangeException\");\n        } catch (OutOfRangeException ex) {\n            // expected\n        }\n        try {\n            m.setColumn(0, new Fraction[5]);\n            Assert.fail(\"Expecting MatrixDimensionMismatchException\");\n        } catch (MatrixDimensionMismatchException ex) {\n            // expected\n        }\n    }\n\n    @Test\n    public void testGetSetColumnLarge() {\n        int n = 3 * BlockFieldMatrix.BLOCK_SIZE;\n        FieldMatrix<Fraction> m = new BlockFieldMatrix<Fraction>(FractionField.getInstance(), n, n);\n        Fraction[] sub = new Fraction[n];\n        Arrays.fill(sub, new Fraction(1));\n\n        m.setColumn(2, sub);\n        for (int i = 0; i < n; ++i) {\n            for (int j = 0; j < n; ++j) {\n                if (j != 2) {\n                    Assert.assertEquals(new Fraction(0), m.getEntry(i, j));\n                } else {\n                    Assert.assertEquals(new Fraction(1), m.getEntry(i, j));\n                }\n            }\n        }\n        checkArrays(sub, m.getColumn(2));\n\n    }\n\n    private Fraction[] columnToArray(Fraction[][] column) {\n        Fraction[] data = new Fraction[column.length];\n        for (int i = 0; i < data.length; ++i) {\n            data[i] = column[i][0];\n        }\n        return data;\n    }\n\n    private void checkArrays(Fraction[] expected, Fraction[] actual) {\n        Assert.assertEquals(expected.length, actual.length);\n        for (int i = 0; i < expected.length; ++i) {\n            Assert.assertEquals(expected[i], actual[i]);\n        }\n    }\n\n    @Test\n    public void testEqualsAndHashCode() {\n        BlockFieldMatrix<Fraction> m = new BlockFieldMatrix<Fraction>(testData);\n        BlockFieldMatrix<Fraction> m1 = (BlockFieldMatrix<Fraction>) m.copy();\n        BlockFieldMatrix<Fraction> mt = (BlockFieldMatrix<Fraction>) m.transpose();\n        Assert.assertTrue(m.hashCode() != mt.hashCode());\n        Assert.assertEquals(m.hashCode(), m1.hashCode());\n        Assert.assertEquals(m, m);\n        Assert.assertEquals(m, m1);\n        Assert.assertFalse(m.equals(null));\n        Assert.assertFalse(m.equals(mt));\n        Assert.assertFalse(m.equals(new BlockFieldMatrix<Fraction>(bigSingular)));\n    }\n\n    @Test\n    public void testToString() {\n        BlockFieldMatrix<Fraction> m = new BlockFieldMatrix<Fraction>(testData);\n        Assert.assertEquals(\"BlockFieldMatrix{{1,2,3},{2,5,3},{1,0,8}}\", m.toString());\n    }\n\n    @Test\n",
+  "compaction": {
+    "source_lines": 1378,
+    "mode": "windows",
+    "windows_total": 23,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        960,
+        1040
+      ],
+      [
+        1080,
+        1160
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 41.86794213288367
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 11.383300605927872
+      },
+      {
+        "start": 1080,
+        "end": 1160,
+        "score": 18.537573448952134
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 41.86794213288367
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 1.102173318291062
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 9.383945665296077
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 0.9708040834003119
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 2.320521739421034
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 2.2151625271671382
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 3.6709519584424513
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 3.236708446040278
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 4.989667516511966
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 6.529042468442578
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 5.085911907935157
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 7.628261580811142
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 5.100491865763339
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 2.925555377245807
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 2.586153967984344
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 4.246338647823433
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 11.383300605927872
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 6.615360131345188
+      },
+      {
+        "start": 1080,
+        "end": 1160,
+        "score": 18.537573448952134
+      },
+      {
+        "start": 1140,
+        "end": 1220,
+        "score": 11.078697556963522
+      },
+      {
+        "start": 1200,
+        "end": 1280,
+        "score": 1.7545898147238992
+      },
+      {
+        "start": 1260,
+        "end": 1340,
+        "score": 1.0139834740381106
+      },
+      {
+        "start": 1320,
+        "end": 1378,
+        "score": 6.949695741085357
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9231,
+  "representation_chars": 9231,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

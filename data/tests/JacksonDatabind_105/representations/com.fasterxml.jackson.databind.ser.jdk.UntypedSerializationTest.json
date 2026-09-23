@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.ser.jdk.UntypedSerializationTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/ser/jdk/UntypedSerializationTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.ser.jdk.UntypedSerializationTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/ser/jdk/UntypedSerializationTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.ser.jdk;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.ObjectMapper;\n\n/**\n * This unit test suite tries verify simplest aspects of\n * \"Native\" java type mapper; basically that is can properly serialize\n * core JDK objects to JSON.\n */\npublic class UntypedSerializationTest\n    extends BaseMapTest\n{\n    public void testFromArray()\n        throws Exception\n    {\n        ArrayList<Object> doc = new ArrayList<Object>();\n        doc.add(\"Elem1\");\n        doc.add(Integer.valueOf(3));\n        Map<String,Object> struct = new LinkedHashMap<String, Object>();\n        struct.put(\"first\", Boolean.TRUE);\n        struct.put(\"Second\", new ArrayList<Object>());\n        doc.add(struct);\n        doc.add(Boolean.FALSE);\n\n        ObjectMapper mapper = new ObjectMapper();\n        JsonFactory f =  new JsonFactory();\n\n        // loop more than once, just to ensure caching works ok (during second round)\n        for (int i = 0; i < 3; ++i) {\n            String str = mapper.writeValueAsString(doc);\n            \n            JsonParser jp = f.createParser(str);\n            assertEquals(JsonToken.START_ARRAY, jp.nextToken());\n            \n            assertEquals(JsonToken.VALUE_STRING, jp.nextToken());\n            assertEquals(\"Elem1\", getAndVerifyText(jp));\n            \n            assertEquals(JsonToken.VALUE_NUMBER_INT, jp.nextToken());\n            assertEquals(3, jp.getIntValue());\n            \n            assertEquals(JsonToken.START_OBJECT, jp.nextToken());\n            assertEquals(JsonToken.FIELD_NAME, jp.nextToken());\n            assertEquals(\"first\", getAndVerifyText(jp));\n            \n            assertEquals(JsonToken.VALUE_TRUE, jp.nextToken());\n            assertEquals(JsonToken.FIELD_NAME, jp.nextToken());\n            assertEquals(\"Second\", getAndVerifyText(jp));\n            \n            if (jp.nextToken() != JsonToken.START_ARRAY) {\n                fail(\"Expected START_ARRAY: JSON == '\"+str+\"'\");\n            }\n            assertEquals(JsonToken.END_ARRAY, jp.nextToken());\n            assertEquals(JsonToken.END_OBJECT, jp.nextToken());\n            \n            assertEquals(JsonToken.VALUE_FALSE, jp.nextToken());\n            \n            assertEquals(JsonToken.END_ARRAY, jp.nextToken());\n            assertNull(jp.nextToken());\n            jp.close();\n        }\n    }\n\n    public void testFromMap()\n        throws Exception\n    {\n        LinkedHashMap<String,Object> doc = new LinkedHashMap<String,Object>();\n        JsonFactory f =  new JsonFactory();\n\n        doc.put(\"a1\", \"\\\"text\\\"\");\n        doc.put(\"int\", Integer.valueOf(137));\n        doc.put(\"foo bar\", Long.valueOf(1234567890L));\n\n        ObjectMapper mapper = new ObjectMapper();\n        for (int i = 0; i < 3; ++i) {\n            String str = mapper.writeValueAsString(doc);\n            JsonParser jp = f.createParser(str);\n            \n            assertEquals(JsonToken.START_OBJECT, jp.nextToken());\n            \n            assertEquals(JsonToken.FIELD_NAME, jp.nextToken());\n            assertEquals(\"a1\", getAndVerifyText(jp));\n            assertEquals(JsonToken.VALUE_STRING, jp.nextToken());\n            assertEquals(\"\\\"text\\\"\", getAndVerifyText(jp));\n            \n            assertEquals(JsonToken.FIELD_NAME, jp.nextToken());\n            assertEquals(\"int\", getAndVerifyText(jp));\n            assertEquals(JsonToken.VALUE_NUMBER_INT, jp.nextToken());\n            assertEquals(137, jp.getIntValue());\n            \n            assertEquals(JsonToken.FIELD_NAME, jp.nextToken());\n            assertEquals(\"foo bar\", getAndVerifyText(jp));\n            assertEquals(JsonToken.VALUE_NUMBER_INT, jp.nextToken());\n            assertEquals(1234567890L, jp.getLongValue());\n            \n            assertEquals(JsonToken.END_OBJECT, jp.nextToken());\n\n            assertNull(jp.nextToken());\n            jp.close();\n        }\n    }\n}\n",
+  "compaction": {
+    "source_lines": 105,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 4147,
+  "representation_chars": 4147,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

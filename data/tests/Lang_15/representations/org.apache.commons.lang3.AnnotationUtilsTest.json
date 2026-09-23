@@ -1,0 +1,101 @@
+{
+  "test_class": "org.apache.commons.lang3.AnnotationUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/AnnotationUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.AnnotationUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/AnnotationUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3;\n\nimport static java.lang.annotation.ElementType.FIELD;\nimport static java.lang.annotation.RetentionPolicy.RUNTIME;\nimport static org.apache.commons.lang3.AnnotationUtilsTest.Stooge.CURLY;\nimport static org.apache.commons.lang3.AnnotationUtilsTest.Stooge.LARRY;\nimport static org.apache.commons.lang3.AnnotationUtilsTest.Stooge.MOE;\nimport static org.apache.commons.lang3.AnnotationUtilsTest.Stooge.SHEMP;\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertFalse;\nimport static org.junit.Assert.assertTrue;\n\nimport java.lang.annotation.ElementType;\nimport java.lang.annotation.Retention;\nimport java.lang.annotation.Target;\nimport java.lang.reflect.Array;\nimport java.lang.reflect.Field;\nimport java.lang.reflect.InvocationHandler;\nimport java.lang.reflect.Method;\nimport java.lang.reflect.Proxy;\nimport java.util.Collection;\nimport java.util.Map;\n\nimport org.junit.Before;\nimport org.junit.Test;\n\n/**\n * @version $Id$\n */\npublic class AnnotationUtilsTest {\n    @TestAnnotation(\n            booleanValue = false,\n            booleanValues = { false },\n            byteValue = 0,\n            byteValues = { 0 },\n            charValue = 0,\n            charValues = { 0 },\n            doubleValue = 0,\n            doubleValues = { 0 },\n            floatValue = 0,\n            floatValues = { 0 },\n            intValue = 0,\n            intValues = { 0 },\n            longValue = 0,\n            longValues = { 0 },\n            nest = @NestAnnotation(\n                    booleanValue = false,\n                    booleanValues = { false },\n                    byteValue = 0,\n                    byteValues = { 0 },\n                    charValue = 0,\n                    charValues = { 0 },\n                    doubleValue = 0,\n                    doubleValues = { 0 },\n                    floatValue = 0,\n                    floatValues = { 0 },\n                    intValue = 0,\n                    intValues = { 0 },\n                    longValue = 0,\n                    longValues = { 0 },\n                    shortValue = 0,\n                    shortValues = { 0 },\n                    stooge = CURLY,\n                    stooges = { MOE, LARRY, SHEMP },\n    public void testOneArgNull() {\n        assertFalse(AnnotationUtils.equals(field1.getAnnotation(TestAnnotation.class), null));\n        assertFalse(AnnotationUtils.equals(null, field1.getAnnotation(TestAnnotation.class)));\n    }\n\n    @Test\n    public void testBothArgsNull() {\n        assertTrue(AnnotationUtils.equals(null, null));\n    }\n\n    @Test\n    public void testIsValidAnnotationMemberType() {\n        for (Class<?> type : new Class[] { byte.class, short.class, int.class, char.class,\n                long.class, float.class, double.class, boolean.class, String.class, Class.class,\n                NestAnnotation.class, TestAnnotation.class, Stooge.class, ElementType.class }) {\n            assertTrue(AnnotationUtils.isValidAnnotationMemberType(type));\n            assertTrue(AnnotationUtils.isValidAnnotationMemberType(Array.newInstance(type, 0)\n                    .getClass()));\n        }\n        for (Class<?> type : new Class[] { Object.class, Map.class, Collection.class }) {\n            assertFalse(AnnotationUtils.isValidAnnotationMemberType(type));\n            assertFalse(AnnotationUtils.isValidAnnotationMemberType(Array.newInstance(type, 0)\n                    .getClass()));\n        }\n    }\n\n    @Test(timeout = 666000)\n    public void testGeneratedAnnotationEquivalentToRealAnnotation() throws Exception {\n        final Test real = getClass().getDeclaredMethod(\n                \"testGeneratedAnnotationEquivalentToRealAnnotation\").getAnnotation(Test.class);\n\n        InvocationHandler generatedTestInvocationHandler = new InvocationHandler() {\n\n            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {\n                if (\"equals\".equals(method.getName()) && method.getParameterTypes().length == 1) {\n                    return Boolean.valueOf(proxy == args[0]);\n                }\n                if (\"hashCode\".equals(method.getName()) && method.getParameterTypes().length == 0) {\n                    return Integer.valueOf(System.identityHashCode(proxy));\n                }\n                if (\"toString\".equals(method.getName()) && method.getParameterTypes().length == 0) {\n                    return \"Test proxy\";\n                }\n                return method.invoke(real, args);\n            }\n        };\n\n        Test generated = (Test) Proxy.newProxyInstance(Thread.currentThread()\n                .getContextClassLoader(), new Class[] { Test.class },\n                generatedTestInvocationHandler);\n        assertTrue(real.equals(generated));\n        assertFalse(generated.equals(real));\n        assertTrue(AnnotationUtils.equals(generated, real));\n        assertTrue(AnnotationUtils.equals(real, generated));\n\n        Test generated2 = (Test) Proxy.newProxyInstance(Thread.currentThread()\n                .getContextClassLoader(), new Class[] { Test.class },\n                generatedTestInvocationHandler);\n        assertFalse(generated.equals(generated2));\n        assertFalse(generated2.equals(generated));\n        assertTrue(AnnotationUtils.equals(generated, generated2));\n        assertTrue(AnnotationUtils.equals(generated2, generated));\n    }\n\n    @Test(timeout = 666000)\n    public void testHashCode() throws Exception {\n        final Test test = getClass().getDeclaredMethod(\"testHashCode\").getAnnotation(Test.class);\n        assertEquals(test.hashCode(), AnnotationUtils.hashCode(test));\n        final TestAnnotation testAnnotation1 = field1.getAnnotation(TestAnnotation.class);\n        assertEquals(testAnnotation1.hashCode(), AnnotationUtils.hashCode(testAnnotation1));\n        final TestAnnotation testAnnotation3 = field3.getAnnotation(TestAnnotation.class);\n        assertEquals(testAnnotation3.hashCode(), AnnotationUtils.hashCode(testAnnotation3));\n    }\n\n    @Test(timeout = 666000)\n    public void testToString() throws Exception {\n        final Test testAnno = getClass().getDeclaredMethod(\"testToString\")\n                .getAnnotation(Test.class);\n        String toString = AnnotationUtils.toString(testAnno);\n        assertTrue(toString.startsWith(\"@org.junit.Test(\"));\n        assertTrue(toString.endsWith(\")\"));\n        assertTrue(toString.contains(\"expected=class org.junit.Test$None\"));\n        assertTrue(toString.contains(\"timeout=666000\"));\n        assertTrue(toString.contains(\", \"));\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 507,
+    "mode": "windows",
+    "windows_total": 9,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        420,
+        500
+      ],
+      [
+        480,
+        507
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 39.562974346212975
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 28.948790648824723
+      },
+      {
+        "start": 480,
+        "end": 507,
+        "score": 15.21703195771291
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 39.562974346212975
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 0.7914865928891202
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 0.7928784589058315
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 0.8158158785300929
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 1.7243170641411454
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 2.3147288915594704
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 13.09686699634187
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 28.948790648824723
+      },
+      {
+        "start": 480,
+        "end": 507,
+        "score": 15.21703195771291
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7471,
+  "representation_chars": 7471,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

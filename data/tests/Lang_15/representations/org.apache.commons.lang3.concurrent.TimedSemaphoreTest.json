@@ -1,0 +1,96 @@
+{
+  "test_class": "org.apache.commons.lang3.concurrent.TimedSemaphoreTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/concurrent/TimedSemaphoreTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.concurrent.TimedSemaphoreTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/concurrent/TimedSemaphoreTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3.concurrent;\n\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertFalse;\nimport static org.junit.Assert.assertNotNull;\nimport static org.junit.Assert.assertTrue;\nimport static org.junit.Assert.fail;\n\nimport java.util.concurrent.CountDownLatch;\nimport java.util.concurrent.ScheduledExecutorService;\nimport java.util.concurrent.ScheduledFuture;\nimport java.util.concurrent.ScheduledThreadPoolExecutor;\nimport java.util.concurrent.TimeUnit;\n\nimport org.easymock.EasyMock;\nimport org.junit.Test;\n\n/**\n * Test class for TimedSemaphore.\n *\n * @version $Id$\n */\npublic class TimedSemaphoreTest {\n    /** Constant for the time period. */\n    private static final long PERIOD = 500;\n\n    /** Constant for the time unit. */\n    private static final TimeUnit UNIT = TimeUnit.MILLISECONDS;\n\n    /** Constant for the default limit. */\n    private static final int LIMIT = 10;\n\n    /**\n     * Tests creating a new instance.\n     */\n    @Test\n    public void testInit() {\n        ScheduledExecutorService service = EasyMock\n                .createMock(ScheduledExecutorService.class);\n        EasyMock.replay(service);\n        TimedSemaphore semaphore = new TimedSemaphore(service, PERIOD, UNIT,\n                LIMIT);\n        EasyMock.verify(service);\n        assertEquals(\"Wrong service\", service, semaphore.getExecutorService());\n        assertEquals(\"Wrong period\", PERIOD, semaphore.getPeriod());\n        assertEquals(\"Wrong unit\", UNIT, semaphore.getUnit());\n        assertEquals(\"Statistic available\", 0, semaphore\n                .getLastAcquiresPerPeriod());\n        assertEquals(\"Average available\", 0.0, semaphore\n                .getAverageCallsPerPeriod(), .05);\n        assertFalse(\"Already shutdown\", semaphore.isShutdown());\n        assertEquals(\"Wrong limit\", LIMIT, semaphore.getLimit());\n    }\n\n    /**\n     * Tries to create an instance with a negative period. This should cause an\n     * exception.\n     */\n    @Test(expected = IllegalArgumentException.class)\n    public void testInitInvalidPeriod() {\n        new TimedSemaphore(0L, UNIT, LIMIT);\n    }\n\n    /**\n     * Tests multiple invocations of the shutdown() method.\n     */\n    @Test\n    public void testShutdownMultipleTimes() throws InterruptedException {\n        ScheduledExecutorService service = EasyMock\n                .createMock(ScheduledExecutorService.class);\n        ScheduledFuture<?> future = EasyMock.createMock(ScheduledFuture.class);\n        prepareStartTimer(service, future);\n        EasyMock.expect(Boolean.valueOf(future.cancel(false))).andReturn(Boolean.TRUE);\n        EasyMock.replay(service, future);\n        TimedSemaphoreTestImpl semaphore = new TimedSemaphoreTestImpl(service,\n                PERIOD, UNIT, LIMIT);\n        semaphore.acquire();\n        for (int i = 0; i < 10; i++) {\n            semaphore.shutdown();\n        }\n        EasyMock.verify(service, future);\n    }\n\n    /**\n     * Tests the acquire() method if a limit is set.\n     */\n    @Test\n    public void testAcquireLimit() throws InterruptedException {\n        ScheduledExecutorService service = EasyMock\n                .createMock(ScheduledExecutorService.class);\n        ScheduledFuture<?> future = EasyMock.createMock(ScheduledFuture.class);\n        prepareStartTimer(service, future);\n        EasyMock.replay(service, future);\n        final int count = 10;\n        CountDownLatch latch = new CountDownLatch(count - 1);\n        TimedSemaphore semaphore = new TimedSemaphore(service, PERIOD, UNIT, 1);\n        SemaphoreThread t = new SemaphoreThread(semaphore, latch, count,\n                count - 1);\n        semaphore.setLimit(count - 1);\n\n        // start a thread that calls the semaphore count times\n        t.start();\n        latch.await();\n        // now the semaphore's limit should be reached and the thread blocked\n        assertEquals(\"Wrong semaphore count\", count - 1, semaphore\n                .getAcquireCount());\n\n        // this wakes up the thread, it should call the semaphore once more\n        semaphore.endOfPeriod();\n        t.join();\n        assertEquals(\"Wrong semaphore count (2)\", 1, semaphore\n                .getAcquireCount());\n        assertEquals(\"Wrong acquire() count\", count - 1, semaphore\n                .getLastAcquiresPerPeriod());\n        EasyMock.verify(service, future);\n    }\n\n    /**\n     * Tests the acquire() method if more threads are involved than the limit.\n     * This method starts a number of threads that all invoke the semaphore. The\n     * semaphore's limit is set to 1, so in each period only a single thread can\n     * acquire the semaphore.\n     */\n    @Test\n    public void testAcquireMultipleThreads() throws InterruptedException {\n        ScheduledExecutorService service = EasyMock\n                .createMock(ScheduledExecutorService.class);\n        ScheduledFuture<?> future = EasyMock.createMock(ScheduledFuture.class);\n        prepareStartTimer(service, future);\n        EasyMock.replay(service, future);\n        TimedSemaphoreTestImpl semaphore = new TimedSemaphoreTestImpl(service,\n                PERIOD, UNIT, 1);\n        semaphore.latch = new CountDownLatch(1);\n        final int count = 10;\n        SemaphoreThread[] threads = new SemaphoreThread[count];\n        for (int i = 0; i < count; i++) {\n            threads[i] = new SemaphoreThread(semaphore, null, 1, 0);\n            threads[i].start();\n        }\n        for (int i = 0; i < count; i++) {\n            semaphore.latch.await();\n            assertEquals(\"Wrong count\", 1, semaphore.getAcquireCount());\n            semaphore.latch = new CountDownLatch(1);\n            semaphore.endOfPeriod();\n            semaphore.acquire();\n        }\n        semaphore.endOfPeriod();\n        assertEquals(\"Wrong available count in new period\", LIMIT, semaphore\n                .getAvailablePermits());\n        EasyMock.verify(service, future);\n    }\n\n    /**\n     * A specialized implementation of {@code TimedSemaphore} that is easier to\n     * test.\n     */\n    private static class TimedSemaphoreTestImpl extends TimedSemaphore {\n        /** A mock scheduled future. */\n        ScheduledFuture<?> schedFuture;\n\n        /** A latch for synchronizing with the main thread. */\n        volatile CountDownLatch latch;\n\n        /** Counter for the endOfPeriod() invocations. */\n        private int periodEnds;\n\n        public TimedSemaphoreTestImpl(long timePeriod, TimeUnit timeUnit,\n                int limit) {\n            super(timePeriod, timeUnit, limit);\n        }\n\n        public TimedSemaphoreTestImpl(ScheduledExecutorService service,\n                long timePeriod, TimeUnit timeUnit, int limit) {\n            super(service, timePeriod, timeUnit, limit);\n        }\n\n        /**\n         * Returns the number of invocations of the endOfPeriod() method.\n         *\n         * @return the endOfPeriod() invocations\n         */\n        public int getPeriodEnds() {\n            synchronized (this) {\n                return periodEnds;\n            }\n        }\n\n        /**\n         * Invokes the latch if one is set.\n         */\n        @Override\n        public void acquire() throws InterruptedException {\n            super.acquire();\n            if (latch != null) {\n                latch.countDown();\n            }\n        }\n\n        /**\n         * Counts the number of invocations.\n         */\n        @Override\n        protected void endOfPeriod() {\n            super.endOfPeriod();\n            synchronized (this) {\n                periodEnds++;\n            }\n        }\n\n        /**\n         * Either returns the mock future or calls the super method.\n         */\n        @Override\n        protected ScheduledFuture<?> startTimer() {\n            return schedFuture != null ? schedFuture : super.startTimer();\n        }\n    }\n\n    /**\n     * A test thread class that will be used by tests for triggering the\n     * semaphore. The thread calls the semaphore a configurable number of times.\n     * When this is done, it can notify the main thread.\n     */\n    private static class SemaphoreThread extends Thread {\n",
+  "compaction": {
+    "source_lines": 480,
+    "mode": "windows",
+    "windows_total": 8,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        180,
+        260
+      ],
+      [
+        360,
+        440
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 20.381004145826363
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 9.668467813024302
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 9.351655581651126
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 20.381004145826363
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 6.784314379343898
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 6.463363009020698
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 9.668467813024302
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 5.461718499968783
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 6.548703094996323
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 9.351655581651126
+      },
+      {
+        "start": 420,
+        "end": 480,
+        "score": 6.526340082563627
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9028,
+  "representation_chars": 9028,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

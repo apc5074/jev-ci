@@ -1,0 +1,186 @@
+{
+  "test_class": "org.apache.commons.math.estimation.MinpackTest",
+  "source_file": "src/test/org/apache/commons/math/estimation/MinpackTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math.estimation.MinpackTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/math/estimation/MinpackTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math.estimation;\n\nimport java.util.Arrays;\n\nimport org.apache.commons.math.estimation.EstimatedParameter;\nimport org.apache.commons.math.estimation.EstimationException;\nimport org.apache.commons.math.estimation.EstimationProblem;\nimport org.apache.commons.math.estimation.LevenbergMarquardtEstimator;\nimport org.apache.commons.math.estimation.WeightedMeasurement;\n\nimport junit.framework.*;\n\n/**\n * <p>Some of the unit tests are re-implementations of the MINPACK <a\n * href=\"http://www.netlib.org/minpack/ex/file17\">file17</a> and <a\n * href=\"http://www.netlib.org/minpack/ex/file22\">file22</a> test files. \n * The redistribution policy for MINPACK is available <a\n * href=\"http://www.netlib.org/minpack/disclaimer\">here</a>, for\n * convenience, it is reproduced below.</p>\n\n * <table border=\"0\" width=\"80%\" cellpadding=\"10\" align=\"center\" bgcolor=\"#E0E0E0\">\n * <tr><td>\n *    Minpack Copyright Notice (1999) University of Chicago.\n *    All rights reserved\n * </td></tr>\n * <tr><td>\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions\n * are met:\n * <ol>\n *  <li>Redistributions of source code must retain the above copyright\n *      notice, this list of conditions and the following disclaimer.</li>\n * <li>Redistributions in binary form must reproduce the above\n *     copyright notice, this list of conditions and the following\n *     disclaimer in the documentation and/or other materials provided\n *     with the distribution.</li>\n * <li>The end-user documentation included with the redistribution, if any,\n *     must include the following acknowledgment:\n *     <code>This product includes software developed by the University of\n *           Chicago, as Operator of Argonne National Laboratory.</code>\n *     Alternately, this acknowledgment may appear in the software itself,\n *     if and wherever such third-party acknowledgments normally appear.</li>\n * <li><strong>WARRANTY DISCLAIMER. THE SOFTWARE IS SUPPLIED \"AS IS\"\n *     WITHOUT WARRANTY OF ANY KIND. THE COPYRIGHT HOLDER, THE\n *     UNITED STATES, THE UNITED STATES DEPARTMENT OF ENERGY, AND\n *     THEIR EMPLOYEES: (1) DISCLAIM ANY WARRANTIES, EXPRESS OR\n *     IMPLIED, INCLUDING BUT NOT LIMITED TO ANY IMPLIED WARRANTIES\n *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE\n *     OR NON-INFRINGEMENT, (2) DO NOT ASSUME ANY LEGAL LIABILITY\n *     OR RESPONSIBILITY FOR THE ACCURACY, COMPLETENESS, OR\n *     USEFULNESS OF THE SOFTWARE, (3) DO NOT REPRESENT THAT USE OF\n *     THE SOFTWARE WOULD NOT INFRINGE PRIVATELY OWNED RIGHTS, (4)\n *     DO NOT WARRANT THAT THE SOFTWARE WILL FUNCTION\n *     UNINTERRUPTED, THAT IT IS ERROR-FREE OR THAT ANY ERRORS WILL\n *     BE CORRECTED.</strong></li>\n * <li><strong>LIMITATION OF LIABILITY. IN NO EVENT WILL THE COPYRIGHT\n *     HOLDER, THE UNITED STATES, THE UNITED STATES DEPARTMENT OF\n *     ENERGY, OR THEIR EMPLOYEES: BE LIABLE FOR ANY INDIRECT,\n *     INCIDENTAL, CONSEQUENTIAL, SPECIAL OR PUNITIVE DAMAGES OF\n *     ANY KIND OR NATURE, INCLUDING BUT NOT LIMITED TO LOSS OF\n *     PROFITS OR LOSS OF DATA, FOR ANY REASON WHATSOEVER, WHETHER\n *     SUCH LIABILITY IS ASSERTED ON THE BASIS OF CONTRACT, TORT\n *     (INCLUDING NEGLIGENCE OR STRICT LIABILITY), OR OTHERWISE,\n        // purposes and is simpler to check.\n        // This implementation should NOT be taken as an example, it is ugly!\n        return getResiduals()[index];\n      }\n\n      @Override\n      public double getPartial(EstimatedParameter parameter) {\n        // this is obviously NOT efficient as we recompute the whole jacobian\n        // each time we need only one element, but it is only for test\n        // purposes and is simpler to check.\n        // This implementation should NOT be taken as an example, it is ugly!\n        for (int j = 0; j < n; ++j) {\n          if (parameter == parameters[j]) {\n            return getJacobian()[index][j];\n          }\n        }\n        return 0;\n      }\n\n      private int index;\n      private static final long serialVersionUID = 1L;\n\n    }\n\n    protected int                  n;\n    protected int                  m;\n    protected EstimatedParameter[] parameters;\n    protected double               theoreticalStartCost;\n    protected double               theoreticalMinCost;\n    protected double[]             theoreticalMinParams;\n    protected double               costAccuracy;\n    protected double               paramsAccuracy;\n\n  }\n\n  private static class LinearFullRankFunction extends MinpackFunction {\n\n    public LinearFullRankFunction(int m, int n, double x0,\n                                  double theoreticalStartCost,\n                                  double theoreticalMinCost) {\n      super(m, buildArray(n, x0), theoreticalStartCost,\n            theoreticalMinCost, buildArray(n, -1.0));\n    }\n\n    @Override\n    protected double[][] getJacobian() {\n      double t = 2.0 / m;\n      double[][] jacobian = new double[m][];\n      for (int i = 0; i < m; ++i) {\n        jacobian[i] = new double[n];\n        for (int j = 0; j < n; ++j) {\n          jacobian[i][j] = (i == j) ? (1 - t) : -t;\n        }\n      }\n      return jacobian;\n    }\n\n    @Override\n    protected double[] getResiduals() {\n      double sum = 0;\n      for (int i = 0; i < n; ++i) {\n        sum += parameters[i].getEstimate();\n      }\n      double t  = 1 + 2 * sum / m;\n      double[] f = new double[m];\n      for (int i = 0; i < n; ++i) {\n        f[i] = parameters[i].getEstimate() - t;\n      }\n      Arrays.fill(f, n, m, -t);\n      return f;\n    }\n\n  }\n\n  private static class LinearRank1Function extends MinpackFunction {\n\n    public LinearRank1Function(int m, int n, double x0,\n                                  double theoreticalStartCost,\n                                  double theoreticalMinCost) {\n      super(m, buildArray(n, x0), theoreticalStartCost, theoreticalMinCost, null);\n    }\n\n    @Override\n    protected double[][] getJacobian() {\n      double[][] jacobian = new double[m][];\n      for (int i = 0; i < m; ++i) {\n        jacobian[i] = new double[n];\n        for (int j = 0; j < n; ++j) {\n          jacobian[i][j] = (i + 1) * (j + 1);\n        }\n      }\n      return jacobian;\n    }\n\n    @Override\n    protected double[] getResiduals() {\n      double[] f = new double[m];\n      double sum = 0;\n      for (int i = 0; i < n; ++i) {\n        sum += (i + 1) * parameters[i].getEstimate();\n      }\n      for (int i = 0; i < m; ++i) {\n        f[i] = (i + 1) * sum - 1;\n      }\n      return f;\n    }\n\n  }\n\n  private static class LinearRank1ZeroColsAndRowsFunction extends MinpackFunction {\n\n    public LinearRank1ZeroColsAndRowsFunction(int m, int n, double x0) {\n      super(m, buildArray(n, x0),\n            Math.sqrt(m + (n+1)*(n-2)*(m-2)*(m-1) * ((n+1)*(n-2)*(2*m-3) - 12) / 24.0),\n            Math.sqrt((m * (m + 3) - 6) / (2.0 * (2 * m - 3))),\n            null);\n    }\n\n    @Override\n    protected double[][] getJacobian() {\n      double[][] jacobian = new double[m][];\n      for (int i = 0; i < m; ++i) {\n        jacobian[i] = new double[n];\n        jacobian[i][0] = 0;\n        for (int j = 1; j < (n - 1); ++j) {\n          if (i == 0) {\n            jacobian[i][j] = 0;\n          } else if (i != (m - 1)) {\n            jacobian[i][j] = i * (j + 1);\n          } else {\n            jacobian[i][j] = 0;\n          }\n        }\n        jacobian[i][n - 1] = 0;\n      }\n      return jacobian;\n    }\n\n    @Override\n    protected double[] getResiduals() {\n",
+  "compaction": {
+    "source_lines": 1540,
+    "mode": "windows",
+    "windows_total": 26,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        600,
+        680
+      ],
+      [
+        660,
+        740
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 25.26920676847671
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 9.569635637561294
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 16.061235445907645
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 25.26920676847671
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.892190949142699
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 3.0903747843541503
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 0.5472529224785956
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 3.8637815081577487
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 2.6468731153140332
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 3.570909222165543
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 3.322177776302141
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 5.933115677276187
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 7.156367504199321
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 9.569635637561294
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 16.061235445907645
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 9.1418694807942
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 8.748878151473567
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 5.663561950648939
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 5.349064556537234
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 6.162113305785471
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 5.156056186526868
+      },
+      {
+        "start": 1080,
+        "end": 1160,
+        "score": 5.078577914942825
+      },
+      {
+        "start": 1140,
+        "end": 1220,
+        "score": 4.6975528666534805
+      },
+      {
+        "start": 1200,
+        "end": 1280,
+        "score": 4.187571658312426
+      },
+      {
+        "start": 1260,
+        "end": 1340,
+        "score": 6.169841846210514
+      },
+      {
+        "start": 1320,
+        "end": 1400,
+        "score": 6.82897004820792
+      },
+      {
+        "start": 1380,
+        "end": 1460,
+        "score": 5.511671214289773
+      },
+      {
+        "start": 1440,
+        "end": 1520,
+        "score": 5.184113057189622
+      },
+      {
+        "start": 1500,
+        "end": 1540,
+        "score": 5.374254395867823
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8460,
+  "representation_chars": 8460,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

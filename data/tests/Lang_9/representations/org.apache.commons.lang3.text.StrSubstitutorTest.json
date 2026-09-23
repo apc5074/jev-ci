@@ -1,0 +1,106 @@
+{
+  "test_class": "org.apache.commons.lang3.text.StrSubstitutorTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/text/StrSubstitutorTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.text.StrSubstitutorTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/text/StrSubstitutorTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.lang3.text;\n\nimport org.junit.After;\nimport org.junit.Test;\nimport org.junit.Before;\nimport static org.junit.Assert.*;\nimport java.util.HashMap;\nimport java.util.Map;\nimport java.util.Properties;\n\nimport org.apache.commons.lang3.mutable.MutableObject;\n\n/**\n * Test class for StrSubstitutor.\n *\n * @version $Id$\n */\npublic class StrSubstitutorTest {\n\n    private Map<String, String> values;\n\n    @Before\n    public void setUp() throws Exception {\n        values = new HashMap<String, String>();\n        values.put(\"animal\", \"quick brown fox\");\n        values.put(\"target\", \"lazy dog\");\n    }\n\n    @After\n    public void tearDown() throws Exception {\n        values = null;\n    }\n\n    //-----------------------------------------------------------------------\n    /**\n     * Tests simple key replace.\n     */\n    @Test\n    public void testReplaceSimple() {\n        doTestReplace(\"The quick brown fox jumps over the lazy dog.\", \"The ${animal} jumps over the ${target}.\", true);\n    }\n\n    /**\n     * Tests simple key replace.\n     */\n    @Test\n    public void testReplaceSolo() {\n        doTestReplace(\"quick brown fox\", \"${animal}\", false);\n    }\n\n    /**\n     * Tests replace with no variables.\n     */\n    @Test\n    public void testReplaceNoVariables() {\n        doTestNoReplace(\"The balloon arrived.\");\n    }\n\n    /**\n     * Tests replace with null.\n     */\n    @Test\n    public void testReplaceNull() {\n    public void testConstructorNoArgs() {\n        StrSubstitutor sub = new StrSubstitutor();\n        assertEquals(\"Hi ${name}\", sub.replace(\"Hi ${name}\"));\n    }\n\n    /**\n     * Tests constructor.\n     */\n    @Test\n    public void testConstructorMapPrefixSuffix() {\n        Map<String, String> map = new HashMap<String, String>();\n        map.put(\"name\", \"commons\");\n        StrSubstitutor sub = new StrSubstitutor(map, \"<\", \">\");\n        assertEquals(\"Hi < commons\", sub.replace(\"Hi $< <name>\"));\n    }\n\n    /**\n     * Tests constructor.\n     */\n    @Test\n    public void testConstructorMapFull() {\n        Map<String, String> map = new HashMap<String, String>();\n        map.put(\"name\", \"commons\");\n        StrSubstitutor sub = new StrSubstitutor(map, \"<\", \">\", '!');\n        assertEquals(\"Hi < commons\", sub.replace(\"Hi !< <name>\"));\n    }\n\n    //-----------------------------------------------------------------------\n    /**\n     * Tests get set.\n     */\n    @Test\n    public void testGetSetEscape() {\n        StrSubstitutor sub = new StrSubstitutor();\n        assertEquals('$', sub.getEscapeChar());\n        sub.setEscapeChar('<');\n        assertEquals('<', sub.getEscapeChar());\n    }\n\n    /**\n     * Tests get set.\n     */\n    @Test\n    public void testGetSetPrefix() {\n        StrSubstitutor sub = new StrSubstitutor();\n        assertTrue(sub.getVariablePrefixMatcher() instanceof StrMatcher.StringMatcher);\n        sub.setVariablePrefix('<');\n        assertTrue(sub.getVariablePrefixMatcher() instanceof StrMatcher.CharMatcher);\n\n        sub.setVariablePrefix(\"<<\");\n        assertTrue(sub.getVariablePrefixMatcher() instanceof StrMatcher.StringMatcher);\n        try {\n            sub.setVariablePrefix((String) null);\n            fail();\n        } catch (IllegalArgumentException ex) {\n            // expected\n        }\n        assertTrue(sub.getVariablePrefixMatcher() instanceof StrMatcher.StringMatcher);\n\n        StrMatcher matcher = StrMatcher.commaMatcher();\n        sub.setVariablePrefixMatcher(matcher);\n        assertSame(matcher, sub.getVariablePrefixMatcher());\n        try {\n            sub.setVariablePrefixMatcher((StrMatcher) null);\n            fail();\n        } catch (IllegalArgumentException ex) {\n            // expected\n        }\n        assertSame(matcher, sub.getVariablePrefixMatcher());\n    }\n\n    /**\n     * Tests get set.\n     */\n    @Test\n    public void testGetSetSuffix() {\n        StrSubstitutor sub = new StrSubstitutor();\n        assertTrue(sub.getVariableSuffixMatcher() instanceof StrMatcher.StringMatcher);\n        sub.setVariableSuffix('<');\n        assertTrue(sub.getVariableSuffixMatcher() instanceof StrMatcher.CharMatcher);\n\n        sub.setVariableSuffix(\"<<\");\n        assertTrue(sub.getVariableSuffixMatcher() instanceof StrMatcher.StringMatcher);\n        try {\n            sub.setVariableSuffix((String) null);\n            fail();\n        } catch (IllegalArgumentException ex) {\n            // expected\n        }\n        assertTrue(sub.getVariableSuffixMatcher() instanceof StrMatcher.StringMatcher);\n\n        StrMatcher matcher = StrMatcher.commaMatcher();\n        sub.setVariableSuffixMatcher(matcher);\n        assertSame(matcher, sub.getVariableSuffixMatcher());\n        try {\n            sub.setVariableSuffixMatcher((StrMatcher) null);\n            fail();\n        } catch (IllegalArgumentException ex) {\n            // expected\n        }\n        assertSame(matcher, sub.getVariableSuffixMatcher());\n    }\n\n    //-----------------------------------------------------------------------\n    /**\n     * Tests static.\n     */\n    @Test\n    public void testStaticReplace() {\n        Map<String, String> map = new HashMap<String, String>();\n        map.put(\"name\", \"commons\");\n        assertEquals(\"Hi commons!\", StrSubstitutor.replace(\"Hi ${name}!\", map));\n    }\n\n    /**\n     * Tests static.\n     */\n    @Test\n    public void testStaticReplacePrefixSuffix() {\n        Map<String, String> map = new HashMap<String, String>();\n        map.put(\"name\", \"commons\");\n        assertEquals(\"Hi commons!\", StrSubstitutor.replace(\"Hi <name>!\", map, \"<\", \">\"));\n    }\n\n    /**\n     * Tests interpolation with system properties.\n     */\n    @Test\n    public void testStaticReplaceSystemProperties() {\n        StrBuilder buf = new StrBuilder();\n        buf.append(\"Hi \").append(System.getProperty(\"user.name\"));\n        buf.append(\", you are working with \");\n        buf.append(System.getProperty(\"os.name\"));\n        buf.append(\", your home directory is \");\n        buf.append(System.getProperty(\"user.home\")).append('.');\n        assertEquals(buf.toString(), StrSubstitutor.replaceSystemProperties(\"Hi ${user.name}, you are \"\n            + \"working with ${os.name}, your home \"\n            + \"directory is ${user.home}.\"));\n    }\n\n",
+  "compaction": {
+    "source_lines": 607,
+    "mode": "windows",
+    "windows_total": 10,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        360,
+        440
+      ],
+      [
+        420,
+        500
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 22.733353045651963
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 9.264116319774937
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 10.448681099012216
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 22.733353045651963
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.49782909684432
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 4.5300451493418485
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 2.682916813372201
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 1.7149629317298252
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 5.656776635496527
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 9.264116319774937
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 10.448681099012216
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 6.782173474321554
+      },
+      {
+        "start": 540,
+        "end": 607,
+        "score": 3.9027458407566575
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7166,
+  "representation_chars": 7166,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

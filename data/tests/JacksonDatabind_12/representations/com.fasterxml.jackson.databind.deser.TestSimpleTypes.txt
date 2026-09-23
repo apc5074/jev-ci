@@ -1,0 +1,247 @@
+TEST CLASS:
+com.fasterxml.jackson.databind.deser.TestSimpleTypes
+
+SOURCE FILE:
+src/test/java/com/fasterxml/jackson/databind/deser/TestSimpleTypes.java
+
+TEST SOURCE:
+package com.fasterxml.jackson.databind.deser;
+
+import java.io.*;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.URL;
+import java.net.URI;
+import java.util.*;
+
+import org.junit.Assert;
+
+import com.fasterxml.jackson.core.*;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.util.TokenBuffer;
+
+/**
+ * Unit tests for verifying handling of simple basic non-structured
+ * types; primitives (and/or their wrappers), Strings.
+ */
+public class TestSimpleTypes
+    extends BaseMapTest
+{
+    final static String NAN_STRING = "NaN";
+
+    final static class BooleanBean {
+        boolean _v;
+        void setV(boolean v) { _v = v; }
+    }
+
+    static class IntBean {
+        int _v;
+        void setV(int v) { _v = v; }
+    }
+
+    final static class DoubleBean {
+        double _v;
+        void setV(double v) { _v = v; }
+    }
+
+    final static class FloatBean {
+        float _v;
+        void setV(float v) { _v = v; }
+    }
+    
+    final static class CharacterBean {
+        char _v;
+        void setV(char v) { _v = v; }
+        char getV() { return _v; }
+    }
+    
+    final static class CharacterWrapperBean {
+        Character _v;
+        void setV(Character v) { _v = v; }
+        Character getV() { return _v; }
+    }
+
+    /**
+     * Also, let's ensure that it's ok to override methods.
+     */
+    static class IntBean2
+        extends IntBean
+    {
+        @Override
+        void setV(int v2) { super.setV(v2+1); }
+    }
+
+    /*
+    /**********************************************************
+    /* Then tests for primitives
+    /**********************************************************
+     */
+
+    private final ObjectMapper MAPPER = new ObjectMapper();
+
+    public void testBooleanPrimitive() throws Exception
+    {
+        // first, simple case:
+        BooleanBean result = MAPPER.readValue(new StringReader("{\"v\":true}"), BooleanBean.class);
+        assertTrue(result._v);
+        // then [JACKSON-79]:
+
+        result = MAPPER.readValue(new StringReader("1918.3"), Long.class);
+        assertEquals(Long.valueOf(1918), result);
+    }
+
+    /* Note: dealing with floating-point values is tricky; not sure if
+     * we can really use equality tests here... JDK does have decent
+     * conversions though, to retain accuracy and round-trippability.
+     * But still...
+     */
+    public void testFloatWrapper() throws Exception
+    {
+        // Also: should be able to coerce floats, strings:
+        String[] STRS = new String[] {
+            "1.0", "0.0", "-0.3", "0.7", "42.012", "-999.0", NAN_STRING
+        };
+
+        for (String str : STRS) {
+            Float exp = Float.valueOf(str);
+            Float result;
+
+            if (NAN_STRING != str) {
+                // First, as regular floating point value
+                result = MAPPER.readValue(new StringReader(str), Float.class);
+                assertEquals(exp, result);
+            }
+
+            // and then as coerced String:
+            result = MAPPER.readValue(new StringReader(" \""+str+"\""), Float.class);
+            assertEquals(exp, result);
+        }
+    }
+
+    public void testDoubleWrapper() throws Exception
+    {
+        // Also: should be able to coerce doubles, strings:
+        String[] STRS = new String[] {
+            "1.0", "0.0", "-0.3", "0.7", "42.012", "-999.0", NAN_STRING
+        };
+
+        for (String str : STRS) {
+            Double exp = Double.valueOf(str);
+            Double result;
+
+            // First, as regular double value
+            if (NAN_STRING != str) {
+                result = MAPPER.readValue(str, Double.class);
+            	assertEquals(exp, result);
+            }
+            // and then as coerced String:
+            result = MAPPER.readValue(new StringReader(" \""+str+"\""), Double.class);
+            assertEquals(exp, result);
+        }
+    }
+
+    // as per [Issue#42], allow Base64 variant use as well
+    public void testBase64Variants() throws Exception
+    {
+        final byte[] INPUT = "abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890X".getBytes("UTF-8");
+        
+        // default encoding is "MIME, no linefeeds", so:
+        Assert.assertArrayEquals(INPUT, MAPPER.readValue(
+                quote("YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY3ODkwYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY3ODkwWA=="),
+                byte[].class));
+        ObjectReader reader = MAPPER.reader(byte[].class);
+        Assert.assertArrayEquals(INPUT, (byte[]) reader.with(Base64Variants.MIME_NO_LINEFEEDS).readValue(
+                quote("YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY3ODkwYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY3ODkwWA=="
+        )));
+
+        // but others should be slightly different
+        Assert.assertArrayEquals(INPUT, (byte[]) reader.with(Base64Variants.MIME).readValue(
+                quote("YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY3ODkwYWJjZGVmZ2hpamtsbW5vcHFyc3R1\\ndnd4eXoxMjM0NTY3ODkwWA=="
+        )));
+        Assert.assertArrayEquals(INPUT, (byte[]) reader.with(Base64Variants.MODIFIED_FOR_URL).readValue(
+                quote("YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY3ODkwYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY3ODkwWA"
+        )));
+        // PEM mandates 64 char lines:
+        Assert.assertArrayEquals(INPUT, (byte[]) reader.with(Base64Variants.PEM).readValue(
+                quote("YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY3ODkwYWJjZGVmZ2hpamts\\nbW5vcHFyc3R1dnd4eXoxMjM0NTY3ODkwWA=="
+        )));
+            
+            mapper.enable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);
+            
+            assertEquals(uuid,
+                    mapper.readValue("[" + quote(value) + "]", UUID.class));
+            
+            try {
+                mapper.readValue("[" + quote(value) + "," + quote(value) + "]", UUID.class);
+                fail("Exception was not thrown when UNWRAP_SINGLE_VALUE_ARRAYS is enabled and attempted to read a multi value array as a single element");
+            } catch (JsonMappingException exp) {
+                //Exception thrown successfully
+            }
+        }
+        // then use templating; note that these are not exactly valid UUIDs
+        // wrt spec (type bits etc), but JDK UUID should deal ok
+        final String TEMPL = NULL_UUID;
+        final String chars = "123456789abcdefABCDEF";
+
+        for (int i = 0; i < chars.length(); ++i) {
+            String value = TEMPL.replace('0', chars.charAt(i));
+            assertEquals(UUID.fromString(value).toString(),
+                    mapper.readValue(quote(value), UUID.class).toString());
+        }
+
+        // also: see if base64 encoding works as expected
+        String base64 = Base64Variants.getDefaultVariant().encode(new byte[16]);
+        assertEquals(UUID.fromString(NULL_UUID),
+                mapper.readValue(quote(base64), UUID.class));
+    }
+
+    public void testUUIDAux() throws Exception
+    {
+        // [JACKSON-393] fix:
+        final UUID value = UUID.fromString("76e6d183-5f68-4afa-b94a-922c1fdb83f8");
+
+        // first, null should come as null
+        TokenBuffer buf = new TokenBuffer(null, false);
+        buf.writeObject(null);
+        assertNull(MAPPER.readValue(buf.asParser(), UUID.class));
+        buf.close();
+
+        // then, UUID itself come as is:
+        buf = new TokenBuffer(null, false);
+        buf.writeObject(value);
+        assertSame(value, MAPPER.readValue(buf.asParser(), UUID.class));
+
+        // and finally from byte[]
+        // oh crap; JDK UUID just... sucks. Not even byte[] accessors or constructors? Huh?
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(bytes);
+        out.writeLong(value.getMostSignificantBits());
+        out.writeLong(value.getLeastSignificantBits());
+        byte[] data = bytes.toByteArray();
+        assertEquals(16, data.length);
+        
+        buf.writeObject(data);
+
+        UUID value2 = MAPPER.readValue(buf.asParser(), UUID.class);
+        
+        assertEquals(value, value2);
+        buf.close();
+    }
+
+    public void testURL() throws Exception
+    {
+        URL value = new URL("http://foo.com");
+        assertEquals(value, MAPPER.readValue("\""+value.toString()+"\"", URL.class));
+
+        // trivial case; null to null, embedded URL to URL
+        TokenBuffer buf = new TokenBuffer(null, false);
+        buf.writeObject(null);
+        assertNull(MAPPER.readValue(buf.asParser(), URL.class));
+        buf.close();
+
+        // then, URLitself come as is:
+        buf = new TokenBuffer(null, false);
+        buf.writeObject(value);
+        assertSame(value, MAPPER.readValue(buf.asParser(), URL.class));
+        buf.close();
+    }

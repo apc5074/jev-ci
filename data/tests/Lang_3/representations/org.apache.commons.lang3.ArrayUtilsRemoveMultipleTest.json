@@ -1,0 +1,146 @@
+{
+  "test_class": "org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/ArrayUtilsRemoveMultipleTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.ArrayUtilsRemoveMultipleTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/ArrayUtilsRemoveMultipleTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.lang3;\n\nimport static org.junit.Assert.assertArrayEquals;\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertNotSame;\nimport static org.junit.Assert.assertNull;\nimport static org.junit.Assert.assertTrue;\n\nimport java.util.Arrays;\n\nimport org.junit.Test;\n\n/**\n * Tests ArrayUtils remove and removeElement methods.\n * \n * @version $Id$\n */\npublic class ArrayUtilsRemoveMultipleTest {\n\n    @Test\n    public void testRemoveAllObjectArray() {\n        Object[] array;\n        array = ArrayUtils.removeAll(new Object[] { \"a\" }, 0);\n        assertArrayEquals(ArrayUtils.EMPTY_OBJECT_ARRAY, array);\n        assertEquals(Object.class, array.getClass().getComponentType());\n        array = ArrayUtils.removeAll(new Object[] { \"a\", \"b\" }, 0, 1);\n        assertArrayEquals(ArrayUtils.EMPTY_OBJECT_ARRAY, array);\n        assertEquals(Object.class, array.getClass().getComponentType());\n        array = ArrayUtils.removeAll(new Object[] { \"a\", \"b\", \"c\" }, 1, 2);\n        assertArrayEquals(new Object[] { \"a\" }, array);\n        assertEquals(Object.class, array.getClass().getComponentType());\n        array = ArrayUtils.removeAll(new Object[] { \"a\", \"b\", \"c\", \"d\" }, 1, 2);\n        assertArrayEquals(new Object[] { \"a\", \"d\" }, array);\n        assertEquals(Object.class, array.getClass().getComponentType());\n        array = ArrayUtils.removeAll(new Object[] { \"a\", \"b\", \"c\", \"d\" }, 0, 3);\n        assertArrayEquals(new Object[] { \"b\", \"c\" }, array);\n        assertEquals(Object.class, array.getClass().getComponentType());\n        array = ArrayUtils.removeAll(new Object[] { \"a\", \"b\", \"c\", \"d\" }, 0, 1, 3);\n        assertArrayEquals(new Object[] { \"c\" }, array);\n        assertEquals(Object.class, array.getClass().getComponentType());\n        array = ArrayUtils.removeAll(new Object[] { \"a\", \"b\", \"c\", \"d\", \"e\" }, 0, 1, 3);\n        assertArrayEquals(new Object[] { \"c\", \"e\" }, array);\n        assertEquals(Object.class, array.getClass().getComponentType());\n        array = ArrayUtils.removeAll(new Object[] { \"a\", \"b\", \"c\", \"d\", \"e\" }, 0, 2, 4);\n        assertArrayEquals(new Object[] { \"b\", \"d\" }, array);\n        assertEquals(Object.class, array.getClass().getComponentType());\n        array = ArrayUtils.removeAll(new Object[] { \"a\", \"b\", \"c\", \"d\" }, 0, 1, 3, 0, 1, 3);\n        assertArrayEquals(new Object[] { \"c\" }, array);\n        assertEquals(Object.class, array.getClass().getComponentType());\n        array = ArrayUtils.removeAll(new Object[] { \"a\", \"b\", \"c\", \"d\" }, 2, 1, 0, 3);\n        assertArrayEquals(ArrayUtils.EMPTY_OBJECT_ARRAY, array);\n        assertEquals(Object.class, array.getClass().getComponentType());\n        array = ArrayUtils.removeAll(new Object[] { \"a\", \"b\", \"c\", \"d\" }, 2, 0, 1, 3, 0, 2, 1, 3);\n        assertArrayEquals(ArrayUtils.EMPTY_OBJECT_ARRAY, array);\n        assertEquals(Object.class, array.getClass().getComponentType());\n    }\n\n    @Test\n    public void testRemoveAllObjectArrayRemoveNone() {\n        final Object[] array1 = new Object[] { \"foo\", \"bar\", \"baz\" };\n        final Object[] array2 = ArrayUtils.removeAll(array1);\n        assertNotSame(array1, array2);\n        assertArrayEquals(array1, array2);\n        assertEquals(Object.class, array2.getClass().getComponentType());\n    }\n\n    @Test(expected = IndexOutOfBoundsException.class)\n    public void testRemoveAllObjectArrayNegativeIndex() {\n        ArrayUtils.removeAll(new Object[] { \"a\", \"b\" }, -1);\n    }\n\n    @Test(expected = IndexOutOfBoundsException.class)\n    public void testRemoveAllObjectArrayOutOfBoundsIndex() {\n        ArrayUtils.removeAll(new Object[] { \"a\", \"b\" }, 2);\n    }\n\n    @Test(expected = IndexOutOfBoundsException.class)\n    public void testRemoveAllNullObjectArray() {\n        ArrayUtils.remove((Object[]) null, 0);\n    }\n\n    @Test\n    public void testRemoveAllNumberArray() {\n        final Number[] inarray = { Integer.valueOf(1), Long.valueOf(2L), Byte.valueOf((byte) 3) };\n        assertEquals(3, inarray.length);\n        Number[] outarray;\n        outarray = ArrayUtils.removeAll(inarray, 1);\n        assertArrayEquals(new Number[] { Integer.valueOf(1), Byte.valueOf((byte) 3) }, outarray);\n        assertEquals(Number.class, outarray.getClass().getComponentType());\n        outarray = ArrayUtils.removeAll(outarray, 1);\n        assertArrayEquals(new Number[] { Integer.valueOf(1) }, outarray);\n        assertEquals(Number.class, outarray.getClass().getComponentType());\n        outarray = ArrayUtils.removeAll(outarray, 0);\n        assertEquals(0, outarray.length);\n        assertEquals(Number.class, outarray.getClass().getComponentType());\n\n        outarray = ArrayUtils.removeAll(inarray, 0, 1);\n        assertArrayEquals(new Number[] { Byte.valueOf((byte) 3) }, outarray);\n        assertEquals(Number.class, outarray.getClass().getComponentType());\n        outarray = ArrayUtils.removeAll(inarray, 0, 2);\n        assertArrayEquals(new Number[] { Long.valueOf(2L) }, outarray);\n        assertEquals(Number.class, outarray.getClass().getComponentType());\n        outarray = ArrayUtils.removeAll(inarray, 1, 2);\n        assertArrayEquals(new Number[] { Integer.valueOf(1) }, outarray);\n        assertEquals(Number.class, outarray.getClass().getComponentType());\n    }\n\n    @Test\n    public void testRemoveAllBooleanArray() {\n        boolean[] array;\n        array = ArrayUtils.removeAll(new boolean[] { true }, 0);\n        assertTrue(Arrays.equals(ArrayUtils.EMPTY_BOOLEAN_ARRAY, array));\n        assertEquals(Boolean.TYPE, array.getClass().getComponentType());\n        array = ArrayUtils.removeAll(new boolean[] { true, false }, 0);\n        assertTrue(Arrays.equals(new boolean[] { false }, array));\n        assertEquals(Boolean.TYPE, array.getClass().getComponentType());\n        array = ArrayUtils.removeAll(new boolean[] { true, false }, 1);\n        assertTrue(Arrays.equals(new boolean[] { true }, array));\n        assertEquals(Boolean.TYPE, array.getClass().getComponentType());\n        array = ArrayUtils.removeAll(new boolean[] { true, false, true }, 1);\n        assertTrue(Arrays.equals(new boolean[] { true, true }, array));\n        assertEquals(Boolean.TYPE, array.getClass().getComponentType());\n\n        array = ArrayUtils.removeAll(new boolean[] { true, false }, 0, 1);\n        assertTrue(Arrays.equals(ArrayUtils.EMPTY_BOOLEAN_ARRAY, array));\n        assertEquals(Boolean.TYPE, array.getClass().getComponentType());\n        array = ArrayUtils.removeAll(new boolean[] { true, false, false }, 0, 1);\n        assertTrue(Arrays.equals(new boolean[] { false }, array));\n        assertEquals(Boolean.TYPE, array.getClass().getComponentType());\n        array = ArrayUtils.removeAll(new boolean[] { true, false, false }, 0, 2);\n        assertTrue(Arrays.equals(new boolean[] { false }, array));\n        assertEquals(Boolean.TYPE, array.getClass().getComponentType());\n        array = ArrayUtils.removeAll(new boolean[] { true, false, false }, 1, 2);\n        assertTrue(Arrays.equals(new boolean[] { true }, array));\n        assertEquals(Boolean.TYPE, array.getClass().getComponentType());\n        array = ArrayUtils.removeAll(new boolean[] { true, false, true, false, true }, 0, 2, 4);\n        assertTrue(Arrays.equals(new boolean[] { false, false }, array));\n        assertEquals(Boolean.TYPE, array.getClass().getComponentType());\n        array = ArrayUtils.removeAll(new boolean[] { true, false, true, false, true }, 1, 3);\n        assertTrue(Arrays.equals(new boolean[] { true, true, true }, array));\n        assertEquals(Boolean.TYPE, array.getClass().getComponentType());\n        array = ArrayUtils.removeAll(new boolean[] { true, false, true, false, true }, 1, 3, 4);\n        assertTrue(Arrays.equals(new boolean[] { true, true }, array));\n        assertEquals(Boolean.TYPE, array.getClass().getComponentType());\n        array = ArrayUtils.removeAll(new boolean[] { true, false, true, false, true, false, true }, 0, 2, 4, 6);\n        assertTrue(Arrays.equals(new boolean[] { false, false, false }, array));\n        assertEquals(Boolean.TYPE, array.getClass().getComponentType());\n        array = ArrayUtils.removeAll(new boolean[] { true, false, true, false, true, false, true }, 1, 3, 5);\n        assertTrue(Arrays.equals(new boolean[] { true, true, true, true }, array));\n        assertEquals(Boolean.TYPE, array.getClass().getComponentType());\n        array = ArrayUtils.removeAll(new boolean[] { true, false, true, false, true, false, true }, 0, 1, 2);\n        assertTrue(Arrays.equals(new boolean[] { false, true, false, true }, array));\n        assertEquals(Boolean.TYPE, array.getClass().getComponentType());\n    }\n\n    @Test\n    public void testRemoveAllBooleanArrayRemoveNone() {\n        final boolean[] array1 = new boolean[] { true, false };\n        final boolean[] array2 = ArrayUtils.removeAll(array1);\n        assertNotSame(array1, array2);\n        assertTrue(Arrays.equals(array1, array2));\n        assertEquals(boolean.class, array2.getClass().getComponentType());\n    }\n\n    @Test(expected = IndexOutOfBoundsException.class)\n    public void testRemoveAllBooleanArrayNegativeIndex() {\n        ArrayUtils.removeAll(new boolean[] { true, false }, -1);\n    }\n\n    @Test(expected = IndexOutOfBoundsException.class)\n    public void testRemoveAllBooleanArrayOutOfBoundsIndex() {\n        ArrayUtils.removeAll(new boolean[] { true, false }, 2);\n    }\n\n    @Test(expected = IndexOutOfBoundsException.class)\n    public void testRemoveAllNullBooleanArray() {\n        ArrayUtils.removeAll((boolean[]) null, 0);\n    }\n\n    @Test\n    public void testRemoveAllByteArray() {\n        byte[] array;\n        array = ArrayUtils.removeAll(new byte[] { 1 }, 0);\n",
+  "compaction": {
+    "source_lines": 1053,
+    "mode": "windows",
+    "windows_total": 18,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 37.71465064793889
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 14.865016059227425
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 10.671218002469045
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 37.71465064793889
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 14.865016059227425
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 10.671218002469045
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 5.70665945885169
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 3.3368916528298103
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 6.76430224609777
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 10.006324581438822
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 6.347852697722265
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 2.962253073840931
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 2.9665231876441127
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 2.9443361366015206
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 3.0052235181586657
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 2.9561913521193532
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 3.4920047700827057
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 7.054066605433812
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 3.498345399317203
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 0.06388175509951312
+      },
+      {
+        "start": 1020,
+        "end": 1053,
+        "score": 0.06257889244020008
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 10621,
+  "representation_chars": 10621,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

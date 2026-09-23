@@ -1,0 +1,101 @@
+{
+  "test_class": "org.apache.commons.lang3.StringEscapeUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/StringEscapeUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.StringEscapeUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/StringEscapeUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3;\n\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertFalse;\nimport static org.junit.Assert.assertNotNull;\nimport static org.junit.Assert.assertTrue;\nimport static org.junit.Assert.fail;\n\nimport java.io.FileInputStream;\nimport java.io.IOException;\nimport java.io.StringWriter;\nimport java.lang.reflect.Constructor;\nimport java.lang.reflect.Modifier;\n\nimport org.apache.commons.io.IOUtils;\nimport org.apache.commons.lang3.text.translate.CharSequenceTranslator;\nimport org.apache.commons.lang3.text.translate.NumericEntityEscaper;\nimport org.junit.Test;\n\n/**\n * Unit tests for {@link StringEscapeUtils}.\n *\n * @version $Id$\n */\npublic class StringEscapeUtilsTest {\n    private final static String FOO = \"foo\";\n\n    @Test\n    public void testConstructor() {\n        assertNotNull(new StringEscapeUtils());\n        Constructor<?>[] cons = StringEscapeUtils.class.getDeclaredConstructors();\n        assertEquals(1, cons.length);\n        assertTrue(Modifier.isPublic(cons[0].getModifiers()));\n        assertTrue(Modifier.isPublic(StringEscapeUtils.class.getModifiers()));\n        assertFalse(Modifier.isFinal(StringEscapeUtils.class.getModifiers()));\n    }\n    \n    @Test\n    public void testEscapeJava() throws IOException {\n        assertEquals(null, StringEscapeUtils.escapeJava(null));\n        try {\n            StringEscapeUtils.ESCAPE_JAVA.translate(null, null);\n            fail();\n        } catch (IOException ex) {\n            fail();\n        } catch (IllegalArgumentException ex) {\n        }\n        try {\n            StringEscapeUtils.ESCAPE_JAVA.translate(\"\", null);\n            fail();\n        } catch (IOException ex) {\n            fail();\n        } catch (IllegalArgumentException ex) {\n        }\n        \n        assertEscapeJava(\"empty string\", \"\", \"\");\n        assertEscapeJava(FOO, FOO);\n        assertEscapeJava(\"tab\", \"\\\\t\", \"\\t\");\n        assertEscapeJava(\"backslash\", \"\\\\\\\\\", \"\\\\\");\n        assertEscapeJava(\"single quote should not be escaped\", \"'\", \"'\");\n        assertEscapeJava(\"\\\\\\\\\\\\b\\\\t\\\\r\", \"\\\\\\b\\t\\r\");\n        assertEscapeJava(\"\\\\u1234\", \"\\u1234\");\n        assertEscapeJava(\"\\\\u0234\", \"\\u0234\");\n        assertEscapeJava(\"\\\\u00EF\", \"\\u00ef\");\n        assertEscapeJava(\"\\\\u0001\", \"\\u0001\");\n        assertEscapeJava(\"Should use capitalized Unicode hex\", \"\\\\uABCD\", \"\\uabcd\");\n\n        assertEscapeJava(\"He didn't say, \\\\\\\"stop!\\\\\\\"\",\n                \"He didn't say, \\\"stop!\\\"\");\n        assertEscapeJava(\"non-breaking space\", \"This space is non-breaking:\" + \"\\\\u00A0\",\n                \"This space is non-breaking:\\u00a0\");\n        assertEscapeJava(\"\\\\uABCD\\\\u1234\\\\u012C\",\n                \"\\uABCD\\u1234\\u012C\");\n    }\n\n    /**\n     * Tests https://issues.apache.org/jira/browse/LANG-421\n     */\n    @Test\n    public void testEscapeJavaWithSlash() {\n        final String input = \"String with a slash (/) in it\";\n\n        final String expected = input;\n        final String actual = StringEscapeUtils.escapeJava(input);\n\n        /**\n         * In 2.4 StringEscapeUtils.escapeJava(String) escapes '/' characters, which are not a valid character to escape\n         * in a Java string.\n         */\n        assertEquals(expected, actual);\n    }\n    \n    private void assertEscapeJava(String escaped, String original) throws IOException {\n        assertEscapeJava(null, escaped, original);\n    }\n\n    private void assertEscapeJava(String message, String expected, String original) throws IOException {\n        String converted = StringEscapeUtils.escapeJava(original);\n        message = \"escapeJava(String) failed\" + (message == null ? \"\" : (\": \" + message));\n        assertEquals(message, expected, converted);\n\n        StringWriter writer = new StringWriter();\n        StringEscapeUtils.ESCAPE_JAVA.translate(original, writer);\n        assertEquals(expected, writer.toString());\n    }\n\n    @Test\n    public void testUnescapeJava() throws IOException {\n        assertEquals(null, StringEscapeUtils.unescapeJava(null));\n        try {\n            StringEscapeUtils.UNESCAPE_JAVA.translate(null, null);\n            fail();\n        } catch (IOException ex) {\n            fail();\n        } catch (IllegalArgumentException ex) {\n        }\n        try {\n            StringEscapeUtils.UNESCAPE_JAVA.translate(\"\", null);\n            fail();\n        } catch (IOException ex) {\n            fail();\n        } catch (IllegalArgumentException ex) {\n        }\n        try {\n        assertEquals( \"Hiragana character Unicode behaviour should not be being escaped by escapeHtml4\",\n        original, escaped);\n\n        String unescaped = StringEscapeUtils.unescapeHtml4( escaped );\n\n        assertEquals( \"Hiragana character Unicode behaviour has changed - expected no unescaping\", escaped, unescaped);\n    }\n\n    /**\n     * Tests https://issues.apache.org/jira/browse/LANG-708\n     * \n     * @throws IOException\n     *             if an I/O error occurs\n     */\n    @Test\n    public void testLang708() throws IOException {\n        String input = IOUtils.toString(new FileInputStream(\"src/test/resources/lang-708-input.txt\"), \"UTF-8\");\n        String escaped = StringEscapeUtils.escapeEcmaScript(input);\n        // just the end:\n        assertTrue(escaped, escaped.endsWith(\"}]\"));\n        // a little more:\n        assertTrue(escaped, escaped.endsWith(\"\\\"valueCode\\\\\\\":\\\\\\\"\\\\\\\"}]\"));\n    }\n\n    /**\n     * Tests https://issues.apache.org/jira/browse/LANG-720\n     */\n    @Test\n    public void testLang720() {\n        String input = new StringBuilder(\"\\ud842\\udfb7\").append(\"A\").toString();\n        String escaped = StringEscapeUtils.escapeXml(input);\n        assertEquals(input, escaped);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 514,
+    "mode": "windows",
+    "windows_total": 9,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        480,
+        514
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.50979089460215
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 8.449071221721526
+      },
+      {
+        "start": 480,
+        "end": 514,
+        "score": 9.474534045598835
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.50979089460215
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 8.449071221721526
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 7.171045383526232
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 2.487068414717038
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 1.9234963996264254
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 4.694355068013063
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 1.0158914663476053
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 7.822090289048236
+      },
+      {
+        "start": 480,
+        "end": 514,
+        "score": 9.474534045598835
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 6621,
+  "representation_chars": 6621,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

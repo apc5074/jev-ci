@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.TestGenericsBounded",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/TestGenericsBounded.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.TestGenericsBounded\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/TestGenericsBounded.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.JsonProperty;\nimport com.fasterxml.jackson.core.type.TypeReference;\nimport com.fasterxml.jackson.databind.*;\n\nimport java.io.Serializable;\n\npublic class TestGenericsBounded\n    extends BaseMapTest\n{\n    @SuppressWarnings(\"serial\")\n    static class Range<E extends Comparable<E>> implements Serializable\n    {\n         protected E start, end;\n\n         public Range(){ }\n         public Range(E start, E end) {\n             this.start = start;\n             this.end = end;\n         }\n\n         public E getEnd() { return end; }\n         public void setEnd(E e) { end = e; }\n\n         public E getStart() { return start; }\n         public void setStart(E s) {\n             start = s;\n         }\n    }\n\n    @SuppressWarnings(\"serial\")\n    static class DoubleRange extends Range<Double> {\n        public DoubleRange() { }\n        public DoubleRange(Double s, Double e) { super(s, e); }\n    }\n     \n    static class BoundedWrapper<A extends Serializable>\n    {\n        public List<A> values;\n    }\n\n    @SuppressWarnings(\"serial\")\n    static class IntBean implements Serializable\n    {\n        public int x;\n    }\n\n    static class IntBeanWrapper<T extends IntBean> {\n        public T wrapped;\n    }\n\n    // Types for [JACKSON-778]\n    \n    static class Document {}\n    static class Row {}\n    static class RowWithDoc<D extends Document> extends Row {\n        @JsonProperty(\"d\") D d;\n    }\n    static class ResultSet<R extends Row> {\n        @JsonProperty(\"rows\") List<R> rows;\n    }\n    static class ResultSetWithDoc<D extends Document> extends ResultSet<RowWithDoc<D>> {}\n\n    static class MyDoc extends Document {}    \n    /*\n    /*******************************************************\n    /* Unit tests\n    /*******************************************************\n     */\n\n    public void testLowerBound() throws Exception\n    {\n        IntBeanWrapper<?> result = new ObjectMapper().readValue(\"{\\\"wrapped\\\":{\\\"x\\\":3}}\",\n                IntBeanWrapper.class);\n        assertNotNull(result);\n        assertEquals(IntBean.class, result.wrapped.getClass());\n        assertEquals(3, result.wrapped.x);\n    }\n    \n    // Test related to type bound handling problem within [JACKSON-190]\n    public void testBounded() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        BoundedWrapper<IntBean> result = mapper.readValue\n            (\"{\\\"values\\\":[ {\\\"x\\\":3} ] } \", new TypeReference<BoundedWrapper<IntBean>>() {});\n        List<?> list = result.values;\n        assertEquals(1, list.size());\n        Object ob = list.get(0);\n        assertEquals(IntBean.class, ob.getClass());\n        assertEquals(3, result.values.get(0).x);\n    }\n\n    public void testGenericsComplex() throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        DoubleRange in = new DoubleRange(-0.5, 0.5);\n        String json = m.writeValueAsString(in);\n        DoubleRange out = m.readValue(json, DoubleRange.class);\n        assertNotNull(out);\n        assertEquals(-0.5, out.start);\n        assertEquals(0.5, out.end);\n    }\n\n    public void testIssue778() throws Exception\n    {\n        final ObjectMapper mapper = new ObjectMapper();\n        String json = \"{\\\"rows\\\":[{\\\"d\\\":{}}]}\";\n\n        final TypeReference<?> type = new TypeReference<ResultSetWithDoc<MyDoc>>() {};\n        \n        // type passed is correct, but somehow it gets mangled when passed...\n        ResultSetWithDoc<MyDoc> rs = mapper.readValue(json, type);\n        Document d = rs.rows.iterator().next().d;\n    \n        assertEquals(MyDoc.class, d.getClass()); //expected MyDoc but was Document\n    }\n}\n",
+  "compaction": {
+    "source_lines": 120,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3862,
+  "representation_chars": 3862,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

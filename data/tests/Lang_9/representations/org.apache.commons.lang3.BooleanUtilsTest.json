@@ -1,0 +1,141 @@
+{
+  "test_class": "org.apache.commons.lang3.BooleanUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/BooleanUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.BooleanUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/BooleanUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3;\n\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertFalse;\nimport static org.junit.Assert.assertNotNull;\nimport static org.junit.Assert.assertSame;\nimport static org.junit.Assert.assertTrue;\n\nimport java.lang.reflect.Constructor;\nimport java.lang.reflect.Modifier;\n\nimport org.junit.Test;\n\n/**\n * Unit tests {@link org.apache.commons.lang3.BooleanUtils}.\n *\n * @version $Id$\n */\npublic class BooleanUtilsTest {\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testConstructor() {\n        assertNotNull(new BooleanUtils());\n        Constructor<?>[] cons = BooleanUtils.class.getDeclaredConstructors();\n        assertEquals(1, cons.length);\n        assertTrue(Modifier.isPublic(cons[0].getModifiers()));\n        assertTrue(Modifier.isPublic(BooleanUtils.class.getModifiers()));\n        assertFalse(Modifier.isFinal(BooleanUtils.class.getModifiers()));\n    }\n    \n    //-----------------------------------------------------------------------\n    @Test\n    public void test_negate_Boolean() {\n        assertSame(null, BooleanUtils.negate(null));\n        assertSame(Boolean.TRUE, BooleanUtils.negate(Boolean.FALSE));\n        assertSame(Boolean.FALSE, BooleanUtils.negate(Boolean.TRUE));\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void test_isTrue_Boolean() {\n        assertTrue(BooleanUtils.isTrue(Boolean.TRUE));\n        assertFalse(BooleanUtils.isTrue(Boolean.FALSE));\n        assertFalse(BooleanUtils.isTrue((Boolean) null));\n    }\n\n    @Test\n    public void test_isNotTrue_Boolean() {\n        assertFalse(BooleanUtils.isNotTrue(Boolean.TRUE));\n        assertTrue(BooleanUtils.isNotTrue(Boolean.FALSE));\n        assertTrue(BooleanUtils.isNotTrue((Boolean) null));\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void test_isFalse_Boolean() {\n        assertFalse(BooleanUtils.isFalse(Boolean.TRUE));\n        assertTrue(BooleanUtils.isFalse(Boolean.FALSE));\n        assertFalse(BooleanUtils.isFalse((Boolean) null));\n    }\n\n    @Test\n    public void test_isNotFalse_Boolean() {\n        assertTrue(BooleanUtils.isNotFalse(Boolean.TRUE));\n        assertFalse(BooleanUtils.isNotFalse(Boolean.FALSE));\n        assertTrue(BooleanUtils.isNotFalse((Boolean) null));\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void test_toBoolean_Boolean() {\n        assertTrue(BooleanUtils.toBoolean(Boolean.TRUE));\n        assertFalse(BooleanUtils.toBoolean(Boolean.FALSE));\n        assertFalse(BooleanUtils.toBoolean((Boolean) null));\n    }\n\n    @Test\n    public void test_toBooleanDefaultIfNull_Boolean_boolean() {\n        assertTrue(BooleanUtils.toBooleanDefaultIfNull(Boolean.TRUE, true));\n        assertTrue(BooleanUtils.toBooleanDefaultIfNull(Boolean.TRUE, false));\n        assertFalse(BooleanUtils.toBooleanDefaultIfNull(Boolean.FALSE, true));\n        assertFalse(BooleanUtils.toBooleanDefaultIfNull(Boolean.FALSE, false));\n        assertTrue(BooleanUtils.toBooleanDefaultIfNull((Boolean) null, true));\n        assertFalse(BooleanUtils.toBooleanDefaultIfNull((Boolean) null, false));\n    }\n\n    //-----------------------------------------------------------------------\n    //-----------------------------------------------------------------------\n    @Test\n    public void test_toBoolean_int() {\n        assertTrue(BooleanUtils.toBoolean(1));\n        assertTrue(BooleanUtils.toBoolean(-1));\n        assertFalse(BooleanUtils.toBoolean(0));\n    }\n    \n    @Test\n    public void test_toBooleanObject_int() {\n        assertEquals(Boolean.TRUE, BooleanUtils.toBooleanObject(1));\n        assertEquals(Boolean.TRUE, BooleanUtils.toBooleanObject(-1));\n        assertEquals(Boolean.FALSE, BooleanUtils.toBooleanObject(0));\n    }\n    \n    @Test\n    public void test_toBooleanObject_Integer() {\n        assertEquals(Boolean.TRUE, BooleanUtils.toBooleanObject(Integer.valueOf(1)));\n        assertEquals(Boolean.TRUE, BooleanUtils.toBooleanObject(Integer.valueOf(-1)));\n        assertEquals(Boolean.FALSE, BooleanUtils.toBooleanObject(Integer.valueOf(0)));\n        assertEquals(null, BooleanUtils.toBooleanObject((Integer) null));\n    }\n    \n    //-----------------------------------------------------------------------\n    @Test\n    public void test_toBoolean_int_int_int() {\n        assertTrue(BooleanUtils.toBoolean(6, 6, 7));\n        assertFalse(BooleanUtils.toBoolean(7, 6, 7));\n    }\n\n    @Test(expected = IllegalArgumentException.class)\n    public void test_toBoolean_int_int_int_noMatch() {\n        BooleanUtils.toBoolean(8, 6, 7);\n    }\n    \n    @Test\n        assertFalse(BooleanUtils.toBoolean((String) null, \"Y\", null));\n        assertTrue(BooleanUtils.toBoolean(\"Y\", \"Y\", \"N\"));\n        assertTrue(BooleanUtils.toBoolean(\"Y\", new String(\"Y\"), new String(\"N\")));\n        assertFalse(BooleanUtils.toBoolean(\"N\", \"Y\", \"N\"));\n        assertFalse(BooleanUtils.toBoolean(\"N\", new String(\"Y\"), new String(\"N\")));\n        assertTrue(BooleanUtils.toBoolean((String) null, null, null));\n        assertTrue(BooleanUtils.toBoolean(\"Y\", \"Y\", \"Y\"));\n        assertTrue(BooleanUtils.toBoolean(\"Y\", new String(\"Y\"), new String(\"Y\")));\n    }\n\n    @Test(expected = IllegalArgumentException.class)\n    public void test_toBoolean_String_String_String_nullValue() {\n        BooleanUtils.toBoolean(null, \"Y\", \"N\");\n    }\n\n    @Test(expected = IllegalArgumentException.class)\n    public void test_toBoolean_String_String_String_noMatch() {\n        BooleanUtils.toBoolean(\"X\", \"Y\", \"N\");\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void test_toStringTrueFalse_Boolean() {\n        assertEquals(null, BooleanUtils.toStringTrueFalse((Boolean) null));\n        assertEquals(\"true\", BooleanUtils.toStringTrueFalse(Boolean.TRUE));\n        assertEquals(\"false\", BooleanUtils.toStringTrueFalse(Boolean.FALSE));\n    }\n    \n    @Test\n    public void test_toStringOnOff_Boolean() {\n        assertEquals(null, BooleanUtils.toStringOnOff((Boolean) null));\n        assertEquals(\"on\", BooleanUtils.toStringOnOff(Boolean.TRUE));\n        assertEquals(\"off\", BooleanUtils.toStringOnOff(Boolean.FALSE));\n    }\n    \n    @Test\n    public void test_toStringYesNo_Boolean() {\n        assertEquals(null, BooleanUtils.toStringYesNo((Boolean) null));\n        assertEquals(\"yes\", BooleanUtils.toStringYesNo(Boolean.TRUE));\n        assertEquals(\"no\", BooleanUtils.toStringYesNo(Boolean.FALSE));\n    }\n    \n    @Test\n    public void test_toString_Boolean_String_String_String() {\n        assertEquals(\"U\", BooleanUtils.toString((Boolean) null, \"Y\", \"N\", \"U\"));\n        assertEquals(\"Y\", BooleanUtils.toString(Boolean.TRUE, \"Y\", \"N\", \"U\"));\n        assertEquals(\"N\", BooleanUtils.toString(Boolean.FALSE, \"Y\", \"N\", \"U\"));\n    }\n    \n    //-----------------------------------------------------------------------\n    @Test\n    public void test_toStringTrueFalse_boolean() {\n        assertEquals(\"true\", BooleanUtils.toStringTrueFalse(true));\n        assertEquals(\"false\", BooleanUtils.toStringTrueFalse(false));\n    }\n    \n    @Test\n    public void test_toStringOnOff_boolean() {\n        assertEquals(\"on\", BooleanUtils.toStringOnOff(true));\n        assertEquals(\"off\", BooleanUtils.toStringOnOff(false));\n    }\n    \n    @Test\n    public void test_toStringYesNo_boolean() {\n        assertEquals(\"yes\", BooleanUtils.toStringYesNo(true));\n        assertEquals(\"no\", BooleanUtils.toStringYesNo(false));\n    }\n    \n    @Test\n    public void test_toString_boolean_String_String_String() {\n        assertEquals(\"Y\", BooleanUtils.toString(true, \"Y\", \"N\"));\n        assertEquals(\"N\", BooleanUtils.toString(false, \"Y\", \"N\"));\n    }\n    \n    //  testXor\n    //  -----------------------------------------------------------------------\n    @Test(expected = IllegalArgumentException.class)\n    public void testXor_primitive_nullInput() {\n        BooleanUtils.xor((boolean[]) null);\n    }\n",
+  "compaction": {
+    "source_lines": 984,
+    "mode": "windows",
+    "windows_total": 17,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        360,
+        440
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 27.54086416491335
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.530146954732634
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 3.6909105616381463
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 27.54086416491335
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.530146954732634
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 3.397344096085396
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 2.8456112699063594
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 2.8031207793470667
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 3.6319129928826466
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 3.6909105616381463
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 3.421579548475595
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 2.1553445850937685
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 1.6947308072456284
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 1.9521337710244908
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 2.148259942730867
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 0.6440779447585229
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 1.9521337710244908
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 2.151087274878618
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 0.6429236994326196
+      },
+      {
+        "start": 960,
+        "end": 984,
+        "score": 0.5644792802911549
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9011,
+  "representation_chars": 9011,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

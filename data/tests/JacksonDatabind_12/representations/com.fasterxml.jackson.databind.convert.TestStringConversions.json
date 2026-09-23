@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.convert.TestStringConversions",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/convert/TestStringConversions.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.convert.TestStringConversions\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/convert/TestStringConversions.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.convert;\n\nimport java.util.*;\n\nimport static org.junit.Assert.*;\n\nimport com.fasterxml.jackson.core.Base64Variants;\nimport com.fasterxml.jackson.databind.*;\n\npublic class TestStringConversions\n    extends com.fasterxml.jackson.databind.BaseMapTest\n{\n    final ObjectMapper MAPPER = new ObjectMapper();\n\n    public void testSimple()\n    {\n        assertEquals(Boolean.TRUE, MAPPER.convertValue(\"true\", Boolean.class));\n        assertEquals(Integer.valueOf(-3), MAPPER.convertValue(\"  -3 \", Integer.class));\n        assertEquals(Long.valueOf(77), MAPPER.convertValue(\"77\", Long.class));\n\n        int[] ints = { 1, 2, 3 };\n        List<Integer> Ints = new ArrayList<Integer>();\n        Ints.add(1);\n        Ints.add(2);\n        Ints.add(3);\n        \n        assertArrayEquals(ints, MAPPER.convertValue(Ints, int[].class));\n    }\n\n    public void testStringsToInts()\n    {\n        // let's verify our \"neat trick\" actually works...\n        assertArrayEquals(new int[] { 1, 2, 3, 4, -1, 0 },\n                          MAPPER.convertValue(\"1  2 3    4  -1 0\".split(\"\\\\s+\"), int[].class));\n    }\n\n    public void testBytesToBase64AndBack() throws Exception\n    {\n        byte[] input = new byte[] { 1, 2, 3, 4, 5, 6, 7 };\n        String encoded = MAPPER.convertValue(input, String.class);\n        assertNotNull(encoded);\n\n        assertEquals(\"AQIDBAUGBw==\", encoded);\n\n        // plus, ensure this is consistent:\n        assertEquals(Base64Variants.MIME.encode(input), encoded);\n\n        byte[] result = MAPPER.convertValue(encoded, byte[].class);\n        assertArrayEquals(input, result);\n    }\n    \n    public void testBytestoCharArray() throws Exception\n    {\n        byte[] input = new byte[] { 1, 2, 3, 4, 5, 6, 7 };\n        // first, do baseline encoding\n        char[] expEncoded = MAPPER.convertValue(input, String.class).toCharArray();\n        // then compare\n        char[] actEncoded = MAPPER.convertValue(input, char[].class);\n        assertArrayEquals(expEncoded, actEncoded);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 61,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2212,
+  "representation_chars": 2212,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

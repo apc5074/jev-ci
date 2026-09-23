@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.math.special.ErfTest",
+  "source_file": "src/test/org/apache/commons/math/special/ErfTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math.special.ErfTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/math/special/ErfTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n *  contributor license agreements.  See the NOTICE file distributed with\n *  this work for additional information regarding copyright ownership.\n *  The ASF licenses this file to You under the Apache License, Version 2.0\n *  (the \"License\"); you may not use this file except in compliance with\n *  the License.  You may obtain a copy of the License at\n *\n *     http://www.apache.org/licenses/LICENSE-2.0\n *\n *  Unless required by applicable law or agreed to in writing, software\n *  distributed under the License is distributed on an \"AS IS\" BASIS,\n *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n *  See the License for the specific language governing permissions and\n *  limitations under the License.\n */\n\npackage org.apache.commons.math.special;\n\nimport org.apache.commons.math.MathException;\n\nimport junit.framework.TestCase;\n\n/**\n * @version $Revision$ $Date$\n */\npublic class ErfTest extends TestCase {\n\n    public void testErf0() throws MathException {\n        double actual = Erf.erf(0.0);\n        double expected = 0.0;\n        assertEquals(expected, actual, 1.0e-5);\n    }\n\n    public void testErf1960() throws MathException {\n        double x = 1.960 / Math.sqrt(2.0);\n        double actual = Erf.erf(x);\n        double expected = 0.95;\n        assertEquals(expected, actual, 1.0e-5);\n\n        actual = Erf.erf(-x);\n        expected = -expected;\n        assertEquals(expected, actual, 1.0e-5);\n    }\n\n    public void testErf2576() throws MathException {\n        double x = 2.576 / Math.sqrt(2.0);\n        double actual = Erf.erf(x);\n        double expected = 0.99;\n        assertEquals(expected, actual, 1.0e-5);\n    \n        actual = Erf.erf(-x);\n        expected = -expected;\n        assertEquals(expected, actual, 1.0e-5);\n    }\n\n    public void testErf2807() throws MathException {\n        double x = 2.807 / Math.sqrt(2.0);\n        double actual = Erf.erf(x);\n        double expected = 0.995;\n        assertEquals(expected, actual, 1.0e-5);\n        \n        actual = Erf.erf(-x);\n        expected = -expected;\n        assertEquals(expected, actual, 1.0e-5);\n    }\n\n    public void testErf3291() throws MathException {\n        double x = 3.291 / Math.sqrt(2.0);\n        double actual = Erf.erf(x);\n        double expected = 0.999;\n        assertEquals(expected, actual, 1.0e-5);\n        \n        actual = Erf.erf(-x);\n        expected = -expected;\n        assertEquals(expected, actual, 1.0e-5);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 78,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2658,
+  "representation_chars": 2658,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

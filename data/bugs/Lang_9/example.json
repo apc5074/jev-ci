@@ -1,0 +1,95 @@
+{
+  "example_id": "Lang_9",
+  "qualified_id": "Lang-9",
+  "project": "Lang",
+  "bug_id": "9",
+  "split": "development",
+  "status": "complete",
+  "revisions": {
+    "base": "Bf",
+    "proposed": "Bb",
+    "direction": "fixed_to_buggy",
+    "notes": "Fixed (Bf) is the working base for tests/source. Buggy (Bb) is the proposed production change."
+  },
+  "manifest": {
+    "path": "data/manifest.json",
+    "selection_seed": 20260922,
+    "defects4j_version": "3.0.1",
+    "defects4j_commit": "6d54320e0db5a357f9ab38a8e4d2e5aead7e1c09",
+    "manifest_created_at": "2026-09-22T23:16:15+00:00",
+    "manifest_git_commit": "784d3d84dd09ae7f53cb828eac65532370906c56"
+  },
+  "artifacts": {
+    "bugs": "data/bugs/Lang_9/",
+    "patches": "data/patches/Lang_9/",
+    "tests": "data/tests/Lang_9/"
+  },
+  "visibility": {
+    "model_visible": [
+      "data/patches/<id>/representation.txt",
+      "data/patches/<id>/patch_meta.json (truncation stats only)",
+      "data/tests/<id>/inventory.json (test class ids + source paths)",
+      "data/tests/<id>/representations/*.json (compact test source)"
+    ],
+    "private": [
+      "data/tests/<id>/labels.json",
+      "data/tests/<id>/raw/tests.trigger",
+      "data/bugs/<id>/error.json",
+      "checkout trees under data/bugs/<id>/checkouts/"
+    ]
+  },
+  "complete_requirements": [
+    "example_json",
+    "checkout_provenance",
+    "checkout_fixed",
+    "checkout_buggy",
+    "patch_meta",
+    "patch_diff",
+    "patch_representation",
+    "raw_tests_all",
+    "raw_tests_trigger",
+    "test_inventory",
+    "test_labels",
+    "representations_index"
+  ],
+  "error": null,
+  "checkouts": {
+    "fixed": "data/bugs/Lang_9/checkouts/fixed",
+    "buggy": "data/bugs/Lang_9/checkouts/buggy",
+    "provenance": "data/bugs/Lang_9/checkout_provenance.json"
+  },
+  "patch": {
+    "meta": "data/patches/Lang_9/patch_meta.json",
+    "diff": "data/patches/Lang_9/regression_patch.diff",
+    "representation": "data/patches/Lang_9/representation.txt",
+    "patch_truncated": false,
+    "original_patch_chars": 761,
+    "representation_chars": 761
+  },
+  "tests": {
+    "inventory": "data/tests/Lang_9/inventory.json",
+    "labels": "data/tests/Lang_9/labels.json",
+    "num_test_classes": 111,
+    "num_positive_classes": 2,
+    "num_trigger_methods": 2,
+    "source_resolved": 111,
+    "source_missing": 0,
+    "source_ambiguous": 0
+  },
+  "representations": {
+    "index": "data/tests/Lang_9/representations_index.json",
+    "dir": "data/tests/Lang_9/representations",
+    "num_representations": 111,
+    "source_missing": 0,
+    "representation_truncated": 1,
+    "window_compacted": 54
+  },
+  "content_hashes": {
+    "patch_representation": "882c8dec081e1af528aa15c182af05df759c811f52c897754617e6f8db55778d",
+    "patch_meta": "6385970c7f4a80ea76efa31d7873aeafdf878e0a70cb854e70047602cdd79822",
+    "test_inventory": "27a311a4037fb6b98f875b8a9dd770134820b923cd514482ca08f602f5d605fe",
+    "test_labels": "1a8795861a06b44e5364ccdb677c6e8925aa822808d9830dadd261ac5732252c",
+    "representations_index": "d1366c4a6b155643cf0028d9a0fb61da77739bc41b81c48a1259213e906d7bcd",
+    "checkout_provenance": "d96fdf54a85073a481184e0c572f34b0add6d3a7c638cd9966821a39aa16d49c"
+  }
+}

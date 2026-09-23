@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.cli.ArgumentIsOptionTest",
+  "source_file": "src/test/java/org/apache/commons/cli/ArgumentIsOptionTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.cli.ArgumentIsOptionTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/cli/ArgumentIsOptionTest.java\n\nTEST SOURCE:\n/**\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *     http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.cli;\n\nimport static org.junit.Assert.assertFalse;\nimport static org.junit.Assert.assertTrue;\n\nimport org.junit.Before;\nimport org.junit.Test;\n\n@SuppressWarnings(\"deprecation\") // tests some deprecated classes\npublic class ArgumentIsOptionTest\n{\n    private Options options = null;\n    private CommandLineParser parser = null;\n\n    @Before\n    public void setUp()\n    {\n        options = new Options().addOption(\"p\", false, \"Option p\").addOption(\"attr\", true, \"Option accepts argument\");\n\n        parser = new PosixParser();\n    }\n\n    @Test\n    public void testOptionAndOptionWithArgument() throws Exception\n    {\n        final String[] args = new String[]{\n                \"-p\",\n                \"-attr\",\n                \"p\"\n        };\n\n        final CommandLine cl = parser.parse(options, args);\n        assertTrue(\"Confirm -p is set\", cl.hasOption(\"p\"));\n        assertTrue(\"Confirm -attr is set\", cl.hasOption(\"attr\"));\n        assertTrue(\"Confirm arg of -attr\", cl.getOptionValue(\"attr\").equals(\"p\"));\n        assertTrue(\"Confirm all arguments recognized\", cl.getArgs().length == 0);\n    }\n\n    @Test\n    public void testOptionWithArgument() throws Exception\n    {\n        final String[] args = new String[]{\n                \"-attr\",\n                \"p\"\n        };\n\n        final CommandLine cl = parser.parse(options, args);\n        assertFalse(\"Confirm -p is set\", cl.hasOption(\"p\"));\n        assertTrue(\"Confirm -attr is set\", cl.hasOption(\"attr\"));\n        assertTrue(\"Confirm arg of -attr\",\n                cl.getOptionValue(\"attr\").equals(\"p\"));\n        assertTrue(\"Confirm all arguments recognized\", cl.getArgs().length == 0);\n    }\n\n    @Test\n    public void testOption() throws Exception\n    {\n        final String[] args = new String[]{\n                \"-p\"\n        };\n\n        final CommandLine cl = parser.parse(options, args);\n        assertTrue(\"Confirm -p is set\", cl.hasOption(\"p\"));\n        assertFalse(\"Confirm -attr is not set\", cl.hasOption(\"attr\"));\n        assertTrue(\"Confirm all arguments recognized\", cl.getArgs().length == 0);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 84,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3043,
+  "representation_chars": 3043,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

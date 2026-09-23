@@ -1,0 +1,25 @@
+{
+  "test_class": "org.jsoup.nodes.AttributesTest",
+  "source_file": "src/test/java/org/jsoup/nodes/AttributesTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.jsoup.nodes.AttributesTest\n\nSOURCE FILE:\nsrc/test/java/org/jsoup/nodes/AttributesTest.java\n\nTEST SOURCE:\npackage org.jsoup.nodes;\n\nimport static org.junit.Assert.*;\n\nimport org.junit.Test;\n\n/**\n * Tests for Attributes.\n *\n * @author Jonathan Hedley\n */\npublic class AttributesTest {\n    @Test public void html() {\n        Attributes a = new Attributes();\n        a.put(\"Tot\", \"a&p\");\n        a.put(\"Hello\", \"There\");\n        a.put(\"data-name\", \"Jsoup\");\n\n        assertEquals(3, a.size());\n        assertTrue(a.hasKey(\"tot\"));\n        assertTrue(a.hasKey(\"Hello\"));\n        assertTrue(a.hasKey(\"data-name\"));\n        assertEquals(1, a.dataset().size());\n        assertEquals(\"Jsoup\", a.dataset().get(\"name\"));\n        assertEquals(\"a&p\", a.get(\"tot\"));\n\n        assertEquals(\" tot=\\\"a&amp;p\\\" hello=\\\"There\\\" data-name=\\\"Jsoup\\\"\", a.html());\n        assertEquals(a.html(), a.toString());\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 31,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 913,
+  "representation_chars": 913,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

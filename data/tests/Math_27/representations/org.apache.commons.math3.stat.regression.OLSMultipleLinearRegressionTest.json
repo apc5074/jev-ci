@@ -1,0 +1,121 @@
+{
+  "test_class": "org.apache.commons.math3.stat.regression.OLSMultipleLinearRegressionTest",
+  "source_file": "src/test/java/org/apache/commons/math3/stat/regression/OLSMultipleLinearRegressionTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.stat.regression.OLSMultipleLinearRegressionTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/stat/regression/OLSMultipleLinearRegressionTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.stat.regression;\n\n\nimport org.apache.commons.math3.TestUtils;\nimport org.apache.commons.math3.linear.DefaultRealMatrixChangingVisitor;\nimport org.apache.commons.math3.linear.MatrixUtils;\nimport org.apache.commons.math3.linear.RealMatrix;\nimport org.apache.commons.math3.linear.Array2DRowRealMatrix;\nimport org.apache.commons.math3.linear.RealVector;\nimport org.apache.commons.math3.stat.StatUtils;\nimport org.junit.Assert;\nimport org.junit.Before;\nimport org.junit.Test;\n\npublic class OLSMultipleLinearRegressionTest extends MultipleLinearRegressionAbstractTest {\n\n    private double[] y;\n    private double[][] x;\n\n    @Before\n    @Override\n    public void setUp(){\n        y = new double[]{11.0, 12.0, 13.0, 14.0, 15.0, 16.0};\n        x = new double[6][];\n        x[0] = new double[]{0, 0, 0, 0, 0};\n        x[1] = new double[]{2.0, 0, 0, 0, 0};\n        x[2] = new double[]{0, 3.0, 0, 0, 0};\n        x[3] = new double[]{0, 0, 4.0, 0, 0};\n        x[4] = new double[]{0, 0, 0, 5.0, 0};\n        x[5] = new double[]{0, 0, 0, 0, 6.0};\n        super.setUp();\n    }\n\n    @Override\n    protected OLSMultipleLinearRegression createRegression() {\n        OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();\n        regression.newSampleData(y, x);\n        return regression;\n    }\n\n    @Override\n    protected int getNumberOfRegressors() {\n        return x[0].length + 1;\n    }\n\n    @Override\n    protected int getSampleSize() {\n        return y.length;\n    }\n    \n    @Test(expected=IllegalArgumentException.class)\n    public void cannotAddSampleDataWithSizeMismatch() {\n        double[] y = new double[]{1.0, 2.0};\n        double[][] x = new double[1][];\n        x[0] = new double[]{1.0, 0};\n        createRegression().newSampleData(y, x);\n    }\n\n    @Test\n    public void testPerfectFit() {\n        double[] betaHat = regression.estimateRegressionParameters();\n        TestUtils.assertEquals(betaHat,\n                               new double[]{ 11.0, 1.0 / 2.0, 2.0 / 3.0, 3.0 / 4.0, 4.0 / 5.0, 5.0 / 6.0 },\n                               1e-14);\n        double[] residuals = regression.estimateResiduals();\n        TestUtils.assertEquals(residuals, new double[]{0d,0d,0d,0d,0d,0d},\n                               1e-14);\n        RealMatrix errors =\n            new Array2DRowRealMatrix(regression.estimateRegressionParametersVariance(), false);\n        final double[] s = { 1.0, -1.0 /  2.0, -1.0 /  3.0, -1.0 /  4.0, -1.0 /  5.0, -1.0 /  6.0 };\n        RealMatrix referenceVariance = new Array2DRowRealMatrix(s.length, s.length);\n        referenceVariance.walkInOptimizedOrder(new DefaultRealMatrixChangingVisitor() {\n            @Override\n            public double visit(int row, int column, double value) {\n                if (row == 0) {\n                    return s[column];\n                }\n                double x = s[row] * s[column];\n                return (row == column) ? 2 * x : x;\n            }\n        });\n       Assert.assertEquals(0.0,\n                     errors.subtract(referenceVariance).getNorm(),\n                     5.0e-16 * referenceVariance.getNorm());\n       Assert.assertEquals(1, ((OLSMultipleLinearRegression) regression).calculateRSquared(), 1E-12);\n    }\n\n\n    /**\n     * Test Longley dataset against certified values provided by NIST.\n     * Data Source: J. Longley (1967) \"An Appraisal of Least Squares\n     * Programs for the Electronic Computer from the Point of View of the User\"\n     * Journal of the American Statistical Association, vol. 62. September,\n     * pp. 819-841.\n     *\n     * Certified values (and data) are from NIST:\n     * http://www.itl.nist.gov/div898/strd/lls/data/LINKS/DATA/Longley.dat\n     */\n    @Test\n    public void testLongly() {\n        // Y values are first, then independent vars\n        // Each row is one observation\n        double[] design = new double[] {\n            60323,83.0,234289,2356,1590,107608,1947,\n            61122,88.5,259426,2325,1456,108632,1948,\n            60171,88.2,258054,3682,1616,109773,1949,\n            61187,89.5,284599,3351,1650,110929,1950,\n            63221,96.2,328975,2099,3099,112075,1951,\n            63639,98.1,346999,1932,3594,113270,1952,\n            64989,99.0,365385,1870,3547,115094,1953,\n            63761,100.0,363112,3578,3350,116219,1954,\n            66019,101.2,397469,2904,3048,117388,1955,\n            67857,104.6,419180,2822,2857,118734,1956,\n            68169,108.4,442769,2936,2798,120445,1957,\n            66513,110.8,444546,4681,2637,121950,1958,\n            68655,112.6,482704,3813,2552,123366,1959,\n            69564,114.2,502601,3931,2514,125368,1960,\n            69331,115.7,518173,4806,2572,127852,1961,\n            70551,116.9,554894,4007,2827,130081,1962\n        };\n\n        final int nobs = 16;\n        final int nvars = 6;\n\n        // Check against reference data and verify symmetry\n        int k = 0;\n        for (int i = 0; i < 10; i++) {\n            for (int j = i; j < 10; j++) {\n                Assert.assertEquals(referenceData[k], hat.getEntry(i, j), 10e-3);\n                Assert.assertEquals(hat.getEntry(i, j), hat.getEntry(j, i), 10e-12);\n                k++;\n            }\n        }\n\n        /*\n         * Verify that residuals computed using the hat matrix are close to\n         * what we get from direct computation, i.e. r = (I - H) y\n         */\n        double[] residuals = model.estimateResiduals();\n        RealMatrix I = MatrixUtils.createRealIdentityMatrix(10);\n        double[] hatResiduals = I.subtract(hat).operate(model.getY()).toArray();\n        TestUtils.assertEquals(residuals, hatResiduals, 10e-12);\n    }\n\n    /**\n     * test calculateYVariance\n     */\n    @Test\n    public void testYVariance() {\n\n        // assumes: y = new double[]{11.0, 12.0, 13.0, 14.0, 15.0, 16.0};\n\n        OLSMultipleLinearRegression model = new OLSMultipleLinearRegression();\n        model.newSampleData(y, x);\n        TestUtils.assertEquals(model.calculateYVariance(), 3.5, 0);\n    }\n    \n    /**\n     * Verifies that calculateYVariance and calculateResidualVariance return consistent\n     * values with direct variance computation from Y, residuals, respectively.\n     */\n    protected void checkVarianceConsistency(OLSMultipleLinearRegression model) {\n        // Check Y variance consistency\n        TestUtils.assertEquals(StatUtils.variance(model.getY().toArray()), model.calculateYVariance(), 0);\n        \n        // Check residual variance consistency\n        double[] residuals = model.calculateResiduals().toArray();\n        RealMatrix X = model.getX();\n        TestUtils.assertEquals(\n                StatUtils.variance(model.calculateResiduals().toArray()) * (residuals.length - 1),\n                model.calculateErrorVariance() * (X.getRowDimension() - X.getColumnDimension()), 1E-20);\n        \n    }\n    \n    /**\n     * Verifies that setting X and Y separately has the same effect as newSample(X,Y).\n     */\n    @Test\n    public void testNewSample2() {\n        double[] y = new double[] {1, 2, 3, 4}; \n        double[][] x = new double[][] {\n          {19, 22, 33},\n          {20, 30, 40},\n          {25, 35, 45},\n          {27, 37, 47}   \n        };\n        OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();\n        regression.newSampleData(y, x);\n        RealMatrix combinedX = regression.getX().copy();\n        RealVector combinedY = regression.getY().copy();\n        regression.newXSampleData(x);\n        regression.newYSampleData(y);\n        Assert.assertEquals(combinedX, regression.getX());\n        Assert.assertEquals(combinedY, regression.getY());\n        \n        // No intercept\n        regression.setNoIntercept(true);\n        regression.newSampleData(y, x);\n        combinedX = regression.getX().copy();\n        combinedY = regression.getY().copy();\n        regression.newXSampleData(x);\n        regression.newYSampleData(y);\n        Assert.assertEquals(combinedX, regression.getX());\n        Assert.assertEquals(combinedY, regression.getY());\n",
+  "compaction": {
+    "source_lines": 786,
+    "mode": "windows",
+    "windows_total": 13,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        420,
+        500
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 22.50082833678488
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 4.774609183542475
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 2.850221454817356
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 22.50082833678488
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 4.774609183542475
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 1.2850522982342094
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 1.3077284099981255
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 1.3690204833967594
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 0.5359156274018348
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 0.6232960046681121
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 2.850221454817356
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 0.6161613660918286
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 1.1793174485188254
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 1.1882331099535888
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 1.2171842652163716
+      },
+      {
+        "start": 720,
+        "end": 786,
+        "score": 1.0567215267986896
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8999,
+  "representation_chars": 8999,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

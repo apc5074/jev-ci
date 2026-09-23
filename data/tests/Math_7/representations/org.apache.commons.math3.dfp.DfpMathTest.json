@@ -1,0 +1,106 @@
+{
+  "test_class": "org.apache.commons.math3.dfp.DfpMathTest",
+  "source_file": "src/test/java/org/apache/commons/math3/dfp/DfpMathTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.dfp.DfpMathTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/dfp/DfpMathTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math3.dfp;\n\nimport org.junit.After;\nimport org.junit.Assert;\nimport org.junit.Before;\nimport org.junit.Test;\n\npublic class DfpMathTest {\n\n    private DfpField factory;\n    private Dfp pinf;\n    private Dfp ninf;\n    private Dfp nan;\n    private Dfp qnan;\n\n    @Before\n    public void setUp() {\n        // Some basic setup.  Define some constants and clear the status flags\n        factory = new DfpField(20);\n        pinf = factory.newDfp(\"1\").divide(factory.newDfp(\"0\"));\n        ninf = factory.newDfp(\"-1\").divide(factory.newDfp(\"0\"));\n        nan = factory.newDfp(\"0\").divide(factory.newDfp(\"0\"));\n        qnan = factory.newDfp((byte)1, Dfp.QNAN);\n        ninf.getField().clearIEEEFlags();\n\n        // force loading of dfpmath\n        Dfp pi = factory.getPi();\n        pi.getField().clearIEEEFlags();\n    }\n\n    @After\n    public void tearDown() {\n        pinf = null;\n        ninf = null;\n        nan  = null;\n        qnan = null;\n    }\n\n    // Generic test function.  Takes params x and y and tests them for \n    // equality.  Then checks the status flags against the flags argument.\n    // If the test fail, it prints the desc string\n    private void test(Dfp x, Dfp y, int flags, String desc)\n    {\n        boolean b = x.equals(y);\n\n        if (!x.equals(y) && !x.unequal(y))  // NaNs involved \n            b = (x.toString().equals(y.toString()));\n\n        if (x.equals(factory.newDfp(\"0\")))  // distinguish +/- zero\n            b = (b && (x.toString().equals(y.toString())));\n\n        b = (b && x.getField().getIEEEFlags() == flags);\n\n        if (!b)\n            Assert.assertTrue(\"assersion failed \"+desc+\" x = \"+x.toString()+\" flags = \"+x.getField().getIEEEFlags(), b);\n\n        x.getField().clearIEEEFlags();\n    }\n\n    @Test\n    public void testPow()  \n    {\n        // Test special cases  exponent of zero\n        test(DfpMath.pow(factory.newDfp(\"0\"), factory.newDfp(\"0\")),      \n             factory.newDfp(\"1\"), \n             0, \"pow #1\");\n\n        test(DfpMath.pow(factory.newDfp(\"0\"), factory.newDfp(\"-0\")),      \n             factory.newDfp(\"1\"), \n             0, \"pow #2\");\n\n        test(DfpMath.pow(factory.newDfp(\"2\"), factory.newDfp(\"0\")),      \n             factory.newDfp(\"1\"), \n             0, \"pow #3\");\n\n        test(DfpMath.pow(factory.newDfp(\"-2\"), factory.newDfp(\"-0\")),      \n             factory.newDfp(\"1\"), \n             0, \"pow #4\");\n\n        test(DfpMath.pow(pinf, factory.newDfp(\"-0\")),      \n             factory.newDfp(\"1\"), \n             0, \"pow #5\");\n\n        test(DfpMath.pow(pinf, factory.newDfp(\"0\")),\n             factory.newDfp(\"1\"), \n             0, \"pow #6\");\n\n        test(DfpMath.pow(ninf, factory.newDfp(\"-0\")),      \n             factory.newDfp(\"1\"), \n             0, \"pow #7\");\n\n        test(DfpMath.pow(ninf, factory.newDfp(\"0\")),\n             factory.newDfp(\"1\"), \n             0, \"pow #8\");\n\n        test(DfpMath.pow(qnan, factory.newDfp(\"0\")),\n             factory.newDfp(\"1\"), \n             0, \"pow #8\");\n\n        // exponent of one\n        test(DfpMath.pow(factory.newDfp(\"0\"), factory.newDfp(\"1\")),\n             factory.newDfp(\"0\"), \n             0, \"pow #9\");\n\n        test(DfpMath.pow(factory.newDfp(\"-0\"), factory.newDfp(\"1\")),      \n             factory.newDfp(\"-0\"), \n             0, \"pow #10\");\n\n        test(DfpMath.pow(factory.newDfp(\"2\"), factory.newDfp(\"1\")),\n             factory.newDfp(\"2\"), \n             0, \"pow #11\");\n\n        test(DfpMath.pow(factory.newDfp(\"-2\"), factory.newDfp(\"1\")),\n             factory.newDfp(\"-2\"), \n             0, \"pow #12\");\n\n        test(DfpMath.pow(pinf, factory.newDfp(\"1\")),      \n             pinf, \n             0, \"pow #13\");\n\n        test(DfpMath.pow(ninf, factory.newDfp(\"1\")),\n             ninf, \n             0, \"pow #14\");\n\n        test(DfpMath.pow(qnan, factory.newDfp(\"1\")),\n             qnan, \n             DfpField.FLAG_INVALID, \"pow #14.1\");\n\n        // exponent of NaN\n        test(DfpMath.pow(factory.newDfp(\"0\"), qnan),\n             qnan, \n             DfpField.FLAG_INVALID, \"pow #15\");\n\n        test(DfpMath.pow(factory.newDfp(\"-0\"), qnan),      \n             qnan, \n             DfpField.FLAG_INVALID, \"pow #16\");\n\n        test(DfpMath.pow(factory.newDfp(\"2\"), qnan),\n             qnan, \n             DfpField.FLAG_INVALID, \"pow #17\");\n\n        test(DfpMath.pow(factory.newDfp(\"-2\"), qnan),\n             qnan, \n             DfpField.FLAG_INVALID, \"pow #18\");\n\n        test(DfpMath.pow(pinf, qnan),      \n             qnan, \n             DfpField.FLAG_INVALID, \"pow #19\");\n\n        test(DfpMath.pow(ninf, qnan),\n             qnan, \n             DfpField.FLAG_INVALID, \"pow #20\");\n\n        test(DfpMath.pow(qnan, qnan),\n             qnan, \n             DfpField.FLAG_INVALID, \"pow #21\");\n\n        // radix of NaN\n        test(DfpMath.pow(qnan, factory.newDfp(\"1\")),\n             qnan, \n             DfpField.FLAG_INVALID, \"pow #22\");\n\n        test(DfpMath.pow(qnan, factory.newDfp(\"-1\")),      \n             qnan,\n             DfpField.FLAG_INVALID, \"pow #23\");\n\n        test(DfpMath.pow(qnan, pinf),\n             qnan,\n             DfpField.FLAG_INVALID, \"pow #24\");\n\n        test(DfpMath.pow(qnan, ninf),\n             qnan, \n             DfpField.FLAG_INVALID, \"pow #25\");\n\n        test(DfpMath.pow(qnan, qnan),\n             qnan, \n             DfpField.FLAG_INVALID, \"pow #26\");\n\n        // (x > 1) ^ pinf = pinf,    (x < -1) ^ pinf = pinf\n        test(DfpMath.pow(factory.newDfp(\"2\"), pinf),\n             pinf, \n             0, \"pow #27\");\n\n",
+  "compaction": {
+    "source_lines": 587,
+    "mode": "windows",
+    "windows_total": 10,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 37.53617855775972
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 11.77094256288517
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 5.465941266650407
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 37.53617855775972
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 11.77094256288517
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 5.465941266650407
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 0.5522481311776429
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 0.4313431848448143
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 0.3692659178246245
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 0.476202876068675
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 1.9417429896349732
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 2.595708196065644
+      },
+      {
+        "start": 540,
+        "end": 587,
+        "score": 3.0352142812020766
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 6440,
+  "representation_chars": 6440,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

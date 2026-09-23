@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.filter.TestSimpleSerializationIgnore",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/filter/TestSimpleSerializationIgnore.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.filter.TestSimpleSerializationIgnore\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/filter/TestSimpleSerializationIgnore.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.filter;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.databind.*;\n\n/**\n * This unit test suite tests use of {@link JsonIgnore} annotations\n * with  bean serialization; as well as {@link JsonIgnoreType}.\n */\npublic class TestSimpleSerializationIgnore\n    extends BaseMapTest\n{\n    // Class for testing enabled {@link JsonIgnore} annotation\n    final static class SizeClassEnabledIgnore\n    {\n        @JsonIgnore public int getY() { return 9; }\n\n        // note: must be public to be seen\n        public int getX() { return 1; }\n\n        @JsonIgnore public int getY2() { return 1; }\n        @JsonIgnore public int getY3() { return 2; }\n    }\n\n    // Class for testing disabled {@link JsonIgnore} annotation\n    final static class SizeClassDisabledIgnore\n    {\n        // note: must be public to be seen\n        public int getX() { return 3; }\n        @JsonIgnore(false) public int getY() { return 4; }\n    }\n\n    static class BaseClassIgnore\n    {\n        @JsonProperty(\"x\")\n        @JsonIgnore\n        public int x() { return 1; }\n\n        public int getY() { return 2; }\n    }\n\n    static class SubClassNonIgnore\n        extends BaseClassIgnore\n    {\n        /* Annotations to disable ignorance, in sub-class; note that\n         * we must still get \"JsonProperty\" fro super class\n         */\n        @Override\n        @JsonIgnore(false)\n        public int x() { return 3; }\n    }\n\n    @JsonIgnoreType\n    static class IgnoredType { }\n\n    @JsonIgnoreType(false)\n    static class NonIgnoredType\n    {\n        public int value = 13;\n        \n        public IgnoredType ignored = new IgnoredType();\n    }\n    \n    /*\n    /**********************************************************\n    /* Unit tests\n    /**********************************************************\n     */\n\n    public void testSimpleIgnore() throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        // Should see \"x\", not \"y\"\n        Map<String,Object> result = writeAndMap(m, new SizeClassEnabledIgnore());\n        assertEquals(1, result.size());\n        assertEquals(Integer.valueOf(1), result.get(\"x\"));\n        assertNull(result.get(\"y\"));\n    }\n\n    public void testDisabledIgnore() throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        // Should see \"x\" and \"y\"\n        Map<String,Object> result = writeAndMap(m, new SizeClassDisabledIgnore());\n        assertEquals(2, result.size());\n        assertEquals(Integer.valueOf(3), result.get(\"x\"));\n        assertEquals(Integer.valueOf(4), result.get(\"y\"));\n    }\n\n    /**\n     * Test case to verify that ignore tag can also be disabled\n     * via inheritance\n     */\n    public void testIgnoreOver() throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n\n        // should only see \"y\"\n        Map<String,Object> result = writeAndMap(m, new BaseClassIgnore());\n        assertEquals(1, result.size());\n        assertEquals(Integer.valueOf(2), result.get(\"y\"));\n\n        // Should see \"x\" and \"y\"\n        result = writeAndMap(m, new SubClassNonIgnore());\n        assertEquals(2, result.size());\n        assertEquals(Integer.valueOf(3), result.get(\"x\"));\n        assertEquals(Integer.valueOf(2), result.get(\"y\"));\n    }\n\n    /**\n     * @since 1.7\n     */\n    public void testIgnoreType() throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        assertEquals(\"{\\\"value\\\":13}\", m.writeValueAsString(new NonIgnoredType()));\n    }\n}\n",
+  "compaction": {
+    "source_lines": 121,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3697,
+  "representation_chars": 3697,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

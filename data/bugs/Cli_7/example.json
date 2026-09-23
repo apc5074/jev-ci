@@ -1,0 +1,95 @@
+{
+  "example_id": "Cli_7",
+  "qualified_id": "Cli-7",
+  "project": "Cli",
+  "bug_id": "7",
+  "split": "development",
+  "status": "complete",
+  "revisions": {
+    "base": "Bf",
+    "proposed": "Bb",
+    "direction": "fixed_to_buggy",
+    "notes": "Fixed (Bf) is the working base for tests/source. Buggy (Bb) is the proposed production change."
+  },
+  "manifest": {
+    "path": "data/manifest.json",
+    "selection_seed": 20260922,
+    "defects4j_version": "3.0.1",
+    "defects4j_commit": "6d54320e0db5a357f9ab38a8e4d2e5aead7e1c09",
+    "manifest_created_at": "2026-09-22T23:16:15+00:00",
+    "manifest_git_commit": "784d3d84dd09ae7f53cb828eac65532370906c56"
+  },
+  "artifacts": {
+    "bugs": "data/bugs/Cli_7/",
+    "patches": "data/patches/Cli_7/",
+    "tests": "data/tests/Cli_7/"
+  },
+  "visibility": {
+    "model_visible": [
+      "data/patches/<id>/representation.txt",
+      "data/patches/<id>/patch_meta.json (truncation stats only)",
+      "data/tests/<id>/inventory.json (test class ids + source paths)",
+      "data/tests/<id>/representations/*.json (compact test source)"
+    ],
+    "private": [
+      "data/tests/<id>/labels.json",
+      "data/tests/<id>/raw/tests.trigger",
+      "data/bugs/<id>/error.json",
+      "checkout trees under data/bugs/<id>/checkouts/"
+    ]
+  },
+  "complete_requirements": [
+    "example_json",
+    "checkout_provenance",
+    "checkout_fixed",
+    "checkout_buggy",
+    "patch_meta",
+    "patch_diff",
+    "patch_representation",
+    "raw_tests_all",
+    "raw_tests_trigger",
+    "test_inventory",
+    "test_labels",
+    "representations_index"
+  ],
+  "error": null,
+  "checkouts": {
+    "fixed": "data/bugs/Cli_7/checkouts/fixed",
+    "buggy": "data/bugs/Cli_7/checkouts/buggy",
+    "provenance": "data/bugs/Cli_7/checkout_provenance.json"
+  },
+  "patch": {
+    "meta": "data/patches/Cli_7/patch_meta.json",
+    "diff": "data/patches/Cli_7/regression_patch.diff",
+    "representation": "data/patches/Cli_7/representation.txt",
+    "patch_truncated": false,
+    "original_patch_chars": 733,
+    "representation_chars": 733
+  },
+  "tests": {
+    "inventory": "data/tests/Cli_7/inventory.json",
+    "labels": "data/tests/Cli_7/labels.json",
+    "num_test_classes": 44,
+    "num_positive_classes": 1,
+    "num_trigger_methods": 1,
+    "source_resolved": 44,
+    "source_missing": 0,
+    "source_ambiguous": 0
+  },
+  "representations": {
+    "index": "data/tests/Cli_7/representations_index.json",
+    "dir": "data/tests/Cli_7/representations",
+    "num_representations": 44,
+    "source_missing": 0,
+    "representation_truncated": 0,
+    "window_compacted": 13
+  },
+  "content_hashes": {
+    "patch_representation": "f52c63a6ce939f2769a19b7edb74ebd99b274df284b96efeda46d1d322e04a4a",
+    "patch_meta": "ac517f769e804dad017a5e1926ac39297c05454db8e8412a09f714e7d5649c9b",
+    "test_inventory": "64960665ad20b3d55b084d4a9cce61e4e07c7c57ce7afb5b77972ba854f50380",
+    "test_labels": "1e9ba9625b87e63d32bdbd57d3b23c2ab0fc9c500a3c6177bd477a213354d9f6",
+    "representations_index": "0ef2e65b3bc2cd42683667ea508aee7536b79cbe0c19b4d8b044995bc19e73c2",
+    "checkout_provenance": "7a84e550568e0f3f7cc70655540374960ab01c71ab74f89290c739483528c89a"
+  }
+}

@@ -1,0 +1,181 @@
+{
+  "test_class": "org.apache.commons.math.estimation.MinpackTest",
+  "source_file": "src/test/org/apache/commons/math/estimation/MinpackTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math.estimation.MinpackTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/math/estimation/MinpackTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math.estimation;\n\nimport java.util.Arrays;\n\nimport org.apache.commons.math.estimation.EstimatedParameter;\nimport org.apache.commons.math.estimation.EstimationException;\nimport org.apache.commons.math.estimation.EstimationProblem;\nimport org.apache.commons.math.estimation.LevenbergMarquardtEstimator;\nimport org.apache.commons.math.estimation.WeightedMeasurement;\n\nimport junit.framework.*;\n\n/**\n * <p>Some of the unit tests are re-implementations of the MINPACK <a\n * href=\"http://www.netlib.org/minpack/ex/file17\">file17</a> and <a\n * href=\"http://www.netlib.org/minpack/ex/file22\">file22</a> test files. \n * The redistribution policy for MINPACK is available <a\n * href=\"http://www.netlib.org/minpack/disclaimer\">here</a>, for\n * convenience, it is reproduced below.</p>\n\n * <table border=\"0\" width=\"80%\" cellpadding=\"10\" align=\"center\" bgcolor=\"#E0E0E0\">\n * <tr><td>\n *    Minpack Copyright Notice (1999) University of Chicago.\n *    All rights reserved\n * </td></tr>\n * <tr><td>\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions\n * are met:\n * <ol>\n *  <li>Redistributions of source code must retain the above copyright\n *      notice, this list of conditions and the following disclaimer.</li>\n * <li>Redistributions in binary form must reproduce the above\n *     copyright notice, this list of conditions and the following\n *     disclaimer in the documentation and/or other materials provided\n *     with the distribution.</li>\n * <li>The end-user documentation included with the redistribution, if any,\n *     must include the following acknowledgment:\n *     <code>This product includes software developed by the University of\n *           Chicago, as Operator of Argonne National Laboratory.</code>\n *     Alternately, this acknowledgment may appear in the software itself,\n *     if and wherever such third-party acknowledgments normally appear.</li>\n * <li><strong>WARRANTY DISCLAIMER. THE SOFTWARE IS SUPPLIED \"AS IS\"\n *     WITHOUT WARRANTY OF ANY KIND. THE COPYRIGHT HOLDER, THE\n *     UNITED STATES, THE UNITED STATES DEPARTMENT OF ENERGY, AND\n *     THEIR EMPLOYEES: (1) DISCLAIM ANY WARRANTIES, EXPRESS OR\n *     IMPLIED, INCLUDING BUT NOT LIMITED TO ANY IMPLIED WARRANTIES\n *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE\n *     OR NON-INFRINGEMENT, (2) DO NOT ASSUME ANY LEGAL LIABILITY\n *     OR RESPONSIBILITY FOR THE ACCURACY, COMPLETENESS, OR\n *     USEFULNESS OF THE SOFTWARE, (3) DO NOT REPRESENT THAT USE OF\n *     THE SOFTWARE WOULD NOT INFRINGE PRIVATELY OWNED RIGHTS, (4)\n *     DO NOT WARRANT THAT THE SOFTWARE WILL FUNCTION\n *     UNINTERRUPTED, THAT IT IS ERROR-FREE OR THAT ANY ERRORS WILL\n *     BE CORRECTED.</strong></li>\n * <li><strong>LIMITATION OF LIABILITY. IN NO EVENT WILL THE COPYRIGHT\n *     HOLDER, THE UNITED STATES, THE UNITED STATES DEPARTMENT OF\n *     ENERGY, OR THEIR EMPLOYEES: BE LIABLE FOR ANY INDIRECT,\n *     INCIDENTAL, CONSEQUENTIAL, SPECIAL OR PUNITIVE DAMAGES OF\n *     ANY KIND OR NATURE, INCLUDING BUT NOT LIMITED TO LOSS OF\n *     PROFITS OR LOSS OF DATA, FOR ANY REASON WHATSOEVER, WHETHER\n *     SUCH LIABILITY IS ASSERTED ON THE BASIS OF CONTRACT, TORT\n *     (INCLUDING NEGLIGENCE OR STRICT LIABILITY), OR OTHERWISE,\n *     EVEN IF ANY OF SAID PARTIES HAS BEEN WARNED OF THE\n *     POSSIBILITY OF SUCH LOSS OR DAMAGES.</strong></li>\n * <ol></td></tr>\n * </table>\n\n * @author Argonne National Laboratory. MINPACK project. March 1980 (original fortran minpack tests)\n * @author Burton S. Garbow (original fortran minpack tests)\n * @author Kenneth E. Hillstrom (original fortran minpack tests)\n * @author Jorge J. More (original fortran minpack tests)\n * @author Luc Maisonobe (non-minpack tests and minpack tests Java translation)\n */\npublic class MinpackTest\n  extends TestCase {\n\n  public MinpackTest(String name) {\n    super(name);\n  }\n\n  public void testMinpackLinearFullRank()\n    throws EstimationException {\n    minpackTest(new LinearFullRankFunction(10, 5, 1.0,\n                                           5.0, 2.23606797749979), false);\n    minpackTest(new LinearFullRankFunction(50, 5, 1.0,\n                                           8.06225774829855, 6.70820393249937), false);\n  }\n\n  public void testMinpackLinearRank1()\n    throws EstimationException {\n    minpackTest(new LinearRank1Function(10, 5, 1.0,\n                                        291.521868819476, 1.4638501094228), false);\n    minpackTest(new LinearRank1Function(50, 5, 1.0,\n                                        3101.60039334535, 3.48263016573496), false);\n  }\n\n  public void testMinpackLinearRank1ZeroColsAndRows()\n    throws EstimationException {\n    minpackTest(new LinearRank1ZeroColsAndRowsFunction(10, 5, 1.0), false);\n    minpackTest(new LinearRank1ZeroColsAndRowsFunction(50, 5, 1.0), false);\n  }\n\n  public void testMinpackRosenbrok()\n    throws EstimationException {\n    minpackTest(new RosenbrockFunction(new double[] { -1.2, 1.0 },\n                                       Math.sqrt(24.2)), false);\n    minpackTest(new RosenbrockFunction(new double[] { -12.0, 10.0 },\n                                       Math.sqrt(1795769.0)), false);\n    minpackTest(new RosenbrockFunction(new double[] { -120.0, 100.0 },\n                                       11.0 * Math.sqrt(169000121.0)), false);\n  }\n\n  public void testMinpackHelicalValley()\n    throws EstimationException {\n    minpackTest(new HelicalValleyFunction(new double[] { -1.0, 0.0, 0.0 },\n                                          50.0), false);\n    minpackTest(new HelicalValleyFunction(new double[] { -10.0, 0.0, 0.0 },\n                                          102.95630140987), false);\n    minpackTest(new HelicalValleyFunction(new double[] { -100.0, 0.0, 0.0},\n                                          991.261822123701), false);\n  }\n    \n    throws EstimationException {\n      minpackTest(new Osborne1Function(new double[] { 0.5, 1.5, -1.0, 0.01, 0.02, },\n                                       0.937564021037838, 0.00739249260904843,\n                                       new double[] {\n                                         0.375410049244025, 1.93584654543108,\n                                        -1.46468676748716, 0.0128675339110439,\n                                         0.0221227011813076\n                                       }), false);\n    }\n    \n  public void testMinpackOsborne2()\n    throws EstimationException {\n      \n    minpackTest(new Osborne2Function(new double[] {\n                                       1.3, 0.65, 0.65, 0.7, 0.6,\n                                       3.0, 5.0, 7.0, 2.0, 4.5, 5.5\n                                     },\n                                     1.44686540984712, 0.20034404483314,\n                                     new double[] {\n                                       1.30997663810096,  0.43155248076,\n                                       0.633661261602859, 0.599428560991695,\n                                       0.754179768272449, 0.904300082378518,\n                                       1.36579949521007, 4.82373199748107,\n                                       2.39868475104871, 4.56887554791452,\n                                       5.67534206273052\n                                     }), false);\n  }\n\n  private void minpackTest(MinpackFunction function, boolean exceptionExpected) {\n    LevenbergMarquardtEstimator estimator = new LevenbergMarquardtEstimator();\n    estimator.setMaxCostEval(100 * (function.getN() + 1));\n    estimator.setCostRelativeTolerance(Math.sqrt(2.22044604926e-16));\n    estimator.setParRelativeTolerance(Math.sqrt(2.22044604926e-16));\n    estimator.setOrthoTolerance(2.22044604926e-16);\n    assertTrue(function.checkTheoreticalStartCost(estimator.getRMS(function)));\n    try {\n      estimator.estimate(function);\n      assertFalse(exceptionExpected);\n    } catch (EstimationException lsse) {\n      assertTrue(exceptionExpected);\n    }\n    assertTrue(function.checkTheoreticalMinCost(estimator.getRMS(function)));\n    assertTrue(function.checkTheoreticalMinParams());\n  }\n\n  private static abstract class MinpackFunction implements EstimationProblem {\n \n    protected MinpackFunction(int m,\n                              double[] startParams,\n                              double   theoreticalStartCost,\n                              double   theoreticalMinCost,\n                              double[] theoreticalMinParams) {\n      this.m = m;\n      this.n = startParams.length;\n      parameters = new EstimatedParameter[n];\n      for (int i = 0; i < n; ++i) {\n        parameters[i] = new EstimatedParameter(\"p\" + i, startParams[i]);\n      }\n      this.theoreticalStartCost = theoreticalStartCost;\n      this.theoreticalMinCost   = theoreticalMinCost;\n      this.theoreticalMinParams = theoreticalMinParams;\n      this.costAccuracy         = 1.0e-8;\n      this.paramsAccuracy       = 1.0e-5;\n    }\n\n    protected static double[] buildArray(int n, double x) {\n      double[] array = new double[n];\n      Arrays.fill(array, x);\n      return array;\n    }\n\n    protected void setCostAccuracy(double costAccuracy) {\n      this.costAccuracy = costAccuracy;\n    }\n\n    protected void setParamsAccuracy(double paramsAccuracy) {\n      this.paramsAccuracy = paramsAccuracy;\n    }\n\n    public int getN() {\n",
+  "compaction": {
+    "source_lines": 1519,
+    "mode": "windows",
+    "windows_total": 25,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        480,
+        560
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 40.288294650445536
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 25.975578802993706
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 24.626104329987214
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 40.288294650445536
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 25.975578802993706
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 10.355507151559896
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 5.869781545409069
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 6.376157336917845
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 8.17020083665495
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 5.091799706333917
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 5.313211553216471
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 24.626104329987214
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 23.279916482483326
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 8.404306070865308
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 15.506434342966536
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 18.939799428192774
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 10.678666685154887
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 6.696812888090707
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 5.438822364845048
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 6.809433815007714
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 5.473838486782087
+      },
+      {
+        "start": 1080,
+        "end": 1160,
+        "score": 4.627491043471604
+      },
+      {
+        "start": 1140,
+        "end": 1220,
+        "score": 4.526518094498621
+      },
+      {
+        "start": 1200,
+        "end": 1280,
+        "score": 4.534236589516217
+      },
+      {
+        "start": 1260,
+        "end": 1340,
+        "score": 4.6419408482327755
+      },
+      {
+        "start": 1320,
+        "end": 1400,
+        "score": 5.722006273594221
+      },
+      {
+        "start": 1380,
+        "end": 1460,
+        "score": 5.20670120714252
+      },
+      {
+        "start": 1440,
+        "end": 1519,
+        "score": 4.977813146172783
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 10303,
+  "representation_chars": 10303,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

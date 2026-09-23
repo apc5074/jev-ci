@@ -25,4 +25,8 @@ docker run --rm --platform linux/amd64 \
 | [docs/verification-phase2.md](docs/verification-phase2.md) | Manifest lock record |
 | [docs/manifest.md](docs/manifest.md) | Manifest schema / create / verify |
 | [docs/testing.md](docs/testing.md) | Phase 2 unit tests |
-| [docs/example-contract.md](docs/example-contract.md) | Phase 3 example layout and visibility |
+| [docs/example-contract.md](docs/example-contract.md) | Phase 3 layout, visibility, prepare_dataset |
+| [docs/patch-truncation.md](docs/patch-truncation.md) | 12k patch cap / marker-reserving rule |
+| [docs/test-representations.md](docs/test-representations.md) | Test compaction, tokenizer/BM25 versions |
+| [docs/verification-phase3.md](docs/verification-phase3.md) | Phase 3 integrity audit record |
+| [docs/phase4-handoff.md](docs/phase4-handoff.md) | Artifacts and lexical primitives for Phase 4 |

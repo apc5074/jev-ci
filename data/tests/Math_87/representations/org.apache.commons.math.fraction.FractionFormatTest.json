@@ -1,0 +1,81 @@
+{
+  "test_class": "org.apache.commons.math.fraction.FractionFormatTest",
+  "source_file": "src/test/org/apache/commons/math/fraction/FractionFormatTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math.fraction.FractionFormatTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/math/fraction/FractionFormatTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math.fraction;\n\nimport java.text.NumberFormat;\nimport java.text.ParseException;\nimport java.util.Locale;\n\nimport junit.framework.TestCase;\n\npublic class FractionFormatTest extends TestCase {\n \n    FractionFormat properFormat = null;\n    FractionFormat improperFormat = null;\n\n    protected Locale getLocale() {\n        return Locale.getDefault();\n    }\n\n    @Override\n    protected void setUp() throws Exception {\n        properFormat = FractionFormat.getProperInstance(getLocale());\n        improperFormat = FractionFormat.getImproperInstance(getLocale());\n    }\n   \n    public void testFormat() {\n        Fraction c = new Fraction(1, 2);\n        String expected = \"1 / 2\";\n        \n        String actual = properFormat.format(c); \n        assertEquals(expected, actual);\n\n        actual = improperFormat.format(c);\n        assertEquals(expected, actual);\n    }\n\n    public void testFormatNegative() {\n        Fraction c = new Fraction(-1, 2);\n        String expected = \"-1 / 2\";\n\n        String actual = properFormat.format(c); \n        assertEquals(expected, actual);\n\n        actual = improperFormat.format(c); \n        assertEquals(expected, actual);\n    }\n\n    public void testFormatZero() {\n        Fraction c = new Fraction(0, 1);\n        String expected = \"0 / 1\";\n\n        String actual = properFormat.format(c); \n        assertEquals(expected, actual);\n\n        actual = improperFormat.format(c); \n        assertEquals(expected, actual);\n    }\n    \n    public void testFormatImproper() {\n        Fraction c = new Fraction(5, 3);\n\n        String actual = properFormat.format(c); \n        assertEquals(\"1 2 / 3\", actual);\n\n        actual = improperFormat.format(c); \n        assertEquals(\"5 / 3\", actual);\n    }\n    \n    public void testFormatImproperNegative() {\n        Fraction c = new Fraction(-5, 3);\n\n        String actual = properFormat.format(c); \n        assertEquals(\"-1 2 / 3\", actual);\n\n        actual = improperFormat.format(c); \n        assertEquals(\"-5 / 3\", actual);\n    }\n    \n    public void testParse() {\n        String source = \"1 / 2\";\n\n        try {\n            Fraction c = properFormat.parse(source);\n            assertNotNull(c);\n            assertEquals(1, c.getNumerator());\n            assertEquals(2, c.getDenominator());\n            \n            c = improperFormat.parse(source);\n            assertNotNull(c);\n            assertEquals(1, c.getNumerator());\n            assertEquals(2, c.getDenominator());\n        } catch (ParseException ex) {\n            fail(ex.getMessage());\n        }\n    }\n    \n    public void testParseInteger() {\n        String source = \"10\";\n        try {\n            Fraction c = properFormat.parse(source);\n            assertNotNull(c);\n            assertEquals(10, c.getNumerator());\n            assertEquals(1, c.getDenominator());\n        } catch (ParseException ex) {\n            fail(ex.getMessage());\n        }\n        try {\n            Fraction c = improperFormat.parse(source);\n            assertNotNull(c);\n            assertEquals(10, c.getNumerator());\n            assertEquals(1, c.getDenominator());\n        } catch (ParseException ex) {\n            fail(ex.getMessage());\n        }\n    }\n    \n    public void testParseInvalid() {\n        String source = \"a\";\n        String msg = \"should not be able to parse '10 / a'.\";\n        try {\n            properFormat.parse(source);\n            fail(msg);\n        } catch (ParseException ex) {\n            // success\n        }\n        }\n        source = \"2 2 / -3\";\n        try {\n            properFormat.parse(source);\n            fail(\"invalid minus in improper fraction.\");\n        } catch (ParseException ex) {\n            // expected\n        }\n    }\n    \n    public void testNumeratorFormat() {\n        NumberFormat old = properFormat.getNumeratorFormat();\n        NumberFormat nf = NumberFormat.getInstance();\n        nf.setParseIntegerOnly(true);\n        properFormat.setNumeratorFormat(nf);\n        assertEquals(nf, properFormat.getNumeratorFormat());\n        properFormat.setNumeratorFormat(old);\n\n        old = improperFormat.getNumeratorFormat();\n        nf = NumberFormat.getInstance();\n        nf.setParseIntegerOnly(true);\n        improperFormat.setNumeratorFormat(nf);\n        assertEquals(nf, improperFormat.getNumeratorFormat());\n        improperFormat.setNumeratorFormat(old);\n    }\n    \n    public void testDenominatorFormat() {\n        NumberFormat old = properFormat.getDenominatorFormat();\n        NumberFormat nf = NumberFormat.getInstance();\n        nf.setParseIntegerOnly(true);\n        properFormat.setDenominatorFormat(nf);\n        assertEquals(nf, properFormat.getDenominatorFormat());\n        properFormat.setDenominatorFormat(old);\n\n        old = improperFormat.getDenominatorFormat();\n        nf = NumberFormat.getInstance();\n        nf.setParseIntegerOnly(true);\n        improperFormat.setDenominatorFormat(nf);\n        assertEquals(nf, improperFormat.getDenominatorFormat());\n        improperFormat.setDenominatorFormat(old);\n    }\n    \n    public void testWholeFormat() {\n        ProperFractionFormat format = (ProperFractionFormat)properFormat;\n        \n        NumberFormat old = format.getWholeFormat();\n        NumberFormat nf = NumberFormat.getInstance();\n        nf.setParseIntegerOnly(true);\n        format.setWholeFormat(nf);\n        assertEquals(nf, format.getWholeFormat());\n        format.setWholeFormat(old);\n    }\n    \n    public void testLongFormat() {\n        assertEquals(\"10 / 1\", improperFormat.format(10l));\n    }\n    \n    public void testDoubleFormat() {\n        assertEquals(\"355 / 113\", improperFormat.format(Math.PI));\n    }\n}\n",
+  "compaction": {
+    "source_lines": 301,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        240,
+        301
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 12.341066770764181
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.5066135789077286
+      },
+      {
+        "start": 240,
+        "end": 301,
+        "score": 2.7524093276203248
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 12.341066770764181
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.5066135789077286
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 1.98806915829074
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 1.460712558401935
+      },
+      {
+        "start": 240,
+        "end": 301,
+        "score": 2.7524093276203248
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 6595,
+  "representation_chars": 6595,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

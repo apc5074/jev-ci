@@ -1,0 +1,86 @@
+{
+  "test_class": "org.apache.commons.math3.distribution.GammaDistributionTest",
+  "source_file": "src/test/java/org/apache/commons/math3/distribution/GammaDistributionTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.distribution.GammaDistributionTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/distribution/GammaDistributionTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math3.distribution;\n\nimport java.io.BufferedReader;\nimport java.io.IOException;\nimport java.io.InputStream;\nimport java.io.InputStreamReader;\n\nimport org.apache.commons.math3.exception.NotStrictlyPositiveException;\nimport org.apache.commons.math3.special.Gamma;\nimport org.apache.commons.math3.stat.descriptive.SummaryStatistics;\nimport org.apache.commons.math3.util.FastMath;\nimport org.junit.Assert;\nimport org.junit.Test;\n\n/**\n * Test cases for GammaDistribution.\n * Extends ContinuousDistributionAbstractTest.  See class javadoc for\n * ContinuousDistributionAbstractTest for details.\n *\n * @version $Id$\n */\npublic class GammaDistributionTest extends RealDistributionAbstractTest {\n\n    //-------------- Implementations for abstract methods -----------------------\n\n    /** Creates the default continuous distribution instance to use in tests. */\n    @Override\n    public GammaDistribution makeDistribution() {\n        return new GammaDistribution(4d, 2d);\n    }\n\n    /** Creates the default cumulative probability distribution test input values */\n    @Override\n    public double[] makeCumulativeTestPoints() {\n        // quantiles computed using R version 2.9.2\n        return new double[] {0.857104827257, 1.64649737269, 2.17973074725, 2.7326367935, 3.48953912565,\n                26.1244815584, 20.0902350297, 17.5345461395, 15.5073130559, 13.3615661365};\n    }\n\n    /** Creates the default cumulative probability density test expected values */\n    @Override\n    public double[] makeCumulativeTestValues() {\n        return new double[] {0.001, 0.01, 0.025, 0.05, 0.1, 0.999, 0.990, 0.975, 0.950, 0.900};\n    }\n\n    /** Creates the default probability density test expected values */\n    @Override\n    public double[] makeDensityTestValues() {\n        return new double[] {0.00427280075546, 0.0204117166709, 0.0362756163658, 0.0542113174239, 0.0773195272491,\n                0.000394468852816, 0.00366559696761, 0.00874649473311, 0.0166712508128, 0.0311798227954};\n    }\n\n    // --------------------- Override tolerance  --------------\n    @Override\n    public void setUp() {\n        super.setUp();\n        setTolerance(1e-9);\n    }\n\n    //---------------------------- Additional test cases -------------------------\n    @Test\n    public void testParameterAccessors() {\n        GammaDistribution distribution = (GammaDistribution) getDistribution();\n        Assert.assertEquals(\"probability for \" + x, expected, actual, 10e-4);\n    }\n\n    private void testValue(double expected, double a, double b, double p) {\n        GammaDistribution distribution = new GammaDistribution( a, b );\n        double actual = distribution.inverseCumulativeProbability(p);\n        Assert.assertEquals(\"critical value for \" + p, expected, actual, 10e-4);\n    }\n\n    @Test\n    public void testDensity() {\n        double[] x = new double[]{-0.1, 1e-6, 0.5, 1, 2, 5};\n        // R2.5: print(dgamma(x, shape=1, rate=1), digits=10)\n        checkDensity(1, 1, x, new double[]{0.000000000000, 0.999999000001, 0.606530659713, 0.367879441171, 0.135335283237, 0.006737946999});\n        // R2.5: print(dgamma(x, shape=2, rate=1), digits=10)\n        checkDensity(2, 1, x, new double[]{0.000000000000, 0.000000999999, 0.303265329856, 0.367879441171, 0.270670566473, 0.033689734995});\n        // R2.5: print(dgamma(x, shape=4, rate=1), digits=10)\n        checkDensity(4, 1, x, new double[]{0.000000000e+00, 1.666665000e-19, 1.263605541e-02, 6.131324020e-02, 1.804470443e-01, 1.403738958e-01});\n        // R2.5: print(dgamma(x, shape=4, rate=10), digits=10)\n        checkDensity(4, 10, x, new double[]{0.000000000e+00, 1.666650000e-15, 1.403738958e+00, 7.566654960e-02, 2.748204830e-05, 4.018228850e-17});\n        // R2.5: print(dgamma(x, shape=.1, rate=10), digits=10)\n        checkDensity(0.1, 10, x, new double[]{0.000000000e+00, 3.323953832e+04, 1.663849010e-03, 6.007786726e-06, 1.461647647e-10, 5.996008322e-24});\n        // R2.5: print(dgamma(x, shape=.1, rate=20), digits=10)\n        checkDensity(0.1, 20, x, new double[]{0.000000000e+00, 3.562489883e+04, 1.201557345e-05, 2.923295295e-10, 3.228910843e-19, 1.239484589e-45});\n        // R2.5: print(dgamma(x, shape=.1, rate=4), digits=10)\n        checkDensity(0.1, 4, x, new double[]{0.000000000e+00, 3.032938388e+04, 3.049322494e-02, 2.211502311e-03, 2.170613371e-05, 5.846590589e-11});\n        // R2.5: print(dgamma(x, shape=.1, rate=1), digits=10)\n        checkDensity(0.1, 1, x, new double[]{0.000000000e+00, 2.640334143e+04, 1.189704437e-01, 3.866916944e-02, 7.623306235e-03, 1.663849010e-04});\n    }\n\n    private void checkDensity(double alpha, double rate, double[] x, double[] expected) {\n        GammaDistribution d = new GammaDistribution(alpha, 1 / rate);\n        for (int i = 0; i < x.length; i++) {\n            Assert.assertEquals(expected[i], d.density(x[i]), 1e-5);\n        }\n    }\n\n    @Test\n    public void testInverseCumulativeProbabilityExtremes() {\n        setInverseCumulativeTestPoints(new double[] {0, 1});\n        setInverseCumulativeTestValues(new double[] {0, Double.POSITIVE_INFINITY});\n        verifyInverseCumulativeProbabilities();\n    }\n\n    @Test\n    public void testMoments() {\n        final double tol = 1e-9;\n        GammaDistribution dist;\n\n        dist = new GammaDistribution(1, 2);\n        Assert.assertEquals(dist.getNumericalMean(), 2, tol);\n        Assert.assertEquals(dist.getNumericalVariance(), 4, tol);\n\n        dist = new GammaDistribution(1.1, 4.2);\n        Assert.assertEquals(dist.getNumericalMean(), 1.1d * 4.2d, tol);\n        Assert.assertEquals(dist.getNumericalVariance(), 1.1d * 4.2d * 4.2d, tol);\n    }\n\n    public static double density(final double x, final double shape,\n                                 final double scale) {\n        /*\n         * This is a copy of\n         * double GammaDistribution.density(double)\n         * prior to r1338548.\n         */\n        if (x < 0) {\n            return 0;\n        }\n        return FastMath.pow(x / scale, shape - 1) / scale *\n               FastMath.exp(-x / scale) / FastMath.exp(Gamma.logGamma(shape));\n    }\n\n    /*\n     * MATH-753: large values of x or shape parameter cause density(double) to\n     * overflow. Reference data is generated with the Maxima script\n     * gamma-distribution.mac, which can be found in\n     * src/test/resources/org/apache/commons/math3/distribution.\n     */\n\n    private void doTestMath753(final double shape,\n        final double meanNoOF, final double sdNoOF,\n        final double meanOF, final double sdOF,\n        final String resourceName) throws IOException {\n        final GammaDistribution distribution = new GammaDistribution(shape, 1.0);\n        final SummaryStatistics statOld = new SummaryStatistics();\n        final SummaryStatistics statNewNoOF = new SummaryStatistics();\n        final SummaryStatistics statNewOF = new SummaryStatistics();\n\n        final InputStream resourceAsStream;\n        resourceAsStream = this.getClass().getResourceAsStream(resourceName);\n        Assert.assertNotNull(\"Could not find resource \" + resourceName,\n                             resourceAsStream);\n        final BufferedReader in;\n        in = new BufferedReader(new InputStreamReader(resourceAsStream));\n\n        try {\n            for (String line = in.readLine(); line != null; line = in\n                .readLine()) {\n                final String[] tokens = line.split(\", \");\n                Assert.assertTrue(\"expected two floating-point values\",\n                                  tokens.length == 2);\n                final double x = Double.parseDouble(tokens[0]);\n                final String msg = \"x = \" + x + \", shape = \" + shape +\n                                   \", scale = 1.0\";\n                final double expected = Double.parseDouble(tokens[1]);\n                final double ulp = FastMath.ulp(expected);\n                final double actualOld = density(x, shape, 1.0);\n                final double actualNew = distribution.density(x);\n                final double errOld, errNew;\n                errOld = FastMath.abs((actualOld - expected) / ulp);\n                errNew = FastMath.abs((actualNew - expected) / ulp);\n\n                if (Double.isNaN(actualOld) || Double.isInfinite(actualOld)) {\n                    Assert.assertFalse(msg, Double.isNaN(actualNew));\n                    Assert.assertFalse(msg, Double.isInfinite(actualNew));\n                    statNewOF.addValue(errNew);\n                } else {\n                    statOld.addValue(errOld);\n                    statNewNoOF.addValue(errNew);\n                }\n            }\n            if (statOld.getN() != 0) {\n                /*\n                 * If no overflow occurs, check that new implementation is\n                 * better than old one.\n                 */\n                final StringBuilder sb = new StringBuilder(\"shape = \");\n                sb.append(shape);\n                sb.append(\", scale = 1.0\\n\");\n                sb.append(\"Old implementation\\n\");\n                sb.append(\"------------------\\n\");\n                sb.append(statOld.toString());\n                sb.append(\"New implementation\\n\");\n                sb.append(\"------------------\\n\");\n                sb.append(statNewNoOF.toString());\n                final String msg = sb.toString();\n\n                final double oldMin = statOld.getMin();\n                final double newMin = statNewNoOF.getMin();\n                Assert.assertTrue(msg, newMin <= oldMin);\n",
+  "compaction": {
+    "source_lines": 329,
+    "mode": "windows",
+    "windows_total": 6,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 11.952909818348507
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 6.191323444154433
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 7.918596663710767
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 11.952909818348507
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 3.349819238328568
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 6.191323444154433
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 7.918596663710767
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 2.351033567893757
+      },
+      {
+        "start": 300,
+        "end": 329,
+        "score": 2.4426261739163513
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 10414,
+  "representation_chars": 10414,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

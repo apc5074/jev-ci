@@ -1,0 +1,76 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.ser.TestCollectionSerialization",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/ser/TestCollectionSerialization.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.ser.TestCollectionSerialization\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/ser/TestCollectionSerialization.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.ser;\n\nimport java.io.*;\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonSerialize;\n\npublic class TestCollectionSerialization\n    extends BaseMapTest\n{\n    enum Key { A, B, C };\n\n    // Field-based simple bean with a single property, \"values\"\n    final static class CollectionBean\n    {\n        @JsonProperty // not required\n        public Collection<Object> values;\n\n        public CollectionBean(Collection<Object> c) { values = c; }\n    }\n\n    static class EnumMapBean\n    {\n        EnumMap<Key,String> _map;\n\n        public EnumMapBean(EnumMap<Key,String> m)\n        {\n            _map = m;\n        }\n\n        public EnumMap<Key,String> getMap() { return _map; }\n    }\n\n    /**\n     * Class needed for testing [JACKSON-220]\n     */\n    @SuppressWarnings(\"serial\")\n    @JsonSerialize(using=ListSerializer.class)    \n    static class PseudoList extends ArrayList<String>\n    {\n        public PseudoList(String... values) {\n            super(Arrays.asList(values));\n        }\n    }\n\n    static class ListSerializer extends JsonSerializer<List<String>>\n    {\n        @Override\n        public void serialize(List<String> value, JsonGenerator gen, SerializerProvider provider)\n            throws IOException\n        {\n            // just use standard List.toString(), output as JSON String\n            gen.writeString(value.toString());\n        }\n    }\n\n    // for [JACKSON-254], suppression of empty collections\n    static class EmptyListBean {\n        public List<String> empty = new ArrayList<String>();\n    }\n\n    static class EmptyArrayBean {\n        public String[] empty = new String[0];\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n\n    private final static ObjectMapper MAPPER = new ObjectMapper();\n\n    public void testCollections() throws IOException\n    {\n        // Let's try different collections, arrays etc\n        final int entryLen = 98;\n\n        for (int type = 0; type < 4; ++type) {\n            Object value;\n\n            if (type == 0) { // first, array\n                int[] ints = new int[entryLen];\n                for (int i = 0; i < entryLen; ++i) {\n                    ints[i] = Integer.valueOf(i);\n                }\n                value = ints;\n            } else {\n                Collection<Integer> c;\n\n                switch (type) {\n                case 1:\n                    c = new LinkedList<Integer>();\n                    break;\n                case 2:\n                    c = new TreeSet<Integer>(); // has to be ordered\n                    break;\n                default:\n                    c = new ArrayList<Integer>();\n                    break;\n                }\n                for (int i = 0; i < entryLen; ++i) {\n                    c.add(Integer.valueOf(i));\n                }\n                value = c;\n            }\n            String json = MAPPER.writeValueAsString(value);\n            \n            // and then need to verify:\n            JsonParser jp = new JsonFactory().createParser(json);\n            assertToken(JsonToken.START_ARRAY, jp.nextToken());\n            for (int i = 0; i < entryLen; ++i) {\n                assertToken(JsonToken.VALUE_NUMBER_INT, jp.nextToken());\n                assertEquals(i, jp.getIntValue());\n            }\n            assertToken(JsonToken.END_ARRAY, jp.nextToken());\n            jp.close();\n        }\n    }\n\n    @SuppressWarnings(\"resource\")\n    public void testBigCollection() throws IOException\n    {\n        final int COUNT = 9999;\n        ArrayList<Integer> value = new ArrayList<Integer>();\n        for (int i = 0; i <= COUNT; ++i) {\n            value.add(i);\n        }\n        // Let's test using 3 main variants...\n        for (int mode = 0; mode < 3; ++mode) {\n            JsonParser jp = null;\n            switch (mode) {\n            case 0:\n                {\n                    byte[] data = MAPPER.writeValueAsBytes(value);\n                    jp = new JsonFactory().createParser(data);\n                }\n    public void testEmptyBeanCollection() throws IOException\n    {\n        Collection<Object> x = new ArrayList<Object>();\n        x.add(\"foobar\");\n        CollectionBean cb = new CollectionBean(x);\n        Map<String,Object> result = writeAndMap(MAPPER, cb);\n        assertEquals(1, result.size());\n        assertTrue(result.containsKey(\"values\"));\n        Collection<Object> x2 = (Collection<Object>) result.get(\"values\");\n        assertNotNull(x2);\n        assertEquals(x, x2);\n    }\n\n    public void testNullBeanCollection()\n        throws IOException\n    {\n        CollectionBean cb = new CollectionBean(null);\n        Map<String,Object> result = writeAndMap(MAPPER, cb);\n        assertEquals(1, result.size());\n        assertTrue(result.containsKey(\"values\"));\n        assertNull(result.get(\"values\"));\n    }\n\n    @SuppressWarnings(\"unchecked\")\n    public void testEmptyBeanEnumMap() throws IOException\n    {\n        EnumMap<Key,String> map = new EnumMap<Key,String>(Key.class);\n        EnumMapBean b = new EnumMapBean(map);\n        Map<String,Object> result = writeAndMap(MAPPER, b);\n\n        assertEquals(1, result.size());\n        assertTrue(result.containsKey(\"map\"));\n        // we deserialized to untyped, not back to bean, so:\n        Map<Object,Object> map2 = (Map<Object,Object>) result.get(\"map\");\n        assertNotNull(map2);\n        assertEquals(0, map2.size());\n    }\n\n    // Should also be able to serialize null EnumMaps as expected\n    public void testNullBeanEnumMap() throws IOException\n    {\n        EnumMapBean b = new EnumMapBean(null);\n        Map<String,Object> result = writeAndMap(MAPPER, b);\n\n        assertEquals(1, result.size());\n        assertTrue(result.containsKey(\"map\"));\n        assertNull(result.get(\"map\"));\n    }\n\n    // Test [JACKSON-220]\n    public void testListSerializer() throws IOException\n    {\n        assertEquals(\"\\\"[ab, cd, ef]\\\"\",\n                MAPPER.writeValueAsString(new PseudoList(\"ab\", \"cd\", \"ef\")));\n    }\n\n    // [JACKSON-254]\n    public void testEmptyListOrArray() throws IOException\n    {\n        // by default, empty lists serialized normally\n        EmptyListBean list = new EmptyListBean();\n        EmptyArrayBean array = new EmptyArrayBean();\n        assertTrue(MAPPER.isEnabled(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS));\n        assertEquals(\"{\\\"empty\\\":[]}\", MAPPER.writeValueAsString(list));\n        assertEquals(\"{\\\"empty\\\":[]}\", MAPPER.writeValueAsString(array));\n\n        // note: value of setting may be cached when constructing serializer, need a new instance\n        ObjectMapper m = new ObjectMapper();\n        m.configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false);\n        assertEquals(\"{}\", m.writeValueAsString(list));\n        assertEquals(\"{}\", m.writeValueAsString(array));\n    }\n}\n",
+  "compaction": {
+    "source_lines": 253,
+    "mode": "windows",
+    "windows_total": 4,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        180,
+        253
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.638750277577923
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 18.678536601610453
+      },
+      {
+        "start": 180,
+        "end": 253,
+        "score": 12.70583087128097
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.638750277577923
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 18.678536601610453
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 12.347892348998178
+      },
+      {
+        "start": 180,
+        "end": 253,
+        "score": 12.70583087128097
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7189,
+  "representation_chars": 7189,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

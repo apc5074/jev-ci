@@ -1,0 +1,231 @@
+{
+  "test_class": "org.apache.commons.lang3.StringUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/StringUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.StringUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/StringUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3;\n\nimport static org.junit.Assert.assertArrayEquals;\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertFalse;\nimport static org.junit.Assert.assertNotNull;\nimport static org.junit.Assert.assertNull;\nimport static org.junit.Assert.assertSame;\nimport static org.junit.Assert.assertTrue;\nimport static org.junit.Assert.fail;\n\nimport java.io.UnsupportedEncodingException;\nimport java.lang.reflect.Constructor;\nimport java.lang.reflect.Method;\nimport java.lang.reflect.Modifier;\nimport java.nio.CharBuffer;\nimport java.util.Arrays;\nimport java.util.Collections;\nimport java.util.Iterator;\nimport java.util.Locale;\n\nimport org.apache.commons.lang3.text.WordUtils;\nimport org.junit.Test;\n\n/**\n * Unit tests {@link org.apache.commons.lang3.StringUtils}.\n *\n * @version $Id$\n */\npublic class StringUtilsTest {\n    \n    static final String WHITESPACE;\n    static final String NON_WHITESPACE;\n    static final String TRIMMABLE;\n    static final String NON_TRIMMABLE;\n    static {\n        String ws = \"\";\n        String nws = \"\";\n        String tr = \"\";\n        String ntr = \"\";\n        for (int i = 0; i < Character.MAX_VALUE; i++) {\n            if (Character.isWhitespace((char) i)) {\n                ws += String.valueOf((char) i);\n                if (i > 32) {\n                    ntr += String.valueOf((char) i);\n                }\n            } else if (i < 40) {\n                nws += String.valueOf((char) i);\n            }\n        }\n        for (int i = 0; i <= 32; i++) {\n            tr += String.valueOf((char) i);\n        }\n        WHITESPACE = ws;\n        NON_WHITESPACE = nws;\n        TRIMMABLE = tr;\n        NON_TRIMMABLE = ntr;\n    }\n\n    private static final String[] ARRAY_LIST = { \"foo\", \"bar\", \"baz\" };\n    private static final String[] EMPTY_ARRAY_LIST = {};\n    private static final String[] NULL_ARRAY_LIST = {null};\n    private static final Object[] NULL_TO_STRING_LIST = {\n    \tnew Object(){\n        assertEquals(\"abc\", StringUtils.defaultIfBlank(CharBuffer.wrap(\"abc\"), CharBuffer.wrap(\"NULL\")).toString());\n        assertNull(StringUtils.defaultIfBlank(CharBuffer.wrap(\"\"), null));\n        // Tests compatibility for the API return type\n        CharBuffer s = StringUtils.defaultIfBlank(CharBuffer.wrap(\"abc\"), CharBuffer.wrap(\"NULL\"));\n        assertEquals(\"abc\", s.toString());\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testAbbreviate_StringInt() {\n        assertEquals(null, StringUtils.abbreviate(null, 10));\n        assertEquals(\"\", StringUtils.abbreviate(\"\", 10));\n        assertEquals(\"short\", StringUtils.abbreviate(\"short\", 10));\n        assertEquals(\"Now is ...\", StringUtils.abbreviate(\"Now is the time for all good men to come to the aid of their party.\", 10));\n\n        String raspberry = \"raspberry peach\";\n        assertEquals(\"raspberry p...\", StringUtils.abbreviate(raspberry, 14));\n        assertEquals(\"raspberry peach\", StringUtils.abbreviate(\"raspberry peach\", 15));\n        assertEquals(\"raspberry peach\", StringUtils.abbreviate(\"raspberry peach\", 16));\n        assertEquals(\"abc...\", StringUtils.abbreviate(\"abcdefg\", 6));\n        assertEquals(\"abcdefg\", StringUtils.abbreviate(\"abcdefg\", 7));\n        assertEquals(\"abcdefg\", StringUtils.abbreviate(\"abcdefg\", 8));\n        assertEquals(\"a...\", StringUtils.abbreviate(\"abcdefg\", 4));\n        assertEquals(\"\", StringUtils.abbreviate(\"\", 4));\n        \n        try {\n            @SuppressWarnings(\"unused\")\n            String res = StringUtils.abbreviate(\"abc\", 3);\n            fail(\"StringUtils.abbreviate expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException ex) {\n                // empty\n        }              \n    }\n    \n    @Test\n    public void testAbbreviate_StringIntInt() {\n        assertEquals(null, StringUtils.abbreviate(null, 10, 12));\n        assertEquals(\"\", StringUtils.abbreviate(\"\", 0, 10));\n        assertEquals(\"\", StringUtils.abbreviate(\"\", 2, 10));\n        \n        try {\n            @SuppressWarnings(\"unused\")\n            String res = StringUtils.abbreviate(\"abcdefghij\", 0, 3);\n            fail(\"StringUtils.abbreviate expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException ex) {\n                // empty\n        }      \n        try {\n            @SuppressWarnings(\"unused\")\n            String res = StringUtils.abbreviate(\"abcdefghij\", 5, 6);\n            fail(\"StringUtils.abbreviate expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException ex) {\n                // empty\n        }      \n        \n\n        String raspberry = \"raspberry peach\";\n        assertEquals(\"raspberry peach\", StringUtils.abbreviate(raspberry, 11, 15));\n\n        assertEquals(null, StringUtils.abbreviate(null, 7, 14));\n        assertAbbreviateWithOffset(\"abcdefg...\", -1, 10);\n        assertAbbreviateWithOffset(\"abcdefg...\", 0, 10);\n        assertAbbreviateWithOffset(\"abcdefg...\", 1, 10);\n        assertAbbreviateWithOffset(\"abcdefg...\", 2, 10);\n        assertAbbreviateWithOffset(\"abcdefg...\", 3, 10);\n        assertAbbreviateWithOffset(\"abcdefg...\", 4, 10);\n        assertAbbreviateWithOffset(\"...fghi...\", 5, 10);\n        assertAbbreviateWithOffset(\"...ghij...\", 6, 10);\n        assertAbbreviateWithOffset(\"...hijk...\", 7, 10);\n        assertAbbreviateWithOffset(\"...ijklmno\", 8, 10);\n        assertAbbreviateWithOffset(\"...ijklmno\", 9, 10);\n        assertAbbreviateWithOffset(\"...ijklmno\", 10, 10);\n        assertAbbreviateWithOffset(\"...ijklmno\", 10, 10);\n        assertAbbreviateWithOffset(\"...ijklmno\", 11, 10);\n        assertAbbreviateWithOffset(\"...ijklmno\", 12, 10);\n        assertAbbreviateWithOffset(\"...ijklmno\", 13, 10);\n        assertAbbreviateWithOffset(\"...ijklmno\", 14, 10);\n        assertAbbreviateWithOffset(\"...ijklmno\", 15, 10);\n        assertAbbreviateWithOffset(\"...ijklmno\", 16, 10);\n        assertAbbreviateWithOffset(\"...ijklmno\", Integer.MAX_VALUE, 10);\n        // Test boundaries\n        // Fails to change anything as method ensures first and last char are kept\n        assertEquals(\"abc\", StringUtils.abbreviateMiddle(\"abc\", \".\", 1));\n        assertEquals(\"abc\", StringUtils.abbreviateMiddle(\"abc\", \".\", 2));\n\n        // Test length of n=1\n        assertEquals(\"a\", StringUtils.abbreviateMiddle(\"a\", \".\", 1));\n\n        // Test smallest length that can lead to success\n        assertEquals(\"a.d\", StringUtils.abbreviateMiddle(\"abcd\", \".\", 3));\n\n        // More from LANG-405\n        assertEquals(\"a..f\", StringUtils.abbreviateMiddle(\"abcdef\", \"..\", 4));\n        assertEquals(\"ab.ef\", StringUtils.abbreviateMiddle(\"abcdef\", \".\", 5));\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testDifference_StringString() {\n        assertEquals(null, StringUtils.difference(null, null));\n        assertEquals(\"\", StringUtils.difference(\"\", \"\"));\n        assertEquals(\"abc\", StringUtils.difference(\"\", \"abc\"));\n        assertEquals(\"\", StringUtils.difference(\"abc\", \"\"));\n        assertEquals(\"i am a robot\", StringUtils.difference(null, \"i am a robot\"));\n        assertEquals(\"i am a machine\", StringUtils.difference(\"i am a machine\", null));\n        assertEquals(\"robot\", StringUtils.difference(\"i am a machine\", \"i am a robot\"));\n        assertEquals(\"\", StringUtils.difference(\"abc\", \"abc\"));\n        assertEquals(\"you are a robot\", StringUtils.difference(\"i am a robot\", \"you are a robot\"));\n    }\n\n    @Test\n    public void testDifferenceAt_StringString() {\n        assertEquals(-1, StringUtils.indexOfDifference(null, null));\n        assertEquals(0, StringUtils.indexOfDifference(null, \"i am a robot\"));\n        assertEquals(-1, StringUtils.indexOfDifference(\"\", \"\"));\n        assertEquals(0, StringUtils.indexOfDifference(\"\", \"abc\"));\n        assertEquals(0, StringUtils.indexOfDifference(\"abc\", \"\"));\n        assertEquals(0, StringUtils.indexOfDifference(\"i am a machine\", null));\n        assertEquals(7, StringUtils.indexOfDifference(\"i am a machine\", \"i am a robot\"));\n        assertEquals(-1, StringUtils.indexOfDifference(\"foo\", \"foo\"));\n        assertEquals(0, StringUtils.indexOfDifference(\"i am a robot\", \"you are a robot\"));\n        //System.out.println(\"indexOfDiff: \" + StringUtils.indexOfDifference(\"i am a robot\", \"not machine\"));\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testGetLevenshteinDistance_StringString() {\n        assertEquals(0, StringUtils.getLevenshteinDistance(\"\", \"\") );\n        assertEquals(1, StringUtils.getLevenshteinDistance(\"\", \"a\") );\n        assertEquals(7, StringUtils.getLevenshteinDistance(\"aaapppp\", \"\") );\n        assertEquals(1, StringUtils.getLevenshteinDistance(\"frog\", \"fog\") );\n        assertEquals(3, StringUtils.getLevenshteinDistance(\"fly\", \"ant\") );\n        assertEquals(7, StringUtils.getLevenshteinDistance(\"elephant\", \"hippo\") );\n        assertEquals(7, StringUtils.getLevenshteinDistance(\"hippo\", \"elephant\") );\n        assertEquals(8, StringUtils.getLevenshteinDistance(\"hippo\", \"zzzzzzzz\") );\n        assertEquals(8, StringUtils.getLevenshteinDistance(\"zzzzzzzz\", \"hippo\") );\n        assertEquals(1, StringUtils.getLevenshteinDistance(\"hello\", \"hallo\") );\n        try {\n            @SuppressWarnings(\"unused\")\n            int d = StringUtils.getLevenshteinDistance(\"a\", null);\n            fail(\"expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException ex) {\n            // empty\n        }\n        try {\n            @SuppressWarnings(\"unused\")\n            int d = StringUtils.getLevenshteinDistance(null, \"a\");\n            fail(\"expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException ex) {\n            // empty\n        }\n    }\n\n    @Test\n    public void testGetLevenshteinDistance_StringStringInt() {\n        // empty strings\n        assertEquals(0, StringUtils.getLevenshteinDistance(\"\", \"\", 0));\n        assertEquals(7, StringUtils.getLevenshteinDistance(\"aaapppp\", \"\", 8));\n        assertEquals(7, StringUtils.getLevenshteinDistance(\"aaapppp\", \"\", 7));\n        assertEquals(-1, StringUtils.getLevenshteinDistance(\"aaapppp\", \"\", 6));\n",
+  "compaction": {
+    "source_lines": 2118,
+    "mode": "windows",
+    "windows_total": 35,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        1560,
+        1640
+      ],
+      [
+        1680,
+        1760
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 40.34060654222269
+      },
+      {
+        "start": 1560,
+        "end": 1640,
+        "score": 17.309081369415168
+      },
+      {
+        "start": 1680,
+        "end": 1760,
+        "score": 19.85076477040941
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 40.34060654222269
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.06835225933977
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 6.2018716244183505
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 2.2724399695903563
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 0.0
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 3.183842556832617
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 6.278459929967516
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 2.4783421546509676
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 1.282523956202778
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 0.0
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 0.0
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 3.1630282913449994
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 3.126240442915997
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 3.0559166990045776
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 4.153862344286442
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 4.374578711959447
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 0.9319333472281796
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 9.405796829230095
+      },
+      {
+        "start": 1080,
+        "end": 1160,
+        "score": 10.29345698851044
+      },
+      {
+        "start": 1140,
+        "end": 1220,
+        "score": 5.56417870649042
+      },
+      {
+        "start": 1200,
+        "end": 1280,
+        "score": 3.325416783240598
+      },
+      {
+        "start": 1260,
+        "end": 1340,
+        "score": 3.875491916032808
+      },
+      {
+        "start": 1320,
+        "end": 1400,
+        "score": 1.4612981231594926
+      },
+      {
+        "start": 1380,
+        "end": 1460,
+        "score": 1.2890721924614994
+      },
+      {
+        "start": 1440,
+        "end": 1520,
+        "score": 6.942527964160861
+      },
+      {
+        "start": 1500,
+        "end": 1580,
+        "score": 9.470800979765196
+      },
+      {
+        "start": 1560,
+        "end": 1640,
+        "score": 17.309081369415168
+      },
+      {
+        "start": 1620,
+        "end": 1700,
+        "score": 14.927210089679525
+      },
+      {
+        "start": 1680,
+        "end": 1760,
+        "score": 19.85076477040941
+      },
+      {
+        "start": 1740,
+        "end": 1820,
+        "score": 11.818011939734753
+      },
+      {
+        "start": 1800,
+        "end": 1880,
+        "score": 14.831760757774276
+      },
+      {
+        "start": 1860,
+        "end": 1940,
+        "score": 8.485801633147048
+      },
+      {
+        "start": 1920,
+        "end": 2000,
+        "score": 4.06979557202211
+      },
+      {
+        "start": 1980,
+        "end": 2060,
+        "score": 8.148033994677501
+      },
+      {
+        "start": 2040,
+        "end": 2118,
+        "score": 15.265505427015682
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 11140,
+  "representation_chars": 11140,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

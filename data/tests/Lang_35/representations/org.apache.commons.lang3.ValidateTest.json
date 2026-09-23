@@ -1,0 +1,121 @@
+{
+  "test_class": "org.apache.commons.lang3.ValidateTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/ValidateTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.ValidateTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/ValidateTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one\n * or more contributor license agreements.  See the NOTICE file\n * distributed with this work for additional information\n * regarding copyright ownership.  The ASF licenses this file\n * to you under the Apache License, Version 2.0 (the\n * \"License\"); you may not use this file except in compliance\n * with the License.  You may obtain a copy of the License at\n *\n * http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing,\n * software distributed under the License is distributed on an\n * \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY\n * KIND, either express or implied.  See the License for the\n * specific language governing permissions and limitations\n * under the License.\n */\npackage org.apache.commons.lang3;\n\nimport java.lang.reflect.Constructor;\nimport java.lang.reflect.Modifier;\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.Collection;\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\n\nimport junit.framework.TestCase;\n\n/**\n * Unit tests {@link org.apache.commons.lang3.Validate}.\n *\n * @author Apache Software Foundation\n * @author Norm Deane\n * @version $Id$\n */\npublic class ValidateTest extends TestCase {\n\n    public ValidateTest(String name) {\n        super(name);\n    }\n\n    //-----------------------------------------------------------------------\n    public void testIsTrue1() {\n        Validate.isTrue(true);\n        try {\n            Validate.isTrue(false);\n            fail(\"Expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException ex) {\n            assertEquals(\"The validated expression is false\", ex.getMessage());\n        }\n    }\n\n    //-----------------------------------------------------------------------\n    public void testIsTrue2() {\n        Validate.isTrue(true, \"MSG\");\n        try {\n            Validate.isTrue(false, \"MSG\");\n            fail(\"Expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException ex) {\n            assertEquals(\"MSG\", ex.getMessage());\n        }\n    }\n\n    //-----------------------------------------------------------------------\n    public void testIsTrue3() {\n        Validate.isTrue(true, \"MSG\", new Integer(6));\n        try {\n            Validate.isTrue(false, \"MSG\", new Integer(6));\n            fail(\"Expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException ex) {\n            assertEquals(\"MSG\", ex.getMessage());\n        }\n    }\n\n    //-----------------------------------------------------------------------\n    public void testIsTrue4() {\n        Validate.isTrue(true, \"MSG\", 7);\n        array[1] = null;\n        try {\n            Validate.noNullElements(array, \"MSG\");\n            fail(\"Expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException ex) {\n            assertEquals(\"MSG\", ex.getMessage());\n        }\n        \n        array = new String[] {\"a\", \"b\"};\n        String[] test = Validate.noNullElements(array, \"Message\");\n        assertSame(array, test);\n    }\n\n    //-----------------------------------------------------------------------\n    //-----------------------------------------------------------------------\n    public void testNoNullElementsCollection1() {\n        List<String> coll = new ArrayList<String>();\n        coll.add(\"a\");\n        coll.add(\"b\");\n        Validate.noNullElements(coll);\n        try {\n            Validate.noNullElements((Collection<?>) null);\n            fail(\"Expecting NullPointerException\");\n        } catch (NullPointerException ex) {\n            assertEquals(\"The validated object is null\", ex.getMessage());\n        }\n        coll.set(1, null);\n        try {\n            Validate.noNullElements(coll);\n            fail(\"Expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException ex) {\n            assertEquals(\"The validated collection contains null element at index: 1\", ex.getMessage());\n        }\n        \n        coll.set(1, \"b\");\n        List<String> test = Validate.noNullElements(coll);\n        assertSame(coll, test);\n    }\n\n    //-----------------------------------------------------------------------\n    public void testNoNullElementsCollection2() {\n        List<String> coll = new ArrayList<String>();\n        coll.add(\"a\");\n        coll.add(\"b\");\n        Validate.noNullElements(coll, \"MSG\");\n        try {\n            Validate.noNullElements((Collection<?>) null, \"MSG\");\n            fail(\"Expecting NullPointerException\");\n        } catch (NullPointerException ex) {\n            assertEquals(\"The validated object is null\", ex.getMessage());\n        }\n        coll.set(1, null);\n        try {\n            Validate.noNullElements(coll, \"MSG\");\n            fail(\"Expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException ex) {\n            assertEquals(\"MSG\", ex.getMessage());\n        }\n        \n        coll.set(1, \"b\");\n        List<String> test = Validate.noNullElements(coll, \"Message\");\n        assertSame(coll, test);\n    }\n\n    //-----------------------------------------------------------------------\n    //-----------------------------------------------------------------------\n    public void testConstructor() {\n        assertNotNull(new Validate());\n        Constructor<?>[] cons = Validate.class.getDeclaredConstructors();\n        assertEquals(1, cons.length);\n        assertEquals(true, Modifier.isPublic(cons[0].getModifiers()));\n        assertEquals(true, Modifier.isPublic(Validate.class.getModifiers()));\n        assertEquals(false, Modifier.isFinal(Validate.class.getModifiers()));\n    }\n\n    //-----------------------------------------------------------------------\n    //-----------------------------------------------------------------------\n    public void testValidIndex_withMessage_array() {\n        Object[] array = new Object[2];\n        Validate.validIndex(array, 0, \"Broken: \");\n        Validate.validIndex(array, 1, \"Broken: \");\n        try {\n            Validate.validIndex(array, -1, \"Broken: \");\n            fail(\"Expecting IndexOutOfBoundsException\");\n        } catch (IndexOutOfBoundsException ex) {\n            assertEquals(\"Broken: \", ex.getMessage());\n        }\n        try {\n            Validate.validIndex(array, 2, \"Broken: \");\n            fail(\"Expecting IndexOutOfBoundsException\");\n        } catch (IndexOutOfBoundsException ex) {\n            assertEquals(\"Broken: \", ex.getMessage());\n        }\n        \n        String[] strArray = new String[] {\"Hi\"};\n        String[] test = Validate.noNullElements(strArray, \"Message\");\n        assertSame(strArray, test);\n    }\n\n    public void testValidIndex_array() {\n        Object[] array = new Object[2];\n        Validate.validIndex(array, 0);\n        Validate.validIndex(array, 1);\n        try {\n            Validate.validIndex(array, -1);\n            fail(\"Expecting IndexOutOfBoundsException\");\n        } catch (IndexOutOfBoundsException ex) {\n            assertEquals(\"The validated array index is invalid: -1\", ex.getMessage());\n        }\n        try {\n            Validate.validIndex(array, 2);\n            fail(\"Expecting IndexOutOfBoundsException\");\n        } catch (IndexOutOfBoundsException ex) {\n            assertEquals(\"The validated array index is invalid: 2\", ex.getMessage());\n        }\n        \n        String[] strArray = new String[] {\"Hi\"};\n        String[] test = Validate.noNullElements(strArray);\n        assertSame(strArray, test);\n    }\n\n    //-----------------------------------------------------------------------\n    //-----------------------------------------------------------------------\n    public void testValidIndex_withMessage_collection() {\n        Collection<String> coll = new ArrayList<String>();\n        coll.add(null);\n        coll.add(null);\n        Validate.validIndex(coll, 0, \"Broken: \");\n        Validate.validIndex(coll, 1, \"Broken: \");\n        try {\n            Validate.validIndex(coll, -1, \"Broken: \");\n            fail(\"Expecting IndexOutOfBoundsException\");\n        } catch (IndexOutOfBoundsException ex) {\n            assertEquals(\"Broken: \", ex.getMessage());\n        }\n        try {\n            Validate.validIndex(coll, 2, \"Broken: \");\n            fail(\"Expecting IndexOutOfBoundsException\");\n        } catch (IndexOutOfBoundsException ex) {\n            assertEquals(\"Broken: \", ex.getMessage());\n",
+  "compaction": {
+    "source_lines": 758,
+    "mode": "windows",
+    "windows_total": 13,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        540,
+        620
+      ],
+      [
+        600,
+        680
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 30.41243662079557
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 14.40000537935111
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 14.093525792655814
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 30.41243662079557
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.732946040733897
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 7.050240361568446
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.859070456948499
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.013224624409189
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 4.465330981795372
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 3.760270479181613
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 5.067864131525618
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 13.523981596638551
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 14.40000537935111
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 14.093525792655814
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 8.4706118886315
+      },
+      {
+        "start": 720,
+        "end": 758,
+        "score": 5.213480386112325
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8509,
+  "representation_chars": 8509,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

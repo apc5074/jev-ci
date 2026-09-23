@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.math3.complex.RootsOfUnityTest",
+  "source_file": "src/test/java/org/apache/commons/math3/complex/RootsOfUnityTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.complex.RootsOfUnityTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/complex/RootsOfUnityTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.complex;\n\nimport org.apache.commons.math3.exception.MathIllegalStateException;\nimport org.apache.commons.math3.exception.ZeroException;\nimport org.apache.commons.math3.util.FastMath;\nimport org.junit.Assert;\nimport org.junit.Test;\n\n\n/**\n * Unit tests for the {@link RootsOfUnity} class.\n *\n * @version $Id$\n */\npublic class RootsOfUnityTest {\n\n    @Test(expected = MathIllegalStateException.class)\n    public void testMathIllegalState1() {\n        final RootsOfUnity roots = new RootsOfUnity();\n        roots.getReal(0);\n    }\n\n    @Test(expected = MathIllegalStateException.class)\n    public void testMathIllegalState2() {\n        final RootsOfUnity roots = new RootsOfUnity();\n        roots.getImaginary(0);\n    }\n\n    @Test(expected = MathIllegalStateException.class)\n    public void testMathIllegalState3() {\n        final RootsOfUnity roots = new RootsOfUnity();\n        roots.isCounterClockWise();\n    }\n\n    @Test(expected = ZeroException.class)\n    public void testZeroNumberOfRoots() {\n        final RootsOfUnity roots = new RootsOfUnity();\n        roots.computeRoots(0);\n    }\n\n    @Test\n    public void testGetNumberOfRoots() {\n        final RootsOfUnity roots = new RootsOfUnity();\n        Assert.assertEquals(\"\", 0, roots.getNumberOfRoots());\n        roots.computeRoots(5);\n        Assert.assertEquals(\"\", 5, roots.getNumberOfRoots());\n        /*\n         * Testing -5 right after 5 is important, as the roots in this case are\n         * not recomputed.\n         */\n        roots.computeRoots(-5);\n        Assert.assertEquals(\"\", 5, roots.getNumberOfRoots());\n        roots.computeRoots(6);\n        Assert.assertEquals(\"\", 6, roots.getNumberOfRoots());\n    }\n\n    @Test\n    public void testComputeRoots() {\n        final RootsOfUnity roots = new RootsOfUnity();\n        for (int n = -10; n < 11; n++) {\n            /*\n             * Testing -n right after n is important, as the roots in this case\n             * are not recomputed.\n             */\n            if (n != 0) {\n                roots.computeRoots(n);\n                doTestComputeRoots(roots);\n                roots.computeRoots(-n);\n                doTestComputeRoots(roots);\n            }\n        }\n    }\n\n    private void doTestComputeRoots(final RootsOfUnity roots) {\n        final int n = roots.isCounterClockWise() ? roots.getNumberOfRoots() :\n            -roots.getNumberOfRoots();\n        final double tol = 10 * Math.ulp(1.0);\n        for (int k = 0; k < n; k++) {\n            final double t = 2.0 * FastMath.PI * k / n;\n            final String msg = String.format(\"n = %d, k = %d\", n, k);\n            Assert.assertEquals(msg, FastMath.cos(t), roots.getReal(k), tol);\n            Assert.assertEquals(msg, FastMath.sin(t), roots.getImaginary(k), tol);\n        }\n    }\n}\n",
+  "compaction": {
+    "source_lines": 101,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3750,
+  "representation_chars": 3750,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

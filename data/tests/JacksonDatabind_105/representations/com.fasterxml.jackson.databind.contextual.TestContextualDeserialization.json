@@ -1,0 +1,81 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.contextual.TestContextualDeserialization",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/contextual/TestContextualDeserialization.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.contextual.TestContextualDeserialization\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/contextual/TestContextualDeserialization.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.contextual;\n\nimport java.io.IOException;\nimport java.lang.annotation.ElementType;\nimport java.lang.annotation.Retention;\nimport java.lang.annotation.RetentionPolicy;\nimport java.lang.annotation.Target;\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.core.JsonParser;\nimport com.fasterxml.jackson.core.Version;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\nimport com.fasterxml.jackson.databind.deser.ContextualDeserializer;\nimport com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer;\nimport com.fasterxml.jackson.databind.module.SimpleModule;\n\n/**\n * Test cases to verify that it is possible to define deserializers\n * that can use contextual information (like field/method\n * annotations) for configuration.\n */\n@SuppressWarnings(\"serial\")\npublic class TestContextualDeserialization extends BaseMapTest\n{\n    @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE})\n    @Retention(RetentionPolicy.RUNTIME)\n    @JacksonAnnotation\n    public @interface Name {\n        public String value();\n    }\n    \n    static class StringValue {\n        protected String value;\n        \n        public StringValue(String v) { value = v; }\n    }\n    \n    static class ContextualBean\n    {\n        @Name(\"NameA\")\n        public StringValue a;\n        @Name(\"NameB\")\n        public StringValue b;\n    }\n    \n    static class ContextualCtorBean\n    {\n        protected String a, b;\n\n        @JsonCreator\n        public ContextualCtorBean(\n                @Name(\"CtorA\") @JsonProperty(\"a\") StringValue a,\n                @Name(\"CtorB\") @JsonProperty(\"b\") StringValue b)\n        {\n            this.a = a.value;\n            this.b = b.value;\n        }\n    }\n\n    @Name(\"Class\")\n    static class ContextualClassBean\n    {\n        public StringValue a;\n\n        @Name(\"NameB\")\n        public StringValue b;\n    }\n    \n    static class ContextualArrayBean\n    {\n        @Name(\"array\")\n        public StringValue[] beans;\n    }\n    \n    static class ContextualListBean\n    {\n        @Name(\"list\")\n        public List<StringValue> beans;\n        implements ContextualDeserializer\n    {\n        protected final String _fieldName;\n        \n        public AnnotatedContextualDeserializer() { this(\"\"); }\n        public AnnotatedContextualDeserializer(String fieldName) {\n            _fieldName = fieldName;\n        }\n    \n        @Override\n        public StringValue deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException\n        {\n            return new StringValue(\"\"+_fieldName+\"=\"+jp.getText());\n        }\n    \n        @Override\n        public JsonDeserializer<?> createContextual(DeserializationContext ctxt,\n                BeanProperty property)\n            throws JsonMappingException\n        {\n            Name ann = property.getAnnotation(Name.class);\n            if (ann == null) {\n                ann = property.getContextAnnotation(Name.class);\n            }\n            String propertyName = (ann == null) ?  \"UNKNOWN\" : ann.value();\n            return new MyContextualDeserializer(propertyName);\n        }\n    }\n\n    static class GenericStringDeserializer\n        extends StdScalarDeserializer<Object>\n        implements ContextualDeserializer\n    {\n        final String _value;\n\n        public GenericStringDeserializer() { this(\"N/A\"); }\n        protected GenericStringDeserializer(String value) {\n            super(String.class);\n            _value = value;\n        }\n\n        @Override\n        public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) {\n            return new GenericStringDeserializer(String.valueOf(ctxt.getContextualType().getRawClass().getSimpleName()));\n        }\n\n        @Override\n        public Object deserialize(JsonParser p, DeserializationContext ctxt) {\n            return _value;\n        }\n    }\n\n    static class GenericBean {\n        @JsonDeserialize(contentUsing=GenericStringDeserializer.class)\n        public Map<Integer, String> stuff;\n    }\n    \n    /*\n    /**********************************************************\n    /* Unit tests\n    /**********************************************************\n     */\n\n    public void testSimple() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        SimpleModule module = new SimpleModule(\"test\", Version.unknownVersion());\n        module.addDeserializer(StringValue.class, new MyContextualDeserializer());\n        mapper.registerModule(module);\n        ContextualBean bean = mapper.readValue(\"{\\\"a\\\":\\\"1\\\",\\\"b\\\":\\\"2\\\"}\", ContextualBean.class);\n        assertEquals(\"a=1\", bean.a.value);\n        assertEquals(\"b=2\", bean.b.value);\n\n        // try again, to ensure caching etc works\n        bean = mapper.readValue(\"{\\\"a\\\":\\\"3\\\",\\\"b\\\":\\\"4\\\"}\", ContextualBean.class);\n        assertEquals(\"a=3\", bean.a.value);\n        assertEquals(\"b=4\", bean.b.value);\n    }\n\n    public void testSimpleWithAnnotations() throws Exception\n        assertEquals(1, bean.beans.length);\n        assertEquals(\"array=x\", bean.beans[0].value);\n\n        bean = mapper.readValue(\"{\\\"beans\\\":[\\\"a\\\",\\\"b\\\"]}\", ContextualArrayBean.class);\n        assertEquals(2, bean.beans.length);\n        assertEquals(\"array=a\", bean.beans[0].value);\n        assertEquals(\"array=b\", bean.beans[1].value);\n    }\n\n    public void testAnnotatedList() throws Exception\n    {\n        ObjectMapper mapper = _mapperWithAnnotatedContextual();\n        ContextualListBean bean = mapper.readValue(\"{\\\"beans\\\":[\\\"x\\\"]}\", ContextualListBean.class);\n        assertEquals(1, bean.beans.size());\n        assertEquals(\"list=x\", bean.beans.get(0).value);\n\n        bean = mapper.readValue(\"{\\\"beans\\\":[\\\"x\\\",\\\"y\\\",\\\"z\\\"]}\", ContextualListBean.class);\n        assertEquals(3, bean.beans.size());\n        assertEquals(\"list=x\", bean.beans.get(0).value);\n        assertEquals(\"list=y\", bean.beans.get(1).value);\n        assertEquals(\"list=z\", bean.beans.get(2).value);\n    }\n\n    public void testAnnotatedMap() throws Exception\n    {\n        ObjectMapper mapper = _mapperWithAnnotatedContextual();\n        ContextualMapBean bean = mapper.readValue(\"{\\\"beans\\\":{\\\"a\\\":\\\"b\\\"}}\", ContextualMapBean.class);\n        assertEquals(1, bean.beans.size());\n        Map.Entry<String,StringValue> entry = bean.beans.entrySet().iterator().next();\n        assertEquals(\"a\", entry.getKey());\n        assertEquals(\"map=b\", entry.getValue().value);\n\n        bean = mapper.readValue(\"{\\\"beans\\\":{\\\"x\\\":\\\"y\\\",\\\"1\\\":\\\"2\\\"}}\", ContextualMapBean.class);\n        assertEquals(2, bean.beans.size());\n        Iterator<Map.Entry<String,StringValue>> it = bean.beans.entrySet().iterator();\n        entry = it.next();\n        assertEquals(\"x\", entry.getKey());\n        assertEquals(\"map=y\", entry.getValue().value);\n        entry = it.next();\n        assertEquals(\"1\", entry.getKey());\n        assertEquals(\"map=2\", entry.getValue().value);\n    }\n\n    // for [databind#165]\n    public void testContextualType() throws Exception {\n        GenericBean bean = new ObjectMapper().readValue(aposToQuotes(\"{'stuff':{'1':'b'}}\"),\n                GenericBean.class);\n        assertNotNull(bean.stuff);\n        assertEquals(1, bean.stuff.size());\n        assertEquals(\"String\", bean.stuff.get(Integer.valueOf(1)));\n    }\n\n    /*\n    /**********************************************************\n    /* Helper methods\n    /**********************************************************\n     */\n\n    private ObjectMapper _mapperWithAnnotatedContextual()\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        SimpleModule module = new SimpleModule(\"test\", Version.unknownVersion());\n        module.addDeserializer(StringValue.class, new AnnotatedContextualDeserializer());\n        mapper.registerModule(module);\n        return mapper;\n    }\n}\n",
+  "compaction": {
+    "source_lines": 307,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        240,
+        307
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 23.98773776163949
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 9.758096006517768
+      },
+      {
+        "start": 240,
+        "end": 307,
+        "score": 5.936529698131251
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 23.98773776163949
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 4.660549485424497
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 9.758096006517768
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 3.3170068420300223
+      },
+      {
+        "start": 240,
+        "end": 307,
+        "score": 5.936529698131251
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8066,
+  "representation_chars": 8066,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

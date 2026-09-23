@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.introspect.CustomAnnotationIntrospector1756Test",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/introspect/CustomAnnotationIntrospector1756Test.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.introspect.CustomAnnotationIntrospector1756Test\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/introspect/CustomAnnotationIntrospector1756Test.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.introspect;\n\nimport java.io.IOException;\nimport java.lang.annotation.*;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.core.JsonParser;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\nimport com.fasterxml.jackson.databind.module.SimpleModule;\n\n@SuppressWarnings(\"serial\")\npublic class CustomAnnotationIntrospector1756Test extends BaseMapTest\n{\n    @Target({ElementType.PARAMETER, ElementType.METHOD})\n    @Retention(RetentionPolicy.RUNTIME)\n    @interface Field1756 {\n\n      String value() default \"\";\n    }\n\n    public interface Foobar\n    {\n      @JsonIgnore // Comment out this annotation or ...\n      String foo();\n\n      @JsonDeserialize(using = CustomStringDeserializer.class) // ... this annotation to unbreak deserialization.\n      String bar();\n    }\n\n    /**\n     * Custom String deserializer.\n     */\n    private static class CustomStringDeserializer extends JsonDeserializer<String> {\n\n      @Override\n      public String deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {\n        return p.getText();\n      }\n    }\n\n    /**\n     * A concrete implementation.\n     */\n    public static class FoobarImpl implements Foobar {\n\n      private final String foo;\n      private final String bar;\n\n      public FoobarImpl(@Field1756(\"foo\") String foo,\n              @Field1756(\"bar\") String bar) {\n        this.foo = foo;\n        this.bar = bar;\n      }\n\n      @Override\n      public String foo() {\n        return foo;\n      }\n\n      @Override\n      public String bar() {\n        return bar;\n      }\n    }\n\n    /**\n     * Instructs jackson that {@link Foobar#foo()}, {@link Foobar#bar()} and the {@code foo} and {@code bar} constructor\n     * arguments map to the {@code foo} and {@code bar} properties.\n     */\n    public static class FoobarAnnotationIntrospector extends NopAnnotationIntrospector {\n\n      @Override\n      public String findImplicitPropertyName(final AnnotatedMember member) {\n        // Constructor parameter\n        if (member instanceof AnnotatedParameter) {\n          final Field1756 field = member.getAnnotation(Field1756.class);\n          if (field == null) {\n            return null;\n          }\n          return field.value();\n        }\n        // Getter\n        if (member instanceof AnnotatedMethod) {\n          return member.getName();\n        }\n        return null;\n      }\n\n      @SuppressWarnings(\"deprecation\")\n      @Override\n      public boolean hasCreatorAnnotation(Annotated a) {\n        final AnnotatedConstructor ctor = (AnnotatedConstructor) a;\n        return (ctor.getParameterCount() > 0)\n                && (ctor.getParameter(0).getAnnotation(Field1756.class) != null);\n      }\n    }\n\n    public static class Issue1756Module extends SimpleModule {\n        @Override\n        public void setupModule(final SetupContext context) {\n            super.setupModule(context);\n            context.appendAnnotationIntrospector(new FoobarAnnotationIntrospector());\n        }\n    }\n\n    public void testIssue1756() throws Exception\n    {\n        Issue1756Module m = new Issue1756Module();\n        m.addAbstractTypeMapping(Foobar.class, FoobarImpl.class);\n        final ObjectMapper mapper = new ObjectMapper()\n            .registerModule(m);\n\n        final Foobar foobar = mapper.readValue(aposToQuotes(\"{'bar':'bar', 'foo':'foo'}\"),\n                Foobar.class);\n        assertNotNull(foobar);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 118,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3702,
+  "representation_chars": 3702,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

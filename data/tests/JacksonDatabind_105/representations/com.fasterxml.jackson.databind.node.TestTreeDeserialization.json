@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.node.TestTreeDeserialization",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/node/TestTreeDeserialization.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.node.TestTreeDeserialization\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/node/TestTreeDeserialization.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.node;\n\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.JsonNode;\nimport com.fasterxml.jackson.databind.ObjectMapper;\n\n/**\n * This unit test suite tries to verify that JsonNode-based trees\n * can be deserialized as expected.\n */\npublic class TestTreeDeserialization\n    extends BaseMapTest\n{\n    final static class Bean {\n        int _x;\n        JsonNode _node;\n\n        public void setX(int x) { _x = x; }\n        public void setNode(JsonNode n) { _node = n; }\n    }\n\n    /*\n    /**********************************************************\n    /* Unit tests\n    /**********************************************************\n     */\n\n    public void testObjectNodeEquality()\n    {\n        ObjectNode n1 = new ObjectNode(null);\n        ObjectNode n2 = new ObjectNode(null);\n\n        assertTrue(n1.equals(n2));\n        assertTrue(n2.equals(n1));\n\n        n1.set(\"x\", TextNode.valueOf(\"Test\"));\n\n        assertFalse(n1.equals(n2));\n        assertFalse(n2.equals(n1));\n\n        n2.set(\"x\", TextNode.valueOf(\"Test\"));\n\n        assertTrue(n1.equals(n2));\n        assertTrue(n2.equals(n1));\n    }\n\n    public void testReadFromString() throws Exception\n    {\n        String json = \"{\\\"field\\\":\\\"{\\\\\\\"name\\\\\\\":\\\\\\\"John Smith\\\\\\\"}\\\"}\";\n        ObjectMapper mapper = new ObjectMapper();\n        JsonNode jNode = mapper.readValue(json, JsonNode.class);\n\n        String generated = mapper.writeValueAsString( jNode);  //back slashes are gone\n        JsonNode out = mapper.readValue( generated, JsonNode.class );   //crashes here\n        assertTrue(out.isObject());\n        assertEquals(1, out.size());\n        String value = out.path(\"field\").asText();\n        assertNotNull(value);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 60,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1933,
+  "representation_chars": 1933,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "test_class": "org.apache.commons.lang3.RandomStringUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/RandomStringUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.RandomStringUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/RandomStringUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3;\n\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertFalse;\nimport static org.junit.Assert.assertNotNull;\nimport static org.junit.Assert.assertTrue;\nimport static org.junit.Assert.fail;\n\nimport java.lang.reflect.Constructor;\nimport java.lang.reflect.Modifier;\nimport java.util.Random;\n\nimport org.junit.Test;\n\n/**\n * Unit tests {@link org.apache.commons.lang3.RandomStringUtils}.\n *\n * @version $Id$\n */\npublic class RandomStringUtilsTest {\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testConstructor() {\n        assertNotNull(new RandomStringUtils());\n        Constructor<?>[] cons = RandomStringUtils.class.getDeclaredConstructors();\n        assertEquals(1, cons.length);\n        assertTrue(Modifier.isPublic(cons[0].getModifiers()));\n        assertTrue(Modifier.isPublic(RandomStringUtils.class.getModifiers()));\n        assertFalse(Modifier.isFinal(RandomStringUtils.class.getModifiers()));\n    }\n    \n    //-----------------------------------------------------------------------\n    /**\n     * Test the implementation\n     */\n    @Test\n    public void testRandomStringUtils() {\n        String r1 = RandomStringUtils.random(50);\n        assertEquals(\"random(50) length\", 50, r1.length());\n        String r2 = RandomStringUtils.random(50);\n        assertEquals(\"random(50) length\", 50, r2.length());\n        assertTrue(\"!r1.equals(r2)\", !r1.equals(r2));\n        \n        r1 = RandomStringUtils.randomAscii(50);\n        assertEquals(\"randomAscii(50) length\", 50, r1.length());\n        for(int i = 0; i < r1.length(); i++) {\n            assertTrue(\"char between 32 and 127\", r1.charAt(i) >= 32 && r1.charAt(i) <= 127);\n        }        \n        r2 = RandomStringUtils.randomAscii(50);\n        assertTrue(\"!r1.equals(r2)\", !r1.equals(r2));\n\n        r1 = RandomStringUtils.randomAlphabetic(50);\n        assertEquals(\"randomAlphabetic(50)\", 50, r1.length());\n        for(int i = 0; i < r1.length(); i++) {\n            assertTrue(\"r1 contains alphabetic\", Character.isLetter(r1.charAt(i)) && !Character.isDigit(r1.charAt(i)));\n        }\n        r2 = RandomStringUtils.randomAlphabetic(50);\n        assertTrue(\"!r1.equals(r2)\", !r1.equals(r2));\n        \n        r1 = RandomStringUtils.randomAlphanumeric(50);\n        assertEquals(\"randomAlphanumeric(50)\", 50, r1.length());\n        for(int i = 0; i < r1.length(); i++) {\n            assertTrue(\"r1 contains alphanumeric\", Character.isLetterOrDigit(r1.charAt(i)));\n        assertTrue(\"!r1.equals(r2)\", !r1.equals(r2));\n\n        long seed = System.currentTimeMillis();\n        r1 = RandomStringUtils.random(50,0,0,true,true,null,new Random(seed));\n        r2 = RandomStringUtils.random(50,0,0,true,true,null,new Random(seed));\n        assertEquals(\"r1.equals(r2)\", r1, r2);\n\n        r1 = RandomStringUtils.random(0);\n        assertEquals(\"random(0).equals(\\\"\\\")\", \"\", r1);\n    }\n\n    @Test\n    public void testLANG805() {\n        long seed = System.currentTimeMillis();\n        assertEquals(\"aaa\", RandomStringUtils.random(3,0,0,false,false,new char[]{'a'},new Random(seed)));\n    }\n\n    @Test\n    public void testLANG807() {\n        try {\n            RandomStringUtils.random(3,5,5,false,false);\n            fail(\"Expected IllegalArgumentException\");\n        } catch (IllegalArgumentException ex) { // distinguish from Random#nextInt message\n            final String msg = ex.getMessage();\n            assertTrue(\"Message (\" + msg + \") must contain 'start'\", msg.contains(\"start\"));\n            assertTrue(\"Message (\" + msg + \") must contain 'end'\", msg.contains(\"end\"));\n        }\n    }\n\n    @Test\n    public void testExceptions() {\n        final char[] DUMMY = new char[]{'a'}; // valid char array\n        try {\n            RandomStringUtils.random(-1);\n            fail();\n        } catch (IllegalArgumentException ex) {}\n        try {\n            RandomStringUtils.random(-1, true, true);\n            fail();\n        } catch (IllegalArgumentException ex) {}\n        try {\n            RandomStringUtils.random(-1, DUMMY);\n            fail();\n        } catch (IllegalArgumentException ex) {}\n        try {\n            RandomStringUtils.random(1, new char[0]); // must not provide empty array => IAE\n            fail();\n        } catch (IllegalArgumentException ex) {}\n        try {\n            RandomStringUtils.random(-1, \"\");\n            fail();\n        } catch (IllegalArgumentException ex) {}\n        try {\n            RandomStringUtils.random(-1, (String)null);\n            fail();\n        } catch (IllegalArgumentException ex) {}\n        try {\n            RandomStringUtils.random(-1, 'a', 'z', false, false);\n            fail();\n        } catch (IllegalArgumentException ex) {}\n        try {\n            RandomStringUtils.random(-1, 'a', 'z', false, false, DUMMY);\n            fail();\n        } catch (IllegalArgumentException ex) {}\n        try {\n            RandomStringUtils.random(-1, 'a', 'z', false, false, DUMMY, new Random());\n            fail();\n        } catch (IllegalArgumentException ex) {}\n    }\n    \n    /**\n     * Make sure boundary alphanumeric characters are generated by randomAlphaNumeric\n     * This test will fail randomly with probability = 6 * (61/62)**1000 ~ 5.2E-7\n     */  \n    @Test\n    public void testRandomAlphaNumeric() {}\n// Defects4J: flaky method\n//     @Test\n//     public void testRandomAlphaNumeric() {\n//         char[] testChars = {'a', 'z', 'A', 'Z', '0', '9'};\n     * Test homogeneity of random strings generated --\n     * i.e., test that characters show up with expected frequencies\n     * in generated strings.  Will fail randomly about 1 in 1000 times.\n     * Repeated failures indicate a problem.\n     */\n    @Test\n    public void testRandomStringUtilsHomog() {}\n// Defects4J: flaky method\n//     @Test\n//     public void testRandomStringUtilsHomog() {\n//         String set = \"abc\";\n//         char[] chars = set.toCharArray();\n//         String gen = \"\";\n//         int[] counts = {0,0,0};\n//         int[] expected = {200,200,200};\n//         for (int i = 0; i< 100; i++) {\n//            gen = RandomStringUtils.random(6,chars);\n//            for (int j = 0; j < 6; j++) {\n//                switch (gen.charAt(j)) {\n//                    case 'a': {counts[0]++; break;}\n//                    case 'b': {counts[1]++; break;}\n//                    case 'c': {counts[2]++; break;}\n//                    default: {fail(\"generated character not in set\");}\n//                }\n//            }\n//         } \n//         // Perform chi-square test with df = 3-1 = 2, testing at .001 level\n//         assertTrue(\"test homogeneity -- will fail about 1 in 1000 times\",\n//             chiSquare(expected,counts) < 13.82);  \n//     }\n    \n    /**\n     * Computes Chi-Square statistic given observed and expected counts\n     * @param observed array of observed frequency counts\n     * @param expected array of expected frequency counts\n     */\n    private double chiSquare(int[] expected, int[] observed) {\n        double sumSq = 0.0d;\n        double dev = 0.0d;\n        for (int i = 0; i < observed.length; i++) {\n            dev = observed[i] - expected[i];\n            sumSq += dev * dev / expected[i];\n        }\n        return sumSq;\n    }           \n\n    /**\n     * Checks if the string got by {@link RandomStringUtils#random(int)}\n     * can be converted to UTF-8 and back without loss.\n     *\n     * @see <a href=\"http://issues.apache.org/jira/browse/LANG-100\">LANG-100</a>\n     *\n     * @throws Exception\n     */\n    @Test\n    public void testLang100() throws Exception {\n        int size = 5000;\n        String encoding = \"UTF-8\";\n        String orig = RandomStringUtils.random(size);\n        byte[] bytes = orig.getBytes(encoding);\n        String copy = new String(bytes, encoding);\n\n        // for a verbose compare:\n        for (int i=0; i < orig.length() && i < copy.length(); i++) {\n            char o = orig.charAt(i);\n            char c = copy.charAt(i);\n            assertEquals(\"differs at \" + i + \"(\" + Integer.toHexString(new Character(o).hashCode()) + \",\" +\n            Integer.toHexString(new Character(c).hashCode()) + \")\", o, c);\n        }\n        // compare length also\n        assertEquals(orig.length(), copy.length());\n        // just to be complete\n        assertEquals(orig, copy);\n    }\n}\n\n",
+  "compaction": {
+    "source_lines": 376,
+    "mode": "windows",
+    "windows_total": 6,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        300,
+        376
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 12.978343143155517
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 16.231367977552587
+      },
+      {
+        "start": 300,
+        "end": 376,
+        "score": 9.501815948008133
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 12.978343143155517
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.24750283403545
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 16.231367977552587
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 7.765834987980711
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 5.167782518780527
+      },
+      {
+        "start": 300,
+        "end": 376,
+        "score": 9.501815948008133
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9292,
+  "representation_chars": 9292,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

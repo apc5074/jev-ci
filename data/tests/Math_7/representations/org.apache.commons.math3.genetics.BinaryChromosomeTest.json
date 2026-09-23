@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.math3.genetics.BinaryChromosomeTest",
+  "source_file": "src/test/java/org/apache/commons/math3/genetics/BinaryChromosomeTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.genetics.BinaryChromosomeTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/genetics/BinaryChromosomeTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.genetics;\n\n\nimport org.junit.Assert;\nimport org.junit.Test;\n\npublic class BinaryChromosomeTest {\n\n    @Test\n    public void testInvalidConstructor() {\n        Integer[][] reprs = new Integer[][] {\n                new Integer[] {0,1,0,1,2},\n                new Integer[] {0,1,0,1,-1}\n        };\n\n        for (Integer[] repr : reprs) {\n            try {\n                new DummyBinaryChromosome(repr);\n                Assert.fail(\"Exception not caught\");\n            } catch (IllegalArgumentException e) {\n                // Expected\n            }\n        }\n    }\n\n    @Test\n    public void testRandomConstructor() {\n        for (int i=0; i<20; i++) {\n            new DummyBinaryChromosome(BinaryChromosome.randomBinaryRepresentation(10));\n        }\n    }\n\n    @Test\n    public void testIsSame() {\n        Chromosome c1 = new DummyBinaryChromosome(new Integer[] {0,1,0,1,0,1});\n        Chromosome c2 = new DummyBinaryChromosome(new Integer[] {0,1,1,0,1});\n        Chromosome c3 = new DummyBinaryChromosome(new Integer[] {0,1,0,1,0,1,1});\n        Chromosome c4 = new DummyBinaryChromosome(new Integer[] {1,1,0,1,0,1});\n        Chromosome c5 = new DummyBinaryChromosome(new Integer[] {0,1,0,1,0,0});\n        Chromosome c6 = new DummyBinaryChromosome(new Integer[] {0,1,0,1,0,1});\n\n        Assert.assertFalse(c1.isSame(c2));\n        Assert.assertFalse(c1.isSame(c3));\n        Assert.assertFalse(c1.isSame(c4));\n        Assert.assertFalse(c1.isSame(c5));\n        Assert.assertTrue(c1.isSame(c6));\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 65,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2506,
+  "representation_chars": 2506,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

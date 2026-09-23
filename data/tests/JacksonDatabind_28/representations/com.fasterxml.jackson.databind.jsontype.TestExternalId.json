@@ -1,0 +1,96 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.jsontype.TestExternalId",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/jsontype/TestExternalId.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.jsontype.TestExternalId\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/jsontype/TestExternalId.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.jsontype;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.annotation.JsonTypeInfo.As;\nimport com.fasterxml.jackson.annotation.JsonTypeInfo.Id;\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.ObjectMapper;\n\n// Tests for External type id, one that exists at same level as typed Object,\n// that is, property is not within typed object but a member of its parent.\npublic class TestExternalId extends BaseMapTest\n{\n    static class ExternalBean\n    {\n        @JsonTypeInfo(use=Id.NAME, include=As.EXTERNAL_PROPERTY, property=\"extType\")\n        public Object bean;\n\n        public ExternalBean() { }\n        public ExternalBean(int v) {\n            bean = new ValueBean(v);\n        }\n    }\n\n    // for [Issue#96]\n    static class ExternalBeanWithDefault\n    {\n        @JsonTypeInfo(use=Id.CLASS, include=As.EXTERNAL_PROPERTY, property=\"extType\",\n                defaultImpl=ValueBean.class)\n        public Object bean;\n\n        public ExternalBeanWithDefault() { }\n        public ExternalBeanWithDefault(int v) {\n            bean = new ValueBean(v);\n        }\n    }\n\n    static class ExternalBean3\n    {\n        @JsonTypeInfo(use=Id.NAME, include=As.EXTERNAL_PROPERTY, property=\"extType1\")\n        public Object value1;\n        \n        @JsonTypeInfo(use=Id.NAME, include=As.EXTERNAL_PROPERTY, property=\"extType2\")\n        public Object value2;\n\n        public int foo;\n        \n        @JsonTypeInfo(use=Id.NAME, include=As.EXTERNAL_PROPERTY, property=\"extType3\")\n        public Object value3;\n        \n        public ExternalBean3() { }\n        public ExternalBean3(int v) {\n            value1 = new ValueBean(v);\n            value2 = new ValueBean(v+1);\n            value3 = new ValueBean(v+2);\n            foo = v;\n        }\n    }\n\n    static class ExternalBeanWithCreator\n    {\n        @JsonTypeInfo(use=Id.NAME, include=As.EXTERNAL_PROPERTY, property=\"extType\")\n        public Object value;\n\n        public int foo;\n        \n        @JsonCreator\n        public ExternalBeanWithCreator(@JsonProperty(\"foo\") int f)\n        {\n            foo = f;\n            value = new ValueBean(f);\n        }\n    }\n    \n    @JsonTypeName(\"vbean\")\n    static class ValueBean {\n        public int value;\n        \n        public ValueBean() { }\n        Object _payload;\n\n        public Envelope928(@JsonProperty(\"payload\")\n        @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.EXTERNAL_PROPERTY, property=\"class\")\n        Object payload) {\n            _payload = payload;\n        }\n    }\n\n    static class Payload928 {\n        public String something;\n    }\n\n    /*\n    /**********************************************************\n    /* Unit tests, serialization\n    /**********************************************************\n     */\n\n    private final ObjectMapper MAPPER = new ObjectMapper();\n    \n    public void testSimpleSerialization() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.registerSubtypes(ValueBean.class);\n        // This may look odd, but one implementation nastiness is the fact\n        // that we can not properly serialize type id before the object,\n        // because call is made after property name (for object) has already\n        // been written out. So we'll write it after...\n        // Deserializer will work either way as it can not rely on ordering\n        // anyway.\n        assertEquals(\"{\\\"bean\\\":{\\\"value\\\":11},\\\"extType\\\":\\\"vbean\\\"}\",\n                mapper.writeValueAsString(new ExternalBean(11)));\n    }\n\n    // If trying to use with Class, should just become \"PROPERTY\" instead:\n    public void testImproperExternalIdSerialization() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        assertEquals(\"{\\\"extType\\\":\\\"funk\\\",\\\"i\\\":3}\",\n                mapper.writeValueAsString(new FunkyExternalBean()));\n    }\n\n    /*\n    /**********************************************************\n    /* Unit tests, deserialization\n    /**********************************************************\n     */\n    \n    public void testSimpleDeserialization() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.registerSubtypes(ValueBean.class);\n        ExternalBean result = mapper.readValue(\"{\\\"bean\\\":{\\\"value\\\":11},\\\"extType\\\":\\\"vbean\\\"}\", ExternalBean.class);\n        assertNotNull(result);\n        assertNotNull(result.bean);\n        ValueBean vb = (ValueBean) result.bean;\n        assertEquals(11, vb.value);\n\n        // let's also test with order switched:\n        result = mapper.readValue(\"{\\\"extType\\\":\\\"vbean\\\", \\\"bean\\\":{\\\"value\\\":13}}\", ExternalBean.class);\n        assertNotNull(result);\n        assertNotNull(result.bean);\n        vb = (ValueBean) result.bean;\n        assertEquals(13, vb.value);\n    }\n\n    // Test for verifying that it's ok to have multiple (say, 3)\n    // externally typed things, mixed with other stuff...\n    public void testMultipleTypeIdsDeserialization() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.registerSubtypes(ValueBean.class);\n        String json = mapper.writeValueAsString(new ExternalBean3(3));\n        ExternalBean3 result = mapper.readValue(json, ExternalBean3.class);\n        assertNotNull(result);\n        assertNotNull(result.value1);\n        assertNotNull(result.value2);\n        assertNotNull(result.value3);\n        assertEquals(3, ((ValueBean)result.value1).value);\n        Base b = baseContainer2.getBase();\n        assertNotNull(b);\n        if (b.getClass() != Derived1.class) {\n            fail(\"Should have type Derived1, was \"+b.getClass().getName());\n        }\n\n        Derived1 derived1 = (Derived1) b;\n        assertEquals(\"base prop val\", derived1.getBaseProperty());\n        assertEquals(\"derived1 prop val\", derived1.getDerived1Property());\n    }\n\n    // There seems to be some problems if type is also visible...\n    public void testIssue831() throws Exception\n    {\n        final String JSON = \"{ \\\"petType\\\": \\\"dog\\\",\\n\"\n                +\"\\\"pet\\\": { \\\"name\\\": \\\"Pluto\\\" }\\n}\";\n        House831 result = MAPPER.readValue(JSON, House831.class);\n        assertNotNull(result);\n        assertNotNull(result.pet);\n        assertSame(Dog.class, result.pet.getClass());\n        assertEquals(\"dog\", result.petType);\n    }\n\n    // For [Issue#96]: should allow use of default impl, if property missing\n    /* 18-Jan-2013, tatu: Unfortunately this collides with [Issue#118], and I don't\n     *   know what the best resolution is. For now at least \n     */\n    /*\n    public void testWithDefaultAndMissing() throws Exception\n    {\n        ExternalBeanWithDefault input = new ExternalBeanWithDefault(13);\n        // baseline: include type, verify things work:\n        String fullJson = MAPPER.writeValueAsString(input);\n        ExternalBeanWithDefault output = MAPPER.readValue(fullJson, ExternalBeanWithDefault.class);\n        assertNotNull(output);\n        assertNotNull(output.bean);\n        // and then try without type info...\n        ExternalBeanWithDefault defaulted = MAPPER.readValue(\"{\\\"bean\\\":{\\\"value\\\":13}}\",\n                ExternalBeanWithDefault.class);\n        assertNotNull(defaulted);\n        assertNotNull(defaulted.bean);\n        assertSame(ValueBean.class, defaulted.bean.getClass());\n    }\n    */\n\n    // For [Issue#118]\n    // Note: String works fine, since no type id will used; other scalar types have issues\n    public void testWithScalar118() throws Exception\n    {\n        ExternalTypeWithNonPOJO input = new ExternalTypeWithNonPOJO(new java.util.Date(123L));\n        String json = MAPPER.writeValueAsString(input);\n        assertNotNull(json);\n\n        // and back just to be sure:\n        ExternalTypeWithNonPOJO result = MAPPER.readValue(json, ExternalTypeWithNonPOJO.class);\n        assertNotNull(result.value);\n        assertTrue(result.value instanceof java.util.Date);\n    }\n\n    // For [Issue#118] using \"natural\" type(s)\n    public void testWithNaturalScalar118() throws Exception\n    {\n        ExternalTypeWithNonPOJO input = new ExternalTypeWithNonPOJO(Integer.valueOf(13));\n        String json = MAPPER.writeValueAsString(input);\n        assertNotNull(json);\n        // and back just to be sure:\n        ExternalTypeWithNonPOJO result = MAPPER.readValue(json, ExternalTypeWithNonPOJO.class);\n        assertNotNull(result.value);\n        assertTrue(result.value instanceof Integer);\n\n        // ditto with others types\n        input = new ExternalTypeWithNonPOJO(Boolean.TRUE);\n        json = MAPPER.writeValueAsString(input);\n        assertNotNull(json);\n        result = MAPPER.readValue(json, ExternalTypeWithNonPOJO.class);\n        assertNotNull(result.value);\n        assertTrue(result.value instanceof Boolean);\n\n        input = new ExternalTypeWithNonPOJO(\"foobar\");\n        json = MAPPER.writeValueAsString(input);\n",
+  "compaction": {
+    "source_lines": 499,
+    "mode": "windows",
+    "windows_total": 8,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        240,
+        320
+      ],
+      [
+        360,
+        440
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 16.613018109059446
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 19.419598085675478
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 14.749422602622895
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 16.613018109059446
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 9.111036153915554
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 9.320842181819728
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 3.8164322457549207
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 19.419598085675478
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 11.711437480211988
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 14.749422602622895
+      },
+      {
+        "start": 420,
+        "end": 499,
+        "score": 11.75508697816667
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9086,
+  "representation_chars": 9086,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

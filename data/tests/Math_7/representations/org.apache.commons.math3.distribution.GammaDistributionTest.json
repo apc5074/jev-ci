@@ -1,0 +1,86 @@
+{
+  "test_class": "org.apache.commons.math3.distribution.GammaDistributionTest",
+  "source_file": "src/test/java/org/apache/commons/math3/distribution/GammaDistributionTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.distribution.GammaDistributionTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/distribution/GammaDistributionTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math3.distribution;\n\nimport java.io.BufferedReader;\nimport java.io.IOException;\nimport java.io.InputStream;\nimport java.io.InputStreamReader;\n\nimport org.apache.commons.math3.exception.NotStrictlyPositiveException;\nimport org.apache.commons.math3.special.Gamma;\nimport org.apache.commons.math3.stat.descriptive.SummaryStatistics;\nimport org.apache.commons.math3.util.FastMath;\nimport org.junit.Assert;\nimport org.junit.Test;\n\n/**\n * Test cases for GammaDistribution.\n * Extends ContinuousDistributionAbstractTest.  See class javadoc for\n * ContinuousDistributionAbstractTest for details.\n *\n * @version $Id$\n */\npublic class GammaDistributionTest extends RealDistributionAbstractTest {\n\n    //-------------- Implementations for abstract methods -----------------------\n\n    /** Creates the default continuous distribution instance to use in tests. */\n    @Override\n    public GammaDistribution makeDistribution() {\n        return new GammaDistribution(4d, 2d);\n    }\n\n    /** Creates the default cumulative probability distribution test input values */\n    @Override\n    public double[] makeCumulativeTestPoints() {\n        // quantiles computed using R version 2.9.2\n        return new double[] {0.857104827257, 1.64649737269, 2.17973074725, 2.7326367935, 3.48953912565,\n                26.1244815584, 20.0902350297, 17.5345461395, 15.5073130559, 13.3615661365};\n    }\n\n    /** Creates the default cumulative probability density test expected values */\n    @Override\n    public double[] makeCumulativeTestValues() {\n        return new double[] {0.001, 0.01, 0.025, 0.05, 0.1, 0.999, 0.990, 0.975, 0.950, 0.900};\n    }\n\n    /** Creates the default probability density test expected values */\n    @Override\n    public double[] makeDensityTestValues() {\n        return new double[] {0.00427280075546, 0.0204117166709, 0.0362756163658, 0.0542113174239, 0.0773195272491,\n                0.000394468852816, 0.00366559696761, 0.00874649473311, 0.0166712508128, 0.0311798227954};\n    }\n\n    // --------------------- Override tolerance  --------------\n    @Override\n    public void setUp() {\n        super.setUp();\n        setTolerance(1e-9);\n    }\n\n    //---------------------------- Additional test cases -------------------------\n    @Test\n    public void testParameterAccessors() {\n        GammaDistribution distribution = (GammaDistribution) getDistribution();\n    public static double logGamma(double x) {\n        /*\n         * This is a copy of\n         * double Gamma.logGamma(double)\n         * prior to MATH-849\n         */\n        double ret;\n\n        if (Double.isNaN(x) || (x <= 0.0)) {\n            ret = Double.NaN;\n        } else {\n            double sum = Gamma.lanczos(x);\n            double tmp = x + Gamma.LANCZOS_G + .5;\n            ret = ((x + .5) * FastMath.log(tmp)) - tmp +\n                HALF_LOG_2_PI + FastMath.log(sum / x);\n        }\n\n        return ret;\n    }\n\n    public static double density(final double x, final double shape,\n                                 final double scale) {\n        /*\n         * This is a copy of\n         * double GammaDistribution.density(double)\n         * prior to MATH-753.\n         */\n        if (x < 0) {\n            return 0;\n        }\n        return FastMath.pow(x / scale, shape - 1) / scale *\n               FastMath.exp(-x / scale) / FastMath.exp(logGamma(shape));\n    }\n\n    /*\n     * MATH-753: large values of x or shape parameter cause density(double) to\n     * overflow. Reference data is generated with the Maxima script\n     * gamma-distribution.mac, which can be found in\n     * src/test/resources/org/apache/commons/math3/distribution.\n     */\n\n    private void doTestMath753(final double shape,\n        final double meanNoOF, final double sdNoOF,\n        final double meanOF, final double sdOF,\n        final String resourceName) throws IOException {\n        final GammaDistribution distribution = new GammaDistribution(shape, 1.0);\n        final SummaryStatistics statOld = new SummaryStatistics();\n        final SummaryStatistics statNewNoOF = new SummaryStatistics();\n        final SummaryStatistics statNewOF = new SummaryStatistics();\n\n        final InputStream resourceAsStream;\n        resourceAsStream = this.getClass().getResourceAsStream(resourceName);\n        Assert.assertNotNull(\"Could not find resource \" + resourceName,\n                             resourceAsStream);\n        final BufferedReader in;\n        in = new BufferedReader(new InputStreamReader(resourceAsStream));\n\n        try {\n            for (String line = in.readLine(); line != null; line = in.readLine()) {\n                if (line.startsWith(\"#\")) {\n                    continue;\n                }\n                final String[] tokens = line.split(\", \");\n                Assert.assertTrue(\"expected two floating-point values\",\n                                  tokens.length == 2);\n                final double x = Double.parseDouble(tokens[0]);\n                final String msg = \"x = \" + x + \", shape = \" + shape +\n                                   \", scale = 1.0\";\n                final double expected = Double.parseDouble(tokens[1]);\n                final double ulp = FastMath.ulp(expected);\n                final double actualOld = density(x, shape, 1.0);\n                final double actualNew = distribution.density(x);\n                final double errOld, errNew;\n                errOld = FastMath.abs((actualOld - expected) / ulp);\n                errNew = FastMath.abs((actualNew - expected) / ulp);\n\n                if (Double.isNaN(actualOld) || Double.isInfinite(actualOld)) {\n                    Assert.assertFalse(msg, Double.isNaN(actualNew));\n                    Assert.assertFalse(msg, Double.isInfinite(actualNew));\n                    statNewOF.addValue(errNew);\n                } else {\n                    statOld.addValue(errOld);\n                    statNewNoOF.addValue(errNew);\n                }\n            }\n            if (statOld.getN() != 0) {\n                /*\n                 * If no overflow occurs, check that new implementation is\n                 * better than old one.\n                 */\n                final StringBuilder sb = new StringBuilder(\"shape = \");\n                sb.append(shape);\n                sb.append(\", scale = 1.0\\n\");\n                sb.append(\"Old implementation\\n\");\n                sb.append(\"------------------\\n\");\n                sb.append(statOld.toString());\n                sb.append(\"New implementation\\n\");\n                sb.append(\"------------------\\n\");\n                sb.append(statNewNoOF.toString());\n                final String msg = sb.toString();\n\n                final double oldMin = statOld.getMin();\n                final double newMin = statNewNoOF.getMin();\n                Assert.assertTrue(msg, newMin <= oldMin);\n\n                final double oldMax = statOld.getMax();\n                final double newMax = statNewNoOF.getMax();\n                Assert.assertTrue(msg, newMax <= oldMax);\n\n                final double oldMean = statOld.getMean();\n                final double newMean = statNewNoOF.getMean();\n                Assert.assertTrue(msg, newMean <= oldMean);\n\n                final double oldSd = statOld.getStandardDeviation();\n                final double newSd = statNewNoOF.getStandardDeviation();\n                Assert.assertTrue(msg, newSd <= oldSd);\n\n                Assert.assertTrue(msg, newMean <= meanNoOF);\n                Assert.assertTrue(msg, newSd <= sdNoOF);\n            }\n            if (statNewOF.getN() != 0) {\n                final double newMean = statNewOF.getMean();\n                final double newSd = statNewOF.getStandardDeviation();\n\n                final StringBuilder sb = new StringBuilder(\"shape = \");\n                sb.append(shape);\n                sb.append(\", scale = 1.0\");\n                sb.append(\", max. mean error (ulps) = \");\n                sb.append(meanOF);\n                sb.append(\", actual mean error (ulps) = \");\n                sb.append(newMean);\n                sb.append(\", max. sd of error (ulps) = \");\n                sb.append(sdOF);\n                sb.append(\", actual sd of error (ulps) = \");\n                sb.append(newSd);\n                final String msg = sb.toString();\n\n                Assert.assertTrue(msg, newMean <= meanOF);\n                Assert.assertTrue(msg, newSd <= sdOF);\n            }\n",
+  "compaction": {
+    "source_lines": 358,
+    "mode": "windows",
+    "windows_total": 6,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        180,
+        260
+      ],
+      [
+        240,
+        320
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 20.108513746217945
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 13.98924476545557
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 8.818628726589054
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 20.108513746217945
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 6.381031150964341
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 7.097839230924452
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 13.98924476545557
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 8.818628726589054
+      },
+      {
+        "start": 300,
+        "end": 358,
+        "score": 4.742117090381386
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9342,
+  "representation_chars": 9342,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

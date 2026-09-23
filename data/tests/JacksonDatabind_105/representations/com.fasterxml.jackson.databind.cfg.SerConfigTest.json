@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.cfg.SerConfigTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/cfg/SerConfigTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.cfg.SerConfigTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/cfg/SerConfigTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.cfg;\n\nimport java.util.Collections;\n\nimport com.fasterxml.jackson.annotation.JsonInclude;\nimport com.fasterxml.jackson.core.JsonFactory;\nimport com.fasterxml.jackson.core.JsonGenerator;\n\nimport com.fasterxml.jackson.databind.*;\n\npublic class SerConfigTest extends BaseMapTest\n{\n    private final ObjectMapper MAPPER = new ObjectMapper();\n\n    public void testSerConfig() throws Exception\n    {\n        SerializationConfig config = MAPPER.getSerializationConfig();\n        assertTrue(config.hasSerializationFeatures(SerializationFeature.FAIL_ON_EMPTY_BEANS.getMask()));\n        assertFalse(config.hasSerializationFeatures(SerializationFeature.CLOSE_CLOSEABLE.getMask()));\n        assertEquals(JsonInclude.Value.empty(), config.getDefaultPropertyInclusion());\n        assertEquals(JsonInclude.Value.empty(), config.getDefaultPropertyInclusion(String.class));\n        assertFalse(config.useRootWrapping());\n\n        // if no changes then same config object\n        assertSame(config, config.without());\n        assertSame(config, config.with());\n        assertSame(config, config.with(MAPPER.getSubtypeResolver()));\n\n        // and then change\n        SerializationConfig newConfig = config.with(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);\n        assertNotSame(config, newConfig);\n        config = newConfig;\n        assertSame(config, config.with(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES));\n        assertNotSame(config, config.with(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, false));\n\n        assertNotSame(config, config.with(SerializationFeature.INDENT_OUTPUT,\n                SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS));\n        \n        assertSame(config, config.withRootName((PropertyName) null)); // defaults to 'none'\n\n        newConfig = config.withRootName(PropertyName.construct(\"foobar\"));\n        assertNotSame(config, newConfig);\n        assertTrue(newConfig.useRootWrapping());\n\n        assertSame(config, config.with(config.getAttributes()));\n        assertNotSame(config, config.with(new ContextAttributes.Impl(Collections.singletonMap(\"a\", \"b\"))));\n\n        assertNotNull(config.introspectDirectClassAnnotations(getClass()));\n    }\n\n    public void testGeneratorFeatures() throws Exception\n    {\n        SerializationConfig config = MAPPER.getSerializationConfig();\n        JsonFactory f = MAPPER.getFactory();\n        assertFalse(config.isEnabled(JsonGenerator.Feature.ESCAPE_NON_ASCII, f));\n        assertNotSame(config, config.with(JsonGenerator.Feature.ESCAPE_NON_ASCII));\n        SerializationConfig newConfig = config.withFeatures(JsonGenerator.Feature.ESCAPE_NON_ASCII,\n                JsonGenerator.Feature.IGNORE_UNKNOWN);\n        assertNotSame(config, newConfig);\n        assertTrue(newConfig.isEnabled(JsonGenerator.Feature.ESCAPE_NON_ASCII, f));\n\n        assertNotSame(config, config.without(JsonGenerator.Feature.ESCAPE_NON_ASCII));\n        assertNotSame(config, config.withoutFeatures(JsonGenerator.Feature.ESCAPE_NON_ASCII,\n                JsonGenerator.Feature.IGNORE_UNKNOWN));\n    }\n\n    public void testFormatFeatures() throws Exception\n    {\n        SerializationConfig config = MAPPER.getSerializationConfig();\n        assertNotSame(config, config.with(BogusFormatFeature.FF_DISABLED_BY_DEFAULT));\n        assertNotSame(config, config.withFeatures(BogusFormatFeature.FF_DISABLED_BY_DEFAULT,\n                BogusFormatFeature.FF_ENABLED_BY_DEFAULT));\n        assertNotSame(config, config.without(BogusFormatFeature.FF_ENABLED_BY_DEFAULT));\n        assertNotSame(config, config.withoutFeatures(BogusFormatFeature.FF_DISABLED_BY_DEFAULT,\n                BogusFormatFeature.FF_ENABLED_BY_DEFAULT));\n    }\n}\n",
+  "compaction": {
+    "source_lines": 77,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3871,
+  "representation_chars": 3871,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.interop.TestFormatDetection",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/interop/TestFormatDetection.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.interop.TestFormatDetection\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/interop/TestFormatDetection.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.interop;\n\nimport com.fasterxml.jackson.core.JsonProcessingException;\n\nimport com.fasterxml.jackson.databind.*;\n\npublic class TestFormatDetection extends BaseMapTest\n{\n    private final ObjectReader READER = objectReader();\n\n    static class POJO {\n        public int x, y;\n        \n        public POJO() { }\n        public POJO(int x, int y) {\n            this.x = x;\n            this.y = y;\n        }\n    }\n    \n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n\n    public void testSimpleWithJSON() throws Exception\n    {\n        ObjectReader detecting = READER.forType(POJO.class);\n        detecting = detecting.withFormatDetection(detecting);\n        POJO pojo = detecting.readValue(utf8Bytes(\"{\\\"x\\\":1}\"));\n        assertNotNull(pojo);\n        assertEquals(1, pojo.x);\n    }\n\n    public void testSequenceWithJSON() throws Exception\n    {\n        ObjectReader detecting = READER.forType(POJO.class);\n        detecting = detecting.withFormatDetection(detecting);\n        MappingIterator<POJO> it = detecting.\n                readValues(utf8Bytes(aposToQuotes(\"{'x':1}\\n{'x':2,'y':5}\")));\n\n        assertTrue(it.hasNextValue());\n        POJO pojo = it.nextValue();\n        assertEquals(1, pojo.x);\n\n        assertTrue(it.hasNextValue());\n        pojo = it.nextValue();\n        assertEquals(2, pojo.x);\n        assertEquals(5, pojo.y);\n        \n        assertFalse(it.hasNextValue());\n        it.close();\n\n        // And again with nodes\n        ObjectReader r2 = READER.forType(JsonNode.class);\n        r2 = r2.withFormatDetection(r2);\n        MappingIterator<JsonNode> nodes = r2.\n                readValues(utf8Bytes(aposToQuotes(\"{'x':1}\\n{'x':2,'y':5}\")));\n\n        assertTrue(nodes.hasNextValue());\n        JsonNode n = nodes.nextValue();\n        assertEquals(1, n.size());\n\n        assertTrue(nodes.hasNextValue());\n        n = nodes.nextValue();\n        assertEquals(2, n.size());\n        assertEquals(2, n.path(\"x\").asInt());\n        assertEquals(5, n.path(\"y\").asInt());\n\n        assertFalse(nodes.hasNextValue());\n        nodes.close();\n    }\n\n    public void testInvalid() throws Exception\n    {\n        ObjectReader detecting = READER.forType(POJO.class);\n        detecting = detecting.withFormatDetection(detecting);\n        try {\n            detecting.readValue(utf8Bytes(\"<POJO><x>1</x></POJO>\"));\n            fail(\"Should have failed\");\n        } catch (JsonProcessingException e) {\n            verifyException(e, \"Cannot detect format from input\");\n        }\n    }\n}\n",
+  "compaction": {
+    "source_lines": 86,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2815,
+  "representation_chars": 2815,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

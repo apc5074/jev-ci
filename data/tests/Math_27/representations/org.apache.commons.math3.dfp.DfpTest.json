@@ -1,0 +1,191 @@
+{
+  "test_class": "org.apache.commons.math3.dfp.DfpTest",
+  "source_file": "src/test/java/org/apache/commons/math3/dfp/DfpTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.dfp.DfpTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/dfp/DfpTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math3.dfp;\n\nimport org.apache.commons.math3.util.FastMath;\nimport org.apache.commons.math3.util.Precision;\nimport org.junit.After;\nimport org.junit.Assert;\nimport org.junit.Before;\nimport org.junit.Test;\n\npublic class DfpTest {\n\n    private DfpField field;\n    private Dfp pinf;\n    private Dfp ninf;\n    private Dfp nan;\n    private Dfp snan;\n    private Dfp qnan;\n\n    @Before\n    public void setUp() {\n        // Some basic setup.  Define some constants and clear the status flags\n        field = new DfpField(20);\n        pinf = field.newDfp(\"1\").divide(field.newDfp(\"0\"));\n        ninf = field.newDfp(\"-1\").divide(field.newDfp(\"0\"));\n        nan = field.newDfp(\"0\").divide(field.newDfp(\"0\"));\n        snan = field.newDfp((byte)1, Dfp.SNAN);\n        qnan = field.newDfp((byte)1, Dfp.QNAN);\n        ninf.getField().clearIEEEFlags();\n    }\n\n    @After\n    public void tearDown() {\n        field = null;\n        pinf    = null;\n        ninf    = null;\n        nan     = null;\n        snan    = null;\n        qnan    = null;\n    }\n\n    // Generic test function.  Takes params x and y and tests them for\n    // equality.  Then checks the status flags against the flags argument.\n    // If the test fail, it prints the desc string\n    private void test(Dfp x, Dfp y, int flags, String desc)\n    {\n        boolean b = x.equals(y);\n\n        if (!x.equals(y) && !x.unequal(y))  // NaNs involved\n            b = (x.toString().equals(y.toString()));\n\n        if (x.equals(field.newDfp(\"0\")))  // distinguish +/- zero\n            b = (b && (x.toString().equals(y.toString())));\n\n        b = (b && x.getField().getIEEEFlags() == flags);\n\n        if (!b)\n            Assert.assertTrue(\"assersion failed \"+desc+\" x = \"+x.toString()+\" flags = \"+x.getField().getIEEEFlags(), b);\n\n        x.getField().clearIEEEFlags();\n    }\n\n    @Test\n    public void testByteConstructor() {\n\n        test(Dfp.copysign(field.newDfp(\"-1234.\"), field.newDfp(\"-1\")),\n             field.newDfp(\"-1234\"),\n             0, \"CopySign #2\");\n\n        test(Dfp.copysign(field.newDfp(\"-1234.\"), field.newDfp(\"1\")),\n             field.newDfp(\"1234\"),\n             0, \"CopySign #3\");\n\n        test(Dfp.copysign(field.newDfp(\"1234.\"), field.newDfp(\"1\")),\n             field.newDfp(\"1234\"),\n             0, \"CopySign #4\");\n    }\n\n    @Test\n    public void testIntValue()\n    {\n        Assert.assertEquals(\"intValue #1\", 1234, field.newDfp(\"1234\").intValue());\n        Assert.assertEquals(\"intValue #2\", -1234, field.newDfp(\"-1234\").intValue());\n        Assert.assertEquals(\"intValue #3\", 1234, field.newDfp(\"1234.5\").intValue());\n        Assert.assertEquals(\"intValue #4\", 1235, field.newDfp(\"1234.500001\").intValue());\n        Assert.assertEquals(\"intValue #5\", 2147483647, field.newDfp(\"1e1000\").intValue());\n        Assert.assertEquals(\"intValue #6\", -2147483648, field.newDfp(\"-1e1000\").intValue());\n    }\n\n    @Test\n    public void testLog10K()\n    {\n        Assert.assertEquals(\"log10K #1\", 1, field.newDfp(\"123456\").log10K());\n        Assert.assertEquals(\"log10K #2\", 2, field.newDfp(\"123456789\").log10K());\n        Assert.assertEquals(\"log10K #3\", 0, field.newDfp(\"2\").log10K());\n        Assert.assertEquals(\"log10K #3\", 0, field.newDfp(\"1\").log10K());\n        Assert.assertEquals(\"log10K #4\", -1, field.newDfp(\"0.1\").log10K());\n    }\n\n    @Test\n    public void testPower10K()\n    {\n        Dfp d = field.newDfp();\n\n        test(d.power10K(0), field.newDfp(\"1\"), 0, \"Power10 #1\");\n        test(d.power10K(1), field.newDfp(\"10000\"), 0, \"Power10 #2\");\n        test(d.power10K(2), field.newDfp(\"100000000\"), 0, \"Power10 #3\");\n\n        test(d.power10K(-1), field.newDfp(\"0.0001\"), 0, \"Power10 #4\");\n        test(d.power10K(-2), field.newDfp(\"0.00000001\"), 0, \"Power10 #5\");\n        test(d.power10K(-3), field.newDfp(\"0.000000000001\"), 0, \"Power10 #6\");\n    }\n\n    @Test\n    public void testLog10()\n    {\n\n        Assert.assertEquals(\"log10 #1\", 1, field.newDfp(\"12\").log10());\n        Assert.assertEquals(\"log10 #2\", 2, field.newDfp(\"123\").log10());\n        Assert.assertEquals(\"log10 #3\", 3, field.newDfp(\"1234\").log10());\n        Assert.assertEquals(\"log10 #4\", 4, field.newDfp(\"12345\").log10());\n        Assert.assertEquals(\"log10 #5\", 5, field.newDfp(\"123456\").log10());\n        Assert.assertEquals(\"log10 #6\", 6, field.newDfp(\"1234567\").log10());\n        Assert.assertEquals(\"log10 #6\", 7, field.newDfp(\"12345678\").log10());\n        Assert.assertEquals(\"log10 #7\", 8, field.newDfp(\"123456789\").log10());\n        Assert.assertEquals(\"log10 #8\", 9, field.newDfp(\"1234567890\").log10());\n        Assert.assertEquals(\"log10 #9\", 10, field.newDfp(\"12345678901\").log10());\n        Assert.assertEquals(\"log10 #10\", 11, field.newDfp(\"123456789012\").log10());\n        Assert.assertEquals(\"log10 #11\", 12, field.newDfp(\"1234567890123\").log10());\n\n        Assert.assertEquals(\"log10 #12\", 0, field.newDfp(\"2\").log10());\n        Assert.assertEquals(\"log10 #13\", 0, field.newDfp(\"1\").log10());\n        Assert.assertEquals(\"log10 #14\", -1, field.newDfp(\"0.12\").log10());\n        Assert.assertEquals(\"log10 #15\", -2, field.newDfp(\"0.012\").log10());\n    }\n\n    @Test\n    public void testPower10()\n    {\n        Dfp d = field.newDfp();\n\n        test(d.power10(0), field.newDfp(\"1\"), 0, \"Power10 #1\");\n        test(d.power10(1), field.newDfp(\"10\"), 0, \"Power10 #2\");\n        test(d.power10(2), field.newDfp(\"100\"), 0, \"Power10 #3\");\n             field.newDfp(\"0\"),\n             0, \"Sqrt #1\");\n\n        test(field.newDfp(\"-0\").sqrt(),\n             field.newDfp(\"-0\"),\n             0, \"Sqrt #2\");\n\n        test(field.newDfp(\"1\").sqrt(),\n             field.newDfp(\"1\"),\n             0, \"Sqrt #3\");\n\n        test(field.newDfp(\"2\").sqrt(),\n             field.newDfp(\"1.4142135623730950\"),\n             DfpField.FLAG_INEXACT, \"Sqrt #4\");\n\n        test(field.newDfp(\"3\").sqrt(),\n             field.newDfp(\"1.7320508075688773\"),\n             DfpField.FLAG_INEXACT, \"Sqrt #5\");\n\n        test(field.newDfp(\"5\").sqrt(),\n             field.newDfp(\"2.2360679774997897\"),\n             DfpField.FLAG_INEXACT, \"Sqrt #6\");\n\n        test(field.newDfp(\"500\").sqrt(),\n             field.newDfp(\"22.3606797749978970\"),\n             DfpField.FLAG_INEXACT, \"Sqrt #6.2\");\n\n        test(field.newDfp(\"50000\").sqrt(),\n             field.newDfp(\"223.6067977499789696\"),\n             DfpField.FLAG_INEXACT, \"Sqrt #6.3\");\n\n        test(field.newDfp(\"-1\").sqrt(),\n             nan,\n             DfpField.FLAG_INVALID, \"Sqrt #7\");\n\n        test(pinf.sqrt(),\n             pinf,\n             0, \"Sqrt #8\");\n\n        test(field.newDfp((byte) 1, Dfp.QNAN).sqrt(),\n             nan,\n             0, \"Sqrt #9\");\n\n        test(field.newDfp((byte) 1, Dfp.SNAN).sqrt(),\n             nan,\n             DfpField.FLAG_INVALID, \"Sqrt #9\");\n    }\n\n    @Test\n    public void testIssue567() {\n        DfpField field = new DfpField(100);\n        Assert.assertEquals(0.0, field.getZero().toDouble(), Precision.SAFE_MIN);\n        Assert.assertEquals(0.0, field.newDfp(0.0).toDouble(), Precision.SAFE_MIN);\n        Assert.assertEquals(-1, FastMath.copySign(1, field.newDfp(-0.0).toDouble()), Precision.EPSILON);\n        Assert.assertEquals(+1, FastMath.copySign(1, field.newDfp(+0.0).toDouble()), Precision.EPSILON);\n    }\n\n    @Test\n    public void testIsZero() {\n        Assert.assertTrue(field.getZero().isZero());\n        Assert.assertTrue(field.getZero().negate().isZero());\n        Assert.assertTrue(field.newDfp(+0.0).isZero());\n        Assert.assertTrue(field.newDfp(-0.0).isZero());\n        Assert.assertFalse(field.newDfp(1.0e-90).isZero());\n        Assert.assertFalse(nan.isZero());\n        Assert.assertFalse(nan.negate().isZero());\n        Assert.assertFalse(pinf.isZero());\n        Assert.assertFalse(pinf.negate().isZero());\n        Assert.assertFalse(ninf.isZero());\n        Assert.assertFalse(ninf.negate().isZero());\n    }\n\n    @Test\n    public void testSignPredicates() {\n\n        Assert.assertTrue(field.getZero().negativeOrNull());\n        Assert.assertTrue(field.getZero().positiveOrNull());\n        Assert.assertFalse(field.getZero().strictlyNegative());\n        Assert.assertFalse(field.getZero().strictlyPositive());\n\n",
+  "compaction": {
+    "source_lines": 1628,
+    "mode": "windows",
+    "windows_total": 27,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        1380,
+        1460
+      ],
+      [
+        1500,
+        1580
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 29.337072107325522
+      },
+      {
+        "start": 1380,
+        "end": 1460,
+        "score": 7.188536710030818
+      },
+      {
+        "start": 1500,
+        "end": 1580,
+        "score": 6.51910797328413
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 29.337072107325522
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.128482160655613
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 0.0
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 0.0
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 0.0
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 2.2970575169719116
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 2.4903230024131453
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 1.2265300734966993
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 1.2215878935937914
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 1.1951023948605466
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 1.1400494537602504
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 1.150868903760787
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 4.825003029312771
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 4.451195686620766
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 5.108313691031726
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 4.635895254475891
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 2.3112424472126087
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 0.8775254692819864
+      },
+      {
+        "start": 1080,
+        "end": 1160,
+        "score": 2.4741176186461686
+      },
+      {
+        "start": 1140,
+        "end": 1220,
+        "score": 0.7624878056722546
+      },
+      {
+        "start": 1200,
+        "end": 1280,
+        "score": 0.7289468739481454
+      },
+      {
+        "start": 1260,
+        "end": 1340,
+        "score": 0.0
+      },
+      {
+        "start": 1320,
+        "end": 1400,
+        "score": 5.425798739165174
+      },
+      {
+        "start": 1380,
+        "end": 1460,
+        "score": 7.188536710030818
+      },
+      {
+        "start": 1440,
+        "end": 1520,
+        "score": 2.549495632505325
+      },
+      {
+        "start": 1500,
+        "end": 1580,
+        "score": 6.51910797328413
+      },
+      {
+        "start": 1560,
+        "end": 1628,
+        "score": 0.5174202652499916
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9101,
+  "representation_chars": 9101,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

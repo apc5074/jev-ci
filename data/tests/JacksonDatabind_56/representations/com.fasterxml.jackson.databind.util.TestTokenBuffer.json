@@ -1,0 +1,96 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.util.TestTokenBuffer",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/util/TestTokenBuffer.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.util.TestTokenBuffer\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/util/TestTokenBuffer.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.util;\n\nimport java.io.*;\nimport java.util.UUID;\n\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.core.util.JsonParserSequence;\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.ObjectMapper;\n\npublic class TestTokenBuffer extends BaseMapTest\n{\n    private final ObjectMapper MAPPER = objectMapper();\n    \n    /*\n    /**********************************************************\n    /* Basic TokenBuffer tests\n    /**********************************************************\n     */\n    \n    /**\n     * Test writing of individual simple values\n     */\n    public void testSimpleWrites() throws IOException\n    {\n        TokenBuffer buf = new TokenBuffer(null, false); // no ObjectCodec\n\n        // First, with empty buffer\n        JsonParser jp = buf.asParser();\n        assertNull(jp.getCurrentToken());\n        assertNull(jp.nextToken());\n        jp.close();\n\n        // Then with simple text\n        buf.writeString(\"abc\");\n\n        // First, simple text\n        jp = buf.asParser();\n        assertNull(jp.getCurrentToken());\n        assertToken(JsonToken.VALUE_STRING, jp.nextToken());\n        assertEquals(\"abc\", jp.getText());\n        assertNull(jp.nextToken());\n        jp.close();\n\n        // Then, let's append at root level\n        buf.writeNumber(13);\n        jp = buf.asParser();\n        assertNull(jp.getCurrentToken());\n        assertToken(JsonToken.VALUE_STRING, jp.nextToken());\n        assertToken(JsonToken.VALUE_NUMBER_INT, jp.nextToken());\n        assertEquals(13, jp.getIntValue());\n        assertNull(jp.nextToken());\n        jp.close();\n        buf.close();\n    }\n\n    public void testSimpleArray() throws IOException\n    {\n        TokenBuffer buf = new TokenBuffer(null, false); // no ObjectCodec\n\n        // First, empty array\n        assertTrue(buf.getOutputContext().inRoot());\n        buf.writeStartArray();\n        assertTrue(buf.getOutputContext().inArray());\n        buf.writeEndArray();\n        assertTrue(buf.getOutputContext().inRoot());\n\n        JsonParser jp = buf.asParser();\n        assertNull(jp.getCurrentToken());\n        assertTrue(jp.getParsingContext().inRoot());\n        assertToken(JsonToken.START_ARRAY, jp.nextToken());\n        assertTrue(jp.getParsingContext().inArray());\n        assertToken(JsonToken.END_ARRAY, jp.nextToken());\n        assertTrue(jp.getParsingContext().inRoot());\n        assertNull(jp.nextToken());\n        jp.close();\n        buf.close();\n\n        // Then one with simple contents\n        buf = new TokenBuffer(null, false);\n        buf.writeEndObject();\n        gen.writeEndObject();\n        _verifyOutputContext(buf, gen);\n\n        buf.writeEndArray();\n        gen.writeEndArray();\n        _verifyOutputContext(buf, gen);\n        \n        buf.close();\n        gen.close();\n    }\n\n    private void _verifyOutputContext(JsonGenerator gen1, JsonGenerator gen2)\n    {\n        _verifyOutputContext(gen1.getOutputContext(), gen2.getOutputContext());\n    }\n\n    private void _verifyOutputContext(JsonStreamContext ctxt1, JsonStreamContext ctxt2)\n    {\n        if (ctxt1 == null) {\n            if (ctxt2 == null) {\n                return;\n            }\n            fail(\"Context 1 null, context 2 not null: \"+ctxt2);\n        } else if (ctxt2 == null) {\n            fail(\"Context 2 null, context 1 not null: \"+ctxt1);\n        }\n        if (!ctxt1.getTypeDesc().equals(ctxt2.getTypeDesc())) {\n            fail(\"Different output context: token-buffer's = \"+ctxt1+\", json-generator's: \"+ctxt2);\n        }\n\n        if (ctxt1.inObject()) {\n            assertTrue(ctxt2.inObject());\n            String str1 = ctxt1.getCurrentName();\n            String str2 = ctxt2.getCurrentName();\n\n            if ((str1 != str2) && !str1.equals(str2)) {\n                fail(\"Expected name '\"+str2+\"' (JsonParser), TokenBuffer had '\"+str1+\"'\");\n            }\n        } else if (ctxt1.inArray()) {\n            assertTrue(ctxt2.inArray());\n            assertEquals(ctxt1.getCurrentIndex(), ctxt2.getCurrentIndex());\n        }\n        _verifyOutputContext(ctxt1.getParent(), ctxt2.getParent());\n    }\n\n    /*\n    /**********************************************************\n    /* Tests to verify interaction of TokenBuffer and JsonParserSequence\n    /**********************************************************\n     */\n    \n    public void testWithJsonParserSequenceSimple() throws IOException\n    {\n        // Let's join a TokenBuffer with JsonParser first\n        TokenBuffer buf = new TokenBuffer(null, false);\n        buf.writeStartArray();\n        buf.writeString(\"test\");\n        JsonParser jp = createParserUsingReader(\"[ true, null ]\");\n        \n        JsonParserSequence seq = JsonParserSequence.createFlattened(buf.asParser(), jp);\n        assertEquals(2, seq.containedParsersCount());\n\n        assertFalse(jp.isClosed());\n        \n        assertFalse(seq.hasCurrentToken());\n        assertNull(seq.getCurrentToken());\n        assertNull(seq.getCurrentName());\n\n        assertToken(JsonToken.START_ARRAY, seq.nextToken());\n        assertToken(JsonToken.VALUE_STRING, seq.nextToken());\n        assertEquals(\"test\", seq.getText());\n        // end of first parser input, should switch over:\n        \n        assertToken(JsonToken.START_ARRAY, seq.nextToken());\n        assertToken(JsonToken.VALUE_TRUE, seq.nextToken());\n        assertToken(JsonToken.VALUE_NULL, seq.nextToken());\n        assertToken(JsonToken.END_ARRAY, seq.nextToken());\n\n        /* 17-Jan-2009, tatus: At this point, we may or may not get an\n         *   exception, depending on how underlying parsers work.\n         *   Ideally this should be fixed, probably by asking underlying\n         *   parsers to disable checking for balanced start/end markers.\n         */\n\n        // for this particular case, we won't get an exception tho...\n        assertNull(seq.nextToken());\n        // not an error to call again...\n        assertNull(seq.nextToken());\n\n        // also: original parsers should be closed\n        assertTrue(jp.isClosed());\n        jp.close();\n        buf.close();\n        seq.close();\n    }\n    \n    /**\n     * Test to verify that TokenBuffer and JsonParserSequence work together\n     * as expected.\n     */\n    @SuppressWarnings(\"resource\")\n    public void testWithMultipleJsonParserSequences() throws IOException\n    {\n        TokenBuffer buf1 = new TokenBuffer(null, false);\n        buf1.writeStartArray();\n        TokenBuffer buf2 = new TokenBuffer(null, false);\n        buf2.writeString(\"a\");\n        TokenBuffer buf3 = new TokenBuffer(null, false);\n        buf3.writeNumber(13);\n        TokenBuffer buf4 = new TokenBuffer(null, false);\n        buf4.writeEndArray();\n\n        JsonParserSequence seq1 = JsonParserSequence.createFlattened(buf1.asParser(), buf2.asParser());\n        assertEquals(2, seq1.containedParsersCount());\n        JsonParserSequence seq2 = JsonParserSequence.createFlattened(buf3.asParser(), buf4.asParser());\n        assertEquals(2, seq2.containedParsersCount());\n        JsonParserSequence combo = JsonParserSequence.createFlattened(seq1, seq2);\n        // should flatten it to have 4 underlying parsers\n        assertEquals(4, combo.containedParsersCount());\n\n        assertToken(JsonToken.START_ARRAY, combo.nextToken());\n        assertToken(JsonToken.VALUE_STRING, combo.nextToken());\n        assertEquals(\"a\", combo.getText());\n        assertToken(JsonToken.VALUE_NUMBER_INT, combo.nextToken());\n        assertEquals(13, combo.getIntValue());\n        assertToken(JsonToken.END_ARRAY, combo.nextToken());\n        assertNull(combo.nextToken());        \n        buf1.close();\n        buf2.close();\n        buf3.close();\n        buf4.close();\n    }    \n\n    // [databind#743]\n    public void testRawValues() throws Exception\n    {\n        final String RAW = \"{\\\"a\\\":1}\";\n        TokenBuffer buf = new TokenBuffer(null, false);\n        buf.writeRawValue(RAW);\n",
+  "compaction": {
+    "source_lines": 452,
+    "mode": "windows",
+    "windows_total": 8,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        300,
+        380
+      ],
+      [
+        360,
+        440
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 17.911627475001858
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 10.846830463873518
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 8.275481461670388
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 17.911627475001858
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.16952803381996
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 3.628143306945731
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 7.826425004582643
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 6.196419204145942
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 10.846830463873518
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 8.275481461670388
+      },
+      {
+        "start": 420,
+        "end": 452,
+        "score": 3.4175986928480895
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8075,
+  "representation_chars": 8075,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

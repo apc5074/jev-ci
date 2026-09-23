@@ -1,0 +1,91 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.creators.BuilderSimpleTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/creators/BuilderSimpleTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.creators.BuilderSimpleTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/creators/BuilderSimpleTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.creators;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.JsonAnySetter;\nimport com.fasterxml.jackson.annotation.JsonCreator;\nimport com.fasterxml.jackson.annotation.JsonProperty;\nimport com.fasterxml.jackson.annotation.JsonSetter;\nimport com.fasterxml.jackson.core.JsonProcessingException;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\nimport com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;\n\npublic class BuilderSimpleTest extends BaseMapTest\n{\n    // // Simple 2-property value class, builder with standard naming\n\t\n    @JsonDeserialize(builder=SimpleBuilderXY.class)\n    static class ValueClassXY\n    {\n        final int _x, _y;\n\n        protected ValueClassXY(int x, int y) {\n            _x = x+1;\n            _y = y+1;\n        }\n    }\n\n    static class SimpleBuilderXY\n    {\n        public int x, y;\n    \t\n        public SimpleBuilderXY withX(int x0) {\n    \t\t    this.x = x0;\n    \t\t    return this;\n        }\n\n        public SimpleBuilderXY withY(int y0) {\n    \t\t    this.y = y0;\n    \t\t    return this;\n        }\n\n        public ValueClassXY build() {\n    \t\t    return new ValueClassXY(x, y);\n        }\n    }\n\n    // // 3-property value, with more varied builder\n\t\n    @JsonDeserialize(builder=BuildABC.class)\n    static class ValueClassABC\n    {\n        final int a, b, c;\n\n        protected ValueClassABC(int a, int b, int c) {\n            this.a = a;\n            this.b = b;\n            this.c = c;\n        }\n    }\n\n    static class BuildABC\n    {\n        public int a; // to be used as is\n        private int b, c;\n    \t\n        @JsonProperty(\"b\")\n        public BuildABC assignB(int b0) {\n            this.b = b0;\n            return this;\n        }\n\n        // Also ok NOT to return 'this'\n        @JsonSetter(\"c\")\n        public void c(int c0) {\n            this.c = c0;\n        }\n\n        public ValueClassABC build() {\n            return new ValueClassABC(a, b, c);\n    /**********************************************************\n     */\n\n    private final ObjectMapper MAPPER = new ObjectMapper();\n    \n    public void testSimple() throws Exception\n    {\n        String json = \"{\\\"x\\\":1,\\\"y\\\":2}\";\n        Object o = MAPPER.readValue(json, ValueClassXY.class);\n        assertNotNull(o);\n    \t    assertSame(ValueClassXY.class, o.getClass());\n    \t    ValueClassXY value = (ValueClassXY) o;\n    \t    // note: ctor adds one to both values\n    \t    assertEquals(value._x, 2);\n    \t    assertEquals(value._y, 3);\n    }\n\n    public void testMultiAccess() throws Exception\n    {\n        String json = \"{\\\"c\\\":3,\\\"a\\\":2,\\\"b\\\":-9}\";\n        ValueClassABC value = MAPPER.readValue(json, ValueClassABC.class);\n        assertNotNull(value);\n    \t    // note: ctor adds one to both values\n        assertEquals(value.a, 2);\n        assertEquals(value.b, -9);\n        assertEquals(value.c, 3);\n    }\n\n    // test for Immutable builder, to ensure return value is used\n    public void testImmutable() throws Exception\n    {\n        final String json = \"{\\\"value\\\":13}\";\n        ValueImmutable value = MAPPER.readValue(json, ValueImmutable.class);        \n        assertEquals(13, value.value);\n    }\n\n    // test with custom 'with-prefix'\n    public void testCustomWith() throws Exception\n    {\n        final String json = \"{\\\"value\\\":1}\";\n        ValueFoo value = MAPPER.readValue(json, ValueFoo.class);        \n        assertEquals(1, value.value);\n    }\n\n    // test to ensure @JsonCreator also work\n    public void testWithCreator() throws Exception\n    {\n        final String json = \"{\\\"a\\\":1,\\\"c\\\":3,\\\"b\\\":2}\";\n        CreatorValue value = MAPPER.readValue(json, CreatorValue.class);        \n        assertEquals(1, value.a);\n        assertEquals(2, value.b);\n        assertEquals(3, value.c);\n    }\n\n    // for [databind#761]\n    \n    public void testBuilderMethodReturnMoreGeneral() throws Exception\n    {\n        final String json = \"{\\\"x\\\":1}\";\n        ValueInterface value = MAPPER.readValue(json, ValueInterface.class);\n        assertEquals(2, value.getX());\n    }\n\n    public void testBuilderMethodReturnMoreSpecific() throws Exception\n    {\n        final String json = \"{\\\"x\\\":1}\";\n        ValueInterface2 value = MAPPER.readValue(json, ValueInterface2.class);\n        assertEquals(2, value.getX());\n    }\n    \n    public void testBuilderMethodReturnInvalidType() throws Exception\n    {\n        final String json = \"{\\\"x\\\":1}\";\n        try {\n            MAPPER.readValue(json, ValueClassWrongBuildType.class);\n            fail(\"Missing expected JsonProcessingException exception\");\n        } catch(JsonProcessingException e) {\n            assertTrue(\n                    \"Exception cause must be IllegalArgumentException\",\n                    e.getCause() instanceof IllegalArgumentException);\n        }\n    }\n\n    public void testSelfBuilder777() throws Exception\n    {\n        SelfBuilder777 result = MAPPER.readValue(aposToQuotes(\"{'x':3}'\"),\n                SelfBuilder777.class);\n        assertNotNull(result);\n        assertEquals(3, result.x);\n    }\n\n    public void testWithAnySetter822() throws Exception\n    {\n        final String json = \"{\\\"extra\\\":3,\\\"foobar\\\":[ ],\\\"x\\\":1,\\\"name\\\":\\\"bob\\\"}\";\n        ValueClass822 value = MAPPER.readValue(json, ValueClass822.class);\n        assertEquals(1, value.x);\n        assertNotNull(value.stuff);\n        assertEquals(3, value.stuff.size());\n        assertEquals(Integer.valueOf(3), value.stuff.get(\"extra\"));\n        assertEquals(\"bob\", value.stuff.get(\"name\"));\n        Object ob = value.stuff.get(\"foobar\");\n        assertNotNull(ob);\n        assertTrue(ob instanceof List);\n        assertTrue(((List<?>) ob).isEmpty());\n    }\n\n    \n}\n",
+  "compaction": {
+    "source_lines": 408,
+    "mode": "windows",
+    "windows_total": 7,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        300,
+        380
+      ],
+      [
+        360,
+        408
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.134642937017496
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 6.889170764855614
+      },
+      {
+        "start": 360,
+        "end": 408,
+        "score": 5.1430916096384784
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.134642937017496
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.507394925089218
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 3.903783494694599
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 3.781533029978709
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 3.623268962356639
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 6.889170764855614
+      },
+      {
+        "start": 360,
+        "end": 408,
+        "score": 5.1430916096384784
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 5903,
+  "representation_chars": 5903,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

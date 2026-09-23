@@ -1,0 +1,116 @@
+{
+  "test_class": "org.apache.commons.math3.linear.EigenDecompositionTest",
+  "source_file": "src/test/java/org/apache/commons/math3/linear/EigenDecompositionTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.linear.EigenDecompositionTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/linear/EigenDecompositionTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math3.linear;\n\nimport java.util.Arrays;\nimport java.util.Random;\n\n\nimport org.apache.commons.math3.distribution.NormalDistribution;\nimport org.apache.commons.math3.util.FastMath;\nimport org.apache.commons.math3.util.Precision;\nimport org.junit.After;\nimport org.junit.Assert;\nimport org.junit.Before;\nimport org.junit.Ignore;\nimport org.junit.Test;\n\npublic class EigenDecompositionTest {\n\n    private double[] refValues;\n    private RealMatrix matrix;\n\n    @Test\n    public void testDimension1() {\n        RealMatrix matrix =\n            MatrixUtils.createRealMatrix(new double[][] { { 1.5 } });\n        EigenDecomposition ed;\n        ed = new EigenDecomposition(matrix);\n        Assert.assertEquals(1.5, ed.getRealEigenvalue(0), 1.0e-15);\n    }\n\n    @Test\n    public void testDimension2() {\n        RealMatrix matrix =\n            MatrixUtils.createRealMatrix(new double[][] {\n                    { 59.0, 12.0 },\n                    { 12.0, 66.0 }\n            });\n        EigenDecomposition ed;\n        ed = new EigenDecomposition(matrix);\n        Assert.assertEquals(75.0, ed.getRealEigenvalue(0), 1.0e-15);\n        Assert.assertEquals(50.0, ed.getRealEigenvalue(1), 1.0e-15);\n    }\n\n    @Test\n    public void testDimension3() {\n        RealMatrix matrix =\n            MatrixUtils.createRealMatrix(new double[][] {\n                                   {  39632.0, -4824.0, -16560.0 },\n                                   {  -4824.0,  8693.0,   7920.0 },\n                                   { -16560.0,  7920.0,  17300.0 }\n                               });\n        EigenDecomposition ed;\n        ed = new EigenDecomposition(matrix);\n        Assert.assertEquals(50000.0, ed.getRealEigenvalue(0), 3.0e-11);\n        Assert.assertEquals(12500.0, ed.getRealEigenvalue(1), 3.0e-11);\n        Assert.assertEquals( 3125.0, ed.getRealEigenvalue(2), 3.0e-11);\n    }\n\n    @Test\n    public void testDimension3MultipleRoot() {\n        RealMatrix matrix =\n            MatrixUtils.createRealMatrix(new double[][] {\n                    {  5,   10,   15 },\n                    { 10,   20,   30 },\n                    { 15,   30,   45 }\n            });\n        EigenDecomposition ed;\n        ed = new EigenDecomposition(matrix);\n        Assert.assertEquals(70.0, ed.getRealEigenvalue(0), 3.0e-11);\n        Assert.assertEquals(0.0,  ed.getRealEigenvalue(1), 3.0e-11);\n        Assert.assertEquals(0.0,  ed.getRealEigenvalue(2), 3.0e-11);\n    }\n\n    @Test\n    public void testDimension4WithSplit() {\n        RealMatrix matrix =\n            MatrixUtils.createRealMatrix(new double[][] {\n                                   {  0.784, -0.288,  0.000,  0.000 },\n                                   { -0.288,  0.616,  0.000,  0.000 },\n                                   {  0.000,  0.000,  0.164, -0.048 },\n                                   {  0.000,  0.000, -0.048,  0.136 }\n                               });\n        EigenDecomposition ed;\n        ed = new EigenDecomposition(matrix);\n        Assert.assertEquals(1.0, ed.getRealEigenvalue(0), 1.0e-15);\n        Assert.assertEquals(0.4, ed.getRealEigenvalue(1), 1.0e-15);\n        Assert.assertEquals(0.2, ed.getRealEigenvalue(2), 1.0e-15);\n        Assert.assertEquals(0.1, ed.getRealEigenvalue(3), 1.0e-15);\n    }\n\n    @Test\n    public void testDimension4WithoutSplit() {\n        RealMatrix matrix =\n            MatrixUtils.createRealMatrix(new double[][] {\n                                   {  0.5608, -0.2016,  0.1152, -0.2976 },\n                                   { -0.2016,  0.4432, -0.2304,  0.1152 },\n                                   {  0.1152, -0.2304,  0.3088, -0.1344 },\n                                   { -0.2976,  0.1152, -0.1344,  0.3872 }\n                               });\n        EigenDecomposition ed;\n        ed = new EigenDecomposition(matrix);\n        Assert.assertEquals(1.0, ed.getRealEigenvalue(0), 1.0e-15);\n        Assert.assertEquals(0.4, ed.getRealEigenvalue(1), 1.0e-15);\n        Assert.assertEquals(0.2, ed.getRealEigenvalue(2), 1.0e-15);\n        Assert.assertEquals(0.1, ed.getRealEigenvalue(3), 1.0e-15);\n    }\n\n    // the following test triggered an ArrayIndexOutOfBoundsException in commons-math 2.0\n    @Test\n    public void testMath308() {\n\n        double[] mainTridiagonal = {\n            22.330154644539597, 46.65485522478641, 17.393672330044705, 54.46687435351116, 80.17800767709437\n        };\n        double[] secondaryTridiagonal = {\n            13.04450406501361, -5.977590941539671, 2.9040909856707517, 7.1570352792841225\n        };\n\n        // the reference values have been computed using routine DSTEMR\n        // from the fortran library LAPACK version 3.2.1\n        double[] refEigenValues = {\n            82.044413207204002, 53.456697699894512, 52.536278520113882, 18.847969733754262, 14.138204224043099\n        };\n        RealVector[] refEigenVectors = {\n            new ArrayRealVector(new double[] { -0.000462690386766, -0.002118073109055,  0.011530080757413,  0.252322434584915,  0.967572088232592 }),\n            new ArrayRealVector(new double[] {  0.314647769490148,  0.750806415553905, -0.167700312025760, -0.537092972407375,  0.143854968127780 }),\n            new ArrayRealVector(new double[] {  0.222368839324646,  0.514921891363332, -0.021377019336614,  0.801196801016305, -0.207446991247740 }),\n            new ArrayRealVector(new double[] { -0.713933751051495,  0.190582113553930, -0.671410443368332,  0.056056055955050, -0.006541576993581 }),\n            new ArrayRealVector(new double[] { -0.584677060845929,  0.367177264979103,  0.721453187784497, -0.052971054621812,  0.005740715188257 })\n        };\n\n        EigenDecomposition decomposition;\n        decomposition = new EigenDecomposition(mainTridiagonal, secondaryTridiagonal);\n\n        double[] eigenValues = decomposition.getRealEigenvalues();\n        for (int i = 0; i < refEigenValues.length; ++i) {\n            Assert.assertEquals(refEigenValues[i], eigenValues[i], 1.0e-5);\n            Assert.assertEquals(0, refEigenVectors[i].subtract(decomposition.getEigenvector(i)).getNorm(), 2.0e-7);\n        }\n\n    }\n\n    @Test\n    public void testMathpbx02() {\n\n        double[] mainTridiagonal = {\n              7484.860960227216, 18405.28129035345, 13855.225609560746,\n             10016.708722343366, 559.8117399576674, 6750.190788301587,\n                71.21428769782159\n        };\n        double[] secondaryTridiagonal = {\n             -4175.088570476366,1975.7955858241994,5193.178422374075,\n              1995.286659169179,75.34535882933804,-234.0808002076056\n        };\n\n        // the reference values have been computed using routine DSTEMR\n        // from the fortran library LAPACK version 3.2.1\n        double[] refEigenValues = {\n                20654.744890306974412,16828.208208485466457,\n                6893.155912634994820,6757.083016675340332,\n                5887.799885688558788,64.309089923240379,\n                57.992628792736340\n        };\n        RealVector[] refEigenVectors = {\n                new ArrayRealVector(new double[] {-0.270356342026904, 0.852811091326997, 0.399639490702077, 0.198794657813990, 0.019739323307666, 0.000106983022327, -0.000001216636321}),\n                new ArrayRealVector(new double[] {0.179995273578326,-0.402807848153042,0.701870993525734,0.555058211014888,0.068079148898236,0.000509139115227,-0.000007112235617}),\n                new ArrayRealVector(new double[] {-0.399582721284727,-0.056629954519333,-0.514406488522827,0.711168164518580,0.225548081276367,0.125943999652923,-0.004321507456014}),\n                new ArrayRealVector(new double[] {0.058515721572821,0.010200130057739,0.063516274916536,-0.090696087449378,-0.017148420432597,0.991318870265707,-0.034707338554096}),\n                new ArrayRealVector(new double[] {0.855205995537564,0.327134656629775,-0.265382397060548,0.282690729026706,0.105736068025572,-0.009138126622039,0.000367751821196}),\n                new ArrayRealVector(new double[] {-0.002913069901144,-0.005177515777101,0.041906334478672,-0.109315918416258,0.436192305456741,0.026307315639535,0.891797507436344}),\n                new ArrayRealVector(new double[] {-0.005738311176435,-0.010207611670378,0.082662420517928,-0.215733886094368,0.861606487840411,-0.025478530652759,-0.451080697503958})\n        };\n\n        // the following line triggers the exception\n        EigenDecomposition decomposition;\n        decomposition = new EigenDecomposition(mainTridiagonal, secondaryTridiagonal);\n\n        double[] eigenValues = decomposition.getRealEigenvalues();\n        for (int i = 0; i < refEigenValues.length; ++i) {\n            Assert.assertEquals(refEigenValues[i], eigenValues[i], 1.0e-3);\n            if (refEigenVectors[i].dotProduct(decomposition.getEigenvector(i)) < 0) {\n                Assert.assertEquals(0, refEigenVectors[i].add(decomposition.getEigenvector(i)).getNorm(), 1.0e-5);\n            } else {\n                Assert.assertEquals(0, refEigenVectors[i].subtract(decomposition.getEigenvector(i)).getNorm(), 1.0e-5);\n",
+  "compaction": {
+    "source_lines": 684,
+    "mode": "windows",
+    "windows_total": 12,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 21.783340289034932
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.530293647436037
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 7.332890314706737
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 21.783340289034932
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.530293647436037
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 7.332890314706737
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 7.25836019920691
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.804431631723854
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 1.8177855317460185
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 4.08169071954557
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 3.6258588587236664
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 6.414195057293718
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 6.524934357946516
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 5.894683057110226
+      },
+      {
+        "start": 660,
+        "end": 684,
+        "score": 6.268716256480601
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9963,
+  "representation_chars": 9963,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

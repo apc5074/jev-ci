@@ -1,0 +1,166 @@
+{
+  "test_class": "org.jsoup.nodes.ElementTest",
+  "source_file": "src/test/java/org/jsoup/nodes/ElementTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.jsoup.nodes.ElementTest\n\nSOURCE FILE:\nsrc/test/java/org/jsoup/nodes/ElementTest.java\n\nTEST SOURCE:\npackage org.jsoup.nodes;\n\nimport org.jsoup.Jsoup;\nimport org.jsoup.TextUtil;\nimport org.jsoup.parser.Tag;\nimport org.jsoup.select.Elements;\nimport org.junit.Test;\n\nimport java.util.ArrayList;\nimport java.util.Collection;\nimport java.util.HashSet;\nimport java.util.LinkedHashSet;\nimport java.util.List;\nimport java.util.Map;\nimport java.util.Set;\n\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertFalse;\nimport static org.junit.Assert.assertNotNull;\nimport static org.junit.Assert.assertNull;\nimport static org.junit.Assert.assertTrue;\nimport static org.junit.Assert.fail;\n\n/**\n * Tests for Element (DOM stuff mostly).\n *\n * @author Jonathan Hedley\n */\npublic class ElementTest {\n    private String reference = \"<div id=div1><p>Hello</p><p>Another <b>element</b></p><div id=div2><img src=foo.png></div></div>\";\n\n    @Test public void getElementsByTagName() {\n        Document doc = Jsoup.parse(reference);\n        List<Element> divs = doc.getElementsByTag(\"div\");\n        assertEquals(2, divs.size());\n        assertEquals(\"div1\", divs.get(0).id());\n        assertEquals(\"div2\", divs.get(1).id());\n\n        List<Element> ps = doc.getElementsByTag(\"p\");\n        assertEquals(2, ps.size());\n        assertEquals(\"Hello\", ((TextNode) ps.get(0).childNode(0)).getWholeText());\n        assertEquals(\"Another \", ((TextNode) ps.get(1).childNode(0)).getWholeText());\n        List<Element> ps2 = doc.getElementsByTag(\"P\");\n        assertEquals(ps, ps2);\n\n        List<Element> imgs = doc.getElementsByTag(\"img\");\n        assertEquals(\"foo.png\", imgs.get(0).attr(\"src\"));\n\n        List<Element> empty = doc.getElementsByTag(\"wtf\");\n        assertEquals(0, empty.size());\n    }\n    \n    @Test public void getNamespacedElementsByTag() {\n        Document doc = Jsoup.parse(\"<div><abc:def id=1>Hello</abc:def></div>\");\n        Elements els = doc.getElementsByTag(\"abc:def\");\n        assertEquals(1, els.size());\n        assertEquals(\"1\", els.first().id());\n        assertEquals(\"abc:def\", els.first().tagName());\n    }\n\n    @Test public void testGetElementById() {\n        Document doc = Jsoup.parse(reference);\n        Element div = doc.getElementById(\"div1\");\n        assertEquals(\"div1\", div.id());\n        assertNull(doc.getElementById(\"none\"));\n\n        Document doc2 = Jsoup.parse(\"<div id=1><div id=2><p>Hello <span id=2>world!</span></p></div></div>\");\n        Element div2 = doc2.getElementById(\"2\");\n        assertEquals(\"div\", div2.tagName()); // not the span\n        Element span = div2.child(0).getElementById(\"2\"); // called from <p> context should be span\n        assertEquals(\"span\", span.tagName());\n    }\n    \n    @Test public void testGetText() {\n        Document doc = Jsoup.parse(reference);\n        assertEquals(\"Hello Another element\", doc.text());\n        assertEquals(\"Another element\", doc.getElementsByTag(\"p\").get(1).text());\n    }\n\n    @Test public void testGetChildText() {\n        assertEquals(\"<img src=\\\"foo\\\">\", img.toString());\n    }\n\n    @Test public void testClone() {\n        Document doc = Jsoup.parse(\"<div><p>One<p><span>Two</div>\");\n\n        Element p = doc.select(\"p\").get(1);\n        Element clone = p.clone();\n\n        assertNull(clone.parent()); // should be orphaned\n        assertEquals(0, clone.siblingIndex);\n        assertEquals(1, p.siblingIndex);\n        assertNotNull(p.parent());\n\n        clone.append(\"<span>Three\");\n        assertEquals(\"<p><span>Two</span><span>Three</span></p>\", TextUtil.stripNewlines(clone.outerHtml()));\n        assertEquals(\"<div><p>One</p><p><span>Two</span></p></div>\", TextUtil.stripNewlines(doc.body().html())); // not modified\n\n        doc.body().appendChild(clone); // adopt\n        assertNotNull(clone.parent());\n        assertEquals(\"<div><p>One</p><p><span>Two</span></p></div><p><span>Two</span><span>Three</span></p>\", TextUtil.stripNewlines(doc.body().html()));\n    }\n\n    @Test public void testClonesClassnames() {\n        Document doc = Jsoup.parse(\"<div class='one two'></div>\");\n        Element div = doc.select(\"div\").first();\n        Set<String> classes = div.classNames();\n        assertEquals(2, classes.size());\n        assertTrue(classes.contains(\"one\"));\n        assertTrue(classes.contains(\"two\"));\n\n        Element copy = div.clone();\n        Set<String> copyClasses = copy.classNames();\n        assertEquals(2, copyClasses.size());\n        assertTrue(copyClasses.contains(\"one\"));\n        assertTrue(copyClasses.contains(\"two\"));\n        copyClasses.add(\"three\");\n        copyClasses.remove(\"one\");\n\n        assertTrue(classes.contains(\"one\"));\n        assertFalse(classes.contains(\"three\"));\n        assertFalse(copyClasses.contains(\"one\"));\n        assertTrue(copyClasses.contains(\"three\"));\n\n        assertEquals(\"\", div.html());\n        assertEquals(\"\", copy.html());\n    }\n\n    @Test public void testShallowClone() {\n        String base = \"http://example.com/\";\n        Document doc = Jsoup.parse(\"<div id=1 class=one><p id=2 class=two>One\", base);\n        Element d = doc.selectFirst(\"div\");\n        Element p = doc.selectFirst(\"p\");\n        TextNode t = p.textNodes().get(0);\n\n        Element d2 = d.shallowClone();\n        Element p2 = p.shallowClone();\n        TextNode t2 = (TextNode) t.shallowClone();\n\n        assertEquals(1, d.childNodeSize());\n        assertEquals(0, d2.childNodeSize());\n\n        assertEquals(1, p.childNodeSize());\n        assertEquals(0, p2.childNodeSize());\n        assertEquals(\"\", p2.text());\n\n        assertEquals(\"two\", p2.className());\n        assertEquals(\"One\", t2.text());\n\n        d2.append(\"<p id=3>Three\");\n        assertEquals(1, d2.childNodeSize());\n        assertEquals(\"Three\", d2.text());\n        assertEquals(\"One\", d.text());\n        assertEquals(base, d2.baseUri());\n    }\n\n    @Test public void testTagNameSet() {\n        Document doc = Jsoup.parse(\"<div><i>Hello</i>\");\n        doc.select(\"i\").first().tagName(\"em\");\n        assertEquals(0, doc.select(\"i\").size());\n\n    @Test\n    public void testHashAndEqualsAndValue() {\n        // .equals and hashcode are identity. value is content.\n\n        String doc1 = \"<div id=1><p class=one>One</p><p class=one>One</p><p class=one>Two</p><p class=two>One</p></div>\" +\n                \"<div id=2><p class=one>One</p><p class=one>One</p><p class=one>Two</p><p class=two>One</p></div>\";\n\n        Document doc = Jsoup.parse(doc1);\n        Elements els = doc.select(\"p\");\n\n        /*\n        for (Element el : els) {\n            System.out.println(el.hashCode() + \" - \" + el.outerHtml());\n        }\n\n        0 1534787905 - <p class=\"one\">One</p>\n        1 1534787905 - <p class=\"one\">One</p>\n        2 1539683239 - <p class=\"one\">Two</p>\n        3 1535455211 - <p class=\"two\">One</p>\n        4 1534787905 - <p class=\"one\">One</p>\n        5 1534787905 - <p class=\"one\">One</p>\n        6 1539683239 - <p class=\"one\">Two</p>\n        7 1535455211 - <p class=\"two\">One</p>\n        */\n        assertEquals(8, els.size());\n        Element e0 = els.get(0);\n        Element e1 = els.get(1);\n        Element e2 = els.get(2);\n        Element e3 = els.get(3);\n        Element e4 = els.get(4);\n        Element e5 = els.get(5);\n        Element e6 = els.get(6);\n        Element e7 = els.get(7);\n\n        assertEquals(e0, e0);\n        assertTrue(e0.hasSameValue(e1));\n        assertTrue(e0.hasSameValue(e4));\n        assertTrue(e0.hasSameValue(e5));\n        assertFalse(e0.equals(e2));\n        assertFalse(e0.hasSameValue(e2));\n        assertFalse(e0.hasSameValue(e3));\n        assertFalse(e0.hasSameValue(e6));\n        assertFalse(e0.hasSameValue(e7));\n\n        assertEquals(e0.hashCode(), e0.hashCode());\n        assertFalse(e0.hashCode() == (e2.hashCode()));\n        assertFalse(e0.hashCode() == (e3).hashCode());\n        assertFalse(e0.hashCode() == (e6).hashCode());\n        assertFalse(e0.hashCode() == (e7).hashCode());\n    }\n\n    @Test public void testRelativeUrls() {\n        String html = \"<body><a href='./one.html'>One</a> <a href='two.html'>two</a> <a href='../three.html'>Three</a> <a href='//example2.com/four/'>Four</a> <a href='https://example2.com/five/'>Five</a>\";\n        Document doc = Jsoup.parse(html, \"http://example.com/bar/\");\n        Elements els = doc.select(\"a\");\n\n        assertEquals(\"http://example.com/bar/one.html\", els.get(0).absUrl(\"href\"));\n        assertEquals(\"http://example.com/bar/two.html\", els.get(1).absUrl(\"href\"));\n        assertEquals(\"http://example.com/three.html\", els.get(2).absUrl(\"href\"));\n        assertEquals(\"http://example2.com/four/\", els.get(3).absUrl(\"href\"));\n        assertEquals(\"https://example2.com/five/\", els.get(4).absUrl(\"href\"));\n    }\n\n    @Test\n    public void appendMustCorrectlyMoveChildrenInsideOneParentElement() {\n        Document doc = new Document(\"\");\n        Element body = doc.appendElement(\"body\");\n        body.appendElement(\"div1\");\n        body.appendElement(\"div2\");\n        final Element div3 = body.appendElement(\"div3\");\n        div3.text(\"Check\");\n        final Element div4 = body.appendElement(\"div4\");\n\n        ArrayList<Element> toMove = new ArrayList<>();\n        toMove.add(div3);\n        toMove.add(div4);\n\n        body.insertChildren(0, toMove);\n\n",
+  "compaction": {
+    "source_lines": 1284,
+    "mode": "windows",
+    "windows_total": 22,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        600,
+        680
+      ],
+      [
+        900,
+        980
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.255667368769426
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 17.731165175626188
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 15.891021504954864
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.255667368769426
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 12.163360731282486
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 5.863643393211455
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 8.719571553629171
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 6.485564017241178
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 10.10307240048026
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 15.025577615486805
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 5.268078580111303
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 2.670508140632739
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 14.876568269841666
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 17.731165175626188
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 4.637422135268259
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 6.839732277122568
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 8.418401684167323
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 8.911492892299144
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 15.891021504954864
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 10.523630646368538
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 6.75363110854975
+      },
+      {
+        "start": 1080,
+        "end": 1160,
+        "score": 4.939314572259501
+      },
+      {
+        "start": 1140,
+        "end": 1220,
+        "score": 7.616797227912453
+      },
+      {
+        "start": 1200,
+        "end": 1280,
+        "score": 4.87281581456797
+      },
+      {
+        "start": 1260,
+        "end": 1284,
+        "score": 0.8467226285509011
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9263,
+  "representation_chars": 9263,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

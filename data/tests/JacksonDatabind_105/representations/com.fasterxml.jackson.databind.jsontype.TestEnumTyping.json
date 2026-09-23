@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.jsontype.TestEnumTyping",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/jsontype/TestEnumTyping.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.jsontype.TestEnumTyping\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/jsontype/TestEnumTyping.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.jsontype;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.ObjectMapper;\n\n@SuppressWarnings(\"serial\")\npublic class TestEnumTyping extends BaseMapTest\n{\n    /*\n    /**********************************************************\n    /* Helper types\n    /**********************************************************\n     */\n\n    // note: As.WRAPPER_ARRAY worked initially; but as per [JACKSON-485], As.PROPERTY had issues\n    @JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, include=JsonTypeInfo.As.PROPERTY)\n    public interface EnumInterface { }\n\n    public enum Tag implements EnumInterface\n    { A, B };\n    \n    static class EnumInterfaceWrapper {\n        public EnumInterface value;\n    }\n    \n    static class EnumInterfaceList extends ArrayList<EnumInterface> { }\n\n    static class TagList extends ArrayList<Tag> { }\n\n    static enum TestEnum { A, B, C; }\n    \n    static class UntypedEnumBean\n    {\n       @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property=\"__type\")\n        public Object value;\n\n        public UntypedEnumBean() { }\n        public UntypedEnumBean(TestEnum v) { value = v; }\n\n        @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property=\"__type\")\n        public void setValue(Object o) {\n            value = o;\n        }\n    }\n    \n    /*\n    /**********************************************************\n    /* Unit tests\n    /**********************************************************\n     */\n\n    public void testTagList() throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        TagList list = new TagList();\n        list.add(Tag.A);\n        list.add(Tag.B);\n        String json = m.writeValueAsString(list);\n\n        TagList result = m.readValue(json, TagList.class);\n        assertEquals(2, result.size());\n        assertSame(Tag.A, result.get(0));\n        assertSame(Tag.B, result.get(1));\n    }\n\n    public void testEnumInterface() throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        String json = m.writeValueAsString(Tag.B);\n        EnumInterface result = m.readValue(json, EnumInterface.class);\n        assertSame(Tag.B, result);\n    }\n\n    public void testEnumInterfaceList() throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        EnumInterfaceList list = new EnumInterfaceList();\n        list.add(Tag.A);\n        list.add(Tag.B);\n        String json = m.writeValueAsString(list);\n        \n        EnumInterfaceList result = m.readValue(json, EnumInterfaceList.class);\n        assertEquals(2, result.size());\n        assertSame(Tag.A, result.get(0));\n        assertSame(Tag.B, result.get(1));\n    }\n\n    public void testUntypedEnum() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        String str = mapper.writeValueAsString(new UntypedEnumBean(TestEnum.B));\n        UntypedEnumBean result = mapper.readValue(str, UntypedEnumBean.class);\n        assertNotNull(result);\n        assertNotNull(result.value);\n        Object ob = result.value;\n        assertSame(TestEnum.class, ob.getClass());\n        assertEquals(TestEnum.B, result.value);\n    }\n    \n}\n",
+  "compaction": {
+    "source_lines": 104,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3450,
+  "representation_chars": 3450,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

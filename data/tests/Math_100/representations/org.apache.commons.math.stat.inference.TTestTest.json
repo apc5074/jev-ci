@@ -1,0 +1,81 @@
+{
+  "test_class": "org.apache.commons.math.stat.inference.TTestTest",
+  "source_file": "src/test/org/apache/commons/math/stat/inference/TTestTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math.stat.inference.TTestTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/math/stat/inference/TTestTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math.stat.inference;\n\nimport junit.framework.Test;\nimport junit.framework.TestCase;\nimport junit.framework.TestSuite;\n\nimport org.apache.commons.math.stat.descriptive.SummaryStatistics;\n/**\n * Test cases for the TTestImpl class.\n *\n * @version $Revision$ $Date$\n */\n\npublic class TTestTest extends TestCase {\n\n    protected TTest testStatistic = new TTestImpl();\n    \n    private double[] tooShortObs = { 1.0 };\n    private double[] emptyObs = {};\n    private SummaryStatistics emptyStats = new SummaryStatistics();  \n   SummaryStatistics tooShortStats = null;  \n\n    public TTestTest(String name) {\n        super(name);\n    }\n\n    public void setUp() {\n        tooShortStats = new SummaryStatistics();\n        tooShortStats.addValue(0d);\n    }\n\n    public static Test suite() {\n        TestSuite suite = new TestSuite(TTestTest.class);\n        suite.setName(\"TestStatistic Tests\");\n        return suite;\n    }\n\n    public void testOneSampleT() throws Exception {\n        double[] observed =\n            {93.0, 103.0, 95.0, 101.0, 91.0, 105.0, 96.0, 94.0, 101.0,  88.0, 98.0, 94.0, 101.0, 92.0, 95.0 };\n        double mu = 100.0;\n        SummaryStatistics sampleStats = null;\n        sampleStats = new SummaryStatistics();\n        for (int i = 0; i < observed.length; i++) {\n            sampleStats.addValue(observed[i]);\n        }\n\n        // Target comparison values computed using R version 1.8.1 (Linux version)\n        assertEquals(\"t statistic\",  -2.81976445346,\n                testStatistic.t(mu, observed), 10E-10);\n        assertEquals(\"t statistic\",  -2.81976445346,\n                testStatistic.t(mu, sampleStats), 10E-10);\n        assertEquals(\"p value\", 0.0136390585873,\n                testStatistic.tTest(mu, observed), 10E-10);\n        assertEquals(\"p value\", 0.0136390585873,\n                testStatistic.tTest(mu, sampleStats), 10E-10);\n\n        try {\n            testStatistic.t(mu, (double[]) null);\n            fail(\"arguments too short, IllegalArgumentException expected\");\n        } catch (IllegalArgumentException ex) {\n            // expected\n        }\n\n        try {\n            testStatistic.t(mu, (SummaryStatistics) null);\n            fail(\"arguments too short, IllegalArgumentException expected\");\n        } catch (IllegalArgumentException ex) {\n            // expected\n        }\n\n        try {\n            testStatistic.t(mu, emptyObs);\n            fail(\"arguments too short, IllegalArgumentException expected\");\n        } catch (IllegalArgumentException ex) {\n            // expected\n        }\n \n        try {\n            testStatistic.t(mu, emptyStats);\n            fail(\"arguments too short, IllegalArgumentException expected\");\n        } catch (IllegalArgumentException ex) {\n            // expected\n        }\n\n        try {\n            testStatistic.t(mu, tooShortObs);\n            fail(\"insufficient data to compute t statistic, IllegalArgumentException expected\");\n        } catch (IllegalArgumentException ex) {\n            // expected\n        }\n        try {\n            testStatistic.tTest(mu, tooShortObs);\n            fail(\"insufficient data to perform t test, IllegalArgumentException expected\");\n        } catch (IllegalArgumentException ex) {\n           // expected\n        }  \n\n        try {\n            testStatistic.t(mu, tooShortStats);\n            fail(\"insufficient data to compute t statistic, IllegalArgumentException expected\");\n        } catch (IllegalArgumentException ex) {\n            // expected\n        }\n        try {\n            testStatistic.tTest(mu, tooShortStats);\n            fail(\"insufficient data to perform t test, IllegalArgumentException expected\");\n        } catch (IllegalArgumentException ex) {\n            // expected\n        }  \n    }\n    \n    public void testOneSampleTTest() throws Exception {\n        double[] oneSidedP =\n            {2d, 0d, 6d, 6d, 3d, 3d, 2d, 3d, -6d, 6d, 6d, 6d, 3d, 0d, 1d, 1d, 0d, 2d, 3d, 3d };\n        SummaryStatistics oneSidedPStats = new SummaryStatistics();    \n        for (int i = 0; i < oneSidedP.length; i++) {\n            oneSidedPStats.addValue(oneSidedP[i]);\n        }\n        // Target comparison values computed using R version 1.8.1 (Linux version)\n        assertEquals(\"one sample t stat\", 3.86485535541, \n                testStatistic.t(0d, oneSidedP), 10E-10);\n        assertEquals(\"one sample t stat\", 3.86485535541, \n                testStatistic.t(0d, oneSidedPStats),1E-10);\n        assertEquals(\"one sample p value\", 0.000521637019637,\n                testStatistic.tTest(0d, oneSidedP) / 2d, 10E-10);\n        assertEquals(\"one sample p value\", 0.000521637019637,\n                testStatistic.tTest(0d, oneSidedPStats) / 2d, 10E-5);\n        assertTrue(\"one sample t-test reject\", testStatistic.tTest(0d, oneSidedP, 0.01));\n        assertTrue(\"one sample t-test reject\", testStatistic.tTest(0d, oneSidedPStats, 0.01));\n        assertTrue(\"one sample t-test accept\", !testStatistic.tTest(0d, oneSidedP, 0.0001));\n        assertTrue(\"one sample t-test accept\", !testStatistic.tTest(0d, oneSidedPStats, 0.0001));\n         \n        try {\n            testStatistic.tTest(0d, oneSidedP, 95);\n            fail(\"alpha out of range, IllegalArgumentException expected\");\n        } catch (IllegalArgumentException ex) {\n            // expected\n        }  \n        \n        try {\n            testStatistic.tTest(0d, oneSidedPStats, 95);\n            fail(\"alpha out of range, IllegalArgumentException expected\");\n        } catch (IllegalArgumentException ex) {\n            // expected\n        }  \n        \n    }\n    \n    public void testTwoSampleTHeterscedastic() throws Exception {\n        double[] sample1 = { 7d, -4d, 18d, 17d, -3d, -5d, 1d, 10d, 11d, -2d };\n        double[] sample2 = { -1d, 12d, -1d, -3d, 3d, -5d, 5d, 2d, -11d, -1d, -3d };\n        SummaryStatistics sampleStats1 = new SummaryStatistics();  \n        for (int i = 0; i < sample1.length; i++) {\n            sampleStats1.addValue(sample1[i]);\n        }\n        SummaryStatistics sampleStats2 = new SummaryStatistics();    \n        for (int i = 0; i < sample2.length; i++) {\n            sampleStats2.addValue(sample2[i]);\n        }\n         \n        // Target comparison values computed using R version 1.8.1 (Linux version)\n        assertEquals(\"two sample heteroscedastic t stat\", 1.60371728768, \n                testStatistic.t(sample1, sample2), 1E-10);\n        assertEquals(\"two sample heteroscedastic t stat\", 1.60371728768, \n                testStatistic.t(sampleStats1, sampleStats2), 1E-10);\n        assertEquals(\"two sample heteroscedastic p value\", 0.128839369622, \n                testStatistic.tTest(sample1, sample2), 1E-10);\n        assertEquals(\"two sample heteroscedastic p value\", 0.128839369622, \n                testStatistic.tTest(sampleStats1, sampleStats2), 1E-10);     \n        assertTrue(\"two sample heteroscedastic t-test reject\", \n                testStatistic.tTest(sample1, sample2, 0.2));\n        assertTrue(\"two sample heteroscedastic t-test reject\", \n                testStatistic.tTest(sampleStats1, sampleStats2, 0.2));\n        assertTrue(\"two sample heteroscedastic t-test accept\", \n                !testStatistic.tTest(sample1, sample2, 0.1));\n        assertTrue(\"two sample heteroscedastic t-test accept\", \n                !testStatistic.tTest(sampleStats1, sampleStats2, 0.1));\n     \n        try {\n            testStatistic.tTest(sample1, sample2, .95);\n            fail(\"alpha out of range, IllegalArgumentException expected\");\n        } catch (IllegalArgumentException ex) {\n            // expected\n",
+  "compaction": {
+    "source_lines": 298,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 10.624024215460453
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.879966817493653
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 1.9152390076507642
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 10.624024215460453
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.879966817493653
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 1.9152390076507642
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 1.804768532625812
+      },
+      {
+        "start": 240,
+        "end": 298,
+        "score": 1.2122456909619277
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8509,
+  "representation_chars": 8509,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

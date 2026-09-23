@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.struct.SingleValueAsArrayTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/struct/SingleValueAsArrayTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.struct.SingleValueAsArrayTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/struct/SingleValueAsArrayTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.struct;\n\nimport java.io.IOException;\nimport java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.List;\n\nimport com.fasterxml.jackson.annotation.JsonCreator;\nimport com.fasterxml.jackson.annotation.JsonProperty;\n\nimport com.fasterxml.jackson.core.type.TypeReference;\n\nimport com.fasterxml.jackson.databind.*;\n\npublic class SingleValueAsArrayTest extends BaseMapTest\n{\n    private static final String JSON = \"[{\\\"message\\\":\\\"messageHere\\\"}]\";\n\n    static class Bean1421A\n    {\n        List<Messages> bs = Collections.emptyList();\n\n        @JsonCreator\n        Bean1421A(final List<Messages> bs)\n        {\n            this.bs = bs;\n        }\n    }\n\n    static class Messages\n    {\n        List<MessageWrapper> cs = Collections.emptyList();\n\n        @JsonCreator\n        Messages(final List<MessageWrapper> cs)\n        {\n            this.cs = cs;\n        }\n    }\n\n    static class MessageWrapper\n    {\n        String message;\n\n        @JsonCreator\n        MessageWrapper(@JsonProperty(\"message\") String message)\n        {\n            this.message = message;\n        }\n    }\n\n    static class Bean1421B<T> {\n        T value;\n\n        @JsonCreator\n        public Bean1421B(T value) {\n            this.value = value;\n        }\n    }\n\n    /*\n    /**********************************************************\n    /* Unit tests\n    /**********************************************************\n     */\n    \n    private final ObjectMapper MAPPER = new ObjectMapper();\n    {\n        MAPPER.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);\n    }\n\n    public void testSuccessfulDeserializationOfObjectWithChainedArrayCreators() throws IOException\n    {\n        Bean1421A result = MAPPER.readValue(JSON, Bean1421A.class);\n        assertNotNull(result);\n    }\n\n    public void testWithSingleString() throws Exception {\n        Bean1421B<List<String>> a = MAPPER.readValue(quote(\"test2\"),\n                new TypeReference<Bean1421B<List<String>>>() {});\n        List<String> expected = new ArrayList<>();\n        expected.add(\"test2\");\n        assertEquals(expected, a.value);\n    }\n\n    public void testPrimitives() throws Exception {\n        int[] i = MAPPER.readValue(\"16\", int[].class);\n        assertEquals(1, i.length);\n        assertEquals(16, i[0]);\n\n        long[] l = MAPPER.readValue(\"1234\", long[].class);\n        assertEquals(1, l.length);\n        assertEquals(1234L, l[0]);\n\n        double[] d = MAPPER.readValue(\"12.5\", double[].class);\n        assertEquals(1, d.length);\n        assertEquals(12.5, d[0]);\n\n        boolean[] b = MAPPER.readValue(\"true\", boolean[].class);\n        assertEquals(1, d.length);\n        assertEquals(true, b[0]);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 103,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2891,
+  "representation_chars": 2891,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

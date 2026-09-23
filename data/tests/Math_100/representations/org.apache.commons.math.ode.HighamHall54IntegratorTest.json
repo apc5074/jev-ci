@@ -1,0 +1,86 @@
+{
+  "test_class": "org.apache.commons.math.ode.HighamHall54IntegratorTest",
+  "source_file": "src/test/org/apache/commons/math/ode/HighamHall54IntegratorTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math.ode.HighamHall54IntegratorTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/math/ode/HighamHall54IntegratorTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math.ode;\n\nimport org.apache.commons.math.ConvergenceException;\nimport org.apache.commons.math.FunctionEvaluationException;\nimport org.apache.commons.math.ode.DerivativeException;\nimport org.apache.commons.math.ode.FirstOrderIntegrator;\nimport org.apache.commons.math.ode.HighamHall54Integrator;\nimport org.apache.commons.math.ode.IntegratorException;\nimport org.apache.commons.math.ode.StepHandler;\nimport org.apache.commons.math.ode.StepInterpolator;\nimport org.apache.commons.math.ode.SwitchingFunction;\n\nimport junit.framework.*;\n\npublic class HighamHall54IntegratorTest\n  extends TestCase {\n\n  public HighamHall54IntegratorTest(String name) {\n    super(name);\n  }\n\n  public void testWrongDerivative() {\n    try {\n      HighamHall54Integrator integrator =\n          new HighamHall54Integrator(0.0, 1.0, 1.0e-10, 1.0e-10);\n      FirstOrderDifferentialEquations equations =\n          new FirstOrderDifferentialEquations() {\n          public void computeDerivatives(double t, double[] y, double[] dot)\n            throws DerivativeException {\n            if (t < -0.5) {\n                throw new DerivativeException(\"{0}\", new String[] { \"oops\" });\n            } else {\n                throw new DerivativeException(new RuntimeException(\"oops\"));\n           }\n          }\n          public int getDimension() {\n              return 1;\n          }\n      };\n\n      try  {\n        integrator.integrate(equations, -1.0, new double[1], 0.0, new double[1]);\n        fail(\"an exception should have been thrown\");\n      } catch(DerivativeException de) {\n        // expected behavior\n      }\n\n      try  {\n        integrator.integrate(equations, 0.0, new double[1], 1.0, new double[1]);\n        fail(\"an exception should have been thrown\");\n      } catch(DerivativeException de) {\n        // expected behavior\n      }\n\n    } catch (Exception e) {\n      fail(\"wrong exception caught: \" + e.getMessage());        \n    }\n  }\n\n  public void testMinStep()\n    throws DerivativeException, IntegratorException {\n\n    try {\n      TestProblem1 pb = new TestProblem1();\n      double minStep = 0.1 * (pb.getFinalTime() - pb.getInitialTime());\n      double maxStep = pb.getFinalTime() - pb.getInitialTime();\n      double[] vecAbsoluteTolerance = { 1.0e-15, 1.0e-16 };\n      double[] vecRelativeTolerance = { 1.0e-15, 1.0e-16 };\n\n      FirstOrderIntegrator integ = new HighamHall54Integrator(minStep, maxStep,\n                                                              vecAbsoluteTolerance,\n                                                              vecRelativeTolerance);\n      TestProblemHandler handler = new TestProblemHandler(pb, integ);\n      integ.setStepHandler(handler);\n      integ.integrate(pb,\n                      pb.getInitialTime(), pb.getInitialState(),\n                      pb.getFinalTime(), new double[pb.getDimension()]);\n      fail(\"an exception should have been thrown\");\n    } catch(DerivativeException de) {\n      fail(\"wrong exception caught\");\n    } catch(IntegratorException ie) {\n    }\n\n  }\n\n  public void testIncreasingTolerance()\n    throws DerivativeException, IntegratorException {\n\n    int previousCalls = Integer.MAX_VALUE;\n    for (int i = -12; i < -2; ++i) {\n      TestProblem1 pb = new TestProblem1();\n      double minStep = 0;\n      double maxStep = pb.getFinalTime() - pb.getInitialTime();\n      double scalAbsoluteTolerance = Math.pow(10.0, i);\n      double scalRelativeTolerance = 0.01 * scalAbsoluteTolerance;\n\n      FirstOrderIntegrator integ = new HighamHall54Integrator(minStep, maxStep,\n                                                              scalAbsoluteTolerance,\n                                                              scalRelativeTolerance);\n      TestProblemHandler handler = new TestProblemHandler(pb, integ);\n      integ.setStepHandler(handler);\n      integ.integrate(pb,\n                      pb.getInitialTime(), pb.getInitialState(),\n                      pb.getFinalTime(), new double[pb.getDimension()]);\n\n      // the 1.3 factor is only valid for this test\n      // and has been obtained from trial and error\n      // there is no general relation between local and global errors\n      assertTrue(handler.getMaximalValueError() < (1.3 * scalAbsoluteTolerance));\n      assertEquals(0, handler.getMaximalTimeError(), 1.0e-12);\n\n      int calls = pb.getCalls();\n      assertTrue(calls <= previousCalls);\n      previousCalls = calls;\n\n    }\n\n  }\n\n  public void testSwitchingFunctions()\n    throws DerivativeException, IntegratorException {\n\n    TestProblem4 pb = new TestProblem4();\n    double minStep = 0;\n    double maxStep = pb.getFinalTime() - pb.getInitialTime();\n    double scalAbsoluteTolerance = 1.0e-8;\n    double scalRelativeTolerance = 0.01 * scalAbsoluteTolerance;\n\n    FirstOrderIntegrator integ = new HighamHall54Integrator(minStep, maxStep,\n                                                            scalAbsoluteTolerance,\n                                                            scalRelativeTolerance);\n    TestProblemHandler handler = new TestProblemHandler(pb, integ);\n    integ.setStepHandler(handler);\n    SwitchingFunction[] functions = pb.getSwitchingFunctions();\n    for (int l = 0; l < functions.length; ++l) {\n      integ.addSwitchingFunction(functions[l],\n                                 Double.POSITIVE_INFINITY, 1.0e-8 * maxStep, 1000);\n    }\n    integ.integrate(pb,\n                    pb.getInitialTime(), pb.getInitialState(),\n                    pb.getFinalTime(), new double[pb.getDimension()]);\n\n    assertTrue(handler.getMaximalValueError() < 1.0e-7);\n    assertEquals(0, handler.getMaximalTimeError(), 1.0e-12);\n    assertEquals(12.0, handler.getLastTime(), 1.0e-8 * maxStep);\n\n  }\n\n  public void testSwitchingFunctionsError()\n    throws DerivativeException, IntegratorException {\n\n      final TestProblem1 pb = new TestProblem1();\n      double minStep = 0;\n      double maxStep = pb.getFinalTime() - pb.getInitialTime();\n      double scalAbsoluteTolerance = 1.0e-8;\n      double scalRelativeTolerance = 0.01 * scalAbsoluteTolerance;\n\n      FirstOrderIntegrator integ =\n          new HighamHall54Integrator(minStep, maxStep,\n                                     scalAbsoluteTolerance, scalRelativeTolerance);\n      TestProblemHandler handler = new TestProblemHandler(pb, integ);\n      integ.setStepHandler(handler);\n\n      integ.addSwitchingFunction(new SwitchingFunction() {\n        public int eventOccurred(double t, double[] y) {\n          return SwitchingFunction.CONTINUE;\n        }\n        public double g(double t, double[] y) throws FunctionEvaluationException {\n          double middle = (pb.getInitialTime() + pb.getFinalTime()) / 2;\n          double offset = t - middle;\n          if (offset > 0) {\n            throw new FunctionEvaluationException(t);\n          }\n          return offset;\n        }\n        public void resetState(double t, double[] y) {\n        }\n        private static final long serialVersionUID = 935652725339916361L;\n      }, Double.POSITIVE_INFINITY, 1.0e-8 * maxStep, 1000);\n\n      try {\n        integ.integrate(pb,\n                        pb.getInitialTime(), pb.getInitialState(),\n",
+  "compaction": {
+    "source_lines": 373,
+    "mode": "windows",
+    "windows_total": 6,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 19.16715672606291
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 10.200229236027699
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 10.358740764578682
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 19.16715672606291
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 10.200229236027699
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 10.358740764578682
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 5.129747068778304
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 1.8723915694067381
+      },
+      {
+        "start": 300,
+        "end": 373,
+        "score": 3.8637984258792875
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8107,
+  "representation_chars": 8107,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

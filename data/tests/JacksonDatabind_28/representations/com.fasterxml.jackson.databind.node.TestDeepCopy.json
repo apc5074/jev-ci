@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.node.TestDeepCopy",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/node/TestDeepCopy.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.node.TestDeepCopy\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/node/TestDeepCopy.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.node;\n\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.ObjectMapper;\n\n/**\n * Simple tests to verify that [JACKSON-707] is implemented correctly.\n */\npublic class TestDeepCopy extends BaseMapTest\n{\n    private final ObjectMapper mapper = new ObjectMapper();\n    \n    public void testWithObjectSimple()\n    {\n        ObjectNode root = mapper.createObjectNode();\n        root.put(\"a\", 3);\n        assertEquals(1, root.size());\n        \n        ObjectNode copy = root.deepCopy();\n        assertEquals(1, copy.size());\n\n        // adding to root won't change copy:\n        root.put(\"b\", 7);\n        assertEquals(2, root.size());\n        assertEquals(1, copy.size());\n\n        // nor vice versa\n        copy.put(\"c\", 3);\n        assertEquals(2, root.size());\n        assertEquals(2, copy.size());\n    }\n\n    public void testWithArraySimple()\n    {\n        ArrayNode root = mapper.createArrayNode();\n        root.add(\"a\");\n        assertEquals(1, root.size());\n        \n        ArrayNode copy = root.deepCopy();\n        assertEquals(1, copy.size());\n\n        // adding to root won't change copy:\n        root.add( 7);\n        assertEquals(2, root.size());\n        assertEquals(1, copy.size());\n\n        // nor vice versa\n        copy.add(3);\n        assertEquals(2, root.size());\n        assertEquals(2, copy.size());\n    }\n\n    public void testWithNested()\n    {\n        ObjectNode root = mapper.createObjectNode();\n        ObjectNode leafObject = root.putObject(\"ob\");\n        ArrayNode leafArray = root.putArray(\"arr\");\n        assertEquals(2, root.size());\n\n        leafObject.put(\"a\", 3);\n        assertEquals(1, leafObject.size());\n        leafArray.add(true);\n        assertEquals(1, leafArray.size());\n        \n        ObjectNode copy = root.deepCopy();\n        assertNotSame(copy, root);\n        assertEquals(2, copy.size());\n\n        // should be detached, once again\n\n        leafObject.put(\"x\", 9);\n        assertEquals(2, leafObject.size());\n        assertEquals(1, copy.get(\"ob\").size());\n\n        leafArray.add(\"foobar\");\n        assertEquals(2, leafArray.size());\n        assertEquals(1, copy.get(\"arr\").size());\n\n        // nor vice versa\n        ((ObjectNode) copy.get(\"ob\")).put(\"c\", 3);\n        assertEquals(2, leafObject.size());\n        assertEquals(2, copy.get(\"ob\").size());\n\n        ((ArrayNode) copy.get(\"arr\")).add(13);\n        assertEquals(2, leafArray.size());\n        assertEquals(2, copy.get(\"arr\").size());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 88,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2677,
+  "representation_chars": 2677,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

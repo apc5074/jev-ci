@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.creators.TestPolymorphicDelegating",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/creators/TestPolymorphicDelegating.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.creators.TestPolymorphicDelegating\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/creators/TestPolymorphicDelegating.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser.creators;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.databind.*;\n\npublic class TestPolymorphicDelegating extends BaseMapTest\n{\n\n    // For [databind#580]\n    \n    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)\n    static abstract class Issue580Base {\n    }\n\n    static class Issue580Impl extends Issue580Base {\n        public int id = 3;\n\n        public Issue580Impl() { }\n        public Issue580Impl(int id) { this.id = id; }\n    }\n\n    static class Issue580Bean {\n        public Issue580Base value;\n\n        @JsonCreator\n        public Issue580Bean(Issue580Base v) {\n            value = v;\n        }\n\n        @JsonValue\n        public Issue580Base value() {\n            return value;\n        }\n    }\n\n    /*\n    /**********************************************************\n    /* Unit tests\n    /**********************************************************\n     */\n\n    public void testAbstractDelegateWithCreator() throws Exception\n    {\n        Issue580Bean input = new Issue580Bean(new Issue580Impl(13));\n        ObjectMapper mapper = new ObjectMapper();\n        String json = mapper.writeValueAsString(input);\n\n        Issue580Bean result = mapper.readValue(json, Issue580Bean.class);\n        assertNotNull(result);\n        assertNotNull(result.value);\n        assertEquals(13, ((Issue580Impl) result.value).id);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 53,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1598,
+  "representation_chars": 1598,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

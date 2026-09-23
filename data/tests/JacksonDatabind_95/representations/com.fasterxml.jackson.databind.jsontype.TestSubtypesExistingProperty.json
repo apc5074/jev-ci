@@ -1,0 +1,91 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.jsontype.TestSubtypesExistingProperty",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/jsontype/TestSubtypesExistingProperty.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.jsontype.TestSubtypesExistingProperty\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/jsontype/TestSubtypesExistingProperty.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.jsontype;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.annotation.JsonSubTypes.Type;\nimport com.fasterxml.jackson.annotation.JsonTypeInfo.As;\nimport com.fasterxml.jackson.annotation.JsonTypeInfo.Id;\n\nimport com.fasterxml.jackson.core.type.TypeReference;\n\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.ObjectMapper;\n\npublic class TestSubtypesExistingProperty extends BaseMapTest {\n\n    /**\n     * Polymorphic base class - existing property as simple property on subclasses\n     */\n\t@JsonTypeInfo(use = Id.NAME, include = As.EXISTING_PROPERTY, property = \"type\",\n\t        visible=true)\n\t@JsonSubTypes({\n\t\t@Type(value = Apple.class, name = \"apple\") ,\n\t\t@Type(value = Orange.class, name = \"orange\") \n\t\t})\n\tstatic abstract class Fruit {\n        public String name;\n        protected Fruit(String n)  { name = n; }\n    }\n\n    @JsonTypeName(\"apple\")\n    static class Apple extends Fruit\n    {\n        public int seedCount;\n        public String type;\n\n        private Apple() { super(null);; }\n        public Apple(String name, int b) {\n            super(name);\n            seedCount = b;\n            type = \"apple\";\n        }\n    }\n    \n    @JsonTypeName(\"orange\")\n    static class Orange extends Fruit\n    {\n        public String color;\n        public String type;\n        \n        private Orange() { super(null); }\n        public Orange(String name, String c) {\n            super(name);\n            color = c;\n            type = \"orange\";\n        }\n    }\n\n    static class FruitWrapper {\n        public Fruit fruit;\n        public FruitWrapper() {}\n        public FruitWrapper(Fruit f) { fruit = f; }\n    }\n    \n    /**\n     * Polymorphic base class - existing property forced by abstract method\n     */\n\t@JsonTypeInfo(use = Id.NAME, include = As.EXISTING_PROPERTY, property = \"type\")\n\t@JsonSubTypes({\n\t\t@Type(value = Dog.class, name = \"doggie\") ,\n\t\t@Type(value = Cat.class, name = \"kitty\") \n\t\t})\n\tstatic abstract class Animal {\n        public String name;\n        \n        protected Animal(String n)  { name = n; }\n        \n        public abstract String getType();\n    }\n\n    @JsonTypeName(\"doggie\")\n    static class Dog extends Animal\n    {\n        public int boneCount;\n        \n        private Dog() { super(null); }\n        public Dog(String name, int b) {\n            super(name);\n            boneCount = b;\n        }\n        \n \t\t@Override\n\t\tpublic String getType() {\n        \treturn \"doggie\";\n        }        \n    }\n    \n    @JsonTypeName(\"kitty\")\n    static class Cat extends Animal\n    {\n        public String furColor;\n        \n        private Cat() { super(null); }\n        public Cat(String name, String c) {\n            super(name);\n            furColor = c;\n        }\n        \n\t\t@Override\n\t\tpublic String getType() {\n        \treturn \"kitty\";\n        }        \n    }\n\n    static class AnimalWrapper {\n        public Animal animal;\n        public AnimalWrapper() {}\n        public AnimalWrapper(Animal a) { animal = a; }\n    }\n\n\n    /**\n     * Polymorphic base class - existing property NOT forced by abstract method on base class\n     */\n\t@JsonTypeInfo(use = Id.NAME, include = As.EXISTING_PROPERTY, property = \"type\")\n\t@JsonSubTypes({\n\t\t@Type(value = Accord.class, name = \"accord\") ,\n\t\t@Type(value = Camry.class, name = \"camry\") \n\t\t})\n\tstatic abstract class Car {\n        public String name;        \n        protected Car(String n)  { name = n; }\n    }\n\n    @JsonTypeName(\"accord\")\n    static class Accord extends Car\n    {\n        public int speakerCount;\n        \n        private Accord() { super(null); }\n        public Accord(String name, int b) {\n            super(name);\n            speakerCount = b;\n        }\n        \n\t\tpublic String getType() {\n        \treturn \"accord\";\n        }        \n    }\n    \n    @JsonTypeName(\"camry\")\n    static class Camry extends Car\n    {\n        public String exteriorColor;\n        \n        private Camry() { super(null); }\n        public Camry(String name, String c) {\n            super(name);\n            exteriorColor = c;\n        }\n        \n\t\tpublic String getType() {\n        \treturn \"camry\";\n        }        \n    }\n\n    static class CarWrapper {\n        public Car car;\n        public CarWrapper() {}\n        public CarWrapper(Car c) { car = c; }\n    }\n    \n    private final ObjectMapper MAPPER = new ObjectMapper();\n\n    /*\n    /**********************************************************\n    /* Mock data\n    /**********************************************************\n     */\n\n\tprivate static final Orange mandarin = new Orange(\"Mandarin Orange\", \"orange\");\n\tprivate static final String mandarinJson = \"{\\\"name\\\":\\\"Mandarin Orange\\\",\\\"color\\\":\\\"orange\\\",\\\"type\\\":\\\"orange\\\"}\";\t\n\tprivate static final Apple pinguo = new Apple(\"Apple-A-Day\", 16);\n\tprivate static final String pinguoJson = \"{\\\"name\\\":\\\"Apple-A-Day\\\",\\\"seedCount\\\":16,\\\"type\\\":\\\"apple\\\"}\";\n\tprivate static final FruitWrapper pinguoWrapper = new FruitWrapper(pinguo);\n\tprivate static final String pinguoWrapperJson = \"{\\\"fruit\\\":\" + pinguoJson + \"}\";\n\tprivate static final List<Fruit> fruitList = Arrays.asList(pinguo, mandarin);\n\tprivate static final String fruitListJson = \"[\" + pinguoJson + \",\" + mandarinJson + \"]\";\n\n\tprivate static final Cat beelzebub = new Cat(\"Beelzebub\", \"tabby\");\n\tprivate static final String beelzebubJson = \"{\\\"name\\\":\\\"Beelzebub\\\",\\\"furColor\\\":\\\"tabby\\\",\\\"type\\\":\\\"kitty\\\"}\";\t\n\tprivate static final Dog rover = new Dog(\"Rover\", 42);\n\tprivate static final String roverJson = \"{\\\"name\\\":\\\"Rover\\\",\\\"boneCount\\\":42,\\\"type\\\":\\\"doggie\\\"}\";\n\tprivate static final AnimalWrapper beelzebubWrapper = new AnimalWrapper(beelzebub);\n\tprivate static final String beelzebubWrapperJson = \"{\\\"animal\\\":\" + beelzebubJson + \"}\";\n\tprivate static final List<Animal> animalList = Arrays.asList(beelzebub, rover);\n\tprivate static final String animalListJson = \"[\" + beelzebubJson + \",\" + roverJson + \"]\";\n\n\tprivate static final Camry camry = new Camry(\"Sweet Ride\", \"candy-apple-red\");\n\tprivate static final String camryJson = \"{\\\"name\\\":\\\"Sweet Ride\\\",\\\"exteriorColor\\\":\\\"candy-apple-red\\\",\\\"type\\\":\\\"camry\\\"}\";\t\n",
+  "compaction": {
+    "source_lines": 403,
+    "mode": "windows",
+    "windows_total": 7,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 24.42765773652968
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.848563992762951
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 9.00017302971369
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 24.42765773652968
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.848563992762951
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 9.00017302971369
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 6.203837647278392
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 7.512127387742133
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 7.242864569647276
+      },
+      {
+        "start": 360,
+        "end": 403,
+        "score": 5.474141920766929
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 6372,
+  "representation_chars": 6372,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.math.stat.descriptive.moment.StandardDeviationTest",
+  "source_file": "src/test/org/apache/commons/math/stat/descriptive/moment/StandardDeviationTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math.stat.descriptive.moment.StandardDeviationTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/math/stat/descriptive/moment/StandardDeviationTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math.stat.descriptive.moment;\n\nimport junit.framework.Test;\nimport junit.framework.TestSuite;\n\nimport org.apache.commons.math.stat.descriptive.StorelessUnivariateStatisticAbstractTest;\nimport org.apache.commons.math.stat.descriptive.UnivariateStatistic;\n\n/**\n * Test cases for the {@link UnivariateStatistic} class.\n * \n * @version $Revision$ $Date$\n */\npublic class StandardDeviationTest extends StorelessUnivariateStatisticAbstractTest{\n\n    protected StandardDeviation stat;\n    \n    /**\n     * @param name\n     */\n    public StandardDeviationTest(String name) {\n        super(name);\n    }\n\n    /* (non-Javadoc)\n     * @see org.apache.commons.math.stat.descriptive.UnivariateStatisticAbstractTest#getUnivariateStatistic()\n     */\n    public UnivariateStatistic getUnivariateStatistic() {\n        return new StandardDeviation();\n    }\n\n    public static Test suite() {\n        TestSuite suite = new TestSuite(StandardDeviationTest.class);\n        suite.setName(\"StandardDeviation Tests\");\n        return suite;\n    }\n    \n    /* (non-Javadoc)\n     * @see org.apache.commons.math.stat.descriptive.UnivariateStatisticAbstractTest#expectedValue()\n     */\n    public double expectedValue() {\n        return this.std;\n    }\n    \n    /**\n     * Make sure Double.NaN is returned iff n = 0\n     *\n     */\n    public void testNaN() {\n        StandardDeviation std = new StandardDeviation();\n        assertTrue(Double.isNaN(std.getResult()));\n        std.increment(1d);\n        assertEquals(0d, std.getResult(), 0);\n    }\n    \n    /**\n     * Test population version of variance\n     */ \n    public void testPopulation() {\n        double[] values = {-1.0d, 3.1d, 4.0d, -2.1d, 22d, 11.7d, 3d, 14d};\n        double sigma = populationStandardDeviation(values);\n        SecondMoment m = new SecondMoment();\n        m.evaluate(values);  // side effect is to add values\n        StandardDeviation s1 = new StandardDeviation();\n        s1.setBiasCorrected(false);\n        assertEquals(sigma, s1.evaluate(values), 1E-14);\n        s1.incrementAll(values);\n        assertEquals(sigma, s1.getResult(), 1E-14);\n        s1 = new StandardDeviation(false, m);\n        assertEquals(sigma, s1.getResult(), 1E-14);     \n        s1 = new StandardDeviation(false);\n        assertEquals(sigma, s1.evaluate(values), 1E-14);\n        s1.incrementAll(values);\n        assertEquals(sigma, s1.getResult(), 1E-14);     \n    }\n    \n    /**\n     * Definitional formula for population standard deviation\n     */\n    protected double populationStandardDeviation(double[] v) {\n        double mean = new Mean().evaluate(v);\n        double sum = 0;\n        for (int i = 0; i < v.length; i++) {\n            sum += (v[i] - mean) * (v[i] - mean); \n        }\n        return Math.sqrt(sum / (double) v.length);\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 105,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3796,
+  "representation_chars": 3796,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

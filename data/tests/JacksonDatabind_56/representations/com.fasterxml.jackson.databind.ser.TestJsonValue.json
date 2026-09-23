@@ -1,0 +1,81 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.ser.TestJsonValue",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/ser/TestJsonValue.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.ser.TestJsonValue\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/ser/TestJsonValue.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.ser;\n\nimport java.io.IOException;\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.core.JsonGenerator;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonSerialize;\nimport com.fasterxml.jackson.databind.module.SimpleModule;\nimport com.fasterxml.jackson.databind.ser.std.StdScalarSerializer;\nimport com.fasterxml.jackson.databind.ser.std.ToStringSerializer;\n\n/**\n * This unit test suite tests functioning of {@link JsonValue}\n * annotation with bean serialization.\n */\n@SuppressWarnings(\"serial\")\npublic class TestJsonValue\n    extends BaseMapTest\n{\n    static class ValueClass<T>\n    {\n        final T _value;\n\n        public ValueClass(T v) { _value = v; }\n\n        @JsonValue T value() { return _value; }\n\n        // shouldn't need this, but may be useful for troubleshooting:\n        @Override\n        public String toString() { return \"???\"; }\n    }\n\n    /**\n     * Another test class to check that it is also possible to\n     * force specific serializer to use with @JsonValue annotated\n     * method. Difference is between Integer serialization, and\n     * conversion to a Json String.\n     */\n    final static class ToStringValueClass<T>\n        extends ValueClass<T>\n    {\n        public ToStringValueClass(T value) { super(value); }\n\n        // Also, need to use this annotation to help\n        @JsonSerialize(using=ToStringSerializer.class)\n        @Override\n        @JsonValue T value() { return super.value(); }\n    }\n\n    final static class ToStringValueClass2\n        extends ValueClass<String>\n    {\n        public ToStringValueClass2(String value) { super(value); }\n\n        /* Simple as well, but let's ensure that other getters won't matter...\n         */\n\n        @JsonProperty int getFoobar() { return 4; }\n\n        public String[] getSomethingElse() { return new String[] { \"1\", \"a\" }; }\n    }\n\n    static class ValueBase {\n        public String a = \"a\";\n    }\n\n    static class ValueType extends ValueBase {\n        public String b = \"b\";\n    }\n    \n    // Finally, let's also test static vs dynamic type\n    static class ValueWrapper {\n        @JsonValue\n        public ValueBase getX() { return new ValueType(); }\n    }\n\n    static class MapBean\n    {\n    }\n\n    // [Issue#167]\n    \n    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = \"boingo\")\n    @JsonSubTypes(value = {@JsonSubTypes.Type(name = \"boopsy\", value = AdditionInterfaceImpl.class) })\n    static interface AdditionInterface\n    {\n        public int add(int in);\n    }\n\t\n    public static class AdditionInterfaceImpl implements AdditionInterface\n    {\n\t    private final int toAdd;\n\t\n\t    @JsonCreator\n\t    public AdditionInterfaceImpl(@JsonProperty(\"toAdd\") int toAdd) {\n\t      this.toAdd = toAdd;\n\t    }\n\t\n\t    @JsonProperty\n\t    public int getToAdd() {\n\t      return toAdd;\n\t    }\n\t\n\t    @Override\n\t    public int add(int in) {\n\t      return in + toAdd;\n\t    }\n    }\n\t\n    public static class NegatingAdditionInterface implements AdditionInterface\n    {\n\t    final AdditionInterface delegate;\n\t\n\t    public NegatingAdditionInterface(AdditionInterface delegate) {\n\t        this.delegate = delegate;\n\t    }\n\t\n\t    @Override\n\t    public int add(int in) {\n\t        return delegate.add(-in);\n\t    }\n\t\n\t    @JsonValue\n\t    public AdditionInterface getDelegate() {\n\t        return delegate;\n\t    }\n    }\n\n    static class Bean838 {\n        @JsonValue\n        public String value() {\n            return \"value\";\n        }\n    }\n\n    static class Bean838Serializer extends StdScalarSerializer<Bean838>\n    {\n        public Bean838Serializer() {\n            super(Bean838.class);\n        }\n\n        @Override\n        public void serialize(Bean838 value, JsonGenerator gen,\n                SerializerProvider provider) throws IOException {\n            gen.writeNumber(42);\n        }\n    }\n    \n    /*\n    /*********************************************************\n    /* Test cases\n    /*********************************************************\n     */\n\n    private final ObjectMapper MAPPER = new ObjectMapper();\n    \n    public void testSimpleJsonValue() throws Exception\n    {\n        String result = MAPPER.writeValueAsString(new ValueClass<String>(\"abc\"));\n        assertEquals(\"\\\"abc\\\"\", result);\n    }\n\n    public void testJsonValueWithUseSerializer() throws Exception\n    {\n        String result = serializeAsString(MAPPER, new ToStringValueClass<Integer>(Integer.valueOf(123)));\n        assertEquals(\"\\\"123\\\"\", result);\n    }\n\n    /**\n     * Test for verifying that additional getters won't confuse serializer.\n     */\n    public void testMixedJsonValue() throws Exception\n    {\n        String result = serializeAsString(MAPPER, new ToStringValueClass2(\"xyz\"));\n        assertEquals(\"\\\"xyz\\\"\", result);\n    }\n\n    public void testValueWithStaticType() throws Exception\n    {\n        // Ok; first, with dynamic type:\n        assertEquals(\"{\\\"a\\\":\\\"a\\\",\\\"b\\\":\\\"b\\\"}\", MAPPER.writeValueAsString(new ValueWrapper()));\n\n        // then static\n        ObjectMapper staticMapper = new ObjectMapper();\n        staticMapper.configure(MapperFeature.USE_STATIC_TYPING, true);\n        assertEquals(\"{\\\"a\\\":\\\"a\\\"}\", staticMapper.writeValueAsString(new ValueWrapper()));\n    }\n\n    public void testMapWithJsonValue() throws Exception {\n        assertEquals(\"{\\\"a\\\":\\\"1\\\"}\", MAPPER.writeValueAsString(new MapBean()));\n    }\n\n    public void testWithMap() throws Exception {\n        assertEquals(\"42\", MAPPER.writeValueAsString(new MapAsNumber()));\n\n    }\n\n    public void testWithList() throws Exception {\n        assertEquals(\"13\", MAPPER.writeValueAsString(new ListAsNumber()));\n    }\n\n    public void testInList() throws Exception {\n        IntExtBean bean = new IntExtBean();\n        bean.add(1);\n        bean.add(2);\n        String json = MAPPER.writeValueAsString(bean);\n        assertEquals(json, \"{\\\"values\\\":[{\\\"i\\\":1},{\\\"i\\\":2}]}\");\n    }\n\n    // [Issue#167]\n    public void testPolymorphicSerdeWithDelegate() throws Exception\n    {\n\t    AdditionInterface adder = new AdditionInterfaceImpl(1);\n\t\n\t    assertEquals(2, adder.add(1));\n\t    String json = MAPPER.writeValueAsString(adder);\n\t    assertEquals(\"{\\\"boingo\\\":\\\"boopsy\\\",\\\"toAdd\\\":1}\", json);\n\t    assertEquals(2, MAPPER.readValue(json, AdditionInterface.class).add(1));\n",
+  "compaction": {
+    "source_lines": 284,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 17.8271602625678
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 2.5974638946879263
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 3.955045832591112
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 17.8271602625678
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.4099712601875307
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 2.5974638946879263
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 3.955045832591112
+      },
+      {
+        "start": 240,
+        "end": 284,
+        "score": 1.2965460619580023
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 6497,
+  "representation_chars": 6497,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

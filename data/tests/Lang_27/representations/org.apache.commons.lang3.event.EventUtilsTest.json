@@ -1,0 +1,76 @@
+{
+  "test_class": "org.apache.commons.lang3.event.EventUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/event/EventUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.event.EventUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/event/EventUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3.event;\n\nimport junit.framework.TestCase;\n\nimport java.awt.event.ActionEvent;\nimport java.awt.event.ActionListener;\nimport java.beans.PropertyChangeEvent;\nimport java.beans.PropertyChangeListener;\nimport java.beans.VetoableChangeListener;\nimport java.lang.reflect.InvocationHandler;\nimport java.lang.reflect.Method;\nimport java.lang.reflect.Proxy;\nimport java.util.Map;\nimport java.util.TreeMap;\n\n/**\n * @since 3.0\n * @version $Id$\n */\npublic class EventUtilsTest extends TestCase\n{\n    public void testAddEventListener()\n    {\n        final PropertyChangeSource src = new PropertyChangeSource();\n        EventCountingInvociationHandler handler = new EventCountingInvociationHandler();\n        PropertyChangeListener listener = handler.createListener(PropertyChangeListener.class);\n        assertEquals(0, handler.getEventCount(\"propertyChange\"));\n        EventUtils.addEventListener(src, PropertyChangeListener.class, listener);\n        assertEquals(0, handler.getEventCount(\"propertyChange\"));\n        src.setProperty(\"newValue\");\n        assertEquals(1, handler.getEventCount(\"propertyChange\"));\n    }\n\n    public void testAddEventListenerWithNoAddMethod()\n    {\n        final PropertyChangeSource src = new PropertyChangeSource();\n        EventCountingInvociationHandler handler = new EventCountingInvociationHandler();\n        ActionListener listener = handler.createListener(ActionListener.class);\n        try\n        {\n            EventUtils.addEventListener(src, ActionListener.class, listener);\n            fail(\"Should not be allowed to add a listener to an object that doesn't support it.\");\n        }\n        catch (IllegalArgumentException e)\n        {\n            assertEquals(\"Class \" + src.getClass().getName() + \" does not have a public add\" + ActionListener.class.getSimpleName() + \" method which takes a parameter of type \" + ActionListener.class.getName() + \".\", e.getMessage());\n        }\n    }\n\n    public void testAddEventListenerThrowsException()\n    {\n        final ExceptionEventSource src = new ExceptionEventSource();\n        try\n        {\n            EventUtils.addEventListener(src, ActionListener.class, new ActionListener()\n            {\n                public void actionPerformed(ActionEvent e)\n                {\n                    // Do nothing!\n                }\n            });\n            fail(\"Add method should have thrown an exception, so method should fail.\");\n        }\n        catch (RuntimeException e)\n        {\n\n        }\n    }\n\n    public void testAddEventListenerWithPrivateAddMethod()\n    {\n        final PropertyChangeSource src = new PropertyChangeSource();\n        EventCountingInvociationHandler handler = new EventCountingInvociationHandler();\n        VetoableChangeListener listener = handler.createListener(VetoableChangeListener.class);\n        try\n        {\n            EventUtils.addEventListener(src, VetoableChangeListener.class, listener);\n            fail(\"Should not be allowed to add a listener to an object that doesn't support it.\");\n        }\n        catch (IllegalArgumentException e)\n        {\n            assertEquals(\"Class \" + src.getClass().getName() + \" does not have a public add\" + VetoableChangeListener.class.getSimpleName() + \" method which takes a parameter of type \" + VetoableChangeListener.class.getName() + \".\", e.getMessage());\n        }\n    }\n\n    public void testBindEventsToMethod()\n    {\n        final PropertyChangeSource src = new PropertyChangeSource();\n        final EventCounter counter = new EventCounter();\n        EventUtils.bindEventsToMethod(counter, \"eventOccurred\", src, PropertyChangeListener.class);\n        assertEquals(0, counter.getCount());\n        src.setProperty(\"newValue\");\n        assertEquals(1, counter.getCount());\n    }\n\n\n    public void testBindEventsToMethodWithEvent()\n    {\n        final PropertyChangeSource src = new PropertyChangeSource();\n        final EventCounterWithEvent counter = new EventCounterWithEvent();\n        EventUtils.bindEventsToMethod(counter, \"eventOccurred\", src, PropertyChangeListener.class);\n        assertEquals(0, counter.getCount());\n        src.setProperty(\"newValue\");\n        assertEquals(1, counter.getCount());\n    }\n\n\n    public void testBindFilteredEventsToMethod()\n    {\n        final MultipleEventSource src = new MultipleEventSource();\n        final EventCounter counter = new EventCounter();\n        EventUtils.bindEventsToMethod(counter, \"eventOccurred\", src, MultipleEventListener.class, \"event1\");\n        assertEquals(0, counter.getCount());\n        src.listeners.fire().event1(new ActionEvent(src, ActionEvent.ACTION_PERFORMED, \"event1\"));\n        assertEquals(1, counter.getCount());\n        src.listeners.fire().event2(new ActionEvent(src, ActionEvent.ACTION_PERFORMED, \"event2\"));\n        assertEquals(1, counter.getCount());\n    }\n\n    public static interface MultipleEventListener\n    {\n        public void event1(ActionEvent e);\n\n        public void event2(ActionEvent e);\n                    new Class[]{listenerType},\n                    this));\n        }\n\n        public int getEventCount(String eventName)\n        {\n            Integer count = eventCounts.get(eventName);\n            return count == null ? 0 : count;\n        }\n\n        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable\n        {\n            Integer count = eventCounts.get(method.getName());\n            if (count == null)\n            {\n                eventCounts.put(method.getName(), 1);\n            }\n            else\n            {\n                eventCounts.put(method.getName(), count + 1);\n            }\n            return null;\n        }\n    }\n\n    public static class MultipleEventSource\n    {\n        private EventListenerSupport<MultipleEventListener> listeners = EventListenerSupport.create(MultipleEventListener.class);\n\n        public void addMultipleEventListener(MultipleEventListener listener)\n        {\n            listeners.addListener(listener);\n        }\n    }\n\n    public static class ExceptionEventSource\n    {\n        public void addActionListener(ActionListener listener)\n        {\n            throw new RuntimeException();\n        }\n    }\n\n    public static class PropertyChangeSource\n    {\n        private EventListenerSupport<PropertyChangeListener> listeners = EventListenerSupport.create(PropertyChangeListener.class);\n\n        private String property;\n\n        public void setProperty(String property)\n        {\n            String oldValue = this.property;\n            this.property = property;\n            listeners.fire().propertyChange(new PropertyChangeEvent(this, \"property\", oldValue, property));\n        }\n\n        protected void addVetoableChangeListener(VetoableChangeListener listener)\n        {\n            // Do nothing!\n        }\n\n        public void addPropertyChangeListener(PropertyChangeListener listener)\n        {\n            listeners.addListener(listener);\n        }\n\n        public void removePropertyChangeListener(PropertyChangeListener listener)\n        {\n            listeners.removeListener(listener);\n        }\n    }\n}\n",
+  "compaction": {
+    "source_lines": 252,
+    "mode": "windows",
+    "windows_total": 4,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        180,
+        252
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 13.307381922484659
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 3.7083994570264256
+      },
+      {
+        "start": 180,
+        "end": 252,
+        "score": 4.066609676711928
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 13.307381922484659
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 3.7083994570264256
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 3.034413252720777
+      },
+      {
+        "start": 180,
+        "end": 252,
+        "score": 4.066609676711928
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8043,
+  "representation_chars": 8043,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

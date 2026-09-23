@@ -1,0 +1,111 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.util.TestTokenBuffer",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/util/TestTokenBuffer.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.util.TestTokenBuffer\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/util/TestTokenBuffer.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.util;\n\nimport java.io.*;\nimport java.math.BigDecimal;\nimport java.math.BigInteger;\nimport java.util.UUID;\n\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.core.JsonParser.NumberType;\nimport com.fasterxml.jackson.core.io.SerializedString;\nimport com.fasterxml.jackson.core.util.JsonParserSequence;\n\nimport com.fasterxml.jackson.databind.*;\n\npublic class TestTokenBuffer extends BaseMapTest\n{\n    private final ObjectMapper MAPPER = objectMapper();\n\n    static class Base1730 { }\n\n    static class Sub1730 extends Base1730 { }\n\n    /*\n    /**********************************************************\n    /* Basic TokenBuffer tests\n    /**********************************************************\n     */\n\n    public void testBasicConfig() throws IOException\n    {\n        TokenBuffer buf;\n\n        buf = new TokenBuffer(MAPPER, false);\n        assertEquals(MAPPER.version(), buf.version());\n        assertSame(MAPPER, buf.getCodec());\n        assertNotNull(buf.getOutputContext());\n        assertFalse(buf.isClosed());\n\n        buf.setCodec(null);\n        assertNull(buf.getCodec());\n\n        assertFalse(buf.isEnabled(JsonGenerator.Feature.ESCAPE_NON_ASCII));\n        buf.enable(JsonGenerator.Feature.ESCAPE_NON_ASCII);\n        assertTrue(buf.isEnabled(JsonGenerator.Feature.ESCAPE_NON_ASCII));\n        buf.disable(JsonGenerator.Feature.ESCAPE_NON_ASCII);\n        assertFalse(buf.isEnabled(JsonGenerator.Feature.ESCAPE_NON_ASCII));\n\n        buf.close();\n        assertTrue(buf.isClosed());\n    }\n\n    /**\n     * Test writing of individual simple values\n     */\n    public void testSimpleWrites() throws IOException\n    {\n        TokenBuffer buf = new TokenBuffer(null, false); // no ObjectCodec\n        \n        // First, with empty buffer\n        JsonParser p = buf.asParser();\n        assertNull(p.getCurrentToken());\n        assertNull(p.nextToken());\n        p.close();\n\n        // Then with simple text\n        buf.writeString(\"abc\");\n\n        p = buf.asParser();\n        assertNull(p.getCurrentToken());\n        assertToken(JsonToken.VALUE_STRING, p.nextToken());\n        assertEquals(\"abc\", p.getText());\n        assertNull(p.nextToken());\n        p.close();\n\n        // Then, let's append at root level\n        buf.writeNumber(13);\n        p = buf.asParser();\n        assertNull(p.getCurrentToken());\n        assertToken(JsonToken.VALUE_STRING, p.nextToken());\n        assertToken(JsonToken.VALUE_NUMBER_INT, p.nextToken());\n            boolean expNan = Float.isNaN(v) || Float.isInfinite(v);\n            assertEquals(expNan, p.isNaN());\n            assertEquals(0, Float.compare(v, actual));\n        }\n        p.close();\n        buf.close();\n    }\n\n    // [databind#1729]\n    public void testNumberOverflowInt() throws IOException\n    {\n        try (TokenBuffer buf = new TokenBuffer(null, false)) {\n            long big = 1L + Integer.MAX_VALUE;\n            buf.writeNumber(big);\n            try (JsonParser p = buf.asParser()) {\n                assertToken(JsonToken.VALUE_NUMBER_INT, p.nextToken());\n                assertEquals(NumberType.LONG, p.getNumberType());\n                try {\n                    p.getIntValue();\n                    fail(\"Expected failure for `int` overflow\");\n                } catch (JsonParseException e) {\n                    verifyException(e, \"Numeric value (\"+big+\") out of range of int\");\n                }\n            }\n        }\n        // and ditto for coercion.\n        try (TokenBuffer buf = new TokenBuffer(null, false)) {\n            long big = 1L + Integer.MAX_VALUE;\n            buf.writeNumber(String.valueOf(big));\n            try (JsonParser p = buf.asParser()) {\n                // NOTE: oddity of buffering, no inspection of \"real\" type if given String...\n                assertToken(JsonToken.VALUE_NUMBER_FLOAT, p.nextToken());\n                try {\n                    p.getIntValue();\n                    fail(\"Expected failure for `int` overflow\");\n                } catch (JsonParseException e) {\n                    verifyException(e, \"Numeric value (\"+big+\") out of range of int\");\n                }\n            }\n        }\n    }\n\n    public void testNumberOverflowLong() throws IOException\n    {\n        try (TokenBuffer buf = new TokenBuffer(null, false)) {\n            BigInteger big = BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE);\n            buf.writeNumber(big);\n            try (JsonParser p = buf.asParser()) {\n                assertToken(JsonToken.VALUE_NUMBER_INT, p.nextToken());\n                assertEquals(NumberType.BIG_INTEGER, p.getNumberType());\n                try {\n                    p.getLongValue();\n                    fail(\"Expected failure for `long` overflow\");\n                } catch (JsonParseException e) {\n                    verifyException(e, \"Numeric value (\"+big+\") out of range of long\");\n                }\n            }\n        }\n    }\n\n    public void testParentContext() throws IOException\n    {\n        TokenBuffer buf = new TokenBuffer(null, false); // no ObjectCodec\n        buf.writeStartObject();\n        buf.writeFieldName(\"b\");\n        buf.writeStartObject();\n        buf.writeFieldName(\"c\");\n        //This assertion succeeds as expected\n        assertEquals(\"b\", buf.getOutputContext().getParent().getCurrentName());\n        buf.writeString(\"cval\");\n        buf.writeEndObject();\n        buf.writeEndObject();\n        buf.close();\n    }\n\n    public void testSimpleArray() throws IOException\n    {\n        TokenBuffer buf = new TokenBuffer(null, false); // no ObjectCodec\n\n        // First, empty array\n        assertNull(p.getCurrentName());\n        assertNull(p.nextToken());\n        p.close();\n        buf.close();\n    }\n\n    /**\n     * Verify handling of that \"standard\" test document (from JSON\n     * specification)\n     */\n    public void testWithJSONSampleDoc() throws Exception\n    {\n        // First, copy events from known good source (StringReader)\n        JsonParser p = createParserUsingReader(SAMPLE_DOC_JSON_SPEC);\n        TokenBuffer tb = new TokenBuffer(null, false);\n        while (p.nextToken() != null) {\n            tb.copyCurrentEvent(p);\n        }\n\n        // And then request verification; first structure only:\n        verifyJsonSpecSampleDoc(tb.asParser(), false);\n\n        // then content check too:\n        verifyJsonSpecSampleDoc(tb.asParser(), true);\n        tb.close();\n        p.close();\n\n    \n        // 19-Oct-2016, tatu: Just for fun, trigger `toString()` for code coverage\n        String desc = tb.toString();\n        assertNotNull(desc);\n    }\n\n    public void testAppend() throws IOException\n    {\n        TokenBuffer buf1 = new TokenBuffer(null, false);\n        buf1.writeStartObject();\n        buf1.writeFieldName(\"a\");\n        buf1.writeBoolean(true);\n        \n        TokenBuffer buf2 = new TokenBuffer(null, false);\n        buf2.writeFieldName(\"b\");\n        buf2.writeNumber(13);\n        buf2.writeEndObject();\n        \n        buf1.append(buf2);\n        \n        // and verify that we got it all...\n        JsonParser p = buf1.asParser();\n        assertToken(JsonToken.START_OBJECT, p.nextToken());\n        assertToken(JsonToken.FIELD_NAME, p.nextToken());\n        assertEquals(\"a\", p.getCurrentName());\n        assertToken(JsonToken.VALUE_TRUE, p.nextToken());\n        assertToken(JsonToken.FIELD_NAME, p.nextToken());\n        assertEquals(\"b\", p.getCurrentName());\n        assertToken(JsonToken.VALUE_NUMBER_INT, p.nextToken());\n        assertEquals(13, p.getIntValue());\n        assertToken(JsonToken.END_OBJECT, p.nextToken());\n        p.close();\n        buf1.close();\n        buf2.close();\n    }\n\n    // Since 2.3 had big changes to UUID handling, let's verify we can\n    // deal with\n    public void testWithUUID() throws IOException\n    {\n        for (String value : new String[] {\n                \"00000007-0000-0000-0000-000000000000\",\n                \"76e6d183-5f68-4afa-b94a-922c1fdb83f8\",\n                \"540a88d1-e2d8-4fb1-9396-9212280d0a7f\",\n                \"2c9e441d-1cd0-472d-9bab-69838f877574\",\n                \"591b2869-146e-41d7-8048-e8131f1fdec5\",\n                \"82994ac2-7b23-49f2-8cc5-e24cf6ed77be\",\n        }) {\n            TokenBuffer buf = new TokenBuffer(MAPPER, false); // no ObjectCodec\n            UUID uuid = UUID.fromString(value);\n            MAPPER.writeValue(buf, uuid);\n            buf.close();\n    \n",
+  "compaction": {
+    "source_lines": 668,
+    "mode": "windows",
+    "windows_total": 11,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        300,
+        380
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 22.310827556756763
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 9.31788721601691
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 11.98964892401651
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 22.310827556756763
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.535317104491239
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 9.31788721601691
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.648819495304805
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 5.024272794691688
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 11.98964892401651
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 8.50639226904001
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 6.53025605395359
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 4.588784375718238
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 1.9562987947861084
+      },
+      {
+        "start": 600,
+        "end": 668,
+        "score": 7.606408506089882
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8530,
+  "representation_chars": 8530,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.objectid.ObjectIdReordering1388Test",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/objectid/ObjectIdReordering1388Test.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.objectid.ObjectIdReordering1388Test\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/objectid/ObjectIdReordering1388Test.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.objectid;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.core.type.TypeReference;\nimport com.fasterxml.jackson.databind.*;\n\npublic class ObjectIdReordering1388Test extends BaseMapTest\n{\n    @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class)\n    public static class NamedThing {\n        private final UUID id;\n        private final String name;\n\n        @JsonCreator\n        public NamedThing(@JsonProperty(\"id\") UUID id, @JsonProperty(\"name\") String name) {\n            this.id = id;\n            this.name = name;\n        }\n\n        public UUID getId() {\n            return id;\n        }\n\n        public String getName() {\n            return name;\n        }\n\n        @Override\n        public boolean equals(Object o) {\n            if (this == o) return true;\n            if (o == null || getClass() != o.getClass()) return false;\n            NamedThing that = (NamedThing) o;\n            return that.id.equals(id) && that.name.equals(name);\n        }\n\n        @Override\n        public int hashCode() {\n            return name.hashCode();\n        }\n    }\n\n\n    public void testDeserializationFinalClassJSOG() throws Exception\n    {\n        final ObjectMapper mapper = new ObjectMapper();\n        final UUID id = UUID.fromString(\"a59aa02c-fe3c-43f8-9b5a-5fe01878a818\");\n        final NamedThing thing = new NamedThing(id, \"Hello\");\n\n        final TypeReference<?> namedThingListType = new TypeReference<List<NamedThing>>() { };\n\n        {\n            final String jsog = mapper.writeValueAsString(Arrays.asList(thing, thing, thing));\n            final List<NamedThing> list = mapper.readValue(jsog, namedThingListType);\n            _assertAllSame(list);\n            // this is the jsog representation of the list of 3 of the same item\n            assertTrue(jsog.equals(\"[{\\\"@id\\\":1,\\\"id\\\":\\\"a59aa02c-fe3c-43f8-9b5a-5fe01878a818\\\",\\\"name\\\":\\\"Hello\\\"},1,1]\"));\n        }\n\n        // now move it around it have forward references\n        // this works\n        {\n            final String json = \"[1,1,{\\\"@id\\\":1,\\\"id\\\":\\\"a59aa02c-fe3c-43f8-9b5a-5fe01878a818\\\",\\\"name\\\":\\\"Hello\\\"}]\";\n            final List<NamedThing> forward = mapper.readValue(json, namedThingListType);\n            _assertAllSame(forward);\n        }\n\n        // next, move @id to between properties\n        {\n            final String json = aposToQuotes(\"[{'id':'a59aa02c-fe3c-43f8-9b5a-5fe01878a818','@id':1,'name':'Hello'}, 1, 1]\");\n            final List<NamedThing> forward = mapper.readValue(json, namedThingListType);\n            _assertAllSame(forward);\n        }\n\n        // and last, move @id to be not the first key in the object\n        {\n            final String json = aposToQuotes(\"[{'id':'a59aa02c-fe3c-43f8-9b5a-5fe01878a818','name':'Hello','@id':1}, 1, 1]\");\n            final List<NamedThing> forward = mapper.readValue(json, namedThingListType);\n            _assertAllSame(forward);\n        }\n    }\n\n    private void _assertAllSame(List<?> entries) {\n        Object first = entries.get(0);\n        for (int i = 0, end = entries.size(); i < end; ++i) {\n            if (first != entries.get(i)) {\n                fail(\"Mismatch: entry #\"+i+\" not same as #0\");\n            }\n        }\n    }\n}\n",
+  "compaction": {
+    "source_lines": 92,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3478,
+  "representation_chars": 3478,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

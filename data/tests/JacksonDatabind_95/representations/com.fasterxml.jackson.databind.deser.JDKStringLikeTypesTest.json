@@ -1,0 +1,96 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.JDKStringLikeTypesTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/JDKStringLikeTypesTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.JDKStringLikeTypesTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/JDKStringLikeTypesTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser;\n\nimport java.io.*;\nimport java.net.*;\nimport java.nio.ByteBuffer;\nimport java.nio.charset.Charset;\nimport java.util.Currency;\nimport java.util.Locale;\nimport java.util.UUID;\nimport java.util.regex.Pattern;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;\nimport com.fasterxml.jackson.core.Base64Variants;\nimport com.fasterxml.jackson.core.JsonParser;\nimport com.fasterxml.jackson.core.JsonProcessingException;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\nimport com.fasterxml.jackson.databind.deser.std.StdDeserializer;\nimport com.fasterxml.jackson.databind.exc.InvalidFormatException;\nimport com.fasterxml.jackson.databind.module.SimpleModule;\nimport com.fasterxml.jackson.databind.util.TokenBuffer;\n\npublic class JDKStringLikeTypesTest extends BaseMapTest\n{\n    static class ParamClassBean\n    {\n         public String name = \"bar\";\n         public Class<String> clazz ;\n\n         public ParamClassBean() { }\n         public ParamClassBean(String name) {\n             this.name = name;\n             clazz = String.class;\n         }\n    }\n\n    // [databind#429]\n    static class StackTraceBean {\n        public final static int NUM = 13;\n\n        @JsonProperty(\"Location\")\n        @JsonDeserialize(using=MyStackTraceElementDeserializer.class)\n        protected StackTraceElement location;    \n    }\n\n    @SuppressWarnings(\"serial\")\n    static class MyStackTraceElementDeserializer extends StdDeserializer<StackTraceElement>\n    {\n        public MyStackTraceElementDeserializer() { super(StackTraceElement.class); }\n        \n        @Override\n        public StackTraceElement deserialize(JsonParser jp,\n                DeserializationContext ctxt) throws IOException, JsonProcessingException {\n            jp.skipChildren();\n            return new StackTraceElement(\"a\", \"b\", \"b\", StackTraceBean.NUM);\n        }\n        \n    }\n\n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n\n    private final ObjectMapper MAPPER = objectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);\n\n    // [databind#239]\n    public void testByteBuffer() throws Exception\n    {\n        byte[] INPUT = new byte[] { 1, 3, 9, -1, 6 };\n        String exp = MAPPER.writeValueAsString(INPUT);\n        ByteBuffer result = MAPPER.readValue(exp,  ByteBuffer.class); \n        assertNotNull(result);\n        assertEquals(INPUT.length, result.remaining());\n        for (int i = 0; i < INPUT.length; ++i) {\n            assertEquals(INPUT[i], result.get());\n        }\n        assertEquals(0, result.remaining());\n    }\n\n    public void testCharset() throws Exception\n    {\n        Charset UTF8 = Charset.forName(\"UTF-8\");\n        assertSame(UTF8, MAPPER.readValue(quote(\"UTF-8\"), Charset.class));\n    }\n    \n    public void testClass() throws IOException\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        assertSame(String.class, mapper.readValue(quote(\"java.lang.String\"), Class.class));\n\n        // then primitive types\n        assertSame(Boolean.TYPE, mapper.readValue(quote(\"boolean\"), Class.class));\n        assertSame(Byte.TYPE, mapper.readValue(quote(\"byte\"), Class.class));\n        assertSame(Short.TYPE, mapper.readValue(quote(\"short\"), Class.class));\n        assertSame(Character.TYPE, mapper.readValue(quote(\"char\"), Class.class));\n        assertSame(Integer.TYPE, mapper.readValue(quote(\"int\"), Class.class));\n        assertSame(Long.TYPE, mapper.readValue(quote(\"long\"), Class.class));\n        assertSame(Float.TYPE, mapper.readValue(quote(\"float\"), Class.class));\n        assertSame(Double.TYPE, mapper.readValue(quote(\"double\"), Class.class));\n        assertSame(Void.TYPE, mapper.readValue(quote(\"void\"), Class.class));\n    }\n\n    public void testClassWithParams() throws IOException\n    {\n        String json = MAPPER.writeValueAsString(new ParamClassBean(\"Foobar\"));\n\n        ParamClassBean result = MAPPER.readValue(json, ParamClassBean.class);\n        assertEquals(\"Foobar\", result.name);\n        assertSame(String.class, result.clazz);\n    }\n\n    public void testClassAsArray() throws Exception\n    {\n        final ObjectMapper mapper = new ObjectMapper();        \n        Class<?> result = mapper\n                    .readerFor(Class.class)\n                    .with(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS)\n                    .readValue(quote(String.class.getName()));\n        assertEquals(String.class, result);\n\n        try {\n            mapper\n                .readerFor(Class.class)\n                .without(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS)\n                .readValue(\"[\" + quote(String.class.getName()) + \"]\");\n            fail(\"Did not throw exception when UNWRAP_SINGLE_VALUE_ARRAYS feature was disabled and attempted to read a Class array containing one element\");\n        } catch (JsonMappingException e) {\n            verifyException(e, \"out of START_ARRAY token\");\n        }\n\n        try {\n           mapper\n               .readerFor(Class.class)\n               .with(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS)\n               .readValue(\"[\" + quote(Object.class.getName()) + \",\" + quote(Object.class.getName()) +\"]\"); \n           fail(\"Did not throw exception when UNWRAP_SINGLE_VALUE_ARRAYS feature was enabled and attempted to read a Class array containing two elements\");\n        } catch (JsonMappingException e) {\n        // also: see if base64 encoding works as expected\n        String base64 = Base64Variants.getDefaultVariant().encode(new byte[16]);\n        assertEquals(UUID.fromString(NULL_UUID),\n                mapper.readValue(quote(base64), UUID.class));\n    }\n\n    public void testUUIDInvalid() throws Exception\n    {\n        // and finally, exception handling too [databind#1000], for invalid cases\n        try {\n            MAPPER.readValue(quote(\"abcde\"), UUID.class);\n            fail(\"Should fail on invalid UUID string\");\n        } catch (InvalidFormatException e) {\n            verifyException(e, \"UUID has to be represented by standard\");\n        }\n        try {\n            MAPPER.readValue(quote(\"76e6d183-5f68-4afa-b94a-922c1fdb83fx\"), UUID.class);\n            fail(\"Should fail on invalid UUID string\");\n        } catch (InvalidFormatException e) {\n            verifyException(e, \"non-hex character 'x'\");\n        }\n        // should also test from-bytes version, but that's trickier... leave for now.\n    }\n\n    public void testUUIDAux() throws Exception\n    {\n        // [JACKSON-393] fix:\n        final UUID value = UUID.fromString(\"76e6d183-5f68-4afa-b94a-922c1fdb83f8\");\n\n        // first, null should come as null\n        TokenBuffer buf = new TokenBuffer(null, false);\n        buf.writeObject(null);\n        assertNull(MAPPER.readValue(buf.asParser(), UUID.class));\n        buf.close();\n\n        // then, UUID itself come as is:\n        buf = new TokenBuffer(null, false);\n        buf.writeObject(value);\n        assertSame(value, MAPPER.readValue(buf.asParser(), UUID.class));\n\n        // and finally from byte[]\n        // oh crap; JDK UUID just... sucks. Not even byte[] accessors or constructors? Huh?\n        ByteArrayOutputStream bytes = new ByteArrayOutputStream();\n        DataOutputStream out = new DataOutputStream(bytes);\n        out.writeLong(value.getMostSignificantBits());\n        out.writeLong(value.getLeastSignificantBits());\n        byte[] data = bytes.toByteArray();\n        assertEquals(16, data.length);\n        \n        buf.writeObject(data);\n\n        UUID value2 = MAPPER.readValue(buf.asParser(), UUID.class);\n        \n        assertEquals(value, value2);\n        buf.close();\n    }\n}\n",
+  "compaction": {
+    "source_lines": 477,
+    "mode": "windows",
+    "windows_total": 8,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        420,
+        477
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 27.66768956148498
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 13.187098369561209
+      },
+      {
+        "start": 420,
+        "end": 477,
+        "score": 18.50987351291381
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 27.66768956148498
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 13.187098369561209
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 11.00562484668158
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 10.82539366375635
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 12.539972035928864
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 10.77024355574464
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 12.693191379240888
+      },
+      {
+        "start": 420,
+        "end": 477,
+        "score": 18.50987351291381
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7980,
+  "representation_chars": 7980,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

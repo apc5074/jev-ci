@@ -1,0 +1,96 @@
+{
+  "test_class": "org.jsoup.nodes.DocumentTest",
+  "source_file": "src/test/java/org/jsoup/nodes/DocumentTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.jsoup.nodes.DocumentTest\n\nSOURCE FILE:\nsrc/test/java/org/jsoup/nodes/DocumentTest.java\n\nTEST SOURCE:\npackage org.jsoup.nodes;\n\nimport org.jsoup.Jsoup;\nimport org.jsoup.TextUtil;\nimport org.jsoup.integration.ParseTest;\nimport org.jsoup.nodes.Document.OutputSettings;\nimport org.jsoup.nodes.Document.OutputSettings.Syntax;\nimport org.jsoup.select.Elements;\nimport org.junit.Ignore;\nimport org.junit.Test;\n\nimport java.io.ByteArrayInputStream;\nimport java.io.File;\nimport java.io.IOException;\nimport java.io.InputStream;\nimport java.io.StringWriter;\nimport java.nio.charset.Charset;\nimport java.nio.charset.StandardCharsets;\n\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertFalse;\nimport static org.junit.Assert.assertNotNull;\nimport static org.junit.Assert.assertNull;\nimport static org.junit.Assert.assertTrue;\n\n/**\n Tests for Document.\n\n @author Jonathan Hedley, jonathan@hedley.net */\npublic class DocumentTest {\n    private static final String charsetUtf8 = \"UTF-8\";\n    private static final String charsetIso8859 = \"ISO-8859-1\";\n    \n    \n    @Test public void setTextPreservesDocumentStructure() {\n        Document doc = Jsoup.parse(\"<p>Hello</p>\");\n        doc.text(\"Replaced\");\n        assertEquals(\"Replaced\", doc.text());\n        assertEquals(\"Replaced\", doc.body().text());\n        assertEquals(1, doc.select(\"head\").size());\n    }\n    \n    @Test public void testTitles() {\n        Document noTitle = Jsoup.parse(\"<p>Hello</p>\");\n        Document withTitle = Jsoup.parse(\"<title>First</title><title>Ignore</title><p>Hello</p>\");\n        \n        assertEquals(\"\", noTitle.title());\n        noTitle.title(\"Hello\");\n        assertEquals(\"Hello\", noTitle.title());\n        assertEquals(\"Hello\", noTitle.select(\"title\").first().text());\n        \n        assertEquals(\"First\", withTitle.title());\n        withTitle.title(\"Hello\");\n        assertEquals(\"Hello\", withTitle.title());\n        assertEquals(\"Hello\", withTitle.select(\"title\").first().text());\n\n        Document normaliseTitle = Jsoup.parse(\"<title>   Hello\\nthere   \\n   now   \\n\");\n        assertEquals(\"Hello there now\", normaliseTitle.title());\n    }\n\n    @Test public void testOutputEncoding() {\n        Document doc = Jsoup.parse(\"<p title=π>π & < > </p>\");\n        // default is utf-8\n        assertEquals(\"<p title=\\\"π\\\">π &amp; &lt; &gt; </p>\", doc.body().html());\n        assertEquals(\"UTF-8\", doc.outputSettings().charset().name());\n\n        doc.outputSettings().charset(\"ascii\");\n        assertEquals(Entities.EscapeMode.base, doc.outputSettings().escapeMode());\n        assertEquals(\"<p title=\\\"&#x3c0;\\\">&#x3c0; &amp; &lt; &gt; </p>\", doc.body().html());\n\n        doc.outputSettings().escapeMode(Entities.EscapeMode.extended);\n        assertEquals(\"<p title=\\\"&pi;\\\">&pi; &amp; &lt; &gt; </p>\", doc.body().html());\n    }\n\n    @Test public void testXhtmlReferences() {\n        Document doc = Jsoup.parse(\"&lt; &gt; &amp; &quot; &apos; &times;\");\n        doc.outputSettings().escapeMode(Entities.EscapeMode.xhtml);\n        assertEquals(\"&lt; &gt; &amp; \\\" ' ×\", doc.body().html());\n    }\n\n    @Test public void testHtmlAndXmlSyntax() {\n        String h = \"<!DOCTYPE html><body><img async checked='checked' src='&<>\\\"'>&lt;&gt;&amp;&quot;<foo />bar\";\n        Document doc = Jsoup.parse(h);\n\n        doc.outputSettings().syntax(Syntax.html);\n        assertEquals(\"<!doctype html>\\n\" +\n                \"<html>\\n\" +\n                \" <head></head>\\n\" +\n                \" <body>\\n\" +\n                \"  <img async checked src=\\\"&amp;<>&quot;\\\">&lt;&gt;&amp;\\\"\\n\" +\n                \"  <foo />bar\\n\" +\n                \" </body>\\n\" +\n                \"</html>\", doc.html());\n\n        doc.outputSettings().syntax(Document.OutputSettings.Syntax.xml);\n        assertEquals(\"<!DOCTYPE html>\\n\" +\n                \"<html>\\n\" +\n                \" <head></head>\\n\" +\n                \" <body>\\n\" +\n                \"  <img async=\\\"\\\" checked=\\\"checked\\\" src=\\\"&amp;<>&quot;\\\" />&lt;&gt;&amp;\\\"\\n\" +\n                \"  <foo />bar\\n\" +\n                \" </body>\\n\" +\n                \"</html>\", doc.html());\n    }\n\n    @Test public void htmlParseDefaultsToHtmlOutputSyntax() {\n        Document doc = Jsoup.parse(\"x\");\n        assertEquals(Syntax.html, doc.outputSettings().syntax());\n    }\n    \n    @Test public void testHtmlAppendable() {\n    \tString htmlContent = \"<html><head><title>Hello</title></head><body><p>One</p><p>Two</p></body></html>\";\n    \tDocument document = Jsoup.parse(htmlContent);\n    \tOutputSettings outputSettings = new OutputSettings();\n    \t\n    \toutputSettings.prettyPrint(false);\n    \tdocument.outputSettings(outputSettings);\n    \tassertEquals(htmlContent, document.html(new StringWriter()).toString());\n    }\n\n    // Ignored since this test can take awhile to run.\n    @Ignore\n    @Test public void testOverflowClone() {\n        StringBuilder builder = new StringBuilder();\n        for (int i = 0; i < 100000; i++) {\n            builder.insert(0, \"<i>\");\n            builder.append(\"</i>\");\n        }\n\n        Document doc = Jsoup.parse(builder.toString());\n        doc.clone();\n    }\n\n    @Test public void DocumentsWithSameContentAreEqual() throws Exception {\n        Document docA = Jsoup.parse(\"<div/>One\");\n        Document docB = Jsoup.parse(\"<div/>One\");\n        Document docC = Jsoup.parse(\"<div/>Two\");\n\n        assertFalse(docA.equals(docB));\n        assertTrue(docA.equals(docA));\n        assertEquals(docA.hashCode(), docA.hashCode());\n        assertFalse(docA.hashCode() == docC.hashCode());\n    }\n\n    @Test public void DocumentsWithSameContentAreVerifialbe() throws Exception {\n        Document docA = Jsoup.parse(\"<div/>One\");\n        Document docB = Jsoup.parse(\"<div/>One\");\n        Document docC = Jsoup.parse(\"<div/>Two\");\n\n        assertTrue(docA.hasSameValue(docB));\n        assertFalse(docA.hasSameValue(docC));\n    }\n    \n    @Test\n    public void testMetaCharsetUpdateUtf8() {\n        final Document doc = createHtmlDocument(\"changeThis\");\n        doc.updateMetaCharsetElement(true);\n        doc.charset(Charset.forName(charsetUtf8));\n        \n        final String htmlCharsetUTF8 = \"<html>\\n\" +\n    }\n    \n    @Test\n    public void testMetaCharsetUpdateXmlDisabled() {\n        final Document doc = createXmlDocument(\"none\", \"none\", false);\n        \n        final String xmlNoCharset = \"<root>\\n\" +\n                                    \" node\\n\" +\n                                    \"</root>\";\n        assertEquals(xmlNoCharset, doc.toString());\n    }\n\n    @Test\n    public void testMetaCharsetUpdateXmlDisabledNoChanges() {\n        final Document doc = createXmlDocument(\"dontTouch\", \"dontTouch\", true);\n        \n        final String xmlCharset = \"<?xml version=\\\"dontTouch\\\" encoding=\\\"dontTouch\\\"?>\\n\" +\n                                    \"<root>\\n\" +\n                                    \" node\\n\" +\n                                    \"</root>\";\n        assertEquals(xmlCharset, doc.toString());\n        \n        XmlDeclaration selectedNode = (XmlDeclaration) doc.childNode(0);\n        assertEquals(\"dontTouch\", selectedNode.attr(\"encoding\"));\n        assertEquals(\"dontTouch\", selectedNode.attr(\"version\"));\n    }\n    \n    @Test\n    public void testMetaCharsetUpdatedDisabledPerDefault() {\n        final Document doc = createHtmlDocument(\"none\");\n        assertFalse(doc.updateMetaCharsetElement());\n    }\n    \n    private Document createHtmlDocument(String charset) {\n        final Document doc = Document.createShell(\"\");\n        doc.head().appendElement(\"meta\").attr(\"charset\", charset);\n        doc.head().appendElement(\"meta\").attr(\"name\", \"charset\").attr(\"content\", charset);\n        \n        return doc;\n    }\n    \n    private Document createXmlDocument(String version, String charset, boolean addDecl) {\n        final Document doc = new Document(\"\");\n        doc.appendElement(\"root\").text(\"node\");\n        doc.outputSettings().syntax(Syntax.xml);\n        \n        if(addDecl) {\n            XmlDeclaration decl = new XmlDeclaration(\"xml\", false);\n            decl.attr(\"version\", version);\n            decl.attr(\"encoding\", charset);\n            doc.prependChild(decl);\n        }\n        \n        return doc;\n    }\n\n    @Test\n    public void testShiftJisRoundtrip() throws Exception {\n        String input =\n                \"<html>\"\n                        +   \"<head>\"\n                        +     \"<meta http-equiv=\\\"content-type\\\" content=\\\"text/html; charset=Shift_JIS\\\" />\"\n                        +   \"</head>\"\n                        +   \"<body>\"\n                        +     \"before&nbsp;after\"\n                        +   \"</body>\"\n                        + \"</html>\";\n        InputStream is = new ByteArrayInputStream(input.getBytes(Charset.forName(\"ASCII\")));\n\n        Document doc = Jsoup.parse(is, null, \"http://example.com\");\n        doc.outputSettings().escapeMode(Entities.EscapeMode.xhtml);\n\n        String output = new String(doc.html().getBytes(doc.outputSettings().charset()), doc.outputSettings().charset());\n\n        assertFalse(\"Should not have contained a '?'.\", output.contains(\"?\"));\n        assertTrue(\"Should have contained a '&#xa0;' or a '&nbsp;'.\",\n                output.contains(\"&#xa0;\") || output.contains(\"&nbsp;\"));\n    }\n\n    @Test public void parseAndHtmlOnDifferentThreads() throws InterruptedException {\n",
+  "compaction": {
+    "source_lines": 463,
+    "mode": "windows",
+    "windows_total": 8,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        360,
+        440
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 12.206654352073457
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 11.677287064857266
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 10.214342842232512
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 12.206654352073457
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 3.3413899501662585
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 11.677287064857266
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 7.931980814706215
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 5.675634805314592
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 6.7563364182453975
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 10.214342842232512
+      },
+      {
+        "start": 420,
+        "end": 463,
+        "score": 2.460223934900177
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9314,
+  "representation_chars": 9314,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

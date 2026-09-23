@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.math3.stat.descriptive.moment.VectorialCovarianceTest",
+  "source_file": "src/test/java/org/apache/commons/math3/stat/descriptive/moment/VectorialCovarianceTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.stat.descriptive.moment.VectorialCovarianceTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/stat/descriptive/moment/VectorialCovarianceTest.java\n\nTEST SOURCE:\n//Licensed to the Apache Software Foundation (ASF) under one\n//or more contributor license agreements.  See the NOTICE file\n//distributed with this work for additional information\n//regarding copyright ownership.  The ASF licenses this file\n//to you under the Apache License, Version 2.0 (the\n//\"License\"); you may not use this file except in compliance\n//with the License.  You may obtain a copy of the License at\n\n//http://www.apache.org/licenses/LICENSE-2.0\n\n//Unless required by applicable law or agreed to in writing,\n//software distributed under the License is distributed on an\n//\"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY\n//KIND, either express or implied.  See the License for the\n//specific language governing permissions and limitations\n//under the License.\n\npackage org.apache.commons.math3.stat.descriptive.moment;\n\nimport org.apache.commons.math3.exception.DimensionMismatchException;\nimport org.apache.commons.math3.TestUtils;\nimport org.apache.commons.math3.linear.RealMatrix;\n\nimport org.junit.Test;\nimport org.junit.Assert;\n\npublic class VectorialCovarianceTest {\n    private double[][] points;\n\n    public VectorialCovarianceTest() {\n        points = new double[][] {\n            { 1.2, 2.3,  4.5},\n            {-0.7, 2.3,  5.0},\n            { 3.1, 0.0, -3.1},\n            { 6.0, 1.2,  4.2},\n            {-0.7, 2.3,  5.0}\n        };\n    }\n\n    @Test\n    public void testMismatch() {\n        try {\n            new VectorialCovariance(8, true).increment(new double[5]);\n            Assert.fail(\"an exception should have been thrown\");\n        } catch (DimensionMismatchException dme) {\n            Assert.assertEquals(5, dme.getArgument());\n            Assert.assertEquals(8, dme.getDimension());\n        }\n    }\n\n    @Test\n    public void testSimplistic() {\n        VectorialCovariance stat = new VectorialCovariance(2, true);\n        stat.increment(new double[] {-1.0,  1.0});\n        stat.increment(new double[] { 1.0, -1.0});\n        RealMatrix c = stat.getResult();\n        Assert.assertEquals( 2.0, c.getEntry(0, 0), 1.0e-12);\n        Assert.assertEquals(-2.0, c.getEntry(1, 0), 1.0e-12);\n        Assert.assertEquals( 2.0, c.getEntry(1, 1), 1.0e-12);\n    }\n\n    @Test\n    public void testBasicStats() {\n\n        VectorialCovariance stat = new VectorialCovariance(points[0].length, true);\n        for (int i = 0; i < points.length; ++i) {\n            stat.increment(points[i]);\n        }\n\n        Assert.assertEquals(points.length, stat.getN());\n\n        RealMatrix c = stat.getResult();\n        double[][] refC    = new double[][] {\n                { 8.0470, -1.9195, -3.4445},\n                {-1.9195,  1.0470,  3.2795},\n                {-3.4445,  3.2795, 12.2070}\n        };\n\n        for (int i = 0; i < c.getRowDimension(); ++i) {\n            for (int j = 0; j <= i; ++j) {\n                Assert.assertEquals(refC[i][j], c.getEntry(i, j), 1.0e-12);\n            }\n        }\n\n    }\n\n    @Test\n    public void testSerial(){\n        VectorialCovariance stat = new VectorialCovariance(points[0].length, true);\n        Assert.assertEquals(stat, TestUtils.serializeAndRecover(stat));\n    }\n}\n",
+  "compaction": {
+    "source_lines": 92,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3330,
+  "representation_chars": 3330,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

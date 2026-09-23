@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.mixins.MapperMixinsCopy1998Test",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/mixins/MapperMixinsCopy1998Test.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.mixins.MapperMixinsCopy1998Test\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/mixins/MapperMixinsCopy1998Test.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.mixins;\n\nimport java.io.IOException;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.databind.*;\n\npublic class MapperMixinsCopy1998Test extends BaseMapTest\n{\n    final static String FULLMODEL=\"{\\\"format\\\":\\\"1.0\\\",\\\"child\\\":{\\\"type\\\":\\\"CHILD_B\\\",\\\"name\\\":\\\"testB\\\"},\\\"notVisible\\\":\\\"should not be present\\\"}\";\n    final static String EXPECTED=\"{\\\"format\\\":\\\"1.0\\\",\\\"child\\\":{\\\"name\\\":\\\"testB\\\"}}\";\n\n    static class MyModelView { }\n\n    interface MixinConfig {\n        interface MyModelRoot {\n            @JsonView(MyModelView.class)\n            public String getFormat();\n\n            @JsonView(MyModelView.class)\n            public MyModelChildBase getChild();\n        }\n\n        @JsonTypeInfo(use = JsonTypeInfo.Id.NONE, include = JsonTypeInfo.As.EXISTING_PROPERTY)\n        interface MyModelChildBase {\n            @JsonView(MyModelView.class)\n            public String getName();\n        }\n\n    }\n\n    @JsonPropertyOrder({ \"format\", \"child\" })\n    static class MyModelRoot {\n        @JsonProperty\n        private String format = \"1.0\";\n\n        public String getFormat() {\n            return format;\n        }\n        @JsonProperty\n        private MyModelChildBase child;\n\n        public MyModelChildBase getChild() {\n            return child;\n        }\n\n        public void setChild(MyModelChildBase child) {\n            this.child = child;\n        }\n\n        @JsonProperty\n        private String notVisible = \"should not be present\";\n\n        public String getNotVisible() {\n            return notVisible;\n        }\n    }\n\n    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = \"type\")\n    @JsonSubTypes({\n            @JsonSubTypes.Type(value = MyChildA.class, name = \"CHILD_A\"),\n            @JsonSubTypes.Type(value = MyChildB.class, name = \"CHILD_B\")\n    })\n    abstract static class MyModelChildBase {\n        @JsonProperty\n        private String name;\n\n        public String getName() {\n            return name;\n        }\n\n        @JsonIgnore\n        public void setName(String name) {\n            this.name = name;\n        }\n    }\n\n    static class MyChildA extends MyModelChildBase {\n        public MyChildA(String name) {\n            setName(name);\n        }\n    }\n\n    static class MyChildB extends MyModelChildBase {\n        public MyChildB(String name) {\n            setName(name);\n        }\n    }\n\n    public void testB_KO() throws Exception\n    {\n        final ObjectMapper DEFAULT = defaultMapper();\n        MyModelRoot myModelInstance = new MyModelRoot();\n        myModelInstance.setChild(new MyChildB(\"testB\"));\n\n        ObjectMapper myObjectMapper = DEFAULT.copy();\n\n        String postResult = getString(myModelInstance, myObjectMapper);\n        assertEquals(FULLMODEL, postResult);\n//        System.out.println(\"postResult: \"+postResult);\n\n        myObjectMapper = DEFAULT.copy();\n//        myObjectMapper = defaultMapper();\n        myObjectMapper.addMixIn(MyModelRoot.class, MixinConfig.MyModelRoot.class)\n                .addMixIn(MyModelChildBase.class, MixinConfig.MyModelChildBase.class)\n                .disable(MapperFeature.DEFAULT_VIEW_INCLUSION)\n                .setConfig(myObjectMapper.getSerializationConfig().withView(MyModelView.class));\n\n        String result = getString(myModelInstance, myObjectMapper);\n        assertEquals(EXPECTED, result);\n\n    }\n\n    private String getString(MyModelRoot myModelInstance, ObjectMapper myObjectMapper) throws IOException {\n        return myObjectMapper.writerFor(MyModelRoot.class).writeValueAsString(myModelInstance);\n    }\n\n    private ObjectMapper defaultMapper()\n    {\n        return new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_EMPTY)\n                .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)\n                .configure(MapperFeature.ALLOW_COERCION_OF_SCALARS, false)\n                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true)\n            ;\n    }\n}\n",
+  "compaction": {
+    "source_lines": 127,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 4157,
+  "representation_chars": 4157,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "test_class": "org.apache.commons.cli.ValueTest",
+  "source_file": "src/test/java/org/apache/commons/cli/ValueTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.cli.ValueTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/cli/ValueTest.java\n\nTEST SOURCE:\n/**\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *     http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.cli;\n\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertNotNull;\nimport static org.junit.Assert.assertNull;\nimport static org.junit.Assert.assertTrue;\n\nimport org.junit.Before;\nimport org.junit.Test;\n\n@SuppressWarnings(\"deprecation\") // tests some deprecated classes\npublic class ValueTest\n{\n    private CommandLine _cl = null;\n    private final Options opts = new Options();\n\n    @Before\n    public void setUp() throws Exception\n    {\n        opts.addOption(\"a\", false, \"toggle -a\");\n        opts.addOption(\"b\", true, \"set -b\");\n        opts.addOption(\"c\", \"c\", false, \"toggle -c\");\n        opts.addOption(\"d\", \"d\", true, \"set -d\");\n\n        opts.addOption(OptionBuilder.hasOptionalArg().create('e'));\n        opts.addOption(OptionBuilder.hasOptionalArg().withLongOpt(\"fish\").create());\n        opts.addOption(OptionBuilder.hasOptionalArgs().withLongOpt(\"gravy\").create());\n        opts.addOption(OptionBuilder.hasOptionalArgs(2).withLongOpt(\"hide\").create());\n        opts.addOption(OptionBuilder.hasOptionalArgs(2).create('i'));\n        opts.addOption(OptionBuilder.hasOptionalArgs().create('j'));\n\n        final String[] args = new String[] { \"-a\",\n            \"-b\", \"foo\",\n            \"--c\",\n            \"--d\", \"bar\" \n        };\n\n        final Parser parser = new PosixParser();\n        _cl = parser.parse(opts,args);\n    }\n\n    @Test\n    public void testShortNoArg()\n    {\n        assertTrue( _cl.hasOption(\"a\") );\n        assertNull( _cl.getOptionValue(\"a\") );\n    }\n    \n    @Test\n    public void testShortNoArgWithOption()\n    {\n        assertTrue( _cl.hasOption(opts.getOption(\"a\")) );\n        assertNull( _cl.getOptionValue(opts.getOption(\"a\")) );\n    }\n\n    @Test\n    public void testShortWithArg()\n    {\n        assertTrue( _cl.hasOption(\"b\") );\n        assertNotNull( _cl.getOptionValue(\"b\") );\n        assertEquals( _cl.getOptionValue(\"b\"), \"foo\");\n    }\n    \n    @Test\n    public void testShortWithArgWithOption()\n    {\n        assertTrue( _cl.hasOption(opts.getOption(\"b\")) );\n        assertNotNull( _cl.getOptionValue(opts.getOption(\"b\")) );\n        assertEquals( _cl.getOptionValue(opts.getOption(\"b\")), \"foo\");\n    }\n\n    @Test\n    public void testLongNoArg()\n    {\n        assertTrue( _cl.hasOption(\"c\") );\n        assertNull( _cl.getOptionValue(\"c\") );\n    }\n    \n    @Test\n    public void testLongNoArgWithOption()\n    {\n        assertTrue( _cl.hasOption(opts.getOption(\"c\")) );\n        assertNull( _cl.getOptionValue(opts.getOption(\"c\")) );\n    }\n\n    @Test\n    public void testLongWithArg()\n    {\n        assertTrue( _cl.hasOption(\"d\") );\n        assertNotNull( _cl.getOptionValue(\"d\") );\n        assertEquals( _cl.getOptionValue(\"d\"), \"bar\");\n    }\n    \n    @Test\n    public void testLongWithArgWithOption()\n    {\n        assertTrue( _cl.hasOption(opts.getOption(\"d\")) );\n        assertNotNull( _cl.getOptionValue(opts.getOption(\"d\")) );\n        assertEquals( _cl.getOptionValue(opts.getOption(\"d\")), \"bar\");\n    }\n\n    @Test\n    public void testShortOptionalArgNoValue() throws Exception\n    {\n        final String[] args = new String[] { \"-e\" };\n\n        final Parser parser = new PosixParser();\n        final CommandLine cmd = parser.parse(opts,args);\n        assertTrue( cmd.hasOption(\"e\") );\n        assertNull( cmd.getOptionValue(\"e\") );\n    }\n    \n    @Test\n    public void testShortOptionalArgNoValueWithOption() throws Exception\n    {\n        final String[] args = new String[] { \"-e\" };\n\n        final Parser parser = new PosixParser();\n        final CommandLine cmd = parser.parse(opts,args);\n        assertTrue( cmd.hasOption(opts.getOption(\"e\")) );\n        assertNull( cmd.getOptionValue(opts.getOption(\"e\")) );\n    }\n\n    @Test\n    public void testShortOptionalArgValue() throws Exception\n    {\n        final String[] args = new String[] { \"-e\", \"everything\" };\n\n        final Parser parser = new PosixParser();\n        final CommandLine cmd = parser.parse(opts,args);\n        assertTrue( cmd.hasOption(\"e\") );\n        assertEquals( \"everything\", cmd.getOptionValue(\"e\") );\n    }\n    \n    @Test\n    public void testShortOptionalArgValueWithOption() throws Exception\n    {\n        final String[] args = new String[] { \"-e\", \"everything\" };\n\n        final Parser parser = new PosixParser();\n        final CommandLine cmd = parser.parse(opts,args);\n        assertTrue( cmd.hasOption(opts.getOption(\"e\")) );\n        assertEquals( \"everything\", cmd.getOptionValue(opts.getOption(\"e\")) );\n    }\n\n    @Test\n    public void testLongOptionalNoValue() throws Exception\n    {\n        final String[] args = new String[] { \"--fish\" };\n\n        final Parser parser = new PosixParser();\n        final CommandLine cmd = parser.parse(opts,args);\n        assertTrue( cmd.hasOption(\"fish\") );\n        assertNull( cmd.getOptionValue(\"fish\") );\n    }\n    \n    @Test\n    public void testLongOptionalNoValueWithOption() throws Exception\n    {\n        final String[] args = new String[] { \"--fish\" };\n\n        final Parser parser = new PosixParser();\n        final CommandLine cmd = parser.parse(opts,args);\n        assertTrue( cmd.hasOption(opts.getOption(\"fish\")) );\n        assertNull( cmd.getOptionValue(opts.getOption(\"fish\")) );\n    }\n\n    @Test\n    public void testLongOptionalArgValue() throws Exception\n    {\n        final String[] args = new String[] { \"--fish\", \"face\" };\n\n        final Parser parser = new PosixParser();\n        final CommandLine cmd = parser.parse(opts,args);\n        assertTrue( cmd.hasOption(\"fish\") );\n        assertEquals( \"face\", cmd.getOptionValue(\"fish\") );\n    }\n    \n    @Test\n    public void testLongOptionalArgValueWithOption() throws Exception\n    {\n        final String[] args = new String[] { \"--fish\", \"face\" };\n\n",
+  "compaction": {
+    "source_lines": 330,
+    "mode": "windows",
+    "windows_total": 6,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 36.31847760701376
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 3.0110015185652155
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 1.2870980143440727
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 36.31847760701376
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 3.0110015185652155
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 1.2870980143440727
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 1.2236006827859711
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 1.1767610511173463
+      },
+      {
+        "start": 300,
+        "end": 330,
+        "score": 0.9977623803438259
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 6662,
+  "representation_chars": 6662,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

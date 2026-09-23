@@ -1,0 +1,86 @@
+{
+  "test_class": "org.apache.commons.lang3.reflect.MethodUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/reflect/MethodUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.reflect.MethodUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/reflect/MethodUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3.reflect;\n\nimport java.lang.reflect.Method;\nimport java.util.Arrays;\nimport java.util.HashMap;\nimport java.util.Map;\n\nimport junit.framework.TestCase;\n\nimport org.apache.commons.lang3.ArrayUtils;\nimport org.apache.commons.lang3.math.NumberUtils;\nimport org.apache.commons.lang3.mutable.Mutable;\nimport org.apache.commons.lang3.mutable.MutableObject;\n\n/**\n * Unit tests MethodUtils\n * @author mbenson\n * @version $Id$\n */\npublic class MethodUtilsTest extends TestCase {\n    public static class TestBean {\n\n        public static String bar() {\n            return \"bar()\";\n        }\n\n        public static String bar(int i) {\n            return \"bar(int)\";\n        }\n\n        public static String bar(Integer i) {\n            return \"bar(Integer)\";\n        }\n\n        public static String bar(double d) {\n            return \"bar(double)\";\n        }\n\n        public static String bar(String s) {\n            return \"bar(String)\";\n        }\n\n        public static String bar(Object o) {\n            return \"bar(Object)\";\n        }\n\n        public String foo() {\n            return \"foo()\";\n        }\n\n        public String foo(int i) {\n            return \"foo(int)\";\n        }\n\n        public String foo(Integer i) {\n            return \"foo(Integer)\";\n        }\n\n        public String foo(double d) {\n            return \"foo(double)\";\n        }\n\n        public String foo(String s) {\n            return \"foo(String)\";\n        assertEquals(\"foo(String)\", MethodUtils.invokeMethod(testBean, \"foo\",\n                \"\"));\n        assertEquals(\"foo(Object)\", MethodUtils.invokeMethod(testBean, \"foo\",\n                new Object()));\n        assertEquals(\"foo(Object)\", MethodUtils.invokeMethod(testBean, \"foo\",\n                Boolean.TRUE));\n        assertEquals(\"foo(Integer)\", MethodUtils.invokeMethod(testBean, \"foo\",\n                NumberUtils.INTEGER_ONE));\n        assertEquals(\"foo(int)\", MethodUtils.invokeMethod(testBean, \"foo\",\n                NumberUtils.BYTE_ONE));\n        assertEquals(\"foo(double)\", MethodUtils.invokeMethod(testBean, \"foo\",\n                NumberUtils.LONG_ONE));\n        assertEquals(\"foo(double)\", MethodUtils.invokeMethod(testBean, \"foo\",\n                NumberUtils.DOUBLE_ONE));\n    }\n\n    public void testInvokeExactMethod() throws Exception {\n        assertEquals(\"foo()\", MethodUtils.invokeMethod(testBean, \"foo\",\n                ArrayUtils.EMPTY_CLASS_ARRAY));\n        assertEquals(\"foo()\", MethodUtils.invokeMethod(testBean, \"foo\",\n                (Class[]) null));\n        assertEquals(\"foo(String)\", MethodUtils.invokeExactMethod(testBean,\n                \"foo\", \"\"));\n        assertEquals(\"foo(Object)\", MethodUtils.invokeExactMethod(testBean,\n                \"foo\", new Object()));\n        assertEquals(\"foo(Integer)\", MethodUtils.invokeExactMethod(testBean,\n                \"foo\", NumberUtils.INTEGER_ONE));\n        assertEquals(\"foo(double)\", MethodUtils.invokeExactMethod(testBean,\n                \"foo\", new Object[] { NumberUtils.DOUBLE_ONE },\n                new Class[] { Double.TYPE }));\n\n        try {\n            MethodUtils\n                    .invokeExactMethod(testBean, \"foo\", NumberUtils.BYTE_ONE);\n            fail(\"should throw NoSuchMethodException\");\n        } catch (NoSuchMethodException e) {\n        }\n        try {\n            MethodUtils\n                    .invokeExactMethod(testBean, \"foo\", NumberUtils.LONG_ONE);\n            fail(\"should throw NoSuchMethodException\");\n        } catch (NoSuchMethodException e) {\n        }\n        try {\n            MethodUtils.invokeExactMethod(testBean, \"foo\", Boolean.TRUE);\n            fail(\"should throw NoSuchMethodException\");\n        } catch (NoSuchMethodException e) {\n        }\n    }\n\n    public void testInvokeStaticMethod() throws Exception {\n        assertEquals(\"bar()\", MethodUtils.invokeStaticMethod(TestBean.class,\n                \"bar\", ArrayUtils.EMPTY_CLASS_ARRAY));\n        assertEquals(\"bar()\", MethodUtils.invokeStaticMethod(TestBean.class,\n                \"bar\", (Class[]) null));\n        assertEquals(\"bar(String)\", MethodUtils.invokeStaticMethod(\n                TestBean.class, \"bar\", \"\"));\n        assertEquals(\"bar(Object)\", MethodUtils.invokeStaticMethod(\n                TestBean.class, \"bar\", new Object()));\n        assertEquals(\"bar(Object)\", MethodUtils.invokeStaticMethod(\n                TestBean.class, \"bar\", Boolean.TRUE));\n        assertEquals(\"bar(Integer)\", MethodUtils.invokeStaticMethod(\n                TestBean.class, \"bar\", NumberUtils.INTEGER_ONE));\n        assertEquals(\"bar(int)\", MethodUtils.invokeStaticMethod(TestBean.class,\n                \"bar\", NumberUtils.BYTE_ONE));\n        assertEquals(\"bar(double)\", MethodUtils.invokeStaticMethod(\n                TestBean.class, \"bar\", NumberUtils.LONG_ONE));\n        assertEquals(\"bar(double)\", MethodUtils.invokeStaticMethod(\n                TestBean.class, \"bar\", NumberUtils.DOUBLE_ONE));\n    }\n\n    public void testInvokeExactStaticMethod() throws Exception {\n        assertEquals(\"bar()\", MethodUtils.invokeStaticMethod(TestBean.class,\n                \"bar\", ArrayUtils.EMPTY_CLASS_ARRAY));\n        assertEquals(\"bar()\", MethodUtils.invokeStaticMethod(TestBean.class,\n                \"bar\", (Class[]) null));\n        assertEquals(\"bar(String)\", MethodUtils.invokeExactStaticMethod(\n                TestBean.class, \"bar\", \"\"));\n        assertEquals(\"bar(Object)\", MethodUtils.invokeExactStaticMethod(\n                TestBean.class, \"bar\", new Object()));\n        assertEquals(\"bar(Integer)\", MethodUtils.invokeExactStaticMethod(\n                TestBean.class, \"bar\", NumberUtils.INTEGER_ONE));\n        assertEquals(\"bar(double)\", MethodUtils.invokeExactStaticMethod(\n                TestBean.class, \"bar\", new Object[] { NumberUtils.DOUBLE_ONE },\n                new Class[] { Double.TYPE }));\n\n        try {\n            MethodUtils.invokeExactStaticMethod(TestBean.class, \"bar\",\n                    NumberUtils.BYTE_ONE);\n            fail(\"should throw NoSuchMethodException\");\n        } catch (NoSuchMethodException e) {\n        }\n        try {\n            MethodUtils.invokeExactStaticMethod(TestBean.class, \"bar\",\n                    NumberUtils.LONG_ONE);\n            fail(\"should throw NoSuchMethodException\");\n        } catch (NoSuchMethodException e) {\n        }\n        try {\n            MethodUtils.invokeExactStaticMethod(TestBean.class, \"bar\",\n                    Boolean.TRUE);\n            fail(\"should throw NoSuchMethodException\");\n        } catch (NoSuchMethodException e) {\n        }\n    }\n\n    public void testGetAccessibleInterfaceMethod() throws Exception {\n\n        Class<?>[][] p = { ArrayUtils.EMPTY_CLASS_ARRAY, null };\n        for (int i = 0; i < p.length; i++) {\n            Method method = TestMutable.class.getMethod(\"getValue\", p[i]);\n            Method accessibleMethod = MethodUtils.getAccessibleMethod(method);\n            assertNotSame(accessibleMethod, method);\n            assertSame(Mutable.class, accessibleMethod.getDeclaringClass());\n        }\n    }\n\n    public void testGetAccessibleInterfaceMethodFromDescription()\n            throws Exception {\n        Class<?>[][] p = { ArrayUtils.EMPTY_CLASS_ARRAY, null };\n        for (int i = 0; i < p.length; i++) {\n            Method accessibleMethod = MethodUtils.getAccessibleMethod(\n                    TestMutable.class, \"getValue\", p[i]);\n            assertSame(Mutable.class, accessibleMethod.getDeclaringClass());\n        }\n    }\n\n    public void testGetAccessiblePublicMethod() throws Exception {\n        assertSame(MutableObject.class, MethodUtils.getAccessibleMethod(\n                MutableObject.class.getMethod(\"getValue\",\n                        ArrayUtils.EMPTY_CLASS_ARRAY)).getDeclaringClass());\n    }\n\n    public void testGetAccessiblePublicMethodFromDescription() throws Exception {\n        assertSame(MutableObject.class, MethodUtils.getAccessibleMethod(\n                MutableObject.class, \"getValue\", ArrayUtils.EMPTY_CLASS_ARRAY)\n                .getDeclaringClass());\n    }\n\n    public void testGetMatchingAccessibleMethod() throws Exception {\n",
+  "compaction": {
+    "source_lines": 323,
+    "mode": "windows",
+    "windows_total": 6,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 20.56082939708641
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 4.049833466519252
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 5.609293775650513
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 20.56082939708641
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.5662400680155635
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 4.049833466519252
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 5.609293775650513
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 2.8681919692912334
+      },
+      {
+        "start": 300,
+        "end": 323,
+        "score": 2.4092795409621806
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9046,
+  "representation_chars": 9046,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

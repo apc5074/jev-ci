@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.creators.DelegatingExternalProperty1003Test",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/creators/DelegatingExternalProperty1003Test.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.creators.DelegatingExternalProperty1003Test\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/creators/DelegatingExternalProperty1003Test.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.creators;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.databind.*;\n\npublic class DelegatingExternalProperty1003Test extends BaseMapTest\n{\n    static class HeroBattle {\n\n        private final Hero hero;\n\n        private HeroBattle(Hero hero) {\n            if (hero == null) throw new Error();\n            this.hero = hero;\n        }\n\n        @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.EXTERNAL_PROPERTY, property = \"heroType\")\n        public Hero getHero() {\n            return hero;\n        }\n\n        @JsonCreator\n        static HeroBattle fromJson(Delegate json) {\n            return new HeroBattle(json.hero);\n        }\n    }\n\n    static class Delegate {\n        @JsonProperty\n        @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.EXTERNAL_PROPERTY, property = \"heroType\")\n        public Hero hero;\n    }\n\n    public interface Hero { }\n\n    static class Superman implements Hero {\n        String name = \"superman\";\n\n        public String getName() {\n            return name;\n        }\n    }    \n\n    public void testExtrnalPropertyDelegatingCreator() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n\n        final String json = mapper.writeValueAsString(new HeroBattle(new Superman()));\n\n        final HeroBattle battle = mapper.readValue(json, HeroBattle.class);\n\n        assertTrue(battle.getHero() instanceof Superman);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 55,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1685,
+  "representation_chars": 1685,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

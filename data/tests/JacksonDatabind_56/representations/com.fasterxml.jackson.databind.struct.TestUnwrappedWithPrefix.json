@@ -1,0 +1,76 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.struct.TestUnwrappedWithPrefix",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/struct/TestUnwrappedWithPrefix.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.struct.TestUnwrappedWithPrefix\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/struct/TestUnwrappedWithPrefix.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.struct;\n\nimport com.fasterxml.jackson.annotation.JsonUnwrapped;\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.ObjectMapper;\n\npublic class TestUnwrappedWithPrefix extends BaseMapTest\n{\n    static class Unwrapping {\n        public String name;\n        @JsonUnwrapped\n        public Location location;\n\n        public Unwrapping() { }\n        public Unwrapping(String str, int x, int y) {\n            name = str;\n            location = new Location(x, y);\n        }\n    }\n\n    static class DeepUnwrapping\n    {\n        @JsonUnwrapped\n        public Unwrapping unwrapped;\n\n        public DeepUnwrapping() { }\n        public DeepUnwrapping(String str, int x, int y) {\n            unwrapped = new Unwrapping(str, x, y);\n        }\n    }\n\n    static class Location {\n        public int x;\n        public int y;\n\n        public Location() { }\n        public Location(int x, int y) {\n            this.x = x;\n            this.y = y;\n        }\n    }\n\n    // Class with unwrapping using prefixes\n    static class PrefixUnwrap\n    {\n        public String name;\n        @JsonUnwrapped(prefix=\"_\")\n        public Location location;\n\n        public PrefixUnwrap() { }\n        public PrefixUnwrap(String str, int x, int y) {\n            name = str;\n            location = new Location(x, y);\n        }\n    }\n    \n    static class DeepPrefixUnwrap\n    {\n        @JsonUnwrapped(prefix=\"u.\")\n        public PrefixUnwrap unwrapped;\n\n        public DeepPrefixUnwrap() { }\n        public DeepPrefixUnwrap(String str, int x, int y) {\n            unwrapped = new PrefixUnwrap(str, x, y);\n        }\n    }\n\n    // Let's actually test hierarchic names with unwrapping bit more:\n    \n    static class ConfigRoot\n    {\n        @JsonUnwrapped(prefix=\"general.\")\n        public ConfigGeneral general = new ConfigGeneral();\n        \n        @JsonUnwrapped(prefix=\"misc.\")\n        public ConfigMisc misc = new ConfigMisc();\n\n        public ConfigRoot() { }\n        public ConfigRoot(String name, int value)\n        {\n            general = new ConfigGeneral(name);\n            misc.value = value;\n        }\n    }\n\n    static class ConfigAlternate\n    {\n        @JsonUnwrapped\n        public ConfigGeneral general = new ConfigGeneral();\n        \n        @JsonUnwrapped(prefix=\"misc.\")\n        public ConfigMisc misc = new ConfigMisc();\n\n        public int id;\n        \n        public ConfigAlternate() { }\n        public ConfigAlternate(int id, String name, int value)\n        {\n            this.id = id;\n            general = new ConfigGeneral(name);\n            misc.value = value;\n        }\n    }\n\n    static class ConfigGeneral\n    {\n        @JsonUnwrapped(prefix=\"names.\")\n        public ConfigNames names = new ConfigNames();\n        \n        public ConfigGeneral() { }\n        public ConfigGeneral(String name) {\n            names.name = name;\n        }\n    }\n\n    static class ConfigNames {\n        public String name = \"x\";\n    }\n\n    static class ConfigMisc {\n        public int value;\n    }\n\n    // For [Issue#226]\n    static class Parent {\n        @JsonUnwrapped(prefix=\"c1.\")\n        public Child c1;\n        @JsonUnwrapped(prefix=\"c2.\")\n        public Child c2;\n      }\n\n    static class Child {\n        @JsonUnwrapped(prefix=\"sc2.\")\n        public SubChild sc1;\n      }\n\n    static class SubChild {\n        public String value;\n    }\n    \n    // // // Reuse mapper to keep tests bit faster\n\n    private final ObjectMapper MAPPER = new ObjectMapper();\n\n    /*\n    /**********************************************************\n    /* Tests, serialization\n    /**********************************************************\n     */\n\n    public void testPrefixedUnwrappingSerialize() throws Exception\n    {\n        assertEquals(\"{\\\"name\\\":\\\"Tatu\\\",\\\"_x\\\":1,\\\"_y\\\":2}\",\n                MAPPER.writeValueAsString(new PrefixUnwrap(\"Tatu\", 1, 2)));\n    }\n\n    public void testDeepPrefixedUnwrappingSerialize() throws Exception\n    {\n        String json = MAPPER.writeValueAsString(new DeepPrefixUnwrap(\"Bubba\", 1, 1));\n        assertEquals(\"{\\\"u.name\\\":\\\"Bubba\\\",\\\"u._x\\\":1,\\\"u._y\\\":1}\", json);\n    }\n\n    public void testHierarchicConfigSerialize() throws Exception\n    {\n        String json = MAPPER.writeValueAsString(new ConfigRoot(\"Fred\", 25));\n        assertEquals(\"{\\\"general.names.name\\\":\\\"Fred\\\",\\\"misc.value\\\":25}\", json);\n    }\n\n    /*\n    /**********************************************************\n    /* Tests, deserialization\n    /**********************************************************\n     */\n\n    public void testPrefixedUnwrapping() throws Exception\n    {\n        PrefixUnwrap bean = MAPPER.readValue(\"{\\\"name\\\":\\\"Axel\\\",\\\"_x\\\":4,\\\"_y\\\":7}\", PrefixUnwrap.class);\n        assertNotNull(bean);\n        assertEquals(\"Axel\", bean.name);\n        assertNotNull(bean.location);\n        assertEquals(4, bean.location.x);\n        assertEquals(7, bean.location.y);\n    }\n    \n    public void testDeepPrefixedUnwrappingDeserialize() throws Exception\n    {\n        DeepPrefixUnwrap bean = MAPPER.readValue(\"{\\\"u.name\\\":\\\"Bubba\\\",\\\"u._x\\\":2,\\\"u._y\\\":3}\",\n                DeepPrefixUnwrap.class);\n        assertNotNull(bean.unwrapped);\n        assertNotNull(bean.unwrapped.location);\n        assertEquals(2, bean.unwrapped.location.x);\n        assertEquals(3, bean.unwrapped.location.y);\n        assertEquals(\"Bubba\", bean.unwrapped.name);\n    }\n    \n    public void testHierarchicConfigDeserialize() throws Exception\n    {\n        ConfigRoot root = MAPPER.readValue(\"{\\\"general.names.name\\\":\\\"Bob\\\",\\\"misc.value\\\":3}\",\n                ConfigRoot.class);\n        assertNotNull(root.general);\n",
+  "compaction": {
+    "source_lines": 249,
+    "mode": "windows",
+    "windows_total": 4,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 11.606585502862156
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 3.197018948832458
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 1.6294817972264517
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 11.606585502862156
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 3.197018948832458
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 1.6294817972264517
+      },
+      {
+        "start": 180,
+        "end": 249,
+        "score": 0.624577239535337
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 5829,
+  "representation_chars": 5829,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

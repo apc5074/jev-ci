@@ -1,0 +1,91 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.TestBeanDeserializer",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/TestBeanDeserializer.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.TestBeanDeserializer\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/TestBeanDeserializer.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser;\n\nimport java.io.IOException;\nimport java.util.*;\n\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.deser.BeanDeserializer;\nimport com.fasterxml.jackson.databind.deser.BeanDeserializerBuilder;\nimport com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;\nimport com.fasterxml.jackson.databind.deser.std.StdDeserializer;\nimport com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer;\nimport com.fasterxml.jackson.databind.module.SimpleModule;\nimport com.fasterxml.jackson.databind.type.ArrayType;\nimport com.fasterxml.jackson.databind.type.CollectionType;\nimport com.fasterxml.jackson.databind.type.MapType;\n\n@SuppressWarnings(\"serial\")\npublic class TestBeanDeserializer extends BaseMapTest\n{\n    /*\n    /**********************************************************\n    /* Helper types\n    /**********************************************************\n     */\n\n    static class Bean {\n        public String b = \"b\";\n        public String a = \"a\";\n\n        public Bean() { }\n        public Bean(String a, String b) {\n            this.a = a;\n            this.b = b;\n        }\n    }\n\n    static class ModuleImpl extends SimpleModule\n    {\n        protected BeanDeserializerModifier modifier;\n        \n        public ModuleImpl(BeanDeserializerModifier modifier)\n        {\n            super(\"test\", Version.unknownVersion());\n            this.modifier = modifier;\n        }\n        \n        @Override\n        public void setupModule(SetupContext context)\n        {\n            super.setupModule(context);\n            if (modifier != null) {\n                context.addBeanDeserializerModifier(modifier);\n            }\n        }\n    }\n\n    static class RemovingModifier extends BeanDeserializerModifier\n    {\n        private final String _removedProperty;\n        \n        public RemovingModifier(String remove) { _removedProperty = remove; }\n        \n        @Override\n        public BeanDeserializerBuilder updateBuilder(DeserializationConfig config,\n                BeanDescription beanDesc, BeanDeserializerBuilder builder) {\n            builder.addIgnorable(_removedProperty);\n            return builder;\n        }\n    }\n    \n    static class ReplacingModifier extends BeanDeserializerModifier\n    {\n        private final JsonDeserializer<?> _deserializer;\n        \n        public ReplacingModifier(JsonDeserializer<?> s) { _deserializer = s; }\n        \n        @Override\n        public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config,\n                BeanDescription beanDesc, JsonDeserializer<?> deserializer) {\n            return (JsonDeserializer<?>) new StdDeserializer<Object>(Object.class) {\n                @Override public Object deserialize(JsonParser jp,\n                        DeserializationContext ctxt) {\n                    HashMap<String,String> map = new HashMap<String,String>();\n                    map.put(\"a\", \"foo\");\n                    return map;\n                }\n            };\n        }\n    }\n\n    static class EnumDeserializerModifier extends BeanDeserializerModifier {\n        @Override\n        public JsonDeserializer<?> modifyEnumDeserializer(DeserializationConfig config, JavaType valueType,\n                BeanDescription beanDesc, JsonDeserializer<?> deserializer) {\n            return (JsonDeserializer<?>) new StdDeserializer<Object>(Object.class) {\n                @Override public Object deserialize(JsonParser jp,\n                        DeserializationContext ctxt) {\n                    return \"foo\";\n                }\n            };\n        }\n    }\n\n    static class KeyDeserializerModifier extends BeanDeserializerModifier {\n        @Override\n        public KeyDeserializer modifyKeyDeserializer(DeserializationConfig config, JavaType valueType,\n                KeyDeserializer kd) {\n            return new KeyDeserializer() {\n                @Override\n                public Object deserializeKey(String key,\n                        DeserializationContext ctxt) throws IOException,\n                        JsonProcessingException {\n                    return \"foo\";\n                }\n            };\n        }\n    }\n\n    static class UCStringDeserializer extends StdScalarDeserializer<String>\n    {\n        private final JsonDeserializer<?> _deser;\n        \n        public UCStringDeserializer(JsonDeserializer<?> orig) {\n            super(String.class);\n            _deser = orig;\n        }\n\n        @Override\n        public String deserialize(JsonParser p, DeserializationContext ctxt)\n                throws IOException {\n            Object ob = _deser.deserialize(p, ctxt);\n            return String.valueOf(ob).toUpperCase();\n        }\n    }\n\n    /*\n    /********************************************************\n    /* Test methods\n    /********************************************************\n     */\n\n    private final ObjectMapper MAPPER = new ObjectMapper();\n\n    public void testPropertyRemoval() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.registerModule(new ModuleImpl(new RemovingModifier(\"a\")));\n        Bean bean = mapper.readValue(\"{\\\"b\\\":\\\"2\\\"}\", Bean.class);\n        assertEquals(\"2\", bean.b);\n        // and 'a' has its default value:\n        assertEquals(\"a\", bean.a);\n    } \n\n    public void testDeserializerReplacement() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.registerModule(new ModuleImpl(new ReplacingModifier(new BogusBeanDeserializer(\"foo\", \"bar\"))));\n        Bean bean = mapper.readValue(\"{\\\"a\\\":\\\"xyz\\\"}\", Bean.class);\n        // custom deserializer always produces instance like this:\n        assertEquals(\"foo\", bean.a);\n        assertEquals(\"bar\", bean.b);\n    }\n\n    public void testIssue476() throws Exception\n    {\n        final String JSON = \"{\\\"value1\\\" : {\\\"name\\\" : \\\"fruit\\\", \\\"value\\\" : \\\"apple\\\"}, \\\"value2\\\" : {\\\"name\\\" : \\\"color\\\", \\\"value\\\" : \\\"red\\\"}}\";\n        \n        ObjectMapper mapper = new ObjectMapper();\n        mapper.registerModule(new Issue476Module());\n        mapper.readValue(JSON, Issue476Bean.class);\n\n        // there are 2 properties\n        assertEquals(2, Issue476Deserializer.propCount);\n    }\n\n    public void testPOJOFromEmptyString() throws Exception\n    {\n        // first, verify default settings which do not accept empty String:\n        assertFalse(MAPPER.isEnabled(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT));\n        try {\n            MAPPER.readValue(quote(\"\"), Bean.class);\n            fail(\"Should not accept Empty String for POJO\");\n        } catch (JsonProcessingException e) {\n            verifyException(e, \"from String value\");\n            assertValidLocation(e.getLocation());\n        }\n        // should be ok to enable dynamically\n        ObjectReader r = MAPPER.readerFor(Bean.class)\n                .with(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);\n        Bean result = r.readValue(quote(\"\"));\n        assertNull(result);\n    }\n\n    // [Databind#540]\n    public void testPOJOFromEmptyArray() throws Exception\n    {\n        final String JSON = \"  [\\n]\";\n        assertFalse(MAPPER.isEnabled(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT));\n        // first, verify default settings which do not accept empty Array\n        ObjectMapper mapper = new ObjectMapper();\n        try {\n            mapper.readValue(JSON, Bean.class);\n            fail(\"Should not accept Empty Array for POJO by default\");\n        } catch (JsonProcessingException e) {\n            verifyException(e, \"START_ARRAY token\");\n            assertValidLocation(e.getLocation());\n        }\n\n        // should be ok to enable dynamically:\n        ObjectReader r = MAPPER.readerFor(Bean.class)\n                .with(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT);\n        Bean result = r.readValue(JSON);\n        assertNull(result);\n    }\n\n    // [databind#120]\n    public void testModifyArrayDeserializer() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n",
+  "compaction": {
+    "source_lines": 393,
+    "mode": "windows",
+    "windows_total": 7,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        180,
+        260
+      ],
+      [
+        240,
+        320
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 19.338963534672708
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 8.755213092780826
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 9.280698711073084
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 19.338963534672708
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.944235629013824
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 4.141636245980221
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 8.755213092780826
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 9.280698711073084
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 5.206629054730417
+      },
+      {
+        "start": 360,
+        "end": 393,
+        "score": 4.83261049498009
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8245,
+  "representation_chars": 8245,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

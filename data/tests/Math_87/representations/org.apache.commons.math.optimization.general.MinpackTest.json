@@ -1,0 +1,186 @@
+{
+  "test_class": "org.apache.commons.math.optimization.general.MinpackTest",
+  "source_file": "src/test/org/apache/commons/math/optimization/general/MinpackTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math.optimization.general.MinpackTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/math/optimization/general/MinpackTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math.optimization.general;\n\nimport java.io.Serializable;\nimport java.util.Arrays;\n\nimport junit.framework.Test;\nimport junit.framework.TestCase;\nimport junit.framework.TestSuite;\n\nimport org.apache.commons.math.FunctionEvaluationException;\nimport org.apache.commons.math.analysis.DifferentiableMultivariateVectorialFunction;\nimport org.apache.commons.math.analysis.MultivariateMatrixFunction;\nimport org.apache.commons.math.optimization.OptimizationException;\nimport org.apache.commons.math.optimization.VectorialPointValuePair;\n\n/**\n * <p>Some of the unit tests are re-implementations of the MINPACK <a\n * href=\"http://www.netlib.org/minpack/ex/file17\">file17</a> and <a\n * href=\"http://www.netlib.org/minpack/ex/file22\">file22</a> test files. \n * The redistribution policy for MINPACK is available <a\n * href=\"http://www.netlib.org/minpack/disclaimer\">here</a>, for\n * convenience, it is reproduced below.</p>\n\n * <table border=\"0\" width=\"80%\" cellpadding=\"10\" align=\"center\" bgcolor=\"#E0E0E0\">\n * <tr><td>\n *    Minpack Copyright Notice (1999) University of Chicago.\n *    All rights reserved\n * </td></tr>\n * <tr><td>\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions\n * are met:\n * <ol>\n *  <li>Redistributions of source code must retain the above copyright\n *      notice, this list of conditions and the following disclaimer.</li>\n * <li>Redistributions in binary form must reproduce the above\n *     copyright notice, this list of conditions and the following\n *     disclaimer in the documentation and/or other materials provided\n *     with the distribution.</li>\n * <li>The end-user documentation included with the redistribution, if any,\n *     must include the following acknowledgment:\n *     <code>This product includes software developed by the University of\n *           Chicago, as Operator of Argonne National Laboratory.</code>\n *     Alternately, this acknowledgment may appear in the software itself,\n *     if and wherever such third-party acknowledgments normally appear.</li>\n * <li><strong>WARRANTY DISCLAIMER. THE SOFTWARE IS SUPPLIED \"AS IS\"\n *     WITHOUT WARRANTY OF ANY KIND. THE COPYRIGHT HOLDER, THE\n *     UNITED STATES, THE UNITED STATES DEPARTMENT OF ENERGY, AND\n *     THEIR EMPLOYEES: (1) DISCLAIM ANY WARRANTIES, EXPRESS OR\n *     IMPLIED, INCLUDING BUT NOT LIMITED TO ANY IMPLIED WARRANTIES\n *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE\n *     OR NON-INFRINGEMENT, (2) DO NOT ASSUME ANY LEGAL LIABILITY\n *     OR RESPONSIBILITY FOR THE ACCURACY, COMPLETENESS, OR\n *     USEFULNESS OF THE SOFTWARE, (3) DO NOT REPRESENT THAT USE OF\n *     THE SOFTWARE WOULD NOT INFRINGE PRIVATELY OWNED RIGHTS, (4)\n *     DO NOT WARRANT THAT THE SOFTWARE WILL FUNCTION\n *     UNINTERRUPTED, THAT IT IS ERROR-FREE OR THAT ANY ERRORS WILL\n *     BE CORRECTED.</strong></li>\n * <li><strong>LIMITATION OF LIABILITY. IN NO EVENT WILL THE COPYRIGHT\n *     HOLDER, THE UNITED STATES, THE UNITED STATES DEPARTMENT OF\n *     ENERGY, OR THEIR EMPLOYEES: BE LIABLE FOR ANY INDIRECT,\n *     INCIDENTAL, CONSEQUENTIAL, SPECIAL OR PUNITIVE DAMAGES OF\n *     ANY KIND OR NATURE, INCLUDING BUT NOT LIMITED TO LOSS OF\n\n      public double[] getTarget() {\n          return buildArray(m, 0.0);\n      }\n\n      public double[] getWeight() {\n          return buildArray(m, 1.0);\n      }\n\n      public double[] getStartPoint() {\n          return startParams.clone();\n      }\n\n      protected void setCostAccuracy(double costAccuracy) {\n          this.costAccuracy = costAccuracy;\n      }\n\n      protected void setParamsAccuracy(double paramsAccuracy) {\n          this.paramsAccuracy = paramsAccuracy;\n      }\n\n      public int getN() {\n          return startParams.length;\n      }\n\n      public boolean checkTheoreticalMinCost(double rms) {\n          double threshold = costAccuracy * (1.0 + theoreticalMinCost);\n          return Math.abs(Math.sqrt(m) * rms - theoreticalMinCost) <= threshold;\n      }\n\n      public boolean checkTheoreticalMinParams(VectorialPointValuePair optimum) {\n          double[] params = optimum.getPointRef();\n          if (theoreticalMinParams != null) {\n              for (int i = 0; i < theoreticalMinParams.length; ++i) {\n                  double mi = theoreticalMinParams[i];\n                  double vi = params[i];\n                  if (Math.abs(mi - vi) > (paramsAccuracy * (1.0 + Math.abs(mi)))) {\n                      return false;\n                  }\n              }\n          }\n          return true;\n      }\n\n      public MultivariateMatrixFunction jacobian() {\n          return new MultivariateMatrixFunction() {\n            private static final long serialVersionUID = -2435076097232923678L;\n            public double[][] value(double[] point) {\n                  return jacobian(point);\n              }\n          };\n      }\n\n      public abstract double[][] jacobian(double[] variables);\n\n      public abstract double[] value(double[] variables);\n\n  }\n\n  private static class LinearFullRankFunction extends MinpackFunction {\n\n    private static final long serialVersionUID = -9030323226268039536L;\n\n    public LinearFullRankFunction(int m, int n, double x0,\n                                  double theoreticalStartCost,\n                                  double theoreticalMinCost) {\n      super(m, buildArray(n, x0), theoreticalMinCost,\n            buildArray(n, -1.0));\n    }\n\n    @Override\n    public double[][] jacobian(double[] variables) {\n      double t = 2.0 / m;\n      double[][] jacobian = new double[m][];\n      for (int i = 0; i < m; ++i) {\n        jacobian[i] = new double[n];\n        for (int j = 0; j < n; ++j) {\n          jacobian[i][j] = (i == j) ? (1 - t) : -t;\n        }\n      }\n    }\n\n    @Override\n    public double[] value(double[] variables) {\n      double[] f = new double[m];\n      double sum = 0;\n      for (int i = 0; i < n; ++i) {\n        sum += (i + 1) * variables[i];\n      }\n      for (int i = 0; i < m; ++i) {\n        f[i] = (i + 1) * sum - 1;\n      }\n      return f;\n    }\n\n  }\n\n  private static class LinearRank1ZeroColsAndRowsFunction extends MinpackFunction {\n\n    private static final long serialVersionUID = -3316653043091995018L;\n\n    public LinearRank1ZeroColsAndRowsFunction(int m, int n, double x0) {\n      super(m, buildArray(n, x0),\n            Math.sqrt((m * (m + 3) - 6) / (2.0 * (2 * m - 3))),\n            null);\n    }\n\n    @Override\n    public double[][] jacobian(double[] variables) {\n      double[][] jacobian = new double[m][];\n      for (int i = 0; i < m; ++i) {\n        jacobian[i] = new double[n];\n        jacobian[i][0] = 0;\n        for (int j = 1; j < (n - 1); ++j) {\n          if (i == 0) {\n            jacobian[i][j] = 0;\n          } else if (i != (m - 1)) {\n            jacobian[i][j] = i * (j + 1);\n          } else {\n            jacobian[i][j] = 0;\n          }\n        }\n        jacobian[i][n - 1] = 0;\n      }\n      return jacobian;\n    }\n\n    @Override\n    public double[] value(double[] variables) {\n      double[] f = new double[m];\n      double sum = 0;\n      for (int i = 1; i < (n - 1); ++i) {\n        sum += (i + 1) * variables[i];\n      }\n      for (int i = 0; i < (m - 1); ++i) {\n        f[i] = i * sum - 1;\n      }\n      f[m - 1] = -1;\n      return f;\n    }\n\n  }\n\n  private static class RosenbrockFunction extends MinpackFunction {\n\n    private static final long serialVersionUID = 2893438180956569134L;\n\n    public RosenbrockFunction(double[] startParams, double theoreticalStartCost) {\n      super(2, startParams, 0.0, buildArray(2, 1.0));\n    }\n\n    @Override\n    public double[][] jacobian(double[] variables) {\n      double x1 = variables[0];\n      return new double[][] { { -20 * x1, 10 }, { -1, 0 } };\n    }\n\n    @Override\n    public double[] value(double[] variables) {\n      double x1 = variables[0];\n",
+  "compaction": {
+    "source_lines": 1537,
+    "mode": "windows",
+    "windows_total": 26,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        540,
+        620
+      ],
+      [
+        660,
+        740
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 29.847681004872218
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 13.659006098852124
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 14.697025650186637
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 29.847681004872218
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 8.25316359342861
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 3.2756891559819716
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 0.4668581122270435
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.071294539011561
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 2.6852955819071482
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 3.247561842961649
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 5.778107797960779
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 9.445066381524098
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 13.659006098852124
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 8.600349021375319
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 14.697025650186637
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 7.774052298243894
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 3.9327229238735377
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 3.797399351072009
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 5.079138327517838
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 5.46253016672585
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 3.744442369444389
+      },
+      {
+        "start": 1080,
+        "end": 1160,
+        "score": 5.529141417717345
+      },
+      {
+        "start": 1140,
+        "end": 1220,
+        "score": 5.132650167950371
+      },
+      {
+        "start": 1200,
+        "end": 1280,
+        "score": 4.491777303299594
+      },
+      {
+        "start": 1260,
+        "end": 1340,
+        "score": 6.659925718307274
+      },
+      {
+        "start": 1320,
+        "end": 1400,
+        "score": 7.262599613428648
+      },
+      {
+        "start": 1380,
+        "end": 1460,
+        "score": 4.652816807377072
+      },
+      {
+        "start": 1440,
+        "end": 1520,
+        "score": 4.509761359154134
+      },
+      {
+        "start": 1500,
+        "end": 1537,
+        "score": 4.324907142553328
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8835,
+  "representation_chars": 8835,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

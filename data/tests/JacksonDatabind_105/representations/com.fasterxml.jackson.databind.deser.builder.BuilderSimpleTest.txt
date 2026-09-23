@@ -1,0 +1,227 @@
+TEST CLASS:
+com.fasterxml.jackson.databind.deser.builder.BuilderSimpleTest
+
+SOURCE FILE:
+src/test/java/com/fasterxml/jackson/databind/deser/builder/BuilderSimpleTest.java
+
+TEST SOURCE:
+package com.fasterxml.jackson.databind.deser.builder;
+
+import java.util.*;
+
+import com.fasterxml.jackson.annotation.*;
+
+import com.fasterxml.jackson.core.Version;
+
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector;
+
+public class BuilderSimpleTest extends BaseMapTest
+{
+    // // Simple 2-property value class, builder with standard naming
+
+    @JsonDeserialize(builder=SimpleBuilderXY.class)
+    static class ValueClassXY
+    {
+        final int _x, _y;
+
+        protected ValueClassXY(int x, int y) {
+            _x = x+1;
+            _y = y+1;
+        }
+    }
+
+    static class SimpleBuilderXY
+    {
+        public int x, y;
+    	
+        public SimpleBuilderXY withX(int x0) {
+    		    this.x = x0;
+    		    return this;
+        }
+
+        public SimpleBuilderXY withY(int y0) {
+    		    this.y = y0;
+    		    return this;
+        }
+
+        public ValueClassXY build() {
+    		    return new ValueClassXY(x, y);
+        }
+    }
+
+    // // 3-property value, with more varied builder
+
+    @JsonDeserialize(builder=BuildABC.class)
+    static class ValueClassABC
+    {
+        final int a, b, c;
+
+        protected ValueClassABC(int a, int b, int c) {
+            this.a = a;
+            this.b = b;
+            this.c = c;
+        }
+    }
+
+    @JsonIgnoreProperties({ "d" })
+    static class BuildABC
+    {
+        public int a; // to be used as is
+        private int b, c;
+    	
+        @JsonProperty("b")
+        public BuildABC assignB(int b0) {
+            this.b = b0;
+            return this;
+        }
+
+        // Also ok NOT to return 'this'
+        @JsonSetter("c")
+        public void c(int c0) {
+            this.c = c0;
+        }
+
+        public ValueInterface build() {
+            return new ValueInterfaceImpl(x);
+        }
+    }
+
+    static class ValueInterface2Builder
+    {
+        public int x;
+
+        public ValueInterface2Builder withX(int x0) {
+            this.x = x0;
+            return this;
+        }
+
+        // should also be ok: more specific type
+        public ValueInterface2Impl build() {
+            return new ValueInterface2Impl(x);
+        }
+    }
+
+    // [databind#777]
+    @JsonDeserialize(builder = SelfBuilder777.class)
+    @JsonPOJOBuilder(buildMethodName = "", withPrefix = "with")
+    static class SelfBuilder777 {
+        public int x;
+
+        public SelfBuilder777 withX(int value) {
+            x = value;
+            return this;
+        }
+    }
+
+    // [databind#822]
+    @JsonPOJOBuilder(buildMethodName = "build", withPrefix = "with")
+    static class ValueBuilder822
+    {
+        public int x;
+        private Map<String,Object> stuff = new HashMap<String,Object>();
+        
+        public ValueBuilder822 withX(int x0) {
+            this.x = x0;
+            return this;
+        }
+
+        @JsonAnySetter
+        public void addStuff(String key, Object value) {
+            stuff.put(key, value);
+        }
+
+        public ValueClass822 build() {
+            return new ValueClass822(x, stuff);
+        }
+    }
+
+    @JsonDeserialize(builder = ValueBuilder822.class)
+    static class ValueClass822 {
+        public int x;
+        public Map<String,Object> stuff;
+
+        public ValueClass822(int x, Map<String,Object> stuff) {
+            this.x = x;
+            this.stuff = stuff;
+        }
+    }
+
+    protected static class NopModule1557 extends com.fasterxml.jackson.databind.Module
+    {
+        @Override
+        public String getModuleName() {
+            return "NopModule";
+        }
+
+        @Override
+        public Version version() {
+            return Version.unknownVersion();
+        }
+
+        @Override
+        public void setupModule(SetupContext setupContext) {
+            // This annotation introspector has no opinion about builders, make sure it doesn't interfere
+            setupContext.insertAnnotationIntrospector(new NopAnnotationIntrospector() {
+                private static final long serialVersionUID = 1L;
+                @Override
+                public Version version() {
+                    return Version.unknownVersion();
+                }
+            });
+        }
+    }
+
+    /*
+    /**********************************************************
+    /* Unit tests
+    /**********************************************************
+     */
+
+    private final ObjectMapper MAPPER = new ObjectMapper();
+
+    public void testSimple() throws Exception
+    {
+        String json = aposToQuotes("{'x':1,'y':2}");
+        Object o = MAPPER.readValue(json, ValueClassXY.class);
+        assertNotNull(o);
+        assertSame(ValueClassXY.class, o.getClass());
+        ValueClassXY value = (ValueClassXY) o;
+        // note: ctor adds one to both values
+        assertEquals(value._x, 2);
+        assertEquals(value._y, 3);
+    }
+
+    // related to [databind#1214]
+    public void testSimpleWithIgnores() throws Exception
+    {
+        // 'z' is unknown, and would fail by default:
+        final String json = aposToQuotes("{'x':1,'y':2,'z':4}");
+        Object o = null;
+
+        try {
+            o = MAPPER.readValue(json, ValueClassXY.class);
+            fail("Should not pass");
+        } catch (UnrecognizedPropertyException e) {
+            assertEquals("z", e.getPropertyName());
+            verifyException(e, "Unrecognized field \"z\"");
+        }
+
+        // but with config overrides should pass
+        ObjectMapper ignorantMapper = new ObjectMapper();
+        ignorantMapper.configOverride(SimpleBuilderXY.class)
+                .setIgnorals(JsonIgnoreProperties.Value.forIgnoreUnknown(true));
+        o = ignorantMapper.readValue(json, ValueClassXY.class);
+        assertNotNull(o);
+        assertSame(ValueClassXY.class, o.getClass());
+        ValueClassXY value = (ValueClassXY) o;
+        // note: ctor adds one to both values
+        assertEquals(value._x, 2);
+        assertEquals(value._y, 3);
+    }
+    
+    public void testMultiAccess() throws Exception
+    {

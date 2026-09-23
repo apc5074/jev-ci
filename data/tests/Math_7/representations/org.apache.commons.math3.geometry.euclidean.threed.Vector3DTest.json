@@ -1,0 +1,91 @@
+{
+  "test_class": "org.apache.commons.math3.geometry.euclidean.threed.Vector3DTest",
+  "source_file": "src/test/java/org/apache/commons/math3/geometry/euclidean/threed/Vector3DTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.geometry.euclidean.threed.Vector3DTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/geometry/euclidean/threed/Vector3DTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math3.geometry.euclidean.threed;\n\nimport java.text.DecimalFormat;\nimport java.text.DecimalFormatSymbols;\nimport java.text.NumberFormat;\nimport java.util.Locale;\n\nimport org.apache.commons.math3.TestUtils;\nimport org.apache.commons.math3.exception.DimensionMismatchException;\nimport org.apache.commons.math3.exception.MathArithmeticException;\nimport org.apache.commons.math3.geometry.Space;\nimport org.apache.commons.math3.random.Well1024a;\nimport org.apache.commons.math3.util.FastMath;\nimport org.apache.commons.math3.util.Precision;\nimport org.junit.Assert;\nimport org.junit.Test;\n\npublic class Vector3DTest {\n    @Test\n    public void testConstructors() throws DimensionMismatchException {\n        double r = FastMath.sqrt(2) /2;\n        checkVector(new Vector3D(2, new Vector3D(FastMath.PI / 3, -FastMath.PI / 4)),\n                    r, r * FastMath.sqrt(3), -2 * r);\n        checkVector(new Vector3D(2, Vector3D.PLUS_I,\n                                 -3, Vector3D.MINUS_K),\n                    2, 0, 3);\n        checkVector(new Vector3D(2, Vector3D.PLUS_I,\n                                 5, Vector3D.PLUS_J,\n                                 -3, Vector3D.MINUS_K),\n                    2, 5, 3);\n        checkVector(new Vector3D(2, Vector3D.PLUS_I,\n                                 5, Vector3D.PLUS_J,\n                                 5, Vector3D.MINUS_J,\n                                 -3, Vector3D.MINUS_K),\n                    2, 0, 3);\n        checkVector(new Vector3D(new double[] { 2,  5,  -3 }),\n                    2, 5, -3);\n    }\n\n    @Test\n    public void testSpace() {\n        Space space = new Vector3D(1, 2, 2).getSpace();\n        Assert.assertEquals(3, space.getDimension());\n        Assert.assertEquals(2, space.getSubSpace().getDimension());\n        Space deserialized = (Space) TestUtils.serializeAndRecover(space);\n        Assert.assertTrue(space == deserialized);\n    }\n\n    @Test\n    public void testZero() {\n        Assert.assertEquals(0, new Vector3D(1, 2, 2).getZero().getNorm(), 1.0e-15);\n    }\n\n    @Test\n    public void testEquals() {\n        Vector3D u1 = new Vector3D(1, 2, 3);\n        Vector3D u2 = new Vector3D(1, 2, 3);\n        Assert.assertTrue(u1.equals(u1));\n        Assert.assertTrue(u1.equals(u2));\n        Assert.assertFalse(u1.equals(new Rotation(1, 0, 0, 0, false)));\n        Assert.assertFalse(u1.equals(new Vector3D(1, 2, 3 + 10 * Precision.EPSILON)));\n        Assert.assertFalse(u1.equals(new Vector3D(1, 2 + 10 * Precision.EPSILON, 3)));\n        Assert.assertFalse(u1.equals(new Vector3D(1 + 10 * Precision.EPSILON, 2, 3)));\n        Assert.assertTrue(new Vector3D(0, Double.NaN, 0).equals(new Vector3D(0, 0, Double.NaN)));\n    }\n\n    @Test\n    public void testHash() {\n        Assert.assertEquals(new Vector3D(0, Double.NaN, 0).hashCode(), new Vector3D(0, 0, Double.NaN).hashCode());\n        Vector3D u = new Vector3D(1, 2, 3);\n        Vector3D v = new Vector3D(1, 2, 3 + 10 * Precision.EPSILON);\n        Assert.assertTrue(u.hashCode() != v.hashCode());\n    }\n\n    @Test\n    public void testInfinite() {\n        Assert.assertTrue(new Vector3D(1, 1, Double.NEGATIVE_INFINITY).isInfinite());\n        Assert.assertTrue(new Vector3D(1, Double.NEGATIVE_INFINITY, 1).isInfinite());\n        Assert.assertTrue(new Vector3D(Double.NEGATIVE_INFINITY, 1, 1).isInfinite());\n        Assert.assertFalse(new Vector3D(1, 1, 2).isInfinite());\n        Assert.assertFalse(new Vector3D(1, Double.NaN, Double.NEGATIVE_INFINITY).isInfinite());\n    }\n\n    @Test\n    public void testNaN() {\n        Assert.assertTrue(new Vector3D(1, 1, Double.NaN).isNaN());\n        Assert.assertTrue(new Vector3D(1, Double.NaN, 1).isNaN());\n        Assert.assertTrue(new Vector3D(Double.NaN, 1, 1).isNaN());\n        Assert.assertFalse(new Vector3D(1, 1, 2).isNaN());\n        Assert.assertFalse(new Vector3D(1, 1, Double.NEGATIVE_INFINITY).isNaN());\n    }\n\n    @Test\n    public void testToString() {\n        Assert.assertEquals(\"{3; 2; 1}\", new Vector3D(3, 2, 1).toString());\n        NumberFormat format = new DecimalFormat(\"0.000\", new DecimalFormatSymbols(Locale.US));\n        Assert.assertEquals(\"{3.000; 2.000; 1.000}\", new Vector3D(3, 2, 1).toString(format));\n    }\n\n    @Test(expected=DimensionMismatchException.class)\n    public void testWrongDimension() throws DimensionMismatchException {\n        new Vector3D(new double[] { 2,  5 });\n    }\n\n    @Test\n    public void testCoordinates() {\n        Vector3D v = new Vector3D(1, 2, 3);\n        Assert.assertTrue(FastMath.abs(v.getX() - 1) < 1.0e-12);\n        Assert.assertTrue(FastMath.abs(v.getY() - 2) < 1.0e-12);\n        Assert.assertTrue(FastMath.abs(v.getZ() - 3) < 1.0e-12);\n        double[] coordinates = v.toArray();\n        Assert.assertTrue(FastMath.abs(coordinates[0] - 1) < 1.0e-12);\n        Assert.assertTrue(FastMath.abs(coordinates[1] - 2) < 1.0e-12);\n        Assert.assertTrue(FastMath.abs(coordinates[2] - 3) < 1.0e-12);\n    }\n\n    @Test\n    public void testNorm1() {\n        Assert.assertEquals(0.0, Vector3D.ZERO.getNorm1(), 0);\n        Assert.assertEquals(6.0, new Vector3D(1, -2, 3).getNorm1(), 0);\n    }\n\n    @Test\n        Assert.assertEquals(0.0, Vector3D.dotProduct(v3, v3.orthogonal()), 1.0e-12);\n        Vector3D v4 = new Vector3D(4.2, 0.1, -1.8);\n        Assert.assertEquals(0.0, Vector3D.dotProduct(v4, v4.orthogonal()), 1.0e-12);\n        try {\n            new Vector3D(0, 0, 0).orthogonal();\n            Assert.fail(\"an exception should have been thrown\");\n        } catch (MathArithmeticException ae) {\n            // expected behavior\n        }\n    }\n    @Test\n    public void testAngle() throws MathArithmeticException {\n        Assert.assertEquals(0.22572612855273393616,\n                            Vector3D.angle(new Vector3D(1, 2, 3), new Vector3D(4, 5, 6)),\n                            1.0e-12);\n        Assert.assertEquals(7.98595620686106654517199e-8,\n                            Vector3D.angle(new Vector3D(1, 2, 3), new Vector3D(2, 4, 6.000001)),\n                            1.0e-12);\n        Assert.assertEquals(3.14159257373023116985197793156,\n                            Vector3D.angle(new Vector3D(1, 2, 3), new Vector3D(-2, -4, -6.000001)),\n                            1.0e-12);\n        try {\n            Vector3D.angle(Vector3D.ZERO, Vector3D.PLUS_I);\n            Assert.fail(\"an exception should have been thrown\");\n        } catch (MathArithmeticException ae) {\n            // expected behavior\n        }\n    }\n\n    @Test\n    public void testAccurateDotProduct() {\n        // the following two vectors are nearly but not exactly orthogonal\n        // naive dot product (i.e. computing u1.x * u2.x + u1.y * u2.y + u1.z * u2.z\n        // leads to a result of 0.0, instead of the correct -1.855129...\n        Vector3D u1 = new Vector3D(-1321008684645961.0 /  268435456.0,\n                                   -5774608829631843.0 /  268435456.0,\n                                   -7645843051051357.0 / 8589934592.0);\n        Vector3D u2 = new Vector3D(-5712344449280879.0 /    2097152.0,\n                                   -4550117129121957.0 /    2097152.0,\n                                    8846951984510141.0 /     131072.0);\n        double sNaive = u1.getX() * u2.getX() + u1.getY() * u2.getY() + u1.getZ() * u2.getZ();\n        double sAccurate = u1.dotProduct(u2);\n        Assert.assertEquals(0.0, sNaive, 1.0e-30);\n        Assert.assertEquals(-2088690039198397.0 / 1125899906842624.0, sAccurate, 1.0e-16);\n    }\n\n    @Test\n    public void testDotProduct() {\n        // we compare accurate versus naive dot product implementations\n        // on regular vectors (i.e. not extreme cases like in the previous test)\n        Well1024a random = new Well1024a(553267312521321234l);\n        for (int i = 0; i < 10000; ++i) {\n            double ux = 10000 * random.nextDouble();\n            double uy = 10000 * random.nextDouble();\n            double uz = 10000 * random.nextDouble();\n            double vx = 10000 * random.nextDouble();\n            double vy = 10000 * random.nextDouble();\n            double vz = 10000 * random.nextDouble();\n            double sNaive = ux * vx + uy * vy + uz * vz;\n            double sAccurate = new Vector3D(ux, uy, uz).dotProduct(new Vector3D(vx, vy, vz));\n            Assert.assertEquals(sNaive, sAccurate, 2.5e-16 * sAccurate);\n        }\n    }\n\n    @Test\n    public void testAccurateCrossProduct() {\n        // the vectors u1 and u2 are nearly but not exactly anti-parallel\n        // (7.31e-16 degrees from 180 degrees) naive cross product (i.e.\n        // computing u1.x * u2.x + u1.y * u2.y + u1.z * u2.z\n        // leads to a result of   [0.0009765, -0.0001220, -0.0039062],\n        // instead of the correct [0.0006913, -0.0001254, -0.0007909]\n        final Vector3D u1 = new Vector3D(-1321008684645961.0 /   268435456.0,\n                                         -5774608829631843.0 /   268435456.0,\n                                         -7645843051051357.0 /  8589934592.0);\n        final Vector3D u2 = new Vector3D( 1796571811118507.0 /  2147483648.0,\n                                          7853468008299307.0 /  2147483648.0,\n                                          2599586637357461.0 / 17179869184.0);\n        final Vector3D u3 = new Vector3D(12753243807587107.0 / 18446744073709551616.0, \n                                         -2313766922703915.0 / 18446744073709551616.0, \n                                          -227970081415313.0 /   288230376151711744.0);\n",
+  "compaction": {
+    "source_lines": 412,
+    "mode": "windows",
+    "windows_total": 7,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        300,
+        380
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 27.32089025574158
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 10.415344718503588
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 9.425754261171047
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 27.32089025574158
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 10.415344718503588
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 0.9906537667625965
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 3.1449412871578755
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 3.116721486728456
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 9.425754261171047
+      },
+      {
+        "start": 360,
+        "end": 412,
+        "score": 7.953168379823941
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 10451,
+  "representation_chars": 10451,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "test_class": "org.apache.commons.math3.fraction.BigFractionFormatTest",
+  "source_file": "src/test/java/org/apache/commons/math3/fraction/BigFractionFormatTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.fraction.BigFractionFormatTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/fraction/BigFractionFormatTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math3.fraction;\n\nimport java.math.BigDecimal;\nimport java.math.BigInteger;\nimport java.text.NumberFormat;\nimport java.util.Locale;\n\nimport org.apache.commons.math3.exception.MathParseException;\nimport org.apache.commons.math3.util.FastMath;\nimport org.junit.Assert;\nimport org.junit.Before;\nimport org.junit.Test;\n\n\npublic class BigFractionFormatTest {\n\n    BigFractionFormat properFormat = null;\n    BigFractionFormat improperFormat = null;\n\n    protected Locale getLocale() {\n        return Locale.getDefault();\n    }\n\n    @Before\n    public void setUp() {\n        properFormat = BigFractionFormat.getProperInstance(getLocale());\n        improperFormat = BigFractionFormat.getImproperInstance(getLocale());\n    }\n\n    @Test\n    public void testFormat() {\n        BigFraction c = new BigFraction(1, 2);\n        String expected = \"1 / 2\";\n\n        String actual = properFormat.format(c);\n        Assert.assertEquals(expected, actual);\n\n        actual = improperFormat.format(c);\n        Assert.assertEquals(expected, actual);\n    }\n\n    @Test\n    public void testFormatNegative() {\n        BigFraction c = new BigFraction(-1, 2);\n        String expected = \"-1 / 2\";\n\n        String actual = properFormat.format(c);\n        Assert.assertEquals(expected, actual);\n\n        actual = improperFormat.format(c);\n        Assert.assertEquals(expected, actual);\n    }\n\n    @Test\n    public void testFormatZero() {\n        BigFraction c = new BigFraction(0, 1);\n        String expected = \"0 / 1\";\n\n        String actual = properFormat.format(c);\n        Assert.assertEquals(expected, actual);\n\n        actual = improperFormat.format(c);\n        Assert.assertEquals(expected, actual);\n            Assert.assertNotNull(c);\n            Assert.assertEquals(-1, c.getNumeratorAsInt());\n            Assert.assertEquals(2, c.getDenominatorAsInt());\n\n            c = improperFormat.parse(source);\n            Assert.assertNotNull(c);\n            Assert.assertEquals(-1, c.getNumeratorAsInt());\n            Assert.assertEquals(2, c.getDenominatorAsInt());\n\n            source = \"1 / -2\";\n            c = properFormat.parse(source);\n            Assert.assertNotNull(c);\n            Assert.assertEquals(-1, c.getNumeratorAsInt());\n            Assert.assertEquals(2, c.getDenominatorAsInt());\n\n            c = improperFormat.parse(source);\n            Assert.assertNotNull(c);\n            Assert.assertEquals(-1, c.getNumeratorAsInt());\n            Assert.assertEquals(2, c.getDenominatorAsInt());\n        }\n    }\n\n    @Test\n    public void testParseProper() {\n        String source = \"1 2 / 3\";\n\n        {\n            BigFraction c = properFormat.parse(source);\n            Assert.assertNotNull(c);\n            Assert.assertEquals(5, c.getNumeratorAsInt());\n            Assert.assertEquals(3, c.getDenominatorAsInt());\n        }\n\n        try {\n            improperFormat.parse(source);\n            Assert.fail(\"invalid improper fraction.\");\n        } catch (MathParseException ex) {\n            // success\n        }\n    }\n\n    @Test\n    public void testParseProperNegative() {\n        String source = \"-1 2 / 3\";\n        {\n            BigFraction c = properFormat.parse(source);\n            Assert.assertNotNull(c);\n            Assert.assertEquals(-5, c.getNumeratorAsInt());\n            Assert.assertEquals(3, c.getDenominatorAsInt());\n        }\n\n        try {\n            improperFormat.parse(source);\n            Assert.fail(\"invalid improper fraction.\");\n        } catch (MathParseException ex) {\n            // success\n        }\n    }\n\n    @Test\n    public void testParseProperInvalidMinus() {\n        String source = \"2 -2 / 3\";\n        try {\n            properFormat.parse(source);\n            Assert.fail(\"invalid minus in improper fraction.\");\n        } catch (MathParseException ex) {\n            // expected\n        }\n        source = \"2 2 / -3\";\n        try {\n            properFormat.parse(source);\n            Assert.fail(\"invalid minus in improper fraction.\");\n        } catch (MathParseException ex) {\n            // expected\n        }\n    }\n\n    @Test\n    public void testParseBig() {\n        BigFraction f1 =\n            improperFormat.parse(\"167213075789791382630275400487886041651764456874403\" +\n                                 \" / \" +\n                                 \"53225575123090058458126718248444563466137046489291\");\n        Assert.assertEquals(FastMath.PI, f1.doubleValue(), 0.0);\n        BigFraction f2 =\n            properFormat.parse(\"3 \" +\n                               \"7536350420521207255895245742552351253353317406530\" +\n                               \" / \" +\n                               \"53225575123090058458126718248444563466137046489291\");\n        Assert.assertEquals(FastMath.PI, f2.doubleValue(), 0.0);\n        Assert.assertEquals(f1, f2);\n        BigDecimal pi =\n            new BigDecimal(\"3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117068\");\n        Assert.assertEquals(pi, f1.bigDecimalValue(99, BigDecimal.ROUND_HALF_EVEN));\n    }\n\n    @Test\n    public void testNumeratorFormat() {\n        NumberFormat old = properFormat.getNumeratorFormat();\n        NumberFormat nf = NumberFormat.getInstance();\n        nf.setParseIntegerOnly(true);\n        properFormat.setNumeratorFormat(nf);\n        Assert.assertEquals(nf, properFormat.getNumeratorFormat());\n        properFormat.setNumeratorFormat(old);\n\n        old = improperFormat.getNumeratorFormat();\n        nf = NumberFormat.getInstance();\n        nf.setParseIntegerOnly(true);\n        improperFormat.setNumeratorFormat(nf);\n        Assert.assertEquals(nf, improperFormat.getNumeratorFormat());\n        improperFormat.setNumeratorFormat(old);\n    }\n\n    @Test\n    public void testDenominatorFormat() {\n        NumberFormat old = properFormat.getDenominatorFormat();\n        NumberFormat nf = NumberFormat.getInstance();\n        nf.setParseIntegerOnly(true);\n        properFormat.setDenominatorFormat(nf);\n        Assert.assertEquals(nf, properFormat.getDenominatorFormat());\n        properFormat.setDenominatorFormat(old);\n\n        old = improperFormat.getDenominatorFormat();\n        nf = NumberFormat.getInstance();\n        nf.setParseIntegerOnly(true);\n        improperFormat.setDenominatorFormat(nf);\n        Assert.assertEquals(nf, improperFormat.getDenominatorFormat());\n        improperFormat.setDenominatorFormat(old);\n    }\n\n    @Test\n    public void testWholeFormat() {\n        ProperBigFractionFormat format = (ProperBigFractionFormat)properFormat;\n\n        NumberFormat old = format.getWholeFormat();\n        NumberFormat nf = NumberFormat.getInstance();\n        nf.setParseIntegerOnly(true);\n        format.setWholeFormat(nf);\n        Assert.assertEquals(nf, format.getWholeFormat());\n        format.setWholeFormat(old);\n",
+  "compaction": {
+    "source_lines": 332,
+    "mode": "windows",
+    "windows_total": 6,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        180,
+        260
+      ],
+      [
+        240,
+        320
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 19.162813794173655
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 1.8377097440455135
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 3.1804556420469905
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 19.162813794173655
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 1.8012076529244048
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 1.7178178125076096
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 1.8377097440455135
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 3.1804556420469905
+      },
+      {
+        "start": 300,
+        "end": 332,
+        "score": 1.5930053299330362
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7765,
+  "representation_chars": 7765,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "org.jsoup.nodes.TextNodeTest",
+  "source_file": "src/test/java/org/jsoup/nodes/TextNodeTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.jsoup.nodes.TextNodeTest\n\nSOURCE FILE:\nsrc/test/java/org/jsoup/nodes/TextNodeTest.java\n\nTEST SOURCE:\npackage org.jsoup.nodes;\n\nimport org.jsoup.Jsoup;\nimport org.junit.Test;\n\nimport static org.junit.Assert.*;\n\n/**\n Test TextNodes\n\n @author Jonathan Hedley, jonathan@hedley.net */\npublic class TextNodeTest {\n    @Test public void testBlank() {\n        TextNode one = new TextNode(\"\", \"\");\n        TextNode two = new TextNode(\"     \", \"\");\n        TextNode three = new TextNode(\"  \\n\\n   \", \"\");\n        TextNode four = new TextNode(\"Hello\", \"\");\n        TextNode five = new TextNode(\"  \\nHello \", \"\");\n\n        assertTrue(one.isBlank());\n        assertTrue(two.isBlank());\n        assertTrue(three.isBlank());\n        assertFalse(four.isBlank());\n        assertFalse(five.isBlank());\n    }\n    \n    @Test public void testTextBean() {\n        Document doc = Jsoup.parse(\"<p>One <span>two</span> three</p>\");\n        Element p = doc.select(\"p\").first();\n        \n        TextNode tn = (TextNode) p.childNode(2);\n        assertEquals(\" three\", tn.text());\n        \n        tn.text(\" POW!\");\n        assertEquals(\"One <span>two</span> POW!\", p.html());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 37,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1173,
+  "representation_chars": 1173,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

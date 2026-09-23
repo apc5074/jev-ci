@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.seq.PolyMapWriter827Test",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/seq/PolyMapWriter827Test.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.seq.PolyMapWriter827Test\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/seq/PolyMapWriter827Test.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.seq;\n\nimport java.io.IOException;\nimport java.util.HashMap;\nimport java.util.Map;\n\nimport org.junit.Assert;\n\nimport com.fasterxml.jackson.core.JsonGenerator;\nimport com.fasterxml.jackson.core.JsonProcessingException;\nimport com.fasterxml.jackson.core.type.TypeReference;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.module.SimpleModule;\n\n// for [databind#827]\npublic class PolyMapWriter827Test extends BaseMapTest\n{\n    static class CustomKey {\n        String a;\n        int b;\n\n        @Override\n        public String toString() { return \"BAD-KEY\"; }\n    }\n\n    public class CustomKeySerializer extends JsonSerializer<CustomKey> {\n        @Override\n        public void serialize(CustomKey key, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {\n            jsonGenerator.writeFieldName(key.a + \",\" + key.b);\n        }\n    }\n\n    public void testPolyCustomKeySerializer() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);\n\n        mapper.registerModule(new SimpleModule(\"keySerializerModule\")\n            .addKeySerializer(CustomKey.class, new CustomKeySerializer()));\n\n        Map<CustomKey, String> map = new HashMap<CustomKey, String>();\n        CustomKey key = new CustomKey();\n        key.a = \"foo\";\n        key.b = 1;\n        map.put(key, \"bar\");\n\n        final ObjectWriter writer = mapper.writerFor(new TypeReference<Map<CustomKey,String>>() { });\n        String json = writer.writeValueAsString(map);\n        Assert.assertEquals(\"[\\\"java.util.HashMap\\\",{\\\"foo,1\\\":\\\"bar\\\"}]\", json);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 51,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1904,
+  "representation_chars": 1904,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

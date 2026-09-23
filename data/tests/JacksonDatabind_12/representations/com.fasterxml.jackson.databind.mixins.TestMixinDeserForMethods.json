@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.mixins.TestMixinDeserForMethods",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/mixins/TestMixinDeserForMethods.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.mixins.TestMixinDeserForMethods\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/mixins/TestMixinDeserForMethods.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.mixins;\n\nimport java.io.*;\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.databind.*;\n\npublic class TestMixinDeserForMethods\n    extends BaseMapTest\n{\n    /*\n    /**********************************************************\n    /* Helper bean classes\n    /**********************************************************\n     */\n\n    static class BaseClass\n    {\n        protected HashMap<String,Object> values = new HashMap<String,Object>();\n\n        public BaseClass() { }\n\n        protected void addValue(String key, Object value) {\n            values.put(key, value);\n        }\n    }\n\n    interface MixIn\n    {\n        @JsonAnySetter void addValue(String key, Object value);\n    }\n\n    /*\n    /**********************************************************\n    /* Unit tests\n    /**********************************************************\n     */\n\n    /**\n     * Unit test that verifies that we can mix in @JsonAnySetter\n     * annotation, as expected.\n     */\n    public void testWithAnySetter() throws IOException\n    {\n        ObjectMapper m = new ObjectMapper();\n        m.addMixInAnnotations(BaseClass.class, MixIn.class);\n        BaseClass result = m.readValue(\"{ \\\"a\\\" : 3, \\\"b\\\" : true }\", BaseClass.class);\n        assertNotNull(result);\n        assertEquals(2, result.values.size());\n        assertEquals(Integer.valueOf(3), result.values.get(\"a\"));\n        assertEquals(Boolean.TRUE, result.values.get(\"b\"));\n    }\n}\n",
+  "compaction": {
+    "source_lines": 55,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1691,
+  "representation_chars": 1691,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

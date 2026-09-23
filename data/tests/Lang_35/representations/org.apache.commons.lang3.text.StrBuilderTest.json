@@ -1,0 +1,206 @@
+{
+  "test_class": "org.apache.commons.lang3.text.StrBuilderTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/text/StrBuilderTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.text.StrBuilderTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/text/StrBuilderTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.lang3.text;\n\nimport java.io.Reader;\nimport java.io.Writer;\nimport java.util.Arrays;\n\nimport junit.framework.TestCase;\n\nimport org.apache.commons.lang3.ArrayUtils;\n\n/**\n * Unit tests for {@link org.apache.commons.lang3.text.StrBuilder}.\n * \n * @author Michael Heuer\n * @version $Id$\n */\npublic class StrBuilderTest extends TestCase {\n\n    /**\n     * Create a new test case with the specified name.\n     * \n     * @param name\n     *            name\n     */\n    public StrBuilderTest(String name) {\n        super(name);\n    }\n\n    //-----------------------------------------------------------------------\n    public void testConstructors() {\n        StrBuilder sb0 = new StrBuilder();\n        assertEquals(32, sb0.capacity());\n        assertEquals(0, sb0.length());\n        assertEquals(0, sb0.size());\n\n        StrBuilder sb1 = new StrBuilder(32);\n        assertEquals(32, sb1.capacity());\n        assertEquals(0, sb1.length());\n        assertEquals(0, sb1.size());\n\n        StrBuilder sb2 = new StrBuilder(0);\n        assertEquals(32, sb2.capacity());\n        assertEquals(0, sb2.length());\n        assertEquals(0, sb2.size());\n\n        StrBuilder sb3 = new StrBuilder(-1);\n        assertEquals(32, sb3.capacity());\n        assertEquals(0, sb3.length());\n        assertEquals(0, sb3.size());\n\n        StrBuilder sb4 = new StrBuilder(1);\n        assertEquals(1, sb4.capacity());\n        assertEquals(0, sb4.length());\n        assertEquals(0, sb4.size());\n\n        StrBuilder sb5 = new StrBuilder((String) null);\n        assertEquals(32, sb5.capacity());\n        assertEquals(0, sb5.length());\n        assertEquals(0, sb5.size());\n\n        StrBuilder sb6 = new StrBuilder(\"\");\n        assertEquals(32, sb6.capacity());\n        assertEquals(0, sb6.length());\n        assertEquals(-1, sb.lastIndexOf(A_NUMBER_MATCHER, 6)); // A matches, 1 is outside bounds\n        assertEquals(6, sb.lastIndexOf(A_NUMBER_MATCHER, 7));\n        assertEquals(6, sb.lastIndexOf(A_NUMBER_MATCHER, 22));\n        assertEquals(6, sb.lastIndexOf(A_NUMBER_MATCHER, 23)); // A matches, 2 is outside bounds\n        assertEquals(23, sb.lastIndexOf(A_NUMBER_MATCHER, 24));\n    }\n\n    static final StrMatcher A_NUMBER_MATCHER = new StrMatcher() {\n        @Override\n        public int isMatch(char[] buffer, int pos, int bufferStart, int bufferEnd) {\n            if (buffer[pos] == 'A') {\n                pos++;\n                if (pos < bufferEnd && buffer[pos] >= '0' && buffer[pos] <= '9') {\n                    return 2;\n                }\n            }\n            return 0;\n        }\n    };\n\n    //-----------------------------------------------------------------------\n    public void testAsTokenizer() throws Exception {\n        // from Javadoc\n        StrBuilder b = new StrBuilder();\n        b.append(\"a b \");\n        StrTokenizer t = b.asTokenizer();\n        \n        String[] tokens1 = t.getTokenArray();\n        assertEquals(2, tokens1.length);\n        assertEquals(\"a\", tokens1[0]);\n        assertEquals(\"b\", tokens1[1]);\n        assertEquals(2, t.size());\n        \n        b.append(\"c d \");\n        String[] tokens2 = t.getTokenArray();\n        assertEquals(2, tokens2.length);\n        assertEquals(\"a\", tokens2[0]);\n        assertEquals(\"b\", tokens2[1]);\n        assertEquals(2, t.size());\n        assertEquals(\"a\", t.next());\n        assertEquals(\"b\", t.next());\n        \n        t.reset();\n        String[] tokens3 = t.getTokenArray();\n        assertEquals(4, tokens3.length);\n        assertEquals(\"a\", tokens3[0]);\n        assertEquals(\"b\", tokens3[1]);\n        assertEquals(\"c\", tokens3[2]);\n        assertEquals(\"d\", tokens3[3]);\n        assertEquals(4, t.size());\n        assertEquals(\"a\", t.next());\n        assertEquals(\"b\", t.next());\n        assertEquals(\"c\", t.next());\n        assertEquals(\"d\", t.next());\n        \n        assertEquals(\"a b c d \", t.getContent());\n    }\n\n    // -----------------------------------------------------------------------\n    public void testAsReader() throws Exception {\n        StrBuilder sb = new StrBuilder(\"some text\");\n        Reader reader = sb.asReader();\n        assertEquals(true, reader.ready());\n        char[] buf = new char[40];\n        assertEquals(9, reader.read(buf));\n        assertEquals(\"some text\", new String(buf, 0, 9));\n        \n        assertEquals(-1, reader.read());\n        assertEquals(false, reader.ready());\n        assertEquals(0, reader.skip(2));\n        assertEquals(0, reader.skip(-1));\n        \n        assertEquals(true, reader.markSupported());\n        reader = sb.asReader();\n        assertEquals('s', reader.read());\n        reader.mark(-1);\n        char[] array = new char[3];\n        assertEquals(3, reader.read(array, 0, 3));\n        assertEquals('o', array[0]);\n        assertEquals('m', array[1]);\n        assertEquals(true, sb2.equalsIgnoreCase(sb2));\n        \n        sb2.clear().append(\"aBc\");\n        assertEquals(true, sb1.equalsIgnoreCase(sb2));\n    }\n\n    //-----------------------------------------------------------------------\n    public void testEquals() {\n        StrBuilder sb1 = new StrBuilder();\n        StrBuilder sb2 = new StrBuilder();\n        assertEquals(true, sb1.equals(sb2));\n        assertEquals(true, sb1.equals(sb1));\n        assertEquals(true, sb2.equals(sb2));\n        assertEquals(true, sb1.equals((Object) sb2));\n        \n        sb1.append(\"abc\");\n        assertEquals(false, sb1.equals(sb2));\n        assertEquals(false, sb1.equals((Object) sb2));\n        \n        sb2.append(\"ABC\");\n        assertEquals(false, sb1.equals(sb2));\n        assertEquals(false, sb1.equals((Object) sb2));\n        \n        sb2.clear().append(\"abc\");\n        assertEquals(true, sb1.equals(sb2));\n        assertEquals(true, sb1.equals((Object) sb2));\n        \n        assertEquals(false, sb1.equals(new Integer(1)));\n        assertEquals(false, sb1.equals(\"abc\"));\n    }\n\n    //-----------------------------------------------------------------------\n    public void testHashCode() {\n        StrBuilder sb = new StrBuilder();\n        int hc1a = sb.hashCode();\n        int hc1b = sb.hashCode();\n        assertEquals(0, hc1a);\n        assertEquals(hc1a, hc1b);\n        \n        sb.append(\"abc\");\n        int hc2a = sb.hashCode();\n        int hc2b = sb.hashCode();\n        assertEquals(true, hc2a != 0);\n        assertEquals(hc2a, hc2b);\n    }\n\n    //-----------------------------------------------------------------------\n    public void testToString() {\n        StrBuilder sb = new StrBuilder(\"abc\");\n        assertEquals(\"abc\", sb.toString());\n    }\n\n    //-----------------------------------------------------------------------\n    public void testToStringBuffer() {\n        StrBuilder sb = new StrBuilder();\n        assertEquals(new StringBuffer().toString(), sb.toStringBuffer().toString());\n        \n        sb.append(\"junit\");\n        assertEquals(new StringBuffer(\"junit\").toString(), sb.toStringBuffer().toString());\n    }\n\n    //-----------------------------------------------------------------------\n    public void testLang294() {\n        StrBuilder sb = new StrBuilder(\"\\n%BLAH%\\nDo more stuff\\neven more stuff\\n%BLAH%\\n\");\n        sb.deleteAll(\"\\n%BLAH%\");\n        assertEquals(\"\\nDo more stuff\\neven more stuff\\n\", sb.toString()); \n    }\n\n    public void testIndexOfLang294() {\n        StrBuilder sb = new StrBuilder(\"onetwothree\");\n        sb.deleteFirst(\"three\");\n        assertEquals(-1, sb.indexOf(\"three\"));\n    }\n\n    //-----------------------------------------------------------------------\n    public void testLang295() {\n        StrBuilder sb = new StrBuilder(\"onetwothree\");\n        sb.deleteFirst(\"three\");\n        assertFalse( \"The contains(char) method is looking beyond the end of the string\", sb.contains('h'));\n        assertEquals( \"The indexOf(char) method is looking beyond the end of the string\", -1, sb.indexOf('h'));\n",
+  "compaction": {
+    "source_lines": 1776,
+    "mode": "windows",
+    "windows_total": 30,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        1500,
+        1580
+      ],
+      [
+        1680,
+        1760
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 49.08104828377835
+      },
+      {
+        "start": 1500,
+        "end": 1580,
+        "score": 19.940534551682727
+      },
+      {
+        "start": 1680,
+        "end": 1760,
+        "score": 20.59930228779409
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 49.08104828377835
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 6.419097937023207
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 9.728010200647699
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 7.115763112250452
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.085721159143954
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 2.4411197307270625
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 14.13986840696861
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 9.205133655848925
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 5.15968196838804
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 0.7312424325387001
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 2.812104060214871
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 2.9883245242043737
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 0.9335113314281019
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 0.8581358917927298
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 0.6237955959182421
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 1.5214679011165382
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 1.0684702339129402
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 4.007859756806983
+      },
+      {
+        "start": 1080,
+        "end": 1160,
+        "score": 3.7805937561588454
+      },
+      {
+        "start": 1140,
+        "end": 1220,
+        "score": 2.4390574941614545
+      },
+      {
+        "start": 1200,
+        "end": 1280,
+        "score": 1.5817826497657563
+      },
+      {
+        "start": 1260,
+        "end": 1340,
+        "score": 1.754920217123734
+      },
+      {
+        "start": 1320,
+        "end": 1400,
+        "score": 1.8928308172334156
+      },
+      {
+        "start": 1380,
+        "end": 1460,
+        "score": 1.926167225628352
+      },
+      {
+        "start": 1440,
+        "end": 1520,
+        "score": 11.357710864869935
+      },
+      {
+        "start": 1500,
+        "end": 1580,
+        "score": 19.940534551682727
+      },
+      {
+        "start": 1560,
+        "end": 1640,
+        "score": 5.836227867849583
+      },
+      {
+        "start": 1620,
+        "end": 1700,
+        "score": 8.980178993233515
+      },
+      {
+        "start": 1680,
+        "end": 1760,
+        "score": 20.59930228779409
+      },
+      {
+        "start": 1740,
+        "end": 1776,
+        "score": 12.341198809631587
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8806,
+  "representation_chars": 8806,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

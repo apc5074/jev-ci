@@ -1,0 +1,91 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.node.TestObjectNode",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/node/TestObjectNode.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.node.TestObjectNode\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/node/TestObjectNode.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.node;\n\nimport java.math.BigDecimal;\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.JsonCreator;\nimport com.fasterxml.jackson.annotation.JsonInclude;\nimport com.fasterxml.jackson.annotation.JsonValue;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\n\n/**\n * Additional tests for {@link ObjectNode} container class.\n */\npublic class TestObjectNode\n    extends BaseMapTest\n{\n    @JsonDeserialize(as = DataImpl.class)\n    public interface Data {\n    }\n\n    public static class DataImpl implements Data\n    {\n        protected JsonNode root;\n\n        @JsonCreator\n        public DataImpl(JsonNode n) {\n            root = n;\n        }\n        \n        @JsonValue\n        public JsonNode value() { return root; }\n        \n        /*\n        public Wrapper(ObjectNode n) { root = n; }\n        \n        @JsonValue\n        public ObjectNode value() { return root; }\n        */\n    }\n\n    static class ObNodeWrapper {\n        @JsonInclude(JsonInclude.Include.NON_EMPTY)\n        public ObjectNode node;\n\n        public ObNodeWrapper(ObjectNode n) {\n            node = n;\n        }\n    }\n\n    // [databind#941]\n    static class MyValue\n    {\n        private final ObjectNode object;\n\n        @JsonCreator\n        public MyValue(ObjectNode object) { this.object = object; }\n\n        @JsonValue\n        public ObjectNode getObject() { return object; }\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n\n    private final ObjectMapper MAPPER = objectMapper();\n\n    public void testSimpleObject() throws Exception\n    {\n        String JSON = \"{ \\\"key\\\" : 1, \\\"b\\\" : \\\"x\\\" }\";\n        JsonNode root = MAPPER.readTree(JSON);\n\n        // basic properties first:\n        assertFalse(root.isValueNode());\n        assertTrue(root.isContainerNode());\n        assertFalse(root.isArray());\n        assertTrue(root.isObject());\n        assertEquals(2, root.size());\n\n        // Related to [JACKSON-50]:\n        Iterator<JsonNode> it = root.iterator();\n        assertNotNull(it);\n        assertTrue(it.hasNext());\n        JsonNode n = it.next();\n        assertNotNull(n);\n        assertEquals(IntNode.valueOf(1), n);\n\n        assertTrue(it.hasNext());\n        n = it.next();\n        assertNotNull(n);\n        assertEquals(TextNode.valueOf(\"x\"), n);\n\n        assertFalse(it.hasNext());\n\n        // Ok, then, let's traverse via extended interface\n        ObjectNode obNode = (ObjectNode) root;\n        Iterator<Map.Entry<String,JsonNode>> fit = obNode.fields();\n        // we also know that LinkedHashMap is used, i.e. order preserved\n        assertTrue(fit.hasNext());\n        Map.Entry<String,JsonNode> en = fit.next();\n        assertEquals(\"key\", en.getKey());\n        assertEquals(IntNode.valueOf(1), en.getValue());\n\n        assertTrue(fit.hasNext());\n        en = fit.next();\n        assertEquals(\"b\", en.getKey());\n        assertEquals(TextNode.valueOf(\"x\"), en.getValue());\n\n        // Plus: we should be able to modify the node via iterator too:\n        fit.remove();\n        assertEquals(1, obNode.size());\n        assertEquals(IntNode.valueOf(1), root.get(\"key\"));\n        assertNull(root.get(\"b\"));\n    }    \n    // for [Issue#346]\n    public void testEmptyNodeAsValue() throws Exception\n    {\n        Data w = MAPPER.readValue(\"{}\", Data.class);\n        assertNotNull(w);\n    }\n    \n    public void testBasics()\n    {\n        ObjectNode n = new ObjectNode(JsonNodeFactory.instance);\n        assertStandardEquals(n);\n\n        assertFalse(n.elements().hasNext());\n        assertFalse(n.fields().hasNext());\n        assertFalse(n.fieldNames().hasNext());\n        assertNull(n.get(\"a\"));\n        assertTrue(n.path(\"a\").isMissingNode());\n\n        TextNode text = TextNode.valueOf(\"x\");\n        assertSame(n, n.set(\"a\", text));\n        \n        assertEquals(1, n.size());\n        assertTrue(n.elements().hasNext());\n        assertTrue(n.fields().hasNext());\n        assertTrue(n.fieldNames().hasNext());\n        assertSame(text, n.get(\"a\"));\n        assertSame(text, n.path(\"a\"));\n        assertNull(n.get(\"b\"));\n        assertNull(n.get(0)); // not used with objects\n\n        assertFalse(n.has(0));\n        assertFalse(n.hasNonNull(0));\n        assertTrue(n.has(\"a\"));\n        assertTrue(n.hasNonNull(\"a\"));\n        assertFalse(n.has(\"b\"));\n        assertFalse(n.hasNonNull(\"b\"));\n\n        ObjectNode n2 = new ObjectNode(JsonNodeFactory.instance);\n        n2.put(\"b\", 13);\n        assertFalse(n.equals(n2));\n        n.setAll(n2);\n        \n        assertEquals(2, n.size());\n        n.set(\"null\", (JsonNode)null);\n        assertEquals(3, n.size());\n        // may be non-intuitive, but explicit nulls do exist in tree:\n        assertTrue(n.has(\"null\"));\n        assertFalse(n.hasNonNull(\"null\"));\n        // should replace, not add\n        n.put(\"null\", \"notReallNull\");\n        assertEquals(3, n.size());\n        assertNotNull(n.remove(\"null\"));\n        assertEquals(2, n.size());\n\n        Map<String,JsonNode> nodes = new HashMap<String,JsonNode>();\n        nodes.put(\"d\", text);\n        n.setAll(nodes);\n        assertEquals(3, n.size());\n\n        n.removeAll();\n        assertEquals(0, n.size());\n    }\n\n    /**\n     * Verify null handling\n     */\n    public void testNullChecking()\n    {\n        ObjectNode o1 = JsonNodeFactory.instance.objectNode();\n        ObjectNode o2 = JsonNodeFactory.instance.objectNode();\n        // used to throw NPE before fix:\n        o1.setAll(o2);\n        assertEquals(0, o1.size());\n        assertEquals(0, o2.size());\n\n        // also: nulls should be converted to NullNodes...\n        o1.set(\"x\", null);\n        JsonNode n = o1.get(\"x\");\n        assertNotNull(n);\n        assertSame(n, NullNode.instance);\n\n        o1.put(\"str\", (String) null);\n        n = o1.get(\"str\");\n",
+  "compaction": {
+    "source_lines": 414,
+    "mode": "windows",
+    "windows_total": 7,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 24.758944062318868
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 18.402523941828765
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 16.67687329676321
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 24.758944062318868
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 18.402523941828765
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 16.67687329676321
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 10.167535657813067
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 12.867071034357553
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 9.770926963492947
+      },
+      {
+        "start": 360,
+        "end": 414,
+        "score": 5.803706009145673
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 6079,
+  "representation_chars": 6079,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

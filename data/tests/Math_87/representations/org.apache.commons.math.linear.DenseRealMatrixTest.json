@@ -1,0 +1,156 @@
+{
+  "test_class": "org.apache.commons.math.linear.DenseRealMatrixTest",
+  "source_file": "src/test/org/apache/commons/math/linear/DenseRealMatrixTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math.linear.DenseRealMatrixTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/math/linear/DenseRealMatrixTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math.linear;\n\nimport java.util.Arrays;\nimport java.util.Random;\n\nimport junit.framework.Test;\nimport junit.framework.TestCase;\nimport junit.framework.TestSuite;\n\nimport org.apache.commons.math.TestUtils;\n\n/**\n * Test cases for the {@link DenseRealMatrix} class.\n *\n * @version $Revision$ $Date$\n */\n\npublic final class DenseRealMatrixTest extends TestCase {\n    \n    // 3 x 3 identity matrix\n    protected double[][] id = { {1d,0d,0d}, {0d,1d,0d}, {0d,0d,1d} };\n    \n    // Test data for group operations\n    protected double[][] testData = { {1d,2d,3d}, {2d,5d,3d}, {1d,0d,8d} };\n    protected double[][] testDataLU = {{2d, 5d, 3d}, {.5d, -2.5d, 6.5d}, {0.5d, 0.2d, .2d}};\n    protected double[][] testDataPlus2 = { {3d,4d,5d}, {4d,7d,5d}, {3d,2d,10d} };\n    protected double[][] testDataMinus = { {-1d,-2d,-3d}, {-2d,-5d,-3d}, \n       {-1d,0d,-8d} };\n    protected double[] testDataRow1 = {1d,2d,3d};\n    protected double[] testDataCol3 = {3d,3d,8d};\n    protected double[][] testDataInv = \n        { {-40d,16d,9d}, {13d,-5d,-3d}, {5d,-2d,-1d} };\n    protected double[] preMultTest = {8,12,33};\n    protected double[][] testData2 ={ {1d,2d,3d}, {2d,5d,3d}};\n    protected double[][] testData2T = { {1d,2d}, {2d,5d}, {3d,3d}};\n    protected double[][] testDataPlusInv = \n        { {-39d,18d,12d}, {15d,0d,0d}, {6d,-2d,7d} };\n    \n    // lu decomposition tests\n    protected double[][] luData = { {2d,3d,3d}, {0d,5d,7d}, {6d,9d,8d} };\n    protected double[][] luDataLUDecomposition = { {6d,9d,8d}, {0d,5d,7d},\n            {0.33333333333333,0d,0.33333333333333} };\n    \n    // singular matrices\n    protected double[][] singular = { {2d,3d}, {2d,3d} };\n    protected double[][] bigSingular = {{1d,2d,3d,4d}, {2d,5d,3d,4d},\n        {7d,3d,256d,1930d}, {3d,7d,6d,8d}}; // 4th row = 1st + 2nd\n    protected double[][] detData = { {1d,2d,3d}, {4d,5d,6d}, {7d,8d,10d} };\n    protected double[][] detData2 = { {1d, 3d}, {2d, 4d}};\n    \n    // vectors\n    protected double[] testVector = {1,2,3};\n    protected double[] testVector2 = {1,2,3,4};\n    \n    // submatrix accessor tests\n    protected double[][] subTestData = {{1, 2, 3, 4}, {1.5, 2.5, 3.5, 4.5},\n            {2, 4, 6, 8}, {4, 5, 6, 7}}; \n    // array selections\n    protected double[][] subRows02Cols13 = { {2, 4}, {4, 8}};\n    protected double[][] subRows03Cols12 = { {2, 3}, {5, 6}};\n    protected double[][] subRows03Cols123 = { {2, 3, 4} , {5, 6, 7}};\n    // effective permutations\n    protected double[][] subRows20Cols123 = { {4, 6, 8} , {2, 3, 4}};\n    protected double[][] subRows31Cols31 = {{7, 5}, {4.5, 2.5}};\n    // contiguous ranges\n    protected double[][] subRows01Cols23 = {{3,4} , {3.5, 4.5}};\n    protected double[][] subRows23Cols00 = {{2} , {4}};\n    protected double[][] subRows00Cols33 = {{4}};\n    // row matrices\n    protected double[][] subRow0 = {{1,2,3,4}};\n    protected double[][] subRow3 = {{4,5,6,7}};\n    // column matrices\n    protected double[][] subColumn1 = {{2}, {2.5}, {4}, {5}};\n    protected double[][] subColumn3 = {{4}, {4.5}, {8}, {7}};\n    \n    // tolerances\n    protected double entryTolerance = 10E-16;\n    protected double normTolerance = 10E-14;\n    \n    public DenseRealMatrixTest(String name) {\n        super(name);\n    }\n    \n    public static Test suite() {\n        TestSuite suite = new TestSuite(DenseRealMatrixTest.class);\n        suite.setName(\"DenseRealMatrix Tests\");\n        return suite;\n    }\n    \n    /** test dimensions */\n    public void testDimensions() {\n        DenseRealMatrix m = new DenseRealMatrix(testData);\n        DenseRealMatrix m2 = new DenseRealMatrix(testData2);\n        assertEquals(\"testData row dimension\",3,m.getRowDimension());\n        assertEquals(\"testData column dimension\",3,m.getColumnDimension());\n        assertTrue(\"testData is square\",m.isSquare());\n        assertEquals(\"testData2 row dimension\",m2.getRowDimension(),2);\n        assertEquals(\"testData2 column dimension\",m2.getColumnDimension(),3);\n        assertTrue(\"testData2 is not square\",!m2.isSquare());\n    } \n    \n    /** test copy functions */\n    public void testCopyFunctions() {\n        Random r = new Random(66636328996002l);\n        DenseRealMatrix m1 = createRandomMatrix(r, 47, 83);\n        DenseRealMatrix m2 = new DenseRealMatrix(m1.getData());\n        assertEquals(m1, m2);\n        DenseRealMatrix m3 = new DenseRealMatrix(testData);\n        DenseRealMatrix m4 = new DenseRealMatrix(m3.getData());\n        assertEquals(m3, m4);\n    }           \n    \n    /** test add */\n    public void testAdd() {\n        DenseRealMatrix m = new DenseRealMatrix(testData);\n        DenseRealMatrix mInv = new DenseRealMatrix(testDataInv);\n        RealMatrix mPlusMInv = m.add(mInv);\n        double[][] sumEntries = mPlusMInv.getData();\n        for (int row = 0; row < m.getRowDimension(); row++) {\n            for (int col = 0; col < m.getColumnDimension(); col++) {\n                assertEquals(\"sum entry entry\",\n                    testDataPlusInv[row][col],sumEntries[row][col],\n                        entryTolerance);\n            }\n        }\n        checkArrays(sub, m.getColumn(2));\n\n    }\n    \n    private double[] columnToArray(double[][] column) {\n        double[] data = new double[column.length];\n        for (int i = 0; i < data.length; ++i) {\n            data[i] = column[i][0];\n        }\n        return data;\n    }\n\n    private void checkArrays(double[] expected, double[] actual) {\n        assertEquals(expected.length, actual.length);\n        for (int i = 0; i < expected.length; ++i) {\n            assertEquals(expected[i], actual[i]);            \n        }\n    }\n    \n    public void testEqualsAndHashCode() {\n        DenseRealMatrix m = new DenseRealMatrix(testData);\n        DenseRealMatrix m1 = (DenseRealMatrix) m.copy();\n        DenseRealMatrix mt = (DenseRealMatrix) m.transpose();\n        assertTrue(m.hashCode() != mt.hashCode());\n        assertEquals(m.hashCode(), m1.hashCode());\n        assertEquals(m, m);\n        assertEquals(m, m1);\n        assertFalse(m.equals(null));\n        assertFalse(m.equals(mt));\n        assertFalse(m.equals(new DenseRealMatrix(bigSingular))); \n    }\n    \n    public void testToString() {\n        DenseRealMatrix m = new DenseRealMatrix(testData);\n        assertEquals(\"DenseRealMatrix{{1.0,2.0,3.0},{2.0,5.0,3.0},{1.0,0.0,8.0}}\",\n                m.toString());\n    }\n    \n    public void testSetSubMatrix() throws Exception {\n        DenseRealMatrix m = new DenseRealMatrix(testData);\n        m.setSubMatrix(detData2,1,1);\n        RealMatrix expected = new DenseRealMatrix\n            (new double[][] {{1.0,2.0,3.0},{2.0,1.0,3.0},{1.0,2.0,4.0}});\n        assertEquals(expected, m);  \n        \n        m.setSubMatrix(detData2,0,0);\n        expected = new DenseRealMatrix\n            (new double[][] {{1.0,3.0,3.0},{2.0,4.0,3.0},{1.0,2.0,4.0}});\n        assertEquals(expected, m);  \n        \n        m.setSubMatrix(testDataPlus2,0,0);      \n        expected = new DenseRealMatrix\n            (new double[][] {{3.0,4.0,5.0},{4.0,7.0,5.0},{3.0,2.0,10.0}});\n        assertEquals(expected, m);   \n        \n        // javadoc example\n        DenseRealMatrix matrix = new DenseRealMatrix\n            (new double[][] {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 0, 1 , 2}});\n        matrix.setSubMatrix(new double[][] {{3, 4}, {5, 6}}, 1, 1);\n        expected = new DenseRealMatrix\n            (new double[][] {{1, 2, 3, 4}, {5, 3, 4, 8}, {9, 5 ,6, 2}});\n        assertEquals(expected, matrix);   \n\n        // dimension overflow\n        try {  \n            m.setSubMatrix(testData,1,1);\n            fail(\"expecting MatrixIndexException\");\n        } catch (MatrixIndexException e) {\n            // expected\n        }\n        // dimension underflow\n        try {  \n            m.setSubMatrix(testData,-1,1);\n            fail(\"expecting MatrixIndexException\");\n        } catch (MatrixIndexException e) {\n            // expected\n        }\n        try {  \n            m.setSubMatrix(testData,1,-1);\n",
+  "compaction": {
+    "source_lines": 1210,
+    "mode": "windows",
+    "windows_total": 20,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        960,
+        1040
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 25.257533800681582
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 11.602196166983683
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 11.23622591066487
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 25.257533800681582
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 11.602196166983683
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 7.560392125767134
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 1.7289401531827548
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 6.400396172968317
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 5.2226343497155305
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 4.31356039207951
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 8.26084313241542
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 7.509881395737259
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 6.163781371592098
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 3.3264095753047975
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 3.294805395890557
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 3.334046656656146
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 5.493078042252474
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 5.6228468471488515
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 6.0587359472415505
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 11.23622591066487
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 3.9481163965521042
+      },
+      {
+        "start": 1080,
+        "end": 1160,
+        "score": 3.3243106420625366
+      },
+      {
+        "start": 1140,
+        "end": 1210,
+        "score": 8.0158147873435
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8921,
+  "representation_chars": 8921,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

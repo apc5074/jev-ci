@@ -1,0 +1,209 @@
+TEST CLASS:
+org.apache.commons.math3.geometry.euclidean.twod.PolygonsSetTest
+
+SOURCE FILE:
+src/test/java/org/apache/commons/math3/geometry/euclidean/twod/PolygonsSetTest.java
+
+TEST SOURCE:
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.commons.math3.geometry.euclidean.twod;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.math3.geometry.euclidean.oned.Interval;
+import org.apache.commons.math3.geometry.euclidean.oned.IntervalsSet;
+import org.apache.commons.math3.geometry.euclidean.oned.Vector1D;
+import org.apache.commons.math3.geometry.euclidean.twod.Line;
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
+import org.apache.commons.math3.geometry.euclidean.twod.PolygonsSet;
+import org.apache.commons.math3.geometry.partitioning.BSPTree;
+import org.apache.commons.math3.geometry.partitioning.Region;
+import org.apache.commons.math3.geometry.partitioning.RegionFactory;
+import org.apache.commons.math3.geometry.partitioning.SubHyperplane;
+import org.apache.commons.math3.util.FastMath;
+import org.junit.Assert;
+import org.junit.Test;
+
+public class PolygonsSetTest {
+
+    @Test
+    public void testSimplyConnected() {
+        Vector2D[][] vertices = new Vector2D[][] {
+            new Vector2D[] {
+                new Vector2D(36.0, 22.0),
+                new Vector2D(39.0, 32.0),
+                new Vector2D(19.0, 32.0),
+                new Vector2D( 6.0, 16.0),
+                new Vector2D(31.0, 10.0),
+                new Vector2D(42.0, 16.0),
+                new Vector2D(34.0, 20.0),
+                new Vector2D(29.0, 19.0),
+                new Vector2D(23.0, 22.0),
+                new Vector2D(33.0, 25.0)
+            }
+        };
+        PolygonsSet set = buildSet(vertices);
+        Assert.assertEquals(Region.Location.OUTSIDE, set.checkPoint(new Vector2D(50.0, 30.0)));
+        checkPoints(Region.Location.INSIDE, set, new Vector2D[] {
+            new Vector2D(30.0, 15.0),
+            new Vector2D(15.0, 20.0),
+            new Vector2D(24.0, 25.0),
+            new Vector2D(35.0, 30.0),
+            new Vector2D(19.0, 17.0)
+        });
+        checkPoints(Region.Location.OUTSIDE, set, new Vector2D[] {
+            new Vector2D(50.0, 30.0),
+            new Vector2D(30.0, 35.0),
+            new Vector2D(10.0, 25.0),
+            new Vector2D(10.0, 10.0),
+            new Vector2D(40.0, 10.0),
+            new Vector2D(50.0, 15.0),
+            new Vector2D(30.0, 22.0)
+        });
+        checkPoints(Region.Location.BOUNDARY, set, new Vector2D[] {
+            new Vector2D(30.0, 32.0),
+            new Vector2D(34.0, 20.0)
+        });
+        checkVertices(set.getVertices(), vertices);
+    }
+
+    @Test
+    public void testStair() {
+        BSPTree<Euclidean2D> node1 =
+            new BSPTree<Euclidean2D>(new SubLine(l[0],
+                                          new IntervalsSet(intersectionAbscissa(l[0], l[1]),
+                                                           intersectionAbscissa(l[0], l[2]))),
+                                                           new BSPTree<Euclidean2D>(Boolean.TRUE), new BSPTree<Euclidean2D>(Boolean.FALSE),
+                                                           null);
+        BSPTree<Euclidean2D> node2 =
+            new BSPTree<Euclidean2D>(new SubLine(l[1],
+                                          new IntervalsSet(intersectionAbscissa(l[1], l[2]),
+                                                           intersectionAbscissa(l[1], l[3]))),
+                                                           node1, new BSPTree<Euclidean2D>(Boolean.FALSE), null);
+        BSPTree<Euclidean2D> node3 =
+            new BSPTree<Euclidean2D>(new SubLine(l[2],
+                                          new IntervalsSet(intersectionAbscissa(l[2], l[3]),
+                                                           Double.POSITIVE_INFINITY)),
+                                                           node2, new BSPTree<Euclidean2D>(Boolean.FALSE), null);
+        BSPTree<Euclidean2D> node4 =
+            new BSPTree<Euclidean2D>(l[3].wholeHyperplane(), node3, new BSPTree<Euclidean2D>(Boolean.FALSE), null);
+
+        PolygonsSet set = new PolygonsSet(node4);
+        Assert.assertEquals(0, set.getVertices().length);
+
+    }
+
+    private PolygonsSet buildSet(Vector2D[][] vertices) {
+        ArrayList<SubHyperplane<Euclidean2D>> edges = new ArrayList<SubHyperplane<Euclidean2D>>();
+        for (int i = 0; i < vertices.length; ++i) {
+            int l = vertices[i].length;
+            for (int j = 0; j < l; ++j) {
+                edges.add(buildSegment(vertices[i][j], vertices[i][(j + 1) % l]));
+            }
+        }
+        return new PolygonsSet(edges);
+    }
+
+    private SubHyperplane<Euclidean2D> buildLine(Vector2D start, Vector2D end) {
+        return new Line(start, end).wholeHyperplane();
+    }
+
+    private double intersectionAbscissa(Line l0, Line l1) {
+        Vector2D p = l0.intersection(l1);
+        return (l0.toSubSpace(p)).getX();
+    }
+
+    private SubHyperplane<Euclidean2D> buildHalfLine(Vector2D start, Vector2D end,
+                                                     boolean startIsVirtual) {
+        Line   line  = new Line(start, end);
+        double lower = startIsVirtual
+        ? Double.NEGATIVE_INFINITY
+        : (line.toSubSpace(start)).getX();
+        double upper = startIsVirtual
+        ? (line.toSubSpace(end)).getX()
+        : Double.POSITIVE_INFINITY;
+        return new SubLine(line, new IntervalsSet(lower, upper));
+    }
+
+    private SubHyperplane<Euclidean2D> buildSegment(Vector2D start, Vector2D end) {
+        Line   line  = new Line(start, end);
+        double lower = (line.toSubSpace(start)).getX();
+        double upper = (line.toSubSpace(end)).getX();
+        return new SubLine(line, new IntervalsSet(lower, upper));
+    }
+
+    private void checkPoints(Region.Location expected, PolygonsSet set,
+                             Vector2D[] points) {
+        for (int i = 0; i < points.length; ++i) {
+            Assert.assertEquals(expected, set.checkPoint(points[i]));
+        }
+    }
+
+    private boolean checkInSegment(Vector2D p,
+                                   Vector2D p1, Vector2D p2,
+                                   double tolerance) {
+        Line line = new Line(p1, p2);
+        if (line.getOffset(p) < tolerance) {
+            double x  = (line.toSubSpace(p)).getX();
+            double x1 = (line.toSubSpace(p1)).getX();
+            double x2 = (line.toSubSpace(p2)).getX();
+            return (((x - x1) * (x - x2) <= 0.0)
+                    || (p1.distance(p) < tolerance)
+                    || (p2.distance(p) < tolerance));
+        } else {
+            return false;
+        }
+    }
+
+    private void checkVertices(Vector2D[][] rebuiltVertices,
+                               Vector2D[][] vertices) {
+
+        // each rebuilt vertex should be in a segment joining two original vertices
+        for (int i = 0; i < rebuiltVertices.length; ++i) {
+            for (int j = 0; j < rebuiltVertices[i].length; ++j) {
+                boolean inSegment = false;
+                Vector2D p = rebuiltVertices[i][j];
+                for (int k = 0; k < vertices.length; ++k) {
+                    Vector2D[] loop = vertices[k];
+                    int length = loop.length;
+                    for (int l = 0; (! inSegment) && (l < length); ++l) {
+                        inSegment = checkInSegment(p, loop[l], loop[(l + 1) % length], 1.0e-10);
+                    }
+                }
+                Assert.assertTrue(inSegment);
+            }
+        }
+
+        // each original vertex should have a corresponding rebuilt vertex
+        for (int k = 0; k < vertices.length; ++k) {
+            for (int l = 0; l < vertices[k].length; ++l) {
+                double min = Double.POSITIVE_INFINITY;
+                for (int i = 0; i < rebuiltVertices.length; ++i) {
+                    for (int j = 0; j < rebuiltVertices[i].length; ++j) {
+                        min = FastMath.min(vertices[k][l].distance(rebuiltVertices[i][j]),
+                                       min);
+                    }
+                }
+                Assert.assertEquals(0.0, min, 1.0e-10);
+            }
+        }
+
+    }
+
+}

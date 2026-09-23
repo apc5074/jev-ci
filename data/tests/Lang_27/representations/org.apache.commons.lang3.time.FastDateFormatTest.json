@@ -1,0 +1,86 @@
+{
+  "test_class": "org.apache.commons.lang3.time.FastDateFormatTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/time/FastDateFormatTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.time.FastDateFormatTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/time/FastDateFormatTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3.time;\n\nimport java.text.SimpleDateFormat;\nimport java.util.Calendar;\nimport java.util.Date;\nimport java.util.GregorianCalendar;\nimport java.util.Locale;\nimport java.util.TimeZone;\n\nimport junit.framework.TestCase;\n\nimport org.apache.commons.lang3.SerializationUtils;\n\n/**\n * Unit tests {@link org.apache.commons.lang3.time.FastDateFormat}.\n *\n * @author Sean Schofield\n * @author <a href=\"mailto:ggregory@seagullsw.com\">Gary Gregory</a>\n * @author Fredrik Westermarck\n * @since 2.0\n * @version $Id$\n */\npublic class FastDateFormatTest extends TestCase {\n\n    public FastDateFormatTest(String name) {\n        super(name);\n    }\n\n    public void test_getInstance() {\n        FastDateFormat format1 = FastDateFormat.getInstance();\n        FastDateFormat format2 = FastDateFormat.getInstance();\n        assertSame(format1, format2);\n        assertEquals(new SimpleDateFormat().toPattern(), format1.getPattern());\n    }\n\n    public void test_getInstance_String() {\n        FastDateFormat format1 = FastDateFormat.getInstance(\"MM/DD/yyyy\");\n        FastDateFormat format2 = FastDateFormat.getInstance(\"MM-DD-yyyy\");\n        FastDateFormat format3 = FastDateFormat.getInstance(\"MM-DD-yyyy\");\n\n        assertTrue(format1 != format2); // -- junit 3.8 version -- assertFalse(format1 == format2);\n        assertSame(format2, format3);\n        assertEquals(\"MM/DD/yyyy\", format1.getPattern());\n        assertEquals(TimeZone.getDefault(), format1.getTimeZone());\n        assertEquals(TimeZone.getDefault(), format2.getTimeZone());\n        assertEquals(false, format1.getTimeZoneOverridesCalendar());\n        assertEquals(false, format2.getTimeZoneOverridesCalendar());\n    }\n\n    public void test_getInstance_String_TimeZone() {\n        Locale realDefaultLocale = Locale.getDefault();\n        TimeZone realDefaultZone = TimeZone.getDefault();\n        try {\n            Locale.setDefault(Locale.US);\n            TimeZone.setDefault(TimeZone.getTimeZone(\"America/New_York\"));\n\n            FastDateFormat format1 = FastDateFormat.getInstance(\"MM/DD/yyyy\",\n                    TimeZone.getTimeZone(\"Atlantic/Reykjavik\"));\n            FastDateFormat format2 = FastDateFormat.getInstance(\"MM/DD/yyyy\");\n            FastDateFormat format3 = FastDateFormat.getInstance(\"MM/DD/yyyy\", TimeZone.getDefault());\n            FastDateFormat format4 = FastDateFormat.getInstance(\"MM/DD/yyyy\", TimeZone.getDefault());\n            FastDateFormat format5 = FastDateFormat.getInstance(\"MM-DD-yyyy\", TimeZone.getDefault());\n            FastDateFormat format6 = FastDateFormat.getInstance(\"MM-DD-yyyy\");\n\n\n            assertSame(Locale.GERMANY, format1.getLocale());\n            assertSame(Locale.US, format2.getLocale());\n            assertSame(Locale.GERMANY, format3.getLocale());\n            assertTrue(format1 != format2); // -- junit 3.8 version -- assertFalse(format1 == format2);\n            assertTrue(format2 != format3);\n\n        } finally {\n            Locale.setDefault(realDefaultLocale);\n        }\n    }\n\n    public void test_changeDefault_Locale_DateTimeInstance() {\n        Locale realDefaultLocale = Locale.getDefault();\n        try {\n            Locale.setDefault(Locale.US);\n            FastDateFormat format1 = FastDateFormat.getDateTimeInstance(FastDateFormat.FULL, FastDateFormat.FULL, Locale.GERMANY);\n            FastDateFormat format2 = FastDateFormat.getDateTimeInstance(FastDateFormat.FULL, FastDateFormat.FULL);\n            Locale.setDefault(Locale.GERMANY);\n            FastDateFormat format3 = FastDateFormat.getDateTimeInstance(FastDateFormat.FULL, FastDateFormat.FULL);\n\n            assertSame(Locale.GERMANY, format1.getLocale());\n            assertSame(Locale.US, format2.getLocale());\n            assertSame(Locale.GERMANY, format3.getLocale());\n            assertTrue(format1 != format2); // -- junit 3.8 version -- assertFalse(format1 == format2);\n            assertTrue(format2 != format3);\n\n        } finally {\n            Locale.setDefault(realDefaultLocale);\n        }\n    }\n\n    public void test_getInstance_String_TimeZone_Locale() {\n        Locale realDefaultLocale = Locale.getDefault();\n        TimeZone realDefaultZone = TimeZone.getDefault();\n        try {\n            Locale.setDefault(Locale.US);\n            TimeZone.setDefault(TimeZone.getTimeZone(\"America/New_York\"));\n\n            FastDateFormat format1 = FastDateFormat.getInstance(\"MM/DD/yyyy\",\n                    TimeZone.getTimeZone(\"Atlantic/Reykjavik\"), Locale.GERMANY);\n            FastDateFormat format2 = FastDateFormat.getInstance(\"MM/DD/yyyy\", Locale.GERMANY);\n            FastDateFormat format3 = FastDateFormat.getInstance(\"MM/DD/yyyy\",\n                    TimeZone.getDefault(), Locale.GERMANY);\n\n            assertTrue(format1 != format2); // -- junit 3.8 version -- assertNotSame(format1, format2);\n            assertEquals(TimeZone.getTimeZone(\"Atlantic/Reykjavik\"), format1.getTimeZone());\n            assertEquals(TimeZone.getDefault(), format2.getTimeZone());\n            assertEquals(TimeZone.getDefault(), format3.getTimeZone());\n            assertEquals(true, format1.getTimeZoneOverridesCalendar());\n            assertEquals(false, format2.getTimeZoneOverridesCalendar());\n            assertEquals(true, format3.getTimeZoneOverridesCalendar());\n            assertEquals(Locale.GERMANY, format1.getLocale());\n            assertEquals(Locale.GERMANY, format2.getLocale());\n            assertEquals(Locale.GERMANY, format3.getLocale());\n\n        } finally {\n            Locale.setDefault(realDefaultLocale);\n            TimeZone.setDefault(realDefaultZone);\n        }\n    }\n\n    public void testFormat() {}\n// Defects4J: flaky method\n//     public void testFormat() {\n//         Locale realDefaultLocale = Locale.getDefault();\n//         TimeZone realDefaultZone = TimeZone.getDefault();\n//         try {\n//             Locale.setDefault(Locale.US);\n//             TimeZone.setDefault(TimeZone.getTimeZone(\"America/New_York\"));\n//             FastDateFormat fdf = null;\n//             SimpleDateFormat sdf = null;\n// \n//             GregorianCalendar cal1 = new GregorianCalendar(2003, 0, 10, 15, 33, 20);\n//             GregorianCalendar cal2 = new GregorianCalendar(2003, 6, 10, 9, 00, 00);\n//             Date date1 = cal1.getTime();\n//             Date date2 = cal2.getTime();\n//             long millis1 = date1.getTime();\n//             long millis2 = date2.getTime();\n// \n//         }\n//     }\n\n    /**\n     * Test case for {@link FastDateFormat#getDateInstance(int, java.util.Locale)}.\n     */\n    public void testShortDateStyleWithLocales() {\n        Locale usLocale = Locale.US;\n        Locale swedishLocale = new Locale(\"sv\", \"SE\");\n        Calendar cal = Calendar.getInstance();\n        cal.set(2004, 1, 3);\n        FastDateFormat fdf = FastDateFormat.getDateInstance(FastDateFormat.SHORT, usLocale);\n        assertEquals(\"2/3/04\", fdf.format(cal));\n\n        fdf = FastDateFormat.getDateInstance(FastDateFormat.SHORT, swedishLocale);\n        assertEquals(\"04-02-03\", fdf.format(cal));\n\n    }\n\n    /**\n     * Tests that pre-1000AD years get padded with yyyy\n     */\n    public void testLowYearPadding() {\n        Calendar cal = Calendar.getInstance();\n        FastDateFormat format = FastDateFormat.getInstance(\"yyyy/MM/DD\");\n\n        cal.set(1,0,1);\n        assertEquals(\"0001/01/01\", format.format(cal));\n        cal.set(10,0,1);\n        assertEquals(\"0010/01/01\", format.format(cal));\n        cal.set(100,0,1);\n        assertEquals(\"0100/01/01\", format.format(cal));\n        cal.set(999,0,1);\n        assertEquals(\"0999/01/01\", format.format(cal));\n    }\n    /**\n     * Show Bug #39410 is solved\n     */\n    public void testMilleniumBug() {\n        Calendar cal = Calendar.getInstance();\n        FastDateFormat format = FastDateFormat.getInstance(\"dd.MM.yyyy\");\n\n        cal.set(1000,0,1);\n        assertEquals(\"01.01.1000\", format.format(cal));\n    }\n\n    /**\n     * testLowYearPadding showed that the date was buggy\n     * This test confirms it, getting 366 back as a date\n     */\n     // TODO: Fix this problem\n    public void testSimpleDate() {\n        Calendar cal = Calendar.getInstance();\n        FastDateFormat format = FastDateFormat.getInstance(\"yyyy/MM/dd\");\n\n        cal.set(2004,11,31);\n        assertEquals(\"2004/12/31\", format.format(cal));\n        cal.set(999,11,31);\n        assertEquals(\"0999/12/31\", format.format(cal));\n        cal.set(1,2,2);\n        assertEquals(\"0001/03/02\", format.format(cal));\n    }\n\n    public void testLang303() {\n        Calendar cal = Calendar.getInstance();\n        cal.set(2004,11,31);\n\n        FastDateFormat format = FastDateFormat.getInstance(\"yyyy/MM/dd\");\n        String output = format.format(cal);\n\n        format = (FastDateFormat) SerializationUtils.deserialize( SerializationUtils.serialize( format ) );\n        assertEquals(output, format.format(cal));\n    }\n\n    public void testLang538() {\n        final String dateTime = \"2009-10-16T16:42:16.000Z\";\n\n        // more commonly constructed with: cal = new GregorianCalendar(2009, 9, 16, 8, 42, 16)\n        // for the unit test to work in any time zone, constructing with GMT-8 rather than default locale time zone\n        GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone(\"GMT-8\"));\n",
+  "compaction": {
+    "source_lines": 327,
+    "mode": "windows",
+    "windows_total": 6,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        240,
+        320
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.278594820106768
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 2.2447526111874296
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 3.08953673270106
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.278594820106768
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 1.5837849529820769
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 2.2447526111874296
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 0.9899891921406914
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 3.08953673270106
+      },
+      {
+        "start": 300,
+        "end": 327,
+        "score": 1.5508254450834136
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 10211,
+  "representation_chars": 10211,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

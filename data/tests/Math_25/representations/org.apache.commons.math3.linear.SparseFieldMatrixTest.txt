@@ -1,0 +1,215 @@
+TEST CLASS:
+org.apache.commons.math3.linear.SparseFieldMatrixTest
+
+SOURCE FILE:
+src/test/java/org/apache/commons/math3/linear/SparseFieldMatrixTest.java
+
+TEST SOURCE:
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.commons.math3.linear;
+
+import org.junit.Test;
+import org.junit.Assert;
+
+import org.apache.commons.math3.Field;
+import org.apache.commons.math3.fraction.Fraction;
+import org.apache.commons.math3.fraction.FractionConversionException;
+import org.apache.commons.math3.fraction.FractionField;
+import org.apache.commons.math3.exception.NoDataException;
+import org.apache.commons.math3.exception.OutOfRangeException;
+import org.apache.commons.math3.exception.NumberIsTooSmallException;
+import org.apache.commons.math3.exception.NullArgumentException;
+import org.apache.commons.math3.exception.MathIllegalArgumentException;
+
+/**
+ * Test cases for the {@link SparseFieldMatrix} class.
+ *
+ * @version $Id$
+ */
+public class SparseFieldMatrixTest {
+    // 3 x 3 identity matrix
+    protected Fraction[][] id = { {new Fraction(1), new Fraction(0), new Fraction(0) }, { new Fraction(0), new Fraction(1), new Fraction(0) }, { new Fraction(0), new Fraction(0), new Fraction(1) } };
+    // Test data for group operations
+    protected Fraction[][] testData = { { new Fraction(1), new Fraction(2), new Fraction(3) }, { new Fraction(2), new Fraction(5), new Fraction(3) },
+            { new Fraction(1), new Fraction(0), new Fraction(8) } };
+    protected Fraction[][] testDataLU = null;
+    protected Fraction[][] testDataPlus2 = { { new Fraction(3), new Fraction(4), new Fraction(5) }, { new Fraction(4), new Fraction(7), new Fraction(5) },
+            { new Fraction(3), new Fraction(2), new Fraction(10) } };
+    protected Fraction[][] testDataMinus = { { new Fraction(-1), new Fraction(-2), new Fraction(-3) },
+            { new Fraction(-2), new Fraction(-5), new Fraction(-3) }, { new Fraction(-1), new Fraction(0), new Fraction(-8) } };
+    protected Fraction[] testDataRow1 = { new Fraction(1), new Fraction(2), new Fraction(3) };
+    protected Fraction[] testDataCol3 = { new Fraction(3), new Fraction(3), new Fraction(8) };
+    protected Fraction[][] testDataInv = { { new Fraction(-40), new Fraction(16), new Fraction(9) }, { new Fraction(13), new Fraction(-5), new Fraction(-3) },
+            { new Fraction(5), new Fraction(-2), new Fraction(-1) } };
+    protected Fraction[] preMultTest = { new Fraction(8), new Fraction(12), new Fraction(33) };
+    protected Fraction[][] testData2 = { { new Fraction(1), new Fraction(2), new Fraction(3) }, { new Fraction(2), new Fraction(5), new Fraction(3) } };
+    protected Fraction[][] testData2T = { { new Fraction(1), new Fraction(2) }, { new Fraction(2), new Fraction(5) }, { new Fraction(3), new Fraction(3) } };
+    protected Fraction[][] testDataPlusInv = { { new Fraction(-39), new Fraction(18), new Fraction(12) },
+            { new Fraction(15), new Fraction(0), new Fraction(0) }, { new Fraction(6), new Fraction(-2), new Fraction(7) } };
+
+    // lu decomposition tests
+    protected Fraction[][] luData = { { new Fraction(2), new Fraction(3), new Fraction(3) }, { new Fraction(0), new Fraction(5), new Fraction(7) }, { new Fraction(6), new Fraction(9), new Fraction(8) } };
+    protected Fraction[][] luDataLUDecomposition = null;
+
+    // singular matrices
+    protected Fraction[][] singular = { { new Fraction(2), new Fraction(3) }, { new Fraction(2), new Fraction(3) } };
+    protected Fraction[][] bigSingular = { { new Fraction(1), new Fraction(2), new Fraction(3), new Fraction(4) },
+            { new Fraction(2), new Fraction(5), new Fraction(3), new Fraction(4) }, { new Fraction(7), new Fraction(3), new Fraction(256), new Fraction(1930) }, { new Fraction(3), new Fraction(7), new Fraction(6), new Fraction(8) } }; // 4th
+
+    // row
+    // =
+    // 1st
+    // +
+    // 2nd
+    protected Fraction[][] detData = { { new Fraction(1), new Fraction(2), new Fraction(3) }, { new Fraction(4), new Fraction(5), new Fraction(6) },
+            { new Fraction(7), new Fraction(8), new Fraction(10) } };
+    protected Fraction[][] detData2 = { { new Fraction(1), new Fraction(3) }, { new Fraction(2), new Fraction(4) } };
+
+    // vectors
+    protected Fraction[] testVector = { new Fraction(1), new Fraction(2), new Fraction(3) };
+    protected Fraction[] testVector2 = { new Fraction(1), new Fraction(2), new Fraction(3), new Fraction(4) };
+
+    // submatrix accessor tests
+    public void testTrace() {
+        FieldMatrix<Fraction> m = createSparseMatrix(id);
+        Assert.assertEquals("identity trace", 3d, m.getTrace().doubleValue(), entryTolerance);
+        m = createSparseMatrix(testData2);
+        try {
+            m.getTrace();
+            Assert.fail("Expecting NonSquareMatrixException");
+        } catch (NonSquareMatrixException ex) {
+            // ignored
+        }
+    }
+
+    /** test sclarAdd */
+    @Test
+    public void testScalarAdd() {
+        FieldMatrix<Fraction> m = createSparseMatrix(testData);
+        assertClose("scalar add", createSparseMatrix(testDataPlus2),
+            m.scalarAdd(new Fraction(2)), entryTolerance);
+    }
+
+    /** test operate */
+    @Test
+    public void testOperate() {
+        FieldMatrix<Fraction> m = createSparseMatrix(id);
+        assertClose("identity operate", testVector, m.operate(testVector),
+                entryTolerance);
+        assertClose("identity operate", testVector, m.operate(
+                new ArrayFieldVector<Fraction>(testVector)).getData(), entryTolerance);
+        m = createSparseMatrix(bigSingular);
+        try {
+            m.operate(testVector);
+            Assert.fail("Expecting illegalArgumentException");
+        } catch (MathIllegalArgumentException ex) {
+            // ignored
+        }
+    }
+
+    /** test issue MATH-209 */
+    @Test
+    public void testMath209() {
+        FieldMatrix<Fraction> a = createSparseMatrix(new Fraction[][] {
+                { new Fraction(1), new Fraction(2) }, { new Fraction(3), new Fraction(4) }, { new Fraction(5), new Fraction(6) } });
+        Fraction[] b = a.operate(new Fraction[] { new Fraction(1), new Fraction(1) });
+        Assert.assertEquals(a.getRowDimension(), b.length);
+        Assert.assertEquals(3.0, b[0].doubleValue(), 1.0e-12);
+        Assert.assertEquals(7.0, b[1].doubleValue(), 1.0e-12);
+        Assert.assertEquals(11.0, b[2].doubleValue(), 1.0e-12);
+    }
+
+    /** test transpose */
+    @Test
+    public void testTranspose() {
+        FieldMatrix<Fraction> m = createSparseMatrix(testData);
+        FieldMatrix<Fraction> mIT = new FieldLUDecomposition<Fraction>(m).getSolver().getInverse().transpose();
+        FieldMatrix<Fraction> mTI = new FieldLUDecomposition<Fraction>(m.transpose()).getSolver().getInverse();
+        assertClose("inverse-transpose", mIT, mTI, normTolerance);
+        m = createSparseMatrix(testData2);
+        FieldMatrix<Fraction> mt = createSparseMatrix(testData2T);
+        assertClose("transpose",mt,m.transpose(),normTolerance);
+    }
+
+    /** test preMultiply by vector */
+    @Test
+    public void testPremultiplyVector() {
+        FieldMatrix<Fraction> m = createSparseMatrix(testData);
+        assertClose("premultiply", m.preMultiply(testVector), preMultTest,
+            normTolerance);
+        assertClose("premultiply", m.preMultiply(
+            new ArrayFieldVector<Fraction>(testVector).getData()), preMultTest, normTolerance);
+        m = createSparseMatrix(bigSingular);
+        try {
+            m.preMultiply(testVector);
+            Assert.fail("expecting MathIllegalArgumentException");
+        } catch (MathIllegalArgumentException ex) {
+            // ignored
+        }
+    }
+
+    @Test
+    public void testPremultiply() {
+        } catch (MathIllegalArgumentException e) {
+            // expected
+        }
+
+        // empty
+        try {
+            m.setSubMatrix(new Fraction[][] { {} }, 0, 0);
+            Assert.fail("expecting MathIllegalArgumentException");
+        } catch (MathIllegalArgumentException e) {
+            // expected
+        }
+    }
+
+    // --------------- -----------------Protected methods
+
+    /** verifies that two matrices are close (1-norm) */
+    protected void assertClose(String msg, FieldMatrix<Fraction> m, FieldMatrix<Fraction> n,
+            double tolerance) {
+        for(int i=0; i < m.getRowDimension(); i++){
+            for(int j=0; j < m.getColumnDimension(); j++){
+                Assert.assertEquals(msg, m.getEntry(i,j).doubleValue(), n.getEntry(i,j).doubleValue(), tolerance);
+            }
+
+        }
+    }
+
+    /** verifies that two vectors are close (sup norm) */
+    protected void assertClose(String msg, Fraction[] m, Fraction[] n,
+            double tolerance) {
+        if (m.length != n.length) {
+            Assert.fail("vectors not same length");
+        }
+        for (int i = 0; i < m.length; i++) {
+            Assert.assertEquals(msg + " " + i + " elements differ", m[i].doubleValue(), n[i].doubleValue(),
+                    tolerance);
+        }
+    }
+
+    private SparseFieldMatrix<Fraction> createSparseMatrix(Fraction[][] data) {
+        SparseFieldMatrix<Fraction> matrix = new SparseFieldMatrix<Fraction>(field, data.length, data[0].length);
+        for (int row = 0; row < data.length; row++) {
+            for (int col = 0; col < data[row].length; col++) {
+                matrix.setEntry(row, col, data[row][col]);
+            }
+        }
+        return matrix;
+    }
+}

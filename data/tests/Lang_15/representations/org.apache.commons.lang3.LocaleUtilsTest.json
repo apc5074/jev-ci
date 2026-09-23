@@ -1,0 +1,96 @@
+{
+  "test_class": "org.apache.commons.lang3.LocaleUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/LocaleUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.LocaleUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/LocaleUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3;\n\nimport static org.apache.commons.lang3.JavaVersion.JAVA_1_4;\n\nimport java.lang.reflect.Constructor;\nimport java.lang.reflect.Modifier;\nimport java.util.Arrays;\nimport java.util.Collection;\nimport java.util.HashSet;\nimport java.util.Iterator;\nimport java.util.List;\nimport java.util.Locale;\nimport java.util.Set;\n\nimport junit.framework.TestCase;\n\n/**\n * Unit tests for {@link LocaleUtils}.\n *\n * @version $Id$\n */\npublic class LocaleUtilsTest extends TestCase {\n\n    private static final Locale LOCALE_EN = new Locale(\"en\", \"\");\n    private static final Locale LOCALE_EN_US = new Locale(\"en\", \"US\");\n    private static final Locale LOCALE_EN_US_ZZZZ = new Locale(\"en\", \"US\", \"ZZZZ\");\n    private static final Locale LOCALE_FR = new Locale(\"fr\", \"\");\n    private static final Locale LOCALE_FR_CA = new Locale(\"fr\", \"CA\");\n    private static final Locale LOCALE_QQ = new Locale(\"qq\", \"\");\n    private static final Locale LOCALE_QQ_ZZ = new Locale(\"qq\", \"ZZ\");\n\n    /**\n     * Constructor.\n     * \n     * @param name\n     */\n    public LocaleUtilsTest(String name) {\n        super(name);\n    }\n\n    @Override\n    public void setUp() throws Exception {\n        super.setUp();\n\n        // Testing #LANG-304. Must be called before availableLocaleSet is called.\n        LocaleUtils.isAvailableLocale(Locale.getDefault());\n    }\n\n    //-----------------------------------------------------------------------\n    /**\n     * Test that constructors are public, and work, etc.\n     */\n    public void testConstructor() {\n        assertNotNull(new LocaleUtils());\n        Constructor<?>[] cons = LocaleUtils.class.getDeclaredConstructors();\n        assertEquals(1, cons.length);\n        assertEquals(true, Modifier.isPublic(cons[0].getModifiers()));\n        assertEquals(true, Modifier.isPublic(LocaleUtils.class.getModifiers()));\n        assertEquals(false, Modifier.isFinal(LocaleUtils.class.getModifiers()));\n    }\n\n    //-----------------------------------------------------------------------\n    /**\n     * Pass in a valid language, test toLocale.\n        \n        try {\n            LocaleUtils.toLocale(\"us-EN\");\n            fail(\"Should fail as not underscore\");\n        } catch (IllegalArgumentException iae) {}\n        try {\n            LocaleUtils.toLocale(\"us_En\");\n            fail(\"Should fail second part not uppercase\");\n        } catch (IllegalArgumentException iae) {}\n        try {\n            LocaleUtils.toLocale(\"us_en\");\n            fail(\"Should fail second part not uppercase\");\n        } catch (IllegalArgumentException iae) {}\n        try {\n            LocaleUtils.toLocale(\"us_eN\");\n            fail(\"Should fail second part not uppercase\");\n        } catch (IllegalArgumentException iae) {}\n        try {\n            LocaleUtils.toLocale(\"uS_EN\");\n            fail(\"Should fail first part not lowercase\");\n        } catch (IllegalArgumentException iae) {}\n        try {\n            LocaleUtils.toLocale(\"us_E3\");\n            fail(\"Should fail second part not uppercase\");\n        } catch (IllegalArgumentException iae) {}\n    }        \n\n    /**\n     * Test toLocale() method.\n     */\n    public void testToLocale_3Part() {\n        assertValidToLocale(\"us_EN_A\", \"us\", \"EN\", \"A\");\n        // this isn't pretty, but was caused by a jdk bug it seems\n        // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4210525\n        if (SystemUtils.isJavaVersionAtLeast(JAVA_1_4)) {\n            assertValidToLocale(\"us_EN_a\", \"us\", \"EN\", \"a\");\n            assertValidToLocale(\"us_EN_SFsafdFDsdfF\", \"us\", \"EN\", \"SFsafdFDsdfF\");\n        } else {\n            assertValidToLocale(\"us_EN_a\", \"us\", \"EN\", \"A\");\n            assertValidToLocale(\"us_EN_SFsafdFDsdfF\", \"us\", \"EN\", \"SFSAFDFDSDFF\");\n        }\n        \n        try {\n            LocaleUtils.toLocale(\"us_EN-a\");\n            fail(\"Should fail as not underscore\");\n        } catch (IllegalArgumentException iae) {}\n        try {\n            LocaleUtils.toLocale(\"uu_UU_\");\n            fail(\"Must be 3, 5 or 7+ in length\");\n        } catch (IllegalArgumentException iae) {}\n    }\n\n    //-----------------------------------------------------------------------\n    /**\n     * Helper method for local lookups.\n     *\n     * @param locale  the input locale\n     * @param defaultLocale  the input default locale\n     * @param expected  expected results\n     */\n    private void assertLocaleLookupList(Locale locale, Locale defaultLocale, Locale[] expected) {\n        List<Locale> localeList = defaultLocale == null ?\n                LocaleUtils.localeLookupList(locale) :\n                LocaleUtils.localeLookupList(locale, defaultLocale);\n        \n        assertEquals(expected.length, localeList.size());\n        assertEquals(Arrays.asList(expected), localeList);\n        assertUnmodifiableCollection(localeList);\n    }\n\n    //-----------------------------------------------------------------------\n    /**\n     * Test localeLookupList() method.\n     */\n    public void testLocaleLookupList_Locale() {\n        assertLocaleLookupList(null, null, new Locale[0]);\n        assertLocaleLookupList(LOCALE_QQ, null, new Locale[]{LOCALE_QQ});\n        assertLocaleLookupList(LOCALE_EN, null, new Locale[]{LOCALE_EN});\n        assertLocaleLookupList(LOCALE_EN, null, new Locale[]{LOCALE_EN});\n        assertLocaleLookupList(LOCALE_EN_US, null,\n    //-----------------------------------------------------------------------\n    /**\n     * Make sure the country by language is correct. It checks that \n     * the LocaleUtils.countryByLanguage(language) call contains the \n     * array of countries passed in. It may contain more due to JVM \n     * variations.\n     *\n     *\n     * @param language\n     * @param countries array of countries that should be returned\n     */\n    private void assertCountriesByLanguage(String language, String[] countries) {\n        List<Locale> list = LocaleUtils.countriesByLanguage(language);\n        List<Locale> list2 = LocaleUtils.countriesByLanguage(language);\n        assertNotNull(list);\n        assertSame(list, list2);\n        //search through langauges\n        for (String countrie : countries) {\n            Iterator<Locale> iterator = list.iterator();\n            boolean found = false;\n            // see if it was returned by the set\n            while (iterator.hasNext()) {\n                Locale locale = iterator.next();\n                // should have an en empty variant\n                assertTrue(locale.getVariant() == null\n                        || locale.getVariant().length() == 0);\n                assertEquals(language, locale.getLanguage());\n                if (countrie.equals(locale.getCountry())) {\n                    found = true;\n                    break;\n                }\n            }\n            if (!found) {\n                fail(\"Cound not find language: \" + countrie\n                        + \" for country: \" + language);\n            }\n        }\n        assertUnmodifiableCollection(list);\n    }\n\n    /**\n     * Test countriesByLanguage() method.\n     */\n    public void testCountriesByLanguage() {\n        assertCountriesByLanguage(null, new String[0]);\n        assertCountriesByLanguage(\"de\", new String[]{\"DE\", \"CH\", \"AT\", \"LU\"});\n        assertCountriesByLanguage(\"zz\", new String[0]);\n        assertCountriesByLanguage(\"it\", new String[]{\"IT\", \"CH\"});\n    }\n\n    /**\n     * @param coll  the collection to check\n     */\n    private static void assertUnmodifiableCollection(Collection<?> coll) {\n        try {\n            coll.add(null);\n            fail();\n        } catch (UnsupportedOperationException ex) {}\n    }\n\n    /**\n     * Tests #LANG-328 - only language+variant\n     */\n    public void testLang328() {\n        assertValidToLocale(\"fr__POSIX\", \"fr\", \"\", \"POSIX\");\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 488,
+    "mode": "windows",
+    "windows_total": 8,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        180,
+        260
+      ],
+      [
+        420,
+        488
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 31.384001918730814
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 9.766688390502987
+      },
+      {
+        "start": 420,
+        "end": 488,
+        "score": 11.08368665736889
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 31.384001918730814
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.256730570838686
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 7.010054236295169
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 9.766688390502987
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 0.9109270646336542
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 4.996700390596853
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 8.78691126401733
+      },
+      {
+        "start": 420,
+        "end": 488,
+        "score": 11.08368665736889
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8683,
+  "representation_chars": 8683,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

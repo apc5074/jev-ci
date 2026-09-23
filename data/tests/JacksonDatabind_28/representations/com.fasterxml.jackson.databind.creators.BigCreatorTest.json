@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.creators.BigCreatorTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/creators/BigCreatorTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.creators.BigCreatorTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/creators/BigCreatorTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.creators;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.databind.*;\n\n// Test(s) for \"big\" creators; ones with at least 32 arguments (sic!).\n// Needed because codepaths diverge wrt handling of bitset\npublic class BigCreatorTest extends BaseMapTest\n{\n    static class Biggie {\n        final int[] stuff;\n\n        @JsonCreator\n        public Biggie(\n                @JsonProperty(\"v1\") int v1, @JsonProperty(\"v2\") int v2,\n                @JsonProperty(\"v3\") int v3, @JsonProperty(\"v4\") int v4,\n                @JsonProperty(\"v5\") int v5, @JsonProperty(\"v6\") int v6,\n                @JsonProperty(\"v7\") int v7, @JsonProperty(\"v8\") int v8,\n                @JsonProperty(\"v9\") int v9, @JsonProperty(\"v10\") int v10,\n                @JsonProperty(\"v11\") int v11, @JsonProperty(\"v12\") int v12,\n                @JsonProperty(\"v13\") int v13, @JsonProperty(\"v14\") int v14,\n                @JsonProperty(\"v15\") int v15, @JsonProperty(\"v16\") int v16,\n                @JsonProperty(\"v17\") int v17, @JsonProperty(\"v18\") int v18,\n                @JsonProperty(\"v19\") int v19, @JsonProperty(\"v20\") int v20,\n                @JsonProperty(\"v21\") int v21, @JsonProperty(\"v22\") int v22,\n                @JsonProperty(\"v23\") int v23, @JsonProperty(\"v24\") int v24,\n                @JsonProperty(\"v25\") int v25, @JsonProperty(\"v26\") int v26,\n                @JsonProperty(\"v27\") int v27, @JsonProperty(\"v28\") int v28,\n                @JsonProperty(\"v29\") int v29, @JsonProperty(\"v30\") int v30,\n                @JsonProperty(\"v31\") int v31, @JsonProperty(\"v32\") int v32,\n                @JsonProperty(\"v33\") int v33, @JsonProperty(\"v34\") int v34,\n                @JsonProperty(\"v35\") int v35, @JsonProperty(\"v36\") int v36,\n                @JsonProperty(\"v37\") int v37, @JsonProperty(\"v38\") int v38,\n                @JsonProperty(\"v39\") int v39, @JsonProperty(\"v40\") int v40\n                ) {\n            stuff = new int[] {\n                    v1, v2, v3, v4, v5, v6, v7, v8, v9, v10,\n                    v11, v12, v13, v14, v15, v16, v17, v18, v19, v20,\n                    v21, v22, v23, v24, v25, v26, v27, v28, v29, v30,\n                    v31, v32, v33, v34, v35, v36, v37, v38, v39, v40,\n            };\n        }\n    }\n\n    private final ObjectReader BIGGIE_READER = objectReader(Biggie.class);\n    \n    public void testBigPartial() throws Exception\n    {\n        Biggie value = BIGGIE_READER.readValue(aposToQuotes(\n                \"{'v7':7, 'v8':8,'v29':29, 'v35':35}\"\n                ));\n        int[] stuff = value.stuff;\n        for (int i = 0; i < stuff.length; ++i) {\n            int exp;\n            \n            switch (i) {\n            case 6: // These are off-by-one...\n            case 7:\n            case 28:\n            case 34:\n                exp = i+1;\n                break;\n            default:\n                exp = 0;\n            }\n            assertEquals(\"Entry #\"+i, exp, stuff[i]);\n        }\n    }\n}\n",
+  "compaction": {
+    "source_lines": 70,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3144,
+  "representation_chars": 3144,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "test_class": "org.apache.commons.cli2.PrecedenceTest",
+  "source_file": "src/test/org/apache/commons/cli2/PrecedenceTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.cli2.PrecedenceTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/cli2/PrecedenceTest.java\n\nTEST SOURCE:\n/**\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *     http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.cli2;\n\nimport java.util.Arrays;\nimport java.util.List;\nimport java.util.Set;\n\nimport junit.framework.TestCase;\n\nimport org.apache.commons.cli2.builder.ArgumentBuilder;\nimport org.apache.commons.cli2.builder.DefaultOptionBuilder;\nimport org.apache.commons.cli2.builder.GroupBuilder;\nimport org.apache.commons.cli2.commandline.Parser;\n\n/**\n * @author Rob Oxspring\n */\npublic class PrecedenceTest extends TestCase {\n    private final String[] args = new String[] { \"-file\" };\n\n    public void testSimple() throws OptionException {\n        final DefaultOptionBuilder oBuilder = new DefaultOptionBuilder();\n\n        final Group options =\n            new GroupBuilder()\n                .withOption(oBuilder.withShortName(\"file\").create())\n                .create();\n\n        final CommandLine cl = buildCommandLine(options, args);\n        assertEquals(new String[] { \"-file\" }, cl);\n    }\n\n    public void testArgument() throws OptionException {\n        final DefaultOptionBuilder oBuilder = new DefaultOptionBuilder();\n        final ArgumentBuilder aBuilder = new ArgumentBuilder();\n\n        final Group options =\n            new GroupBuilder()\n                .withOption(\n                    oBuilder\n                        .withShortName(\"f\")\n                        .withArgument(aBuilder.create())\n                        .create())\n                .create();\n\n        final CommandLine cl = buildCommandLine(options, args);\n        assertEquals(new String[] { \"-f\" }, cl);\n    }\n\n    public void testBurst() throws OptionException {\n        final DefaultOptionBuilder oBuilder = new DefaultOptionBuilder();\n        final GroupBuilder gBuilder = new GroupBuilder();\n        final Group options =\n            gBuilder\n                .withOption(oBuilder.withShortName(\"f\").create())\n                .withOption(oBuilder.withShortName(\"i\").create())\n                .withOption(oBuilder.withShortName(\"l\").create())\n                .withOption(oBuilder.withShortName(\"e\").create())\n                .create();\n\n        final CommandLine cl = buildCommandLine(options, args);\n        assertEquals(new String[] { \"-f\", \"-i\", \"-l\", \"-e\" }, cl);\n    }\n\n    public void testChildren() throws OptionException {\n\n    public void XtestSimpleVsBurst() throws OptionException {\n        final DefaultOptionBuilder oBuilder = new DefaultOptionBuilder();\n        final GroupBuilder gBuilder = new GroupBuilder();\n        final Group options =\n            gBuilder\n                .withOption(oBuilder.withShortName(\"file\").create())\n                .withOption(oBuilder.withShortName(\"f\").create())\n                .withOption(oBuilder.withShortName(\"i\").create())\n                .withOption(oBuilder.withShortName(\"l\").create())\n                .withOption(oBuilder.withShortName(\"e\").create())\n                .create();\n\n        final CommandLine cl = buildCommandLine(options, args);\n        assertEquals(new String[] { \"-f\", \"-i\", \"-l\", \"-e\" }, cl);\n    }\n\n    public void XtestSimpleVsChildren() throws OptionException {\n        final DefaultOptionBuilder oBuilder = new DefaultOptionBuilder();\n        final GroupBuilder gBuilder = new GroupBuilder();\n\n        final Group children =\n            gBuilder\n                .withOption(\n                    oBuilder.withShortName(\"i\").withLongName(\"ci\").create())\n                .withOption(\n                    oBuilder.withShortName(\"l\").withLongName(\"cl\").create())\n                .withOption(\n                    oBuilder.withShortName(\"e\").withLongName(\"ce\").create())\n                .create();\n\n        final Group options =\n            gBuilder\n                .withOption(oBuilder.withShortName(\"file\").create())\n                .withOption(\n                    oBuilder\n                        .withShortName(\"f\")\n                        .withChildren(children)\n                        .create())\n                .create();\n\n        final CommandLine cl = buildCommandLine(options, args);\n        assertEquals(\n            new String[] { \"-f\", \"-i\", \"--ci\", \"-l\", \"--cl\", \"-e\", \"--ce\" },\n            cl);\n    }\n\n    public void testArgumentVsBurst() throws OptionException {\n        final DefaultOptionBuilder oBuilder = new DefaultOptionBuilder();\n        final GroupBuilder gBuilder = new GroupBuilder();\n        final ArgumentBuilder aBuilder = new ArgumentBuilder();\n\n        final Group options =\n            gBuilder\n                .withOption(\n                    oBuilder\n                        .withShortName(\"f\")\n                        .withArgument(aBuilder.create())\n                        .create())\n                .withOption(oBuilder.withShortName(\"i\").create())\n                .withOption(oBuilder.withShortName(\"l\").create())\n                .withOption(oBuilder.withShortName(\"e\").create())\n                .create();\n\n        final CommandLine cl = buildCommandLine(options, args);\n        assertEquals(new String[] { \"-f\" }, cl);\n    }\n\n    public void testArgumentVsChildren() throws OptionException {\n        final DefaultOptionBuilder oBuilder = new DefaultOptionBuilder();\n        final GroupBuilder gBuilder = new GroupBuilder();\n        final ArgumentBuilder aBuilder = new ArgumentBuilder();\n\n        final Group children =\n            gBuilder\n                .withOption(oBuilder.withShortName(\"i\").create())\n                .withOption(oBuilder.withShortName(\"l\").create())\n                .withOption(oBuilder.withShortName(\"e\").create())\n                .create();\n        final Group options =\n        assertEquals(new String[] { \"-f\" }, cl);\n    }\n\n    public void XtestSimpleVsArgumentVsBurstVsChildren()\n        throws OptionException {\n        final DefaultOptionBuilder oBuilder = new DefaultOptionBuilder();\n        final GroupBuilder gBuilder = new GroupBuilder();\n        final ArgumentBuilder aBuilder = new ArgumentBuilder();\n\n        final Group children =\n            gBuilder\n                .withOption(\n                    oBuilder.withShortName(\"i\").withLongName(\"ci\").create())\n                .withOption(\n                    oBuilder.withShortName(\"l\").withLongName(\"cl\").create())\n                .withOption(\n                    oBuilder.withShortName(\"e\").withLongName(\"ce\").create())\n                .create();\n\n        final Group options =\n            gBuilder\n                .withOption(oBuilder.withShortName(\"file\").create())\n                .withOption(\n                    oBuilder\n                        .withShortName(\"f\")\n                        .withChildren(children)\n                        .withArgument(aBuilder.create())\n                        .create())\n                .withOption(oBuilder.withShortName(\"i\").create())\n                .withOption(oBuilder.withShortName(\"l\").create())\n                .withOption(oBuilder.withShortName(\"e\").create())\n                .create();\n\n        final CommandLine cl = buildCommandLine(options, args);\n        assertEquals(new String[] { \"-f\" }, cl);\n    }\n\n    public CommandLine buildCommandLine(final Group group, final String[] arguments)\n        throws OptionException {\n        Parser p = new Parser();\n        p.setGroup(group);\n        return p.parse(arguments);\n    }\n\n    public void assertEquals(final String options[], final CommandLine line) {\n        final List expected = Arrays.asList(options);\n        final Set actual = line.getOptionTriggers();\n\n        assertTrue(expected.containsAll(actual));\n        assertTrue(actual.containsAll(expected));\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 413,
+    "mode": "windows",
+    "windows_total": 7,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        360,
+        413
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 29.43955454528812
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 0.8667041733079195
+      },
+      {
+        "start": 360,
+        "end": 413,
+        "score": 2.7086165803584406
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 29.43955454528812
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 0.8587397639941762
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 0.8667041733079195
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 0.863783591050945
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 0.8631217388942605
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 0.8503245952459731
+      },
+      {
+        "start": 360,
+        "end": 413,
+        "score": 2.7086165803584406
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8413,
+  "representation_chars": 8413,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

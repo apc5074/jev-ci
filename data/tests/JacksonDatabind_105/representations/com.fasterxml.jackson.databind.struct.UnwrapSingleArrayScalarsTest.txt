@@ -1,0 +1,195 @@
+TEST CLASS:
+com.fasterxml.jackson.databind.struct.UnwrapSingleArrayScalarsTest
+
+SOURCE FILE:
+src/test/java/com/fasterxml/jackson/databind/struct/UnwrapSingleArrayScalarsTest.java
+
+TEST SOURCE:
+package com.fasterxml.jackson.databind.struct;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.URI;
+import java.util.UUID;
+
+import com.fasterxml.jackson.databind.BaseMapTest;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+
+public class UnwrapSingleArrayScalarsTest extends BaseMapTest
+{
+    static class BooleanBean {
+        boolean _v;
+        void setV(boolean v) { _v = v; }
+    }
+
+    private final ObjectMapper MAPPER = new ObjectMapper();
+
+    private final ObjectReader NO_UNWRAPPING_READER = MAPPER.reader();
+    private final ObjectReader UNWRAPPING_READER = MAPPER.reader()
+            .with(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);
+
+    /*
+    /**********************************************************
+    /* Tests for boolean
+    /**********************************************************
+     */
+    
+    public void testBooleanPrimitiveArrayUnwrap() throws Exception
+    {
+        // [databind#381]
+        final ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);
+        BooleanBean result = mapper.readValue(new StringReader("{\"v\":[true]}"), BooleanBean.class);
+        assertTrue(result._v);
+
+        _verifyMultiValueArrayFail("[{\"v\":[true,true]}]", BooleanBean.class);
+
+        result = mapper.readValue("{\"v\":[null]}", BooleanBean.class);
+        assertNotNull(result);
+        assertFalse(result._v);
+        
+        result = mapper.readValue("[{\"v\":[null]}]", BooleanBean.class);
+        assertNotNull(result);
+        assertFalse(result._v);
+        
+        boolean[] array = mapper.readValue(new StringReader("[ [ null ] ]"), boolean[].class);
+        assertNotNull(array);
+        assertEquals(1, array.length);
+        assertFalse(array[0]);
+    }
+
+    /*
+    /**********************************************************
+    /* Single-element as array tests, numbers
+    /**********************************************************
+     */
+    
+    // [databind#381]
+    public void testSingleElementScalarArrays() throws Exception {
+        final int intTest = 932832;
+        final double doubleTest = 32.3234;
+        final long longTest = 2374237428374293423L;
+        final short shortTest = (short) intTest;
+        final float floatTest = 84.3743f;
+        final byte byteTest = (byte) 43;
+        final char charTest = 'c';
+
+        final ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);
+
+        final int intValue = mapper.readValue(asArray(intTest), Integer.TYPE);
+        assertEquals(intTest, intValue);
+        final Integer integerWrapperValue = mapper.readValue(asArray(Integer.valueOf(intTest)), Integer.class);
+    }
+
+    public void testBigInteger() throws Exception
+    {
+        final ObjectMapper mapper = objectMapper();
+        mapper.disable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);
+        
+        BigInteger value = new BigInteger("-1234567890123456789012345567809");
+        BigInteger result = mapper.readValue(value.toString(), BigInteger.class);
+        assertEquals(value, result);
+
+        try {
+            mapper.readValue("[" + value.toString() + "]", BigInteger.class);
+            fail("Exception was not thrown when attempting to read a single value array of BigInteger when UNWRAP_SINGLE_VALUE_ARRAYS feature is disabled");
+        } catch (MismatchedInputException exp) {
+            verifyException(exp, "Cannot deserialize");
+            verifyException(exp, "out of START_ARRAY");
+        }
+        
+        mapper.enable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);
+        result = mapper.readValue("[" + value.toString() + "]", BigInteger.class);
+        assertEquals(value, result);
+        
+        try {
+            mapper.readValue("[" + value.toString() + "," + value.toString() + "]", BigInteger.class);
+            fail("Exception was not thrown when attempting to read a multi-value array of BigInteger when UNWRAP_SINGLE_VALUE_ARRAYS feature is enabled");
+        } catch (MismatchedInputException exp) {
+            verifyException(exp, "Attempted to unwrap");
+        }        
+    }
+
+    public void testClassAsArray() throws Exception
+    {
+        Class<?> result = MAPPER
+                    .readerFor(Class.class)
+                    .with(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS)
+                    .readValue(quote(String.class.getName()));
+        assertEquals(String.class, result);
+
+        try {
+            MAPPER.readerFor(Class.class)
+                .without(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS)
+                .readValue("[" + quote(String.class.getName()) + "]");
+            fail("Did not throw exception when UNWRAP_SINGLE_VALUE_ARRAYS feature was disabled and attempted to read a Class array containing one element");
+        } catch (MismatchedInputException e) {
+            verifyException(e, "out of START_ARRAY token");
+        }
+
+        _verifyMultiValueArrayFail("[" + quote(Object.class.getName()) + "," + quote(Object.class.getName()) +"]",
+                Class.class);
+        result = MAPPER.readerFor(Class.class)
+                .with(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS)
+                .readValue("[" + quote(String.class.getName()) + "]");
+        assertEquals(String.class, result);
+    }
+
+    public void testURIAsArray() throws Exception
+    {
+        final ObjectReader reader = MAPPER.readerFor(URI.class);
+        final URI value = new URI("http://foo.com");
+        try {
+            reader.without(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS)
+                .readValue("[\""+value.toString()+"\"]");
+            fail("Did not throw exception for single value array when UNWRAP_SINGLE_VALUE_ARRAYS is disabled");
+        } catch (MismatchedInputException e) {
+            verifyException(e, "out of START_ARRAY token");
+        }
+        
+        _verifyMultiValueArrayFail("[\""+value.toString()+"\",\""+value.toString()+"\"]", URI.class);
+    }
+
+    public void testUUIDAsArray() throws Exception
+    {
+        final ObjectReader reader = MAPPER.readerFor(UUID.class);
+        final String uuidStr = "76e6d183-5f68-4afa-b94a-922c1fdb83f8";
+        UUID uuid = UUID.fromString(uuidStr);
+        try {
+            NO_UNWRAPPING_READER.forType(UUID.class)
+                .readValue("[" + quote(uuidStr) + "]");
+            fail("Exception was not thrown when UNWRAP_SINGLE_VALUE_ARRAYS is disabled and attempted to read a single value array as a single element");
+        } catch (MismatchedInputException e) {
+            verifyException(e, "out of START_ARRAY token");
+        }
+        assertEquals(uuid,
+                reader.with(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS)
+                    .readValue("[" + quote(uuidStr) + "]"));
+        _verifyMultiValueArrayFail("[" + quote(uuidStr) + "," + quote(uuidStr) + "]", UUID.class);
+    }
+
+    /*
+    /**********************************************************
+    /* Helper methods
+    /**********************************************************
+     */
+
+    private void _verifyMultiValueArrayFail(String input, Class<?> type) throws IOException {
+        try {
+            UNWRAPPING_READER.forType(type).readValue(input);
+            fail("Single value array didn't throw an exception when DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS is disabled");
+        } catch (MismatchedInputException e) {
+            verifyException(e, "Attempted to unwrap");
+        }
+    }
+
+    private static String asArray(Object value) {
+        return "["+value+"]";
+    }
+}

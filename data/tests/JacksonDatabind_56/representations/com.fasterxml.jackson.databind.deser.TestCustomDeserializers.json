@@ -1,0 +1,91 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.TestCustomDeserializers",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/TestCustomDeserializers.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.TestCustomDeserializers\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/TestCustomDeserializers.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser;\n\nimport java.io.*;\nimport java.lang.annotation.*;\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.JsonCreator;\nimport com.fasterxml.jackson.annotation.JsonProperty;\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.*;\nimport com.fasterxml.jackson.databind.deser.std.*;\nimport com.fasterxml.jackson.databind.module.SimpleModule;\nimport com.fasterxml.jackson.databind.util.StdConverter;\n\n/**\n * Test to check that customizations work as expected.\n */\n@SuppressWarnings(\"serial\")\npublic class TestCustomDeserializers\n    extends BaseMapTest\n{\n    /*\n    /**********************************************************\n    /* Helper classes\n    /**********************************************************\n     */\n\n    static class DummyDeserializer<T>\n        extends StdDeserializer<T>\n    {\n        final T value;\n\n        public DummyDeserializer(T v, Class<T> cls) {\n            super(cls);\n            value = v;\n        }\n\n        @Override\n        public T deserialize(JsonParser jp, DeserializationContext ctxt)\n            throws IOException, JsonProcessingException\n        {\n            // need to skip, if structured...\n            jp.skipChildren();\n            return value;\n        }\n    }\n\n    static class TestBeans {\n        public List<TestBean> beans;\n    }\n    static class TestBean {\n        public CustomBean c;\n        public String d;\n    }\n    @JsonDeserialize(using=CustomBeanDeserializer.class)\n    static class CustomBean {\n        protected final int a, b;\n        public CustomBean(int a, int b) {\n            this.a = a;\n            this.b = b;\n        }\n    }\n\n    static class CustomBeanDeserializer extends JsonDeserializer<CustomBean>\n    {\n        @Override\n        public CustomBean deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException\n        {\n            int a = 0, b = 0;\n            JsonToken t = jp.getCurrentToken();\n            if (t == JsonToken.START_OBJECT) {\n                t = jp.nextToken();\n            } else if (t != JsonToken.FIELD_NAME) {\n                throw new Error();\n            }\n            while(t == JsonToken.FIELD_NAME) {\n                final String fieldName = jp.getCurrentName();\n                t = jp.nextToken();\n                if (t != JsonToken.VALUE_NUMBER_INT) {\n                JsonProcessingException {\n            Object ob = ctxt.readPropertyValue(p, prop, Bean375Inner.class);\n            return new Bean375Outer((Bean375Inner) ob);\n        }\n        @Override\n        public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property)\n                throws JsonMappingException {\n            return new Bean375OuterDeserializer(property);\n        }\n    }\n\n    static class Bean375InnerDeserializer extends StdDeserializer<Bean375Inner>\n        implements ContextualDeserializer\n    {\n        protected boolean negative;\n        \n        protected Bean375InnerDeserializer() { this(false); }\n        protected Bean375InnerDeserializer(boolean n) {\n            super(Bean375Inner.class);\n            negative = n;\n        }\n\n        @Override\n        public Bean375Inner deserialize(JsonParser jp, DeserializationContext ctxt)\n                throws IOException, JsonProcessingException {\n            int x = jp.getIntValue();\n            if (negative) {\n                x = -x;\n            } else {\n                x += x;\n            }\n            return new Bean375Inner(x);\n        }\n\n        @Override\n        public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property)\n                throws JsonMappingException {\n            if (property != null) {\n                Negative n = property.getAnnotation(Negative.class);\n                if (n != null) {\n                    return new Bean375InnerDeserializer(true);\n                }\n            }\n            return this;\n        }\n    }\n\n    // for [databind#631]\n    static class Issue631Bean\n    {\n        @JsonDeserialize(using=ParentClassDeserializer.class)\n        public Object prop;\n    }\n\n    static class ParentClassDeserializer\n        extends StdScalarDeserializer<Object>\n    {\n        protected ParentClassDeserializer() {\n            super(Object.class);\n        }\n\n        @Override\n        public Object deserialize(JsonParser p, DeserializationContext ctxt)\n                throws IOException {\n            Object parent = p.getCurrentValue();\n            String desc = (parent == null) ? \"NULL\" : parent.getClass().getSimpleName();\n            return \"prop/\"+ desc;\n        }\n    }\n\n    static class UCStringDeserializer extends StdDeserializer<String> {\n        public UCStringDeserializer() { super(String.class); }\n\n        @Override\n        public String deserialize(JsonParser p, DeserializationContext ctxt)\n                throws IOException {\n            return p.getText().toUpperCase();\n        }\n    }\n    \n    }\n\n    // [#337]: convenience methods for custom deserializers to use\n    public void testContextReadValue() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        SimpleModule module = new SimpleModule(\"test\", Version.unknownVersion());\n        module.addDeserializer(Bean375Outer.class, new Bean375OuterDeserializer());\n        module.addDeserializer(Bean375Inner.class, new Bean375InnerDeserializer());\n        mapper.registerModule(module);\n\n        // First, without property; doubles up value:\n        Bean375Outer outer = mapper.readValue(\"13\", Bean375Outer.class);\n        assertEquals(26, outer.inner.x);\n\n        // then with property; should find annotation, turn negative\n        Bean375Wrapper w = mapper.readValue(\"{\\\"value\\\":13}\", Bean375Wrapper.class);\n        assertNotNull(w.value);\n        assertNotNull(w.value.inner);\n        assertEquals(-13, w.value.inner.x);\n    }\n\n    // [#631]: \"current value\" access\n    public void testCurrentValueAccess() throws Exception\n    {\n        Issue631Bean bean = MAPPER.readValue(aposToQuotes(\"{'prop':'stuff'}\"),\n                Issue631Bean.class);\n        assertNotNull(bean);\n        assertEquals(\"prop/Issue631Bean\", bean.prop);\n    }\n\n    public void testCustomStringDeser() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper().registerModule(\n                new SimpleModule().addDeserializer(String.class, new UCStringDeserializer())\n                );\n        assertEquals(\"FOO\", mapper.readValue(quote(\"foo\"), String.class));\n        StringWrapper sw = mapper.readValue(\"{\\\"str\\\":\\\"foo\\\"}\", StringWrapper.class);\n        assertNotNull(sw);\n        assertEquals(\"FOO\", sw.str);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 402,
+    "mode": "windows",
+    "windows_total": 7,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        180,
+        260
+      ],
+      [
+        360,
+        402
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 21.392474852883748
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 7.258115228202057
+      },
+      {
+        "start": 360,
+        "end": 402,
+        "score": 8.631814900995474
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 21.392474852883748
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.989106736804038
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 4.574128135830177
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 7.258115228202057
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.589917816676047
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 7.060735682811984
+      },
+      {
+        "start": 360,
+        "end": 402,
+        "score": 8.631814900995474
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 6880,
+  "representation_chars": 6880,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

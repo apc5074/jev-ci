@@ -1,0 +1,76 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.struct.FormatFeaturesTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/struct/FormatFeaturesTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.struct.FormatFeaturesTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/struct/FormatFeaturesTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.struct;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.databind.*;\n\n/**\n * Tests for {@link JsonFormat} and specifically <code>JsonFormat.Feature</code>s.\n */\npublic class FormatFeaturesTest extends BaseMapTest\n{\n    @JsonPropertyOrder( { \"strings\", \"ints\", \"bools\" })\n    static class WrapWriteWithArrays\n    {\n        @JsonProperty(\"strings\")\n        @JsonFormat(with={ JsonFormat.Feature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED })\n        public String[] _strings = new String[] {\n            \"a\"\n        };\n\n        @JsonFormat(without={ JsonFormat.Feature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED })\n        public int[] ints = new int[] {\n            1\n        };\n\n        public boolean[] bools = new boolean[] { true };\n    }\n\n    @JsonPropertyOrder( { \"strings\", \"ints\", \"bools\", \"enums\" })\n    static class WrapWriteWithCollections\n    {\n        @JsonFormat(with={ JsonFormat.Feature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED })\n        public List<String> strings = Arrays.asList(\"a\");\n\n        @JsonFormat(without={ JsonFormat.Feature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED })\n        public Collection<Integer> ints = Arrays.asList(Integer.valueOf(1));\n\n        public Set<Boolean> bools = Collections.singleton(true);\n\n        @JsonFormat(with={ JsonFormat.Feature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED })\n        public EnumSet<ABC> enums = EnumSet.of(ABC.B);\n    }\n\n    static class StringArrayWrapper {\n        @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)\n        public String[] values;\n    }\n\n    static class StringArrayNotAnnoted {\n        public String[] values;\n\n        protected StringArrayNotAnnoted() { }\n        public StringArrayNotAnnoted(String ... v) { values = v; }\n    }\n    \n    static class IntArrayWrapper {\n        @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)\n        public int[] values;\n    }\n\n    static class LongArrayWrapper {\n        @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)\n        public long[] values;\n    }\n\n    static class StringListWrapper {\n        @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)\n        public List<String> values;\n    }\n\n    static class EnumSetWrapper {\n        @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)\n        public EnumSet<ABC> values;\n    }\n    \n    static class RolesInArray {\n        @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)\n        public Role[] roles;\n    }\n\n    static class RolesInList {\n        @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)\n        public List<Role> roles;\n    }\n    \n    static class Role {\n        public String ID;\n        public String Name;\n    }\n\n    static class CaseInsensitiveRoleWrapper\n    {\n        @JsonFormat(with={ JsonFormat.Feature.ACCEPT_CASE_INSENSITIVE_PROPERTIES })\n        public Role role;\n    }\n\n    static class SortedKeysMap {\n        @JsonFormat(with = JsonFormat.Feature.WRITE_SORTED_MAP_ENTRIES)\n        public Map<String,Integer> values = new LinkedHashMap<>();\n\n        protected SortedKeysMap() { }\n\n        public SortedKeysMap put(String key, int value) {\n            values.put(key, value);\n            return this;\n        }\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods, writing with single-element unwrapping\n    /**********************************************************\n     */\n    \n    private final ObjectMapper MAPPER = new ObjectMapper();\n\n    public void testWithArrayTypes() throws Exception\n    {\n        // default: strings unwrapped, ints wrapped\n        assertEquals(aposToQuotes(\"{'strings':'a','ints':[1],'bools':[true]}\"),\n                MAPPER.writeValueAsString(new WrapWriteWithArrays()));\n\n        // change global default to \"yes, unwrap\"; changes 'bools' only\n        assertEquals(aposToQuotes(\"{'strings':'a','ints':[1],'bools':true}\"),\n                MAPPER.writer().with(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED)\n                .writeValueAsString(new WrapWriteWithArrays()));\n\n        // change global default to \"no, don't, unwrap\", same as first case\n        assertEquals(aposToQuotes(\"{'strings':'a','ints':[1],'bools':[true]}\"),\n                MAPPER.writer().without(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED)\n                .writeValueAsString(new WrapWriteWithArrays()));\n\n        // And then without SerializationFeature but with config override:\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.configOverride(String[].class).setFormat(JsonFormat.Value.empty()\n                .withFeature(JsonFormat.Feature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED));\n        assertEquals(aposToQuotes(\"{'values':'a'}\"),\n                mapper.writeValueAsString(new StringArrayNotAnnoted(\"a\")));\n    }\n\n    public void testWithCollectionTypes() throws Exception\n    {\n        // default: strings unwrapped, ints wrapped\n        assertEquals(aposToQuotes(\"{'strings':'a','ints':[1],'bools':[true],'enums':'B'}\"),\n                MAPPER.writeValueAsString(new WrapWriteWithCollections()));\n\n        // change global default to \"yes, unwrap\"; changes 'bools' only\n        assertEquals(aposToQuotes(\"{'strings':'a','ints':[1],'bools':true,'enums':'B'}\"),\n                MAPPER.writer().with(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED)\n                .writeValueAsString(new WrapWriteWithCollections()));\n\n        // change global default to \"no, don't, unwrap\", same as first case\n        assertEquals(aposToQuotes(\"{'strings':'a','ints':[1],'bools':[true],'enums':'B'}\"),\n                MAPPER.writer().without(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED)\n                .writeValueAsString(new WrapWriteWithCollections()));\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods, reading with single-element unwrapping\n    /**********************************************************\n     */\n\n    public void testSingleStringArrayRead() throws Exception {\n        String json = aposToQuotes(\n                \"{ 'values': 'first' }\");\n        StringArrayWrapper result = MAPPER.readValue(json, StringArrayWrapper.class);\n        assertNotNull(result.values);\n        assertEquals(1, result.values.length);\n        assertEquals(\"first\", result.values[0]);\n\n        // and then without annotation, but with global override\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.configOverride(String[].class).setFormat(JsonFormat.Value.empty()\n                .withFeature(JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY));\n        StringArrayNotAnnoted result2 = mapper.readValue(json, StringArrayNotAnnoted.class);\n        assertNotNull(result2.values);\n        assertEquals(1, result2.values.length);\n        assertEquals(\"first\", result2.values[0]);\n    }\n\n    public void testSingleIntArrayRead() throws Exception {\n        String json = aposToQuotes(\n                \"{ 'values': 123 }\");\n        IntArrayWrapper result = MAPPER.readValue(json, IntArrayWrapper.class);\n        assertNotNull(result.values);\n        assertEquals(1, result.values.length);\n        assertEquals(123, result.values[0]);\n    }\n\n    public void testSingleLongArrayRead() throws Exception {\n        String json = aposToQuotes(\n                \"{ 'values': -205 }\");\n        LongArrayWrapper result = MAPPER.readValue(json, LongArrayWrapper.class);\n        assertNotNull(result.values);\n        assertEquals(1, result.values.length);\n        assertEquals(-205L, result.values[0]);\n    }\n\n",
+  "compaction": {
+    "source_lines": 254,
+    "mode": "windows",
+    "windows_total": 4,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 17.62972230947593
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 9.29954920611989
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 8.976268494712235
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 17.62972230947593
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 9.29954920611989
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 8.976268494712235
+      },
+      {
+        "start": 180,
+        "end": 254,
+        "score": 8.413861245850178
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7803,
+  "representation_chars": 7803,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

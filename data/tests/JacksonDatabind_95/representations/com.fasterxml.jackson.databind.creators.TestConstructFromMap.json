@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.creators.TestConstructFromMap",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/creators/TestConstructFromMap.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.creators.TestConstructFromMap\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/creators/TestConstructFromMap.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.creators;\n\nimport java.math.BigDecimal;\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.databind.*;\n\n/**\n * This unit test suite that tests use of {@link JsonCreator}\n * with \"delegate\" constructors and factory methods: ones that\n * take a deserializable type that is bound from JSON content.\n * This is usually done to get two-phase data binding, often using\n * {@link java.util.Map} as the intermediate form.\n */\npublic class TestConstructFromMap\n    extends BaseMapTest\n{\n    static class ConstructorFromMap\n    {\n        int _x;\n        String _y;\n\n        @JsonCreator\n        ConstructorFromMap(Map<?,?> arg)\n        {\n            _x = ((Number) arg.get(\"x\")).intValue();\n            _y = (String) arg.get(\"y\");\n        }\n    }\n\n    static class FactoryFromPoint\n    {\n        int _x, _y;\n\n        private FactoryFromPoint(Point p) {\n            _x = p.x;\n            _y = p.y;\n        }\n\n        @JsonCreator\n        static FactoryFromPoint createIt(Point p)\n        {\n            return new FactoryFromPoint(p);\n        }\n    }\n\n    // Also: let's test BigDecimal-from-JSON-String factory\n    static class FactoryFromDecimalString\n    {\n\tint _value;\n\n        private FactoryFromDecimalString(BigDecimal d) {\n\t    _value = d.intValue();\n        }\n\n        @JsonCreator\n        static FactoryFromDecimalString whateverNameWontMatter(BigDecimal d)\n        {\n            return new FactoryFromDecimalString(d);\n        }\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n\n    public void testViaConstructor() throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        ConstructorFromMap result = m.readValue\n            (\"{ \\\"x\\\":1, \\\"y\\\" : \\\"abc\\\" }\", ConstructorFromMap.class);\n        assertEquals(1, result._x);\n        assertEquals(\"abc\", result._y);\n    }\n\n    public void testViaFactory() throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        FactoryFromPoint result = m.readValue(\"{ \\\"x\\\" : 3, \\\"y\\\" : 4 }\", FactoryFromPoint.class);\n        assertEquals(3, result._x);\n        assertEquals(4, result._y);\n    }\n\n    public void testViaFactoryUsingString() throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        FactoryFromDecimalString result = m.readValue(\"\\\"12.57\\\"\", FactoryFromDecimalString.class);\n        assertNotNull(result);\n        assertEquals(12, result._value);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 95,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2741,
+  "representation_chars": 2741,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

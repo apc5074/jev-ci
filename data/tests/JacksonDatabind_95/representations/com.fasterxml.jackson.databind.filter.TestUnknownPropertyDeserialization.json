@@ -1,0 +1,81 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.filter.TestUnknownPropertyDeserialization",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/filter/TestUnknownPropertyDeserialization.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.filter.TestUnknownPropertyDeserialization\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/filter/TestUnknownPropertyDeserialization.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.filter;\n\nimport java.io.*;\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.core.type.TypeReference;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.deser.DeserializationProblemHandler;\n\n/**\n * Unit tests for checking handling of unknown properties\n */\npublic class TestUnknownPropertyDeserialization\n    extends BaseMapTest\n{\n    final static String JSON_UNKNOWN_FIELD = \"{ \\\"a\\\" : 1, \\\"foo\\\" : [ 1, 2, 3], \\\"b\\\" : -1 }\";\n\n    /*\n    /**********************************************************\n    /* Helper classes\n    /**********************************************************\n     */\n\n    final static class TestBean\n    {\n        String _unknown;\n\n        int _a, _b;\n\n        public TestBean() { }\n\n        public void setA(int a) { _a = a; }\n        public void setB(int b) { _b = b; }\n\n        public void markUnknown(String unk) { _unknown = unk; }\n    }\n\n    /**\n     * Simple {@link DeserializationProblemHandler} sub-class that\n     * just marks unknown property/ies when encountered, along with\n     * Json value of the property.\n     */\n    static class MyHandler\n        extends DeserializationProblemHandler\n    {\n        @Override\n        public boolean handleUnknownProperty(DeserializationContext ctxt,\n                JsonParser jp, JsonDeserializer<?> deserializer,\n                Object bean, String propertyName)\n            throws IOException, JsonProcessingException\n        {\n            // very simple, just to verify that we do see correct token type\n            ((TestBean) bean).markUnknown(propertyName+\":\"+jp.getCurrentToken().toString());\n            // Yup, we are good to go; must skip whatever value we'd have:\n            jp.skipChildren();\n            return true;\n        }\n    }\n\n    @JsonIgnoreProperties({\"b\", \"c\"})\n    static class IgnoreSome\n    {\n        public int a, b;\n        private String c, d;\n\n        public IgnoreSome() { }\n\n        public String c() { return c; }\n        public void setC(String value) { c = value; }\n        public String d() { return d; }\n        public void setD(String value) { d = value; }\n    }\n\n    @JsonIgnoreProperties(ignoreUnknown=true)\n    static class IgnoreUnknown {\n        public int a;\n    }\n\n\n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n\n    private final ObjectMapper MAPPER = new ObjectMapper();\n\n    /**\n     * By default we should just get an exception if an unknown property\n     * is encountered\n     */\n    public void testUnknownHandlingDefault() throws Exception\n    {\n        try {\n            MAPPER.readValue(new StringReader(JSON_UNKNOWN_FIELD), TestBean.class);\n        } catch (JsonMappingException jex) {\n            verifyException(jex, \"Unrecognized field \\\"foo\\\"\");\n        }\n    }\n\n    /**\n     * Test that verifies that it is possible to ignore unknown properties using\n     * {@link DeserializationProblemHandler}.\n     */\n    public void testUnknownHandlingIgnoreWithHandler() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.clearProblemHandlers();\n        mapper.addHandler(new MyHandler());\n        TestBean result = mapper.readValue(new StringReader(JSON_UNKNOWN_FIELD), TestBean.class);\n        assertNotNull(result);\n        assertEquals(1, result._a);\n        assertEquals(-1, result._b);\n        assertEquals(\"foo:START_ARRAY\", result._unknown);\n    }\n\n    /**\n     * Test that verifies that it is possible to ignore unknown properties using\n     * {@link DeserializationProblemHandler} and an ObjectReader.\n     */\n    public void testUnknownHandlingIgnoreWithHandlerAndObjectReader() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.clearProblemHandlers();\n        TestBean result = mapper.readerFor(TestBean.class).withHandler(new MyHandler()).readValue(new StringReader(JSON_UNKNOWN_FIELD));\n        assertNotNull(result);\n        assertEquals(1, result._a);\n        assertEquals(-1, result._b);\n        assertEquals(\"foo:START_ARRAY\", result._unknown);\n    }\n\n    /**\n     * Test for checking that it is also possible to simply suppress\n     * error reporting for unknown properties.\n     */\n    public void testUnknownHandlingIgnoreWithFeature() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);\n        TestBean result = null;\n        try {\n            result = mapper.readValue(new StringReader(JSON_UNKNOWN_FIELD), TestBean.class);\n        } catch (JsonMappingException jex) {\n            fail(\"Did not expect a problem, got: \"+jex.getMessage());\n        }\n        assertNotNull(result);\n        assertEquals(1, result._a);\n        assertNull(result._unknown);\n        assertEquals(-1, result._b);\n    }\n\n    public void testWithClassIgnore() throws Exception\n    {\n        IgnoreSome result = MAPPER.readValue(\"{ \\\"a\\\":1,\\\"b\\\":2,\\\"c\\\":\\\"x\\\",\\\"d\\\":\\\"y\\\"}\",\n                IgnoreSome.class);\n        // first: should deserialize 2 of properties normally\n        assertEquals(1, result.a);\n        assertEquals(\"y\", result.d());\n\n        // but \"d\" is not defined, so should still error\n        try {\n            MAPPER.readValue(\"{\\\"a\\\":1,\\\"b\\\":2,\\\"c\\\":3,\\\"d\\\":4 }\", ImplicitIgnores.class);            \n        } catch (JsonMappingException e) {\n            verifyException(e, \"Unrecognized field \\\"d\\\"\");\n        }\n    }\n\n    public void testPropertyIgnoral() throws Exception\n    {\n        XYZWrapper1 result = MAPPER.readValue(\"{\\\"value\\\":{\\\"y\\\":2,\\\"x\\\":1,\\\"z\\\":3}}\", XYZWrapper1.class);\n        assertEquals(2, result.value.y);\n        assertEquals(3, result.value.z);\n    }\n\n    public void testPropertyIgnoralWithClass() throws Exception\n    {\n        XYZWrapper2 result = MAPPER.readValue(\"{\\\"value\\\":{\\\"y\\\":2,\\\"x\\\":1,\\\"z\\\":3}}\",\n                XYZWrapper2.class);\n        assertEquals(1, result.value.x);\n    }\n\n    public void testPropertyIgnoralForMap() throws Exception\n    {\n        MapWithoutX result = MAPPER.readValue(\"{\\\"values\\\":{\\\"x\\\":1,\\\"y\\\":2}}\", MapWithoutX.class);\n        assertNotNull(result.values);\n        assertEquals(1, result.values.size());\n        assertEquals(Integer.valueOf(2), result.values.get(\"y\"));\n    }\n\n    public void testIssue987() throws Exception\n    {\n        ObjectMapper jsonMapper = new ObjectMapper();\n        jsonMapper.addHandler(new DeserializationProblemHandler() {\n            @Override\n            public boolean handleUnknownProperty(DeserializationContext ctxt, JsonParser p, JsonDeserializer<?> deserializer, Object beanOrClass, String propertyName) throws IOException, JsonProcessingException {\n                p.skipChildren();\n                return true;\n            }\n        });\n\n        String input = \"[{\\\"aProperty\\\":\\\"x\\\",\\\"unknown\\\":{\\\"unknown\\\":{}}}]\";\n        List<Bean987> deserializedList = jsonMapper.readValue(input,\n                new TypeReference<List<Bean987>>() { });\n        assertEquals(1, deserializedList.size());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 288,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        240,
+        288
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 29.704707674290034
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 12.30306242717517
+      },
+      {
+        "start": 240,
+        "end": 288,
+        "score": 10.685565063115135
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 29.704707674290034
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 10.170323295004373
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 12.30306242717517
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 8.69023408307244
+      },
+      {
+        "start": 240,
+        "end": 288,
+        "score": 10.685565063115135
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7403,
+  "representation_chars": 7403,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

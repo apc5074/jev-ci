@@ -1,0 +1,81 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.ser.TestFeatures",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/ser/TestFeatures.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.ser.TestFeatures\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/ser/TestFeatures.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.ser;\n\nimport java.io.*;\nimport java.util.*;\n\nimport com.fasterxml.jackson.core.JsonGenerator;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;\n\n/**\n * Unit tests for checking whether JsonSerializerFactory.Feature\n * configuration works\n */\npublic class TestFeatures\n    extends BaseMapTest\n{\n    /*\n    /**********************************************************\n    /* Helper classes\n    /**********************************************************\n     */\n\n    /**\n     * Class with one explicitly defined getter, one name-based\n     * auto-detectable getter.\n     */\n    static class GetterClass\n    {\n        @JsonProperty(\"x\") public int getX() { return -2; }\n        public int getY() { return 1; }\n    }\n\n    /**\n     * Another test-class that explicitly disables auto-detection\n     */\n    @JsonAutoDetect(getterVisibility=Visibility.NONE)\n    static class DisabledGetterClass\n    {\n        @JsonProperty(\"x\") public int getX() { return -2; }\n        public int getY() { return 1; }\n    }\n\n    /**\n     * Another test-class that explicitly enables auto-detection\n     */\n    @JsonAutoDetect(isGetterVisibility=Visibility.NONE)\n    static class EnabledGetterClass\n    {\n        @JsonProperty(\"x\") public int getX() { return -2; }\n        public int getY() { return 1; }\n\n        // not auto-detected, since \"is getter\" auto-detect disabled\n        public boolean isOk() { return true; }\n    }\n\n    /**\n     * One more: only detect \"isXxx\", not \"getXXX\"\n     */\n    @JsonAutoDetect(getterVisibility=Visibility.NONE)\n    static class EnabledIsGetterClass\n    {\n        // Won't be auto-detected any more\n        public int getY() { return 1; }\n\n        // but this will be\n        public boolean isOk() { return true; }\n    }\n\n    static class CloseableBean implements Closeable\n    {\n        public int a = 3;\n\n        protected boolean wasClosed = false;\n\n        @Override\n        public void close() throws IOException {\n            wasClosed = true;\n        }\n    }\n\n    private static class StringListBean {\n        @SuppressWarnings(\"unused\")\n        public Collection<String> values;\n        \n        public StringListBean(Collection<String> v) { values = v; }\n    }\n    \n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n\n    public void testGlobalAutoDetection() throws IOException\n    {\n        // First: auto-detection enabled (default):\n        ObjectMapper m = new ObjectMapper();\n        Map<String,Object> result = writeAndMap(m, new GetterClass());\n        assertEquals(2, result.size());\n        assertEquals(Integer.valueOf(-2), result.get(\"x\"));\n        assertEquals(Integer.valueOf(1), result.get(\"y\"));\n\n        // Then auto-detection disabled. But note: we MUST create a new\n        // mapper, since old version of serializer may be cached by now\n        m = new ObjectMapper();\n        m.configure(MapperFeature.AUTO_DETECT_GETTERS, false);\n        result = writeAndMap(m, new GetterClass());\n        assertEquals(1, result.size());\n        assertTrue(result.containsKey(\"x\"));\n    }\n\n    public void testPerClassAutoDetection() throws IOException\n    {\n        // First: class-level auto-detection disabling\n        ObjectMapper m = new ObjectMapper();\n        Map<String,Object> result = writeAndMap(m, new DisabledGetterClass());\n        assertEquals(1, result.size());\n        assertTrue(result.containsKey(\"x\"));\n\n        // And then class-level auto-detection enabling, should override defaults\n        m.configure(MapperFeature.AUTO_DETECT_GETTERS, false);\n        result = writeAndMap(m, new EnabledGetterClass());\n        assertEquals(2, result.size());\n        assertTrue(result.containsKey(\"x\"));\n        assertTrue(result.containsKey(\"y\"));\n    }\n\n    public void testPerClassAutoDetectionForIsGetter() throws IOException\n    {\n        ObjectMapper m = new ObjectMapper();\n        // class level should override\n        m.configure(MapperFeature.AUTO_DETECT_GETTERS, true);\n        m.configure(MapperFeature.AUTO_DETECT_IS_GETTERS, false);\n         Map<String,Object> result = writeAndMap(m, new EnabledIsGetterClass());\n        assertEquals(1, result.size());\n        assertTrue(result.containsKey(\"ok\"));\n        assertEquals(Boolean.TRUE, result.get(\"ok\"));\n    }\n\n        assertEquals(quote(\"abc\"), m.writeValueAsString(chars));\n        \n        // new feature: serialize as JSON array:\n        m.configure(SerializationFeature.WRITE_CHAR_ARRAYS_AS_JSON_ARRAYS, true);\n        assertEquals(\"[\\\"a\\\",\\\"b\\\",\\\"c\\\"]\", m.writeValueAsString(chars));\n    }\n\n    // Test for [JACKSON-401]\n    public void testFlushingAutomatic() throws IOException\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        assertTrue(mapper.getSerializationConfig().isEnabled(SerializationFeature.FLUSH_AFTER_WRITE_VALUE));\n        // default is to flush after writeValue()\n        StringWriter sw = new StringWriter();\n        JsonGenerator jgen = mapper.getFactory().createGenerator(sw);\n        mapper.writeValue(jgen, Integer.valueOf(13));\n        assertEquals(\"13\", sw.toString());\n        jgen.close();\n\n        // ditto with ObjectWriter\n        sw = new StringWriter();\n        jgen = mapper.getFactory().createGenerator(sw);\n        ObjectWriter ow = mapper.writer();\n        ow.writeValue(jgen, Integer.valueOf(99));\n        assertEquals(\"99\", sw.toString());\n        jgen.close();\n    }\n\n    // Test for [JACKSON-401]\n    public void testFlushingNotAutomatic() throws IOException\n    {\n        // but should not occur if configured otherwise\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.configure(SerializationFeature.FLUSH_AFTER_WRITE_VALUE, false);\n        StringWriter sw = new StringWriter();\n        JsonGenerator jgen = mapper.getFactory().createGenerator(sw);\n\n        mapper.writeValue(jgen, Integer.valueOf(13));\n        // no flushing now:\n        assertEquals(\"\", sw.toString());\n        // except when actually flushing\n        jgen.flush();\n        assertEquals(\"13\", sw.toString());\n        jgen.close();\n        // Also, same should happen with ObjectWriter\n        sw = new StringWriter();\n        jgen = mapper.getFactory().createGenerator(sw);\n        ObjectWriter ow = mapper.writer();\n        ow.writeValue(jgen, Integer.valueOf(99));\n        assertEquals(\"\", sw.toString());\n        // except when actually flushing\n        jgen.flush();\n        assertEquals(\"99\", sw.toString());\n        jgen.close();\n    }\n\n    // Test for [JACKSON-805]\n    public void testSingleElementCollections() throws IOException\n    {\n        final ObjectWriter writer = objectWriter().with(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED);\n\n        // Lists:\n        ArrayList<String> strs = new ArrayList<String>();\n        strs.add(\"xyz\");\n        assertEquals(quote(\"xyz\"), writer.writeValueAsString(strs));\n        ArrayList<Integer> ints = new ArrayList<Integer>();\n        ints.add(13);\n        assertEquals(\"13\", writer.writeValueAsString(ints));\n\n        // other Collections, like Sets:\n        HashSet<Long> longs = new HashSet<Long>();\n        longs.add(42L);\n        assertEquals(\"42\", writer.writeValueAsString(longs));\n        // [Issue#180]\n        final String EXP_STRINGS = \"{\\\"values\\\":\\\"foo\\\"}\";\n        assertEquals(EXP_STRINGS, writer.writeValueAsString(new StringListBean(Collections.singletonList(\"foo\"))));\n\n        final Set<String> SET = new HashSet<String>();\n        SET.add(\"foo\");\n        assertEquals(EXP_STRINGS, writer.writeValueAsString(new StringListBean(SET)));\n",
+  "compaction": {
+    "source_lines": 269,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 24.101819699864322
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 14.918811241574748
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 12.70777812616842
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 24.101819699864322
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 14.918811241574748
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 12.398451840931378
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 12.70777812616842
+      },
+      {
+        "start": 240,
+        "end": 269,
+        "score": 0.9054672245220746
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7869,
+  "representation_chars": 7869,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

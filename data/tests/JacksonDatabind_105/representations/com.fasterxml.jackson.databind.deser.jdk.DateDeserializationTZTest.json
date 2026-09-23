@@ -1,0 +1,106 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.jdk.DateDeserializationTZTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/jdk/DateDeserializationTZTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.jdk.DateDeserializationTZTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/jdk/DateDeserializationTZTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser.jdk;\n\nimport java.math.BigInteger;\nimport java.text.DateFormat;\nimport java.text.SimpleDateFormat;\nimport java.util.Calendar;\nimport java.util.Date;\nimport java.util.Locale;\nimport java.util.TimeZone;\n\nimport com.fasterxml.jackson.annotation.JsonFormat;\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.ObjectMapper;\nimport com.fasterxml.jackson.databind.exc.InvalidFormatException;\nimport com.fasterxml.jackson.databind.exc.MismatchedInputException;\n\n/**\n * Additional `java.util.Date` deserialization tests for cases where `ObjectMapper`\n * is configured to use timezone different from UTC.\n */\n@SuppressWarnings(\"javadoc\")\npublic class DateDeserializationTZTest\n    extends BaseMapTest\n{\n    private static final String LOCAL_TZ = \"GMT+2\";\n\n    private static final DateFormat FORMAT = new SimpleDateFormat(\"yyyy-MM-dd'T'HH:mm:ss.SSSXXX\");\n\n    static class Annot_TimeZone {\n        @JsonFormat(timezone=\"GMT+4\")\n        private java.util.Date date;\n    }\n\n    static class Annot_Pattern {\n        @JsonFormat(pattern=\"'*'d MMM yyyy HH:mm:ss'*'\")\n        private java.util.Date pattern;\n\n        @JsonFormat(pattern=\"'*'d MMM yyyy HH:mm:ss'*'\", locale=\"FR\")\n        private java.util.Date pattern_FR;\n\n        @JsonFormat(pattern=\"'*'d MMM yyyy HH:mm:ss'*'\", timezone=\"GMT+4\")\n        private java.util.Date pattern_GMT4;\n\n        @JsonFormat(pattern=\"'*'d MMM yyyy HH:mm:ss'*'\", locale=\"FR\", timezone=\"GMT+4\")\n        private java.util.Date pattern_FR_GMT4;\n    }\n\n    static class DateAsStringBean {\n        @JsonFormat(shape=JsonFormat.Shape.STRING, pattern=\"/yyyy/MM/dd/\")\n        public Date date;\n    }\n\n    static class DateAsStringBeanGermany {\n        @JsonFormat(shape=JsonFormat.Shape.STRING, pattern=\"/yyyy/MM/dd/\", locale=\"fr_FR\")\n        public Date date;\n    }\n\n    private ObjectMapper MAPPER;\n\n    @Override\n    protected void setUp() throws Exception {\n        super.setUp();\n\n        // Create an ObjectMapper with its timezone set to something other than the default (UTC).\n        // This way we can verify that serialization and deserialization actually consider the time\n        // zone set on the mapper.\n        ObjectMapper m = new ObjectMapper();\n        m.setTimeZone(TimeZone.getTimeZone(LOCAL_TZ));\n        MAPPER = m;\n        \n        FORMAT.setTimeZone(TimeZone.getTimeZone(\"UTC\"));\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n\n    /**\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        DateFormat df = new SimpleDateFormat(\"yyyy-MM-dd'X'HH:mm:ssZ\");\n        df.setTimeZone(TimeZone.getTimeZone(\"GMT+4\"));    // use a timezone different than the ObjectMapper and the system default\n        mapper.setDateFormat(df);\n\n        verify(mapper, \"2000-01-02X03:04:05+0300\", judate(2000, 1, 2, 3, 4, 5, 00, \"GMT+3\"));\n    }\n\n    /*\n    /**********************************************************\n    /* Helper methods\n    /**********************************************************\n     */\n\n    /**\n     * Create a {@link java.util.Date} with all the fields set to the given value.\n     * \n     * @param year year\n     * @param month month (1-12)\n     * @param day day of month (1-31)\n     * @param hour hour (0-23)\n     * @param minutes minutes (0-59)\n     * @param seconds seconds (0-59)\n     * @param millis millis\n     * @param tz timezone id as accepted by {@link TimeZone#getTimeZone(String)}\n     * @return a new {@link Date} instance\n     */\n    private static Date judate(int year, int month, int day, int hour, int minutes, int seconds, int millis, String tz) \n    {\n        Calendar cal = Calendar.getInstance();\n        cal.setLenient(false);\n        cal.set(year, month-1, day, hour, minutes, seconds);\n        cal.set(Calendar.MILLISECOND, millis);\n        cal.setTimeZone(TimeZone.getTimeZone(tz));\n        return cal.getTime();\n    }\n\n    private static void verify(ObjectMapper mapper, Object input, Date expected) throws Exception {\n\t\t// Deserialize using the supplied ObjectMapper\n\t\tDate actual = read(mapper, input, java.util.Date.class);\n\t\t\n\t\t// Test against the expected\n\t\tif( expected==null && actual==null) {\n\t\t\treturn;\n\t\t}\n\t\tif( expected==null && actual != null) {\n\t\t\tfail(\"Failed to deserialize \"+input+\", actual: '\"+FORMAT.format(actual)+\"', expected: <null>'\");\n\t\t}\n\t\tif( expected != null && actual == null ) {\n\t\t\tfail(\"Failed to deserialize \"+input+\", actual: <null>, expected: '\"+FORMAT.format(expected)+\"'\");\n\t\t}\n\t\tif( actual.getTime() != expected.getTime() ) {\n\t\t\tfail(\"Failed to deserialize \"+input+\", actual: '\"+FORMAT.format(actual)+\"', expected: '\"+FORMAT.format(expected)+\"'\");\n\t\t}\n    }\n\n    private static void failure(ObjectMapper mapper, Object input) throws Exception {\n        failure(mapper, input, MismatchedInputException.class);\n    }\n\n    private static void failure(ObjectMapper mapper, Object input, Class<? extends Exception> exceptionType) throws Exception {\n        try {\n            Date date = read(mapper, input, java.util.Date.class);\n            fail(\"Input \"+input+\" should not have been accepted but was deserialized into \"+FORMAT.format(date));\n        }\n        catch(Exception e) {\n            // Is it the expected exception ?\n            if (!exceptionType.isAssignableFrom(e.getClass()) ) {\n                fail(\"Wrong exception thrown when reading \"+input+\", actual: \"+e.getClass().getName() + \"(\"+e.getMessage()+\"), expected: \"+exceptionType.getName());\n            }\n        }\n    }\n\n    private static <T> T read(ObjectMapper mapper, Object input, Class<T> type) throws Exception {\n        // Construct the json representation from the input\n        String json = input.toString();\n        if( !(input instanceof Number) ) {\n            json = \"\\\"\"+json+\"\\\"\";\n        }\n        // Deserialize using the supplied ObjectMapper\n        return (T) mapper.readValue(json, type);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 564,
+    "mode": "windows",
+    "windows_total": 10,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        480,
+        560
+      ],
+      [
+        540,
+        564
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 25.087022031182048
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 20.96072423617852
+      },
+      {
+        "start": 540,
+        "end": 564,
+        "score": 15.606747009056289
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 25.087022031182048
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 3.0496238266585927
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 1.426171516850982
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 1.9445234599317087
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.261814439783363
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 10.770476879102494
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 9.700841117884382
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 6.606086484084613
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 20.96072423617852
+      },
+      {
+        "start": 540,
+        "end": 564,
+        "score": 15.606747009056289
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 6197,
+  "representation_chars": 6197,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

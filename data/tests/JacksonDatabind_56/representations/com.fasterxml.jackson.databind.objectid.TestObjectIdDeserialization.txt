@@ -1,0 +1,207 @@
+TEST CLASS:
+com.fasterxml.jackson.databind.objectid.TestObjectIdDeserialization
+
+SOURCE FILE:
+src/test/java/com/fasterxml/jackson/databind/objectid/TestObjectIdDeserialization.java
+
+TEST SOURCE:
+package com.fasterxml.jackson.databind.objectid;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerator.IdKey;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.ObjectIdResolver;
+import com.fasterxml.jackson.databind.BaseMapTest;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.cfg.ContextAttributes;
+import com.fasterxml.jackson.databind.deser.UnresolvedForwardReference;
+import com.fasterxml.jackson.databind.deser.UnresolvedId;
+import com.fasterxml.jackson.databind.objectid.TestObjectId.Company;
+import com.fasterxml.jackson.databind.objectid.TestObjectId.Employee;
+
+/**
+ * Unit test to verify handling of Object Id deserialization
+ */
+public class TestObjectIdDeserialization extends BaseMapTest
+{
+    private static final String POOL_KEY = "POOL";
+
+    // // Classes for external id use
+
+    @JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property="id")
+    static class Identifiable
+    {
+        public int value;
+
+        public Identifiable next;
+
+        public Identifiable() { this(0); }
+        public Identifiable(int v) {
+            value = v;
+        }
+    }
+
+    @JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="#")
+    static class UUIDNode
+    {
+        public int value;
+        public UUIDNode parent;
+        public UUIDNode first;
+        public UUIDNode second;
+
+        public UUIDNode() { this(0); }
+        public UUIDNode(int v) { value = v; }
+    }
+
+    // // Classes for external id from property annotations:
+
+    static class IdWrapper
+    {
+        @JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property="@id")
+        public ValueNode node;
+
+        public IdWrapper() { }
+        public IdWrapper(int v) {
+            node = new ValueNode(v);
+        }
+    }
+
+    static class ValueNode {
+        public int value;
+        public IdWrapper next;
+        
+        public ValueNode() { this(0); }
+        public ValueNode(int v) { value = v; }
+    }
+
+    // // Classes for external id use
+
+    @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="customId")
+    static class IdentifiableCustom
+    {
+        public int value;
+
+        public int customId;
+        
+        public IdentifiableCustom next;
+        
+        public IdentifiableCustom() { this(-1, 0); }
+        public IdentifiableCustom(int i, int v) {
+            customId = i;
+            value = v;
+        }
+    }
+
+    static class IdWrapperExt
+    {
+        @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class,
+        		property="customId")
+        public ValueNodeExt node;
+
+        public IdWrapperExt() { }
+        public IdWrapperExt(int v) {
+            node = new ValueNodeExt(v);
+        }
+    }
+
+    static class ValueNodeExt
+    {
+        public int value;
+        protected int customId;
+        public IdWrapperExt next;
+        
+        public ValueNodeExt() { this(0); }
+        public ValueNodeExt(int v) { value = v; }
+
+        public void setCustomId(int i) {
+        	customId = i;
+        }
+    }
+    
+    static class MappedCompany {
+        public Map<Integer, Employee> employees;
+    }
+
+    @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class)
+    static class AnySetterObjectId {
+        protected Map<String, AnySetterObjectId> values = new HashMap<String, AnySetterObjectId>();
+
+        @JsonAnySetter
+        public void anySet(String field, AnySetterObjectId value) {
+            // Ensure that it is never called with null because of unresolved reference.
+            assertNotNull(value);
+            values.put(field, value);
+        }
+    }
+
+    static class CustomResolutionWrapper {
+        public List<WithCustomResolution> data;
+    }
+
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", resolver = PoolResolver.class)
+    @JsonIdentityReference(alwaysAsId = true) // #524
+    static class WithCustomResolution {
+        public int id;
+        public int data;
+
+        public WithCustomResolution(int id, int data)
+        {
+            this.id = id;
+            this.data = data;
+        }
+    }
+
+    public static class PoolResolver implements ObjectIdResolver {
+        private Map<Object,WithCustomResolution> _pool;
+
+        public PoolResolver() {}
+        public PoolResolver(Map<Object,WithCustomResolution> pool){ _pool = pool; }
+
+        @Override
+        public void bindItem(IdKey id, Object pojo){ }
+
+        @Override
+        public Object resolveId(IdKey id){ return _pool.get(id.key); }
+
+        @Override
+        public boolean canUseFor(ObjectIdResolver resolverType)
+        {
+            return resolverType.getClass() == getClass() && _pool != null && !_pool.isEmpty();
+        }
+        
+        @Override
+        public ObjectIdResolver newForDeserialization(Object c)
+        {
+            DeserializationContext context = (DeserializationContext)c;
+            @SuppressWarnings("unchecked")
+            Map<Object,WithCustomResolution> pool = (Map<Object,WithCustomResolution>)context.getAttribute(POOL_KEY);
+            return new PoolResolver(pool);
+        }
+    }
+
+    /*
+    /*****************************************************
+    /* Unit tests, external id deserialization
+    /*****************************************************
+     */
+
+    private final ObjectMapper MAPPER = new ObjectMapper();
+
+    private final static String EXP_SIMPLE_INT_CLASS = "{\"id\":1,\"value\":13,\"next\":1}";
+
+    public void testSimpleDeserializationClass() throws Exception
+    {
+        // then bring back...
+        Identifiable result = MAPPER.readValue(EXP_SIMPLE_INT_CLASS, Identifiable.class);
+        assertEquals(13, result.value);
+        assertSame(result, result.next);

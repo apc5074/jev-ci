@@ -1,0 +1,116 @@
+{
+  "test_class": "org.jsoup.parser.HtmlParserTest",
+  "source_file": "src/test/java/org/jsoup/parser/HtmlParserTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.jsoup.parser.HtmlParserTest\n\nSOURCE FILE:\nsrc/test/java/org/jsoup/parser/HtmlParserTest.java\n\nTEST SOURCE:\npackage org.jsoup.parser;\n\nimport org.jsoup.Jsoup;\nimport org.jsoup.TextUtil;\nimport org.jsoup.helper.StringUtil;\nimport org.jsoup.nodes.*;\nimport org.jsoup.select.Elements;\nimport org.junit.Test;\n\nimport java.util.List;\n\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertNull;\nimport static org.junit.Assert.assertTrue;\n\n/**\n Tests for the Parser\n\n @author Jonathan Hedley, jonathan@hedley.net */\npublic class HtmlParserTest {\n\n    @Test public void parsesSimpleDocument() {\n        String html = \"<html><head><title>First!</title></head><body><p>First post! <img src=\\\"foo.png\\\" /></p></body></html>\";\n        Document doc = Jsoup.parse(html);\n        // need a better way to verify these:\n        Element p = doc.body().child(0);\n        assertEquals(\"p\", p.tagName());\n        Element img = p.child(0);\n        assertEquals(\"foo.png\", img.attr(\"src\"));\n        assertEquals(\"img\", img.tagName());\n    }\n\n    @Test public void parsesRoughAttributes() {\n        String html = \"<html><head><title>First!</title></head><body><p class=\\\"foo > bar\\\">First post! <img src=\\\"foo.png\\\" /></p></body></html>\";\n        Document doc = Jsoup.parse(html);\n\n        // need a better way to verify these:\n        Element p = doc.body().child(0);\n        assertEquals(\"p\", p.tagName());\n        assertEquals(\"foo > bar\", p.attr(\"class\"));\n    }\n\n    @Test public void parsesQuiteRoughAttributes() {\n        String html = \"<p =a>One<a <p>Something</p>Else\";\n        // this gets a <p> with attr '=a' and an <a tag with an attribue named '<p'; and then auto-recreated\n        Document doc = Jsoup.parse(html);\n        assertEquals(\"<p =a=\\\"\\\">One<a <p=\\\"\\\">Something</a></p>\\n\" +\n                \"<a <p=\\\"\\\">Else</a>\", doc.body().html());\n\n        doc = Jsoup.parse(\"<p .....>\");\n        assertEquals(\"<p .....=\\\"\\\"></p>\", doc.body().html());\n    }\n\n    @Test public void parsesComments() {\n        String html = \"<html><head></head><body><img src=foo><!-- <table><tr><td></table> --><p>Hello</p></body></html>\";\n        Document doc = Jsoup.parse(html);\n\n        Element body = doc.body();\n        Comment comment = (Comment) body.childNode(1); // comment should not be sub of img, as it's an empty tag\n        assertEquals(\" <table><tr><td></table> \", comment.getData());\n        Element p = body.child(1);\n        TextNode text = (TextNode) p.childNode(0);\n        assertEquals(\"Hello\", text.getWholeText());\n    }\n\n    @Test public void parsesUnterminatedComments() {\n        String html = \"<p>Hello<!-- <tr><td>\";\n        Document doc = Jsoup.parse(html);\n        Element p = doc.getElementsByTag(\"p\").get(0);\n        assertEquals(\"Hello\", p.text());\n        TextNode text = (TextNode) p.childNode(0);\n        assertEquals(\"Hello\", text.getWholeText());\n        Comment comment = (Comment) p.childNode(1);\n        assertEquals(\" <tr><td>\", comment.getData());\n    }\n\n    @Test public void dropsUnterminatedTag() {\n        // jsoup used to parse this to <p>, but whatwg, webkit will drop.\n        String h1 = \"<p\";\n        Document doc = Jsoup.parse(h1);\n        Element head = doc.head();\n        Element body = doc.body();\n\n        assertEquals(1, doc.children().size()); // root node: contains html node\n        assertEquals(2, doc.child(0).children().size()); // html node: head and body\n        assertEquals(3, head.children().size());\n        assertEquals(1, body.children().size());\n\n        assertEquals(\"keywords\", head.getElementsByTag(\"meta\").get(0).attr(\"name\"));\n        assertEquals(0, body.getElementsByTag(\"meta\").size());\n        assertEquals(\"jsoup\", doc.title());\n        assertEquals(\"Hello world\", body.text());\n        assertEquals(\"Hello world\", body.children().get(0).text());\n    }\n\n    @Test public void createsStructureFromBodySnippet() {\n        // the bar baz stuff naturally goes into the body, but the 'foo' goes into root, and the normalisation routine\n        // needs to move into the start of the body\n        String html = \"foo <b>bar</b> baz\";\n        Document doc = Jsoup.parse(html);\n        assertEquals(\"foo bar baz\", doc.text());\n\n    }\n\n    @Test public void handlesEscapedData() {\n        String html = \"<div title='Surf &amp; Turf'>Reef &amp; Beef</div>\";\n        Document doc = Jsoup.parse(html);\n        Element div = doc.getElementsByTag(\"div\").get(0);\n\n        assertEquals(\"Surf & Turf\", div.attr(\"title\"));\n        assertEquals(\"Reef & Beef\", div.text());\n    }\n\n    @Test public void handlesDataOnlyTags() {\n        String t = \"<style>font-family: bold</style>\";\n        List<Element> tels = Jsoup.parse(t).getElementsByTag(\"style\");\n        assertEquals(\"font-family: bold\", tels.get(0).data());\n        assertEquals(\"\", tels.get(0).text());\n\n        String s = \"<p>Hello</p><script>obj.insert('<a rel=\\\"none\\\" />');\\ni++;</script><p>There</p>\";\n        Document doc = Jsoup.parse(s);\n        assertEquals(\"Hello There\", doc.text());\n        assertEquals(\"obj.insert('<a rel=\\\"none\\\" />');\\ni++;\", doc.data());\n    }\n\n    @Test public void handlesTextAfterData() {\n        String h = \"<html><body>pre <script>inner</script> aft</body></html>\";\n        Document doc = Jsoup.parse(h);\n        assertEquals(\"<html><head></head><body>pre <script>inner</script> aft</body></html>\", TextUtil.stripNewlines(doc.html()));\n    }\n\n    @Test public void handlesTextArea() {\n        Document doc = Jsoup.parse(\"<textarea>Hello</textarea>\");\n        Elements els = doc.select(\"textarea\");\n        assertEquals(\"Hello\", els.text());\n        assertEquals(\"Hello\", els.val());\n    }\n\n    @Test public void preservesSpaceInTextArea() {\n        // preserve because the tag is marked as preserve white space\n        Document doc = Jsoup.parse(\"<textarea>\\n\\tOne\\n\\tTwo\\n\\tThree\\n</textarea>\");\n        String expect = \"One\\n\\tTwo\\n\\tThree\"; // the leading and trailing spaces are dropped as a convenience to authors\n        Element el = doc.select(\"textarea\").first();\n        assertEquals(expect, el.text());\n        assertEquals(expect, el.val());\n        assertEquals(expect, el.html());\n        assertEquals(\"<textarea>\\n\\t\" + expect + \"\\n</textarea>\", el.outerHtml()); // but preserved in round-trip html\n    }\n\n    @Test public void preservesSpaceInScript() {\n        // preserve because it's content is a data node\n        Document doc = Jsoup.parse(\"<script>\\nOne\\n\\tTwo\\n\\tThree\\n</script>\");\n        String expect = \"\\nOne\\n\\tTwo\\n\\tThree\\n\";\n        Element el = doc.select(\"script\").first();\n        assertEquals(expect, el.data());\n        assertEquals(\"One\\n\\tTwo\\n\\tThree\", el.html());\n        assertEquals(\"<script>\" + expect + \"</script>\", el.outerHtml());\n    }\n\n    @Test public void doesNotCreateImplicitLists() {\n    @Test public void tracksErrorsWhenRequested() {\n        String html = \"<p>One</p href='no'><!DOCTYPE html>&arrgh;<font /><br /><foo\";\n        Parser parser = Parser.htmlParser().setTrackErrors(500);\n        Document doc = Jsoup.parse(html, \"http://example.com\", parser);\n        \n        List<ParseError> errors = parser.getErrors();\n        assertEquals(5, errors.size());\n        assertEquals(\"20: Attributes incorrectly present on end tag\", errors.get(0).toString());\n        assertEquals(\"35: Unexpected token [Doctype] when in state [InBody]\", errors.get(1).toString());\n        assertEquals(\"36: Invalid character reference: invalid named referenece 'arrgh'\", errors.get(2).toString());\n        assertEquals(\"50: Self closing flag not acknowledged\", errors.get(3).toString());\n        assertEquals(\"61: Unexpectedly reached end of file (EOF) in input state [TagName]\", errors.get(4).toString());\n    }\n\n    @Test public void tracksLimitedErrorsWhenRequested() {\n        String html = \"<p>One</p href='no'><!DOCTYPE html>&arrgh;<font /><br /><foo\";\n        Parser parser = Parser.htmlParser().setTrackErrors(3);\n        Document doc = parser.parseInput(html, \"http://example.com\");\n\n        List<ParseError> errors = parser.getErrors();\n        assertEquals(3, errors.size());\n        assertEquals(\"20: Attributes incorrectly present on end tag\", errors.get(0).toString());\n        assertEquals(\"35: Unexpected token [Doctype] when in state [InBody]\", errors.get(1).toString());\n        assertEquals(\"36: Invalid character reference: invalid named referenece 'arrgh'\", errors.get(2).toString());\n    }\n\n    @Test public void noErrorsByDefault() {\n        String html = \"<p>One</p href='no'>&arrgh;<font /><br /><foo\";\n        Parser parser = Parser.htmlParser();\n        Document doc = Jsoup.parse(html, \"http://example.com\", parser);\n\n        List<ParseError> errors = parser.getErrors();\n        assertEquals(0, errors.size());\n    }\n    \n    @Test public void handlesCommentsInTable() {\n        String html = \"<table><tr><td>text</td><!-- Comment --></tr></table>\";\n        Document node = Jsoup.parseBodyFragment(html);\n        assertEquals(\"<html><head></head><body><table><tbody><tr><td>text</td><!-- Comment --></tr></tbody></table></body></html>\", TextUtil.stripNewlines(node.outerHtml()));\n    }\n\n    @Test public void handlesQuotesInCommentsInScripts() {\n        String html = \"<script>\\n\" +\n                \"  <!--\\n\" +\n                \"    document.write('</scr' + 'ipt>');\\n\" +\n                \"  // -->\\n\" +\n                \"</script>\";\n        Document node = Jsoup.parseBodyFragment(html);\n        assertEquals(\"<script>\\n\" +\n                \"  <!--\\n\" +\n                \"    document.write('</scr' + 'ipt>');\\n\" +\n                \"  // -->\\n\" +\n                \"</script>\", node.body().html());\n    }\n\n    @Test public void handleNullContextInParseFragment() {\n        String html = \"<ol><li>One</li></ol><p>Two</p>\";\n        List<Node> nodes = Parser.parseFragment(html, null, \"http://example.com/\");\n        assertEquals(1, nodes.size()); // returns <html> node (not document) -- no context means doc gets created\n        assertEquals(\"html\", nodes.get(0).nodeName());\n        assertEquals(\"<html> <head></head> <body> <ol> <li>One</li> </ol> <p>Two</p> </body> </html>\", StringUtil.normaliseWhitespace(nodes.get(0).outerHtml()));\n    }\n\n    @Test public void doesNotFindShortestMatchingEntity() {\n        // previous behaviour was to identify a possible entity, then chomp down the string until a match was found.\n        // (as defined in html5.) However in practise that lead to spurious matches against the author's intent.\n        String html = \"One &clubsuite; &clubsuit;\";\n        Document doc = Jsoup.parse(html);\n        assertEquals(StringUtil.normaliseWhitespace(\"One &amp;clubsuite; ♣\"), doc.body().html());\n    }\n\n    @Test public void relaxedBaseEntityMatchAndStrictExtendedMatch() {\n        // extended entities need a ; at the end to match, base does not\n        String html = \"&amp &quot &reg &icy &hopf &icy; &hopf;\";\n        Document doc = Jsoup.parse(html);\n        doc.outputSettings().escapeMode(Entities.EscapeMode.extended); // modifies output only to clarify test\n        assertEquals(StringUtil.normaliseWhitespace(\"&amp; &quot; &reg; &amp;icy &amp;hopf &icy; &hopf;\"), doc.body().html());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 739,
+    "mode": "windows",
+    "windows_total": 12,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        660,
+        739
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 28.451034135037318
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 13.357018846287856
+      },
+      {
+        "start": 660,
+        "end": 739,
+        "score": 17.57588648024676
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 28.451034135037318
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 6.095358939614906
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 13.357018846287856
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 9.57188541319802
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 7.397110399038833
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 7.916350445077149
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 7.5429843759017485
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 6.290423025002247
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 7.382926193727526
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 6.000082379411449
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 11.330001090420074
+      },
+      {
+        "start": 660,
+        "end": 739,
+        "score": 17.57588648024676
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 11164,
+  "representation_chars": 11164,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

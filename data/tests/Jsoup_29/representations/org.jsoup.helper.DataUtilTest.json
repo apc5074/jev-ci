@@ -1,0 +1,25 @@
+{
+  "test_class": "org.jsoup.helper.DataUtilTest",
+  "source_file": "src/test/java/org/jsoup/helper/DataUtilTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.jsoup.helper.DataUtilTest\n\nSOURCE FILE:\nsrc/test/java/org/jsoup/helper/DataUtilTest.java\n\nTEST SOURCE:\npackage org.jsoup.helper;\n\nimport static org.junit.Assert.assertEquals;\n\nimport org.jsoup.nodes.Document;\nimport org.jsoup.parser.Parser;\nimport org.junit.Test;\n\nimport java.nio.ByteBuffer;\nimport java.nio.charset.Charset;\n\npublic class DataUtilTest {\n    @Test\n    public void testCharset() {\n        assertEquals(\"utf-8\", DataUtil.getCharsetFromContentType(\"text/html;charset=utf-8 \"));\n        assertEquals(\"UTF-8\", DataUtil.getCharsetFromContentType(\"text/html; charset=UTF-8\"));\n        assertEquals(\"ISO-8859-1\", DataUtil.getCharsetFromContentType(\"text/html; charset=ISO-8859-1\"));\n        assertEquals(null, DataUtil.getCharsetFromContentType(\"text/html\"));\n        assertEquals(null, DataUtil.getCharsetFromContentType(null));\n        assertEquals(null, DataUtil.getCharsetFromContentType(\"text/html;charset=Unknown\"));\n    }\n\n    @Test public void testQuotedCharset() {\n        assertEquals(\"utf-8\", DataUtil.getCharsetFromContentType(\"text/html; charset=\\\"utf-8\\\"\"));\n        assertEquals(\"UTF-8\", DataUtil.getCharsetFromContentType(\"text/html;charset=\\\"UTF-8\\\"\"));\n        assertEquals(\"ISO-8859-1\", DataUtil.getCharsetFromContentType(\"text/html; charset=\\\"ISO-8859-1\\\"\"));\n        assertEquals(null, DataUtil.getCharsetFromContentType(\"text/html; charset=\\\"Unsupported\\\"\"));\n    }\n    \n    @Test public void discardsSpuriousByteOrderMark() {\n        String html = \"\\uFEFF<html><head><title>One</title></head><body>Two</body></html>\";\n        ByteBuffer buffer = Charset.forName(\"UTF-8\").encode(html);\n        Document doc = DataUtil.parseByteData(buffer, \"UTF-8\", \"http://foo.com/\", Parser.htmlParser());\n        assertEquals(\"One\", doc.head().text());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 36,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1793,
+  "representation_chars": 1793,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

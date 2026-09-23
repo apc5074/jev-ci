@@ -1,0 +1,91 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.jsontype.TestDefaultForObject",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/jsontype/TestDefaultForObject.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.jsontype.TestDefaultForObject\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/jsontype/TestDefaultForObject.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.jsontype;\n\nimport java.util.*;\n\n\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.annotation.JsonTypeInfo;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.util.TokenBuffer;\n\npublic class TestDefaultForObject\n    extends BaseMapTest\n{\n    static abstract class AbstractBean { }\n    \n    static class StringBean extends AbstractBean { // ha, punny!\n        public String name;\n\n        public StringBean() { this(null); }\n        protected StringBean(String n)  { name = n; }\n    }\n\n    enum Choice { YES, NO; }\n\n    /**\n     * Another enum type, but this time forcing sub-classing\n     */\n    enum ComplexChoice {\n        MAYBE(true), PROBABLY_NOT(false);\n\n        private boolean state;\n    \t\n        private ComplexChoice(boolean b) { state = b; }\n    \t\n        @Override\n        public String toString() { return String.valueOf(state); }\n    }\n\n    static class PolymorphicType {\n        public String foo;\n        public Object bar;\n        \n        public PolymorphicType() { }\n        public PolymorphicType(String foo, int bar) {\n            this.foo = foo;\n            this.bar = bar;\n        }\n    }\n\n    final static class BeanHolder\n    {\n        public AbstractBean bean;\n        \n        public BeanHolder() { }\n        public BeanHolder(AbstractBean b) { bean = b; }\n    }\n\n    final static class ObjectHolder\n    {\n        public Object value;\n\n        public ObjectHolder() { }\n        public ObjectHolder(Object v) { value = v; }\n    }\n\n    static class DomainBean {\n        public int weight;\n    }\n\n    static class DiscussBean extends DomainBean {\n        public String subject;\n    }\n\n    static public class DomainBeanWrapper {\n        public String name;\n        public Object myBean;\n    }\n\n    /*\n    /**********************************************************\n        assertEquals(\"abc\", ((StringBean) result).name);\n    }\n    \n    /**\n     * Unit test that verifies that an abstract bean is stored with type information\n     * if default type information is enabled for non-concrete types.\n     */\n    public void testAbstractBean() throws Exception\n    {\n        // First, let's verify that we'd fail without enabling default type info\n        ObjectMapper m = new ObjectMapper();\n        AbstractBean[] input = new AbstractBean[] { new StringBean(\"xyz\") };\n        String serial = m.writeValueAsString(input);\n        try {\n            m.readValue(serial, AbstractBean[].class);\n            fail(\"Should have failed\");\n        } catch (JsonMappingException e) {\n            // let's use whatever is currently thrown exception... may change tho\n            verifyException(e, \"can not construct\");\n        }\n        \n        // and then that we will succeed with default type info\n        m = new ObjectMapper();\n        m.enableDefaultTyping(ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE);\n        serial = m.writeValueAsString(input);\n        AbstractBean[] beans = m.readValue(serial, AbstractBean[].class);\n        assertEquals(1, beans.length);\n        assertEquals(StringBean.class, beans[0].getClass());\n        assertEquals(\"xyz\", ((StringBean) beans[0]).name);\n    }\n\n    /**\n     * Unit test to verify that type information is included for\n     * all non-final types, if default typing suitably configured\n     */\n    public void testNonFinalBean() throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        // first: use \"object or abstract\" typing: should produce no type info:        \n        m.enableDefaultTyping(ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE);\n        StringBean bean = new StringBean(\"x\");\n        assertEquals(\"{\\\"name\\\":\\\"x\\\"}\", m.writeValueAsString(bean));\n        // then non-final, and voila:\n        m = new ObjectMapper();\n        m.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);\n        assertEquals(\"[\\\"\"+StringBean.class.getName()+\"\\\",{\\\"name\\\":\\\"x\\\"}]\",\n            m.writeValueAsString(bean));\n    }\n\n    public void testNullValue() throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        m.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);\n        BeanHolder h = new BeanHolder();\n        String json = m.writeValueAsString(h);\n        assertNotNull(json);\n        BeanHolder result = m.readValue(json, BeanHolder.class);\n        assertNotNull(result);\n        assertNull(result.bean);\n    }\n    \n    public void testEnumAsObject() throws Exception\n    {\n        // wrapping to be declared as object\n        Object[] input = new Object[] { Choice.YES };\n        Object[] input2 = new Object[] { ComplexChoice.MAYBE};\n        // first, without type info:\n        assertEquals(\"[\\\"YES\\\"]\", serializeAsString(input));\n        assertEquals(\"[\\\"MAYBE\\\"]\", serializeAsString(input2));\n\n        // and then with it\n        ObjectMapper m = new ObjectMapper();\n        m.enableDefaultTyping();\n\n        String json = m.writeValueAsString(input);\n        assertEquals(\"[[\\\"\"+Choice.class.getName()+\"\\\",\\\"YES\\\"]]\", json);\n\n        // which we should get back same way\n        Object[] output = m.readValue(json, Object[].class);\n        assertEquals(1, output.length);\n        buf.writeNumber(321);\n        json = mapper.writeValueAsString(new ObjectHolder(buf));\n        holder = mapper.readValue(json, ObjectHolder.class);\n        assertNotNull(holder.value);\n        assertSame(TokenBuffer.class, holder.value.getClass());\n        jp = ((TokenBuffer) holder.value).asParser();\n        assertToken(JsonToken.VALUE_NUMBER_INT, jp.nextToken());\n        assertEquals(321, jp.getIntValue());\n        assertNull(jp.nextToken());\n        jp.close();\n        buf.close();\n    }\n\n    /**\n     * Test for [JACKSON-352]\n     */\n    public void testIssue352() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.enableDefaultTyping (ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE, JsonTypeInfo.As.PROPERTY);\n        DiscussBean d1 = new DiscussBean();\n        d1.subject = \"mouse\";\n        d1.weight=88;\n        DomainBeanWrapper wrapper = new DomainBeanWrapper();\n        wrapper.name = \"mickey\";\n        wrapper.myBean = d1;\n        String json = mapper.writeValueAsString(wrapper);\n        DomainBeanWrapper result = mapper.readValue(json, DomainBeanWrapper.class);\n        assertNotNull(result);\n        assertNotNull(wrapper.myBean);\n        assertSame(DiscussBean.class, wrapper.myBean.getClass());\n    }    \n\n    // Test to ensure we can also use \"As.PROPERTY\" inclusion and custom property name\n    public void testFeature432() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.enableDefaultTypingAsProperty(ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE, \"*CLASS*\");\n        String json = mapper.writeValueAsString(new BeanHolder(new StringBean(\"punny\")));\n        assertEquals(\"{\\\"bean\\\":{\\\"*CLASS*\\\":\\\"com.fasterxml.jackson.databind.jsontype.TestDefaultForObject$StringBean\\\",\\\"name\\\":\\\"punny\\\"}}\", json);\n    }\n\n    public void testNoGoWithExternalProperty() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        try {\n            mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT,\n                    JsonTypeInfo.As.EXTERNAL_PROPERTY);\n            fail(\"Should not have passed\");\n        } catch (IllegalArgumentException e) {\n            verifyException(e, \"Can not use includeAs of EXTERNAL_PROPERTY\");\n        }\n    }\n    \n    /*\n    /**********************************************************\n    /* Helper methods\n    /**********************************************************\n     */\n    \n    @SuppressWarnings(\"unchecked\")\n    private void _verifySerializationAsMap(String str) throws Exception\n    {\n        // First: validate that structure looks correct (as Map etc)\n        // note: should look something like:\n        // \"[[\"org.codehaus.jackson.map.jsontype.TestDefaultForObject$StringBean\",{\"name\":\"abc\"}]]\")\n\n        // note: must have default mapper, default typer NOT enabled (to get 'plain' map)\n        ObjectMapper m = new ObjectMapper();\n        List<Object> list = m.readValue(str, List.class);\n        assertEquals(1, list.size()); // no type for main List, just single entry\n        Object entryOb = list.get(0);\n        assertTrue(entryOb instanceof List<?>);\n        // but then type wrapper for bean\n        List<?> entryList = (List<?>)entryOb;\n        assertEquals(2, entryList.size());\n        assertEquals(StringBean.class.getName(), entryList.get(0));\n        assertTrue(entryList.get(1) instanceof Map);\n        Map<?,?> map = (Map<?,?>) entryList.get(1);\n        assertEquals(1, map.size());\n",
+  "compaction": {
+    "source_lines": 383,
+    "mode": "windows",
+    "windows_total": 7,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        300,
+        380
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 20.790537197361974
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 17.759503258404607
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 21.285562432022214
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 20.790537197361974
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 15.995828826808522
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 17.759503258404607
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 13.117233429113986
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 12.311854863634094
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 21.285562432022214
+      },
+      {
+        "start": 360,
+        "end": 383,
+        "score": 10.016133776731301
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8861,
+  "representation_chars": 8861,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

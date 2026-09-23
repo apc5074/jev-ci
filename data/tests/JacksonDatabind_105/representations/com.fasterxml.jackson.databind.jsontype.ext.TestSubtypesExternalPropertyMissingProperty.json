@@ -1,0 +1,76 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.jsontype.ext.TestSubtypesExternalPropertyMissingProperty",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/jsontype/ext/TestSubtypesExternalPropertyMissingProperty.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.jsontype.ext.TestSubtypesExternalPropertyMissingProperty\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/jsontype/ext/TestSubtypesExternalPropertyMissingProperty.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.jsontype.ext;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.annotation.JsonSubTypes.Type;\nimport com.fasterxml.jackson.annotation.JsonTypeInfo.As;\nimport com.fasterxml.jackson.annotation.JsonTypeInfo.Id;\n\nimport com.fasterxml.jackson.databind.*;\n\nimport org.junit.Rule;\nimport org.junit.Test;\nimport org.junit.rules.ExpectedException;\n\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertNull;\nimport static org.junit.Assert.assertSame;\n\n// for [databind#1341]\npublic class TestSubtypesExternalPropertyMissingProperty\n{\n    @Rule\n    public ExpectedException thrown = ExpectedException.none();\n\n    /**\n     * Base class - external property for Fruit subclasses.\n     */\n    static class Box {\n        public String type;\n        @JsonTypeInfo(use = Id.NAME, include = As.EXTERNAL_PROPERTY, property = \"type\")\n        public Fruit fruit;\n\n        public Box() {\n        }\n\n        public Box(String type, Fruit fruit) {\n            this.type = type;\n            this.fruit = fruit;\n        }\n    }\n\n    /**\n     * Base class that requires the property to be present.\n     */\n    static class ReqBox {\n        public String type;\n        @JsonTypeInfo(use = Id.NAME, include = As.EXTERNAL_PROPERTY, property = \"type\")\n        @JsonProperty(required = true)\n        public Fruit fruit;\n\n        public ReqBox() {\n        }\n\n        public ReqBox(String type, Fruit fruit) {\n            this.type = type;\n            this.fruit = fruit;\n        }\n    }\n\n    @JsonSubTypes({\n            @Type(value = Apple.class, name = \"apple\"),\n            @Type(value = Orange.class, name = \"orange\")\n    })\n    static abstract class Fruit {\n        public String name;\n\n        public Fruit() {\n        }\n\n        protected Fruit(String n) {\n            name = n;\n        }\n    }\n\n    static class Apple extends Fruit {\n        public int seedCount;\n\n        public Apple() {\n        }\n\n        public Apple(String name, int b) {\n            super(name);\n            seedCount = b;\n        }\n    }\n\n    static class Orange extends Fruit {\n        public String color;\n\n        public Orange() {\n        }\n\n        public Orange(String name, String c) {\n            super(name);\n            color = c;\n        }\n    }\n\n    private final ObjectMapper MAPPER = new ObjectMapper();\n\n    /*\n    /**********************************************************\n    /* Mock data\n    /**********************************************************\n     */\n\n    private static final Orange orange = new Orange(\"Orange\", \"orange\");\n    private static final Box orangeBox = new Box(\"orange\", orange);\n    private static final String orangeBoxJson = \"{\\\"type\\\":\\\"orange\\\",\\\"fruit\\\":{\\\"name\\\":\\\"Orange\\\",\\\"color\\\":\\\"orange\\\"}}\";\n    private static final String orangeBoxNullJson = \"{\\\"type\\\":\\\"orange\\\",\\\"fruit\\\":null}}\";\n    private static final String orangeBoxEmptyJson = \"{\\\"type\\\":\\\"orange\\\",\\\"fruit\\\":{}}}\";\n    private static final String orangeBoxMissingJson = \"{\\\"type\\\":\\\"orange\\\"}}\";\n\n    private static final Apple apple = new Apple(\"Apple\", 16);\n    private static Box appleBox = new Box(\"apple\", apple);\n    private static final String appleBoxJson = \"{\\\"type\\\":\\\"apple\\\",\\\"fruit\\\":{\\\"name\\\":\\\"Apple\\\",\\\"seedCount\\\":16}}\";\n    private static final String appleBoxNullJson = \"{\\\"type\\\":\\\"apple\\\",\\\"fruit\\\":null}\";\n    private static final String appleBoxEmptyJson = \"{\\\"type\\\":\\\"apple\\\",\\\"fruit\\\":{}}\";\n    private static final String appleBoxMissingJson = \"{\\\"type\\\":\\\"apple\\\"}\";\n\n    /*\n    /**********************************************************\n    /* Unit tests\n    /**********************************************************\n     */\n\n    /**\n     * Deserialization tests for external type id property present\n     */\n    @Test\n    public void testDeserializationPresent() throws Exception {\n        MAPPER.disable(DeserializationFeature.FAIL_ON_MISSING_EXTERNAL_TYPE_ID_PROPERTY);\n        checkOrangeBox();\n        checkAppleBox();\n\n        MAPPER.enable(DeserializationFeature.FAIL_ON_MISSING_EXTERNAL_TYPE_ID_PROPERTY);\n        checkOrangeBox();\n        checkAppleBox();\n    }\n\n    /**\n\n    /**\n     * Deserialization tests for external type id required property missing\n     */\n    @Test\n    public void testDeserializationMissingRequired() throws Exception {\n        MAPPER.disable(DeserializationFeature.FAIL_ON_MISSING_EXTERNAL_TYPE_ID_PROPERTY);\n        checkReqBoxJsonMappingException(orangeBoxMissingJson);\n        checkReqBoxJsonMappingException(appleBoxMissingJson);\n\n        MAPPER.enable(DeserializationFeature.FAIL_ON_MISSING_EXTERNAL_TYPE_ID_PROPERTY);\n        checkReqBoxJsonMappingException(orangeBoxMissingJson);\n        checkReqBoxJsonMappingException(appleBoxMissingJson);\n    }\n\n    private void checkOrangeBox() throws Exception {\n        Box deserOrangeBox = MAPPER.readValue(orangeBoxJson, Box.class);\n        assertEquals(orangeBox.type, deserOrangeBox.type);\n\n        Fruit deserOrange = deserOrangeBox.fruit;\n        assertSame(Orange.class, deserOrange.getClass());\n        assertEquals(orange.name, deserOrange.name);\n        assertEquals(orange.color, ((Orange) deserOrange).color);\n    }\n\n    private void checkAppleBox() throws Exception {\n        Box deserAppleBox = MAPPER.readValue(appleBoxJson, Box.class);\n        assertEquals(appleBox.type, deserAppleBox.type);\n\n        Fruit deserApple = deserAppleBox.fruit;\n        assertSame(Apple.class, deserApple.getClass());\n        assertEquals(apple.name, deserApple.name);\n        assertEquals(apple.seedCount, ((Apple) deserApple).seedCount);\n    }\n\n    private void checkOrangeBoxEmpty(String json) throws Exception {\n        Box deserOrangeBox = MAPPER.readValue(json, Box.class);\n        assertEquals(orangeBox.type, deserOrangeBox.type);\n\n        Fruit deserOrange = deserOrangeBox.fruit;\n        assertSame(Orange.class, deserOrange.getClass());\n        assertNull(deserOrange.name);\n        assertNull(((Orange) deserOrange).color);\n    }\n\n    private void checkAppleBoxEmpty(String json) throws Exception {\n        Box deserAppleBox = MAPPER.readValue(json, Box.class);\n        assertEquals(appleBox.type, deserAppleBox.type);\n\n        Fruit deserApple = deserAppleBox.fruit;\n        assertSame(Apple.class, deserApple.getClass());\n        assertNull(deserApple.name);\n        assertEquals(0, ((Apple) deserApple).seedCount);\n    }\n\n    private void checkOrangeBoxNull(String json) throws Exception {\n        Box deserOrangeBox = MAPPER.readValue(json, Box.class);\n        assertEquals(orangeBox.type, deserOrangeBox.type);\n        assertNull(deserOrangeBox.fruit);\n    }\n\n    private void checkAppleBoxNull(String json) throws Exception {\n        Box deserAppleBox = MAPPER.readValue(json, Box.class);\n        assertEquals(appleBox.type, deserAppleBox.type);\n        assertNull(deserAppleBox.fruit);\n    }\n\n    private void checkBoxJsonMappingException(String json) throws Exception {\n        thrown.expect(JsonMappingException.class);\n        thrown.expectMessage(\"Missing property 'fruit' for external type id 'type'\");\n        MAPPER.readValue(json, Box.class);\n    }\n\n    private void checkReqBoxJsonMappingException(String json) throws Exception {\n        thrown.expect(JsonMappingException.class);\n        thrown.expectMessage(\"Missing property 'fruit' for external type id 'type'\");\n        MAPPER.readValue(json, ReqBox.class);\n    }\n}    \n",
+  "compaction": {
+    "source_lines": 259,
+    "mode": "windows",
+    "windows_total": 4,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        180,
+        259
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 13.89135733669398
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.175746115692711
+      },
+      {
+        "start": 180,
+        "end": 259,
+        "score": 6.609666002872382
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 13.89135733669398
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.175746115692711
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 2.6860025838130754
+      },
+      {
+        "start": 180,
+        "end": 259,
+        "score": 6.609666002872382
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7656,
+  "representation_chars": 7656,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

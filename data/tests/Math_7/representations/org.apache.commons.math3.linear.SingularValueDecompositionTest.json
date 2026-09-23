@@ -1,0 +1,86 @@
+{
+  "test_class": "org.apache.commons.math3.linear.SingularValueDecompositionTest",
+  "source_file": "src/test/java/org/apache/commons/math3/linear/SingularValueDecompositionTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.linear.SingularValueDecompositionTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/linear/SingularValueDecompositionTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math3.linear;\n\nimport java.io.BufferedReader;\nimport java.io.DataInputStream;\nimport java.io.IOException;\nimport java.io.InputStreamReader;\nimport java.util.Random;\n\nimport org.junit.Assert;\nimport org.junit.Test;\n\n\npublic class SingularValueDecompositionTest {\n\n    private double[][] testSquare = {\n            { 24.0 / 25.0, 43.0 / 25.0 },\n            { 57.0 / 25.0, 24.0 / 25.0 }\n    };\n\n    private double[][] testNonSquare = {\n        {  -540.0 / 625.0,  963.0 / 625.0, -216.0 / 625.0 },\n        { -1730.0 / 625.0, -744.0 / 625.0, 1008.0 / 625.0 },\n        {  -720.0 / 625.0, 1284.0 / 625.0, -288.0 / 625.0 },\n        {  -360.0 / 625.0,  192.0 / 625.0, 1756.0 / 625.0 },\n    };\n\n    private static final double normTolerance = 10e-14;\n\n    @Test\n    public void testMoreRows() {\n        final double[] singularValues = { 123.456, 2.3, 1.001, 0.999 };\n        final int rows    = singularValues.length + 2;\n        final int columns = singularValues.length;\n        Random r = new Random(15338437322523l);\n        SingularValueDecomposition svd =\n            new SingularValueDecomposition(createTestMatrix(r, rows, columns, singularValues));\n        double[] computedSV = svd.getSingularValues();\n        Assert.assertEquals(singularValues.length, computedSV.length);\n        for (int i = 0; i < singularValues.length; ++i) {\n            Assert.assertEquals(singularValues[i], computedSV[i], 1.0e-10);\n        }\n    }\n\n    @Test\n    public void testMoreColumns() {\n        final double[] singularValues = { 123.456, 2.3, 1.001, 0.999 };\n        final int rows    = singularValues.length;\n        final int columns = singularValues.length + 2;\n        Random r = new Random(732763225836210l);\n        SingularValueDecomposition svd =\n            new SingularValueDecomposition(createTestMatrix(r, rows, columns, singularValues));\n        double[] computedSV = svd.getSingularValues();\n        Assert.assertEquals(singularValues.length, computedSV.length);\n        for (int i = 0; i < singularValues.length; ++i) {\n            Assert.assertEquals(singularValues[i], computedSV[i], 1.0e-10);\n        }\n    }\n\n    /** test dimensions */\n    @Test\n    public void testDimensions() {\n        RealMatrix matrix = MatrixUtils.createRealMatrix(testSquare);\n        final int m = matrix.getRowDimension();\n                {  -3.0 / 1024,   5.0 / 1024,  -3.0 / 1024,   5.0 / 1024 }\n        }, false);\n        Assert.assertEquals(0.0,\n                     halfCovariance.subtract(svd.getCovariance(6.0)).getNorm(),\n                     1.0e-14);\n\n    }\n\n    /** test A = USVt */\n    @Test\n    public void testAEqualUSVt() {\n        checkAEqualUSVt(MatrixUtils.createRealMatrix(testSquare));\n        checkAEqualUSVt(MatrixUtils.createRealMatrix(testNonSquare));\n        checkAEqualUSVt(MatrixUtils.createRealMatrix(testNonSquare).transpose());\n    }\n\n    public void checkAEqualUSVt(final RealMatrix matrix) {\n        SingularValueDecomposition svd = new SingularValueDecomposition(matrix);\n        RealMatrix u = svd.getU();\n        RealMatrix s = svd.getS();\n        RealMatrix v = svd.getV();\n        double norm = u.multiply(s).multiply(v.transpose()).subtract(matrix).getNorm();\n        Assert.assertEquals(0, norm, normTolerance);\n\n    }\n\n    /** test that U is orthogonal */\n    @Test\n    public void testUOrthogonal() {\n        checkOrthogonal(new SingularValueDecomposition(MatrixUtils.createRealMatrix(testSquare)).getU());\n        checkOrthogonal(new SingularValueDecomposition(MatrixUtils.createRealMatrix(testNonSquare)).getU());\n        checkOrthogonal(new SingularValueDecomposition(MatrixUtils.createRealMatrix(testNonSquare).transpose()).getU());\n    }\n\n    /** test that V is orthogonal */\n    @Test\n    public void testVOrthogonal() {\n        checkOrthogonal(new SingularValueDecomposition(MatrixUtils.createRealMatrix(testSquare)).getV());\n        checkOrthogonal(new SingularValueDecomposition(MatrixUtils.createRealMatrix(testNonSquare)).getV());\n        checkOrthogonal(new SingularValueDecomposition(MatrixUtils.createRealMatrix(testNonSquare).transpose()).getV());\n    }\n\n    public void checkOrthogonal(final RealMatrix m) {\n        RealMatrix mTm = m.transpose().multiply(m);\n        RealMatrix id  = MatrixUtils.createRealIdentityMatrix(mTm.getRowDimension());\n        Assert.assertEquals(0, mTm.subtract(id).getNorm(), normTolerance);\n    }\n\n    /** test matrices values */\n    // This test is useless since whereas the columns of U and V are linked\n    // together, the actual triplet (U,S,V) is not uniquely defined.\n    public void testMatricesValues1() {\n       SingularValueDecomposition svd =\n            new SingularValueDecomposition(MatrixUtils.createRealMatrix(testSquare));\n        RealMatrix uRef = MatrixUtils.createRealMatrix(new double[][] {\n                { 3.0 / 5.0, -4.0 / 5.0 },\n                { 4.0 / 5.0,  3.0 / 5.0 }\n        });\n        RealMatrix sRef = MatrixUtils.createRealMatrix(new double[][] {\n                { 3.0, 0.0 },\n                { 0.0, 1.0 }\n        });\n        RealMatrix vRef = MatrixUtils.createRealMatrix(new double[][] {\n                { 4.0 / 5.0,  3.0 / 5.0 },\n                { 3.0 / 5.0, -4.0 / 5.0 }\n        });\n\n        // check values against known references\n        RealMatrix u = svd.getU();\n        Assert.assertEquals(0, u.subtract(uRef).getNorm(), normTolerance);\n        RealMatrix s = svd.getS();\n        Assert.assertEquals(0, s.subtract(sRef).getNorm(), normTolerance);\n        RealMatrix v = svd.getV();\n        Assert.assertEquals(0, v.subtract(vRef).getNorm(), normTolerance);\n\n        // check the same cached instance is returned the second time\n        Assert.assertTrue(u == svd.getU());\n        Assert.assertTrue(s == svd.getS());\n        Assert.assertTrue(v == svd.getV());\n\n    }\n\n    /** test matrices values */\n    // This test is useless since whereas the columns of U and V are linked\n    // together, the actual triplet (U,S,V) is not uniquely defined.\n    public void useless_testMatricesValues2() {\n\n        RealMatrix uRef = MatrixUtils.createRealMatrix(new double[][] {\n            {  0.0 / 5.0,  3.0 / 5.0,  0.0 / 5.0 },\n            { -4.0 / 5.0,  0.0 / 5.0, -3.0 / 5.0 },\n            {  0.0 / 5.0,  4.0 / 5.0,  0.0 / 5.0 },\n            { -3.0 / 5.0,  0.0 / 5.0,  4.0 / 5.0 }\n        });\n        RealMatrix sRef = MatrixUtils.createRealMatrix(new double[][] {\n            { 4.0, 0.0, 0.0 },\n            { 0.0, 3.0, 0.0 },\n            { 0.0, 0.0, 2.0 }\n        });\n        RealMatrix vRef = MatrixUtils.createRealMatrix(new double[][] {\n            {  80.0 / 125.0,  -60.0 / 125.0, 75.0 / 125.0 },\n            {  24.0 / 125.0,  107.0 / 125.0, 60.0 / 125.0 },\n            { -93.0 / 125.0,  -24.0 / 125.0, 80.0 / 125.0 }\n        });\n\n        // check values against known references\n        SingularValueDecomposition svd =\n            new SingularValueDecomposition(MatrixUtils.createRealMatrix(testNonSquare));\n        RealMatrix u = svd.getU();\n        Assert.assertEquals(0, u.subtract(uRef).getNorm(), normTolerance);\n        RealMatrix s = svd.getS();\n        Assert.assertEquals(0, s.subtract(sRef).getNorm(), normTolerance);\n        RealMatrix v = svd.getV();\n        Assert.assertEquals(0, v.subtract(vRef).getNorm(), normTolerance);\n\n        // check the same cached instance is returned the second time\n        Assert.assertTrue(u == svd.getU());\n        Assert.assertTrue(s == svd.getS());\n        Assert.assertTrue(v == svd.getV());\n\n    }\n\n     /** test MATH-465 */\n    @Test\n    public void testRank() {\n        double[][] d = { { 1, 1, 1 }, { 0, 0, 0 }, { 1, 2, 3 } };\n        RealMatrix m = new Array2DRowRealMatrix(d);\n        SingularValueDecomposition svd = new SingularValueDecomposition(m);\n        Assert.assertEquals(2, svd.getRank());\n    }\n\n    /** test MATH-583 */\n    @Test\n    public void testStability1() {\n        RealMatrix m = new Array2DRowRealMatrix(201, 201);\n        loadRealMatrix(m,\"matrix1.csv\");\n        try {\n            new SingularValueDecomposition(m);\n        } catch (Exception e) {\n            Assert.fail(\"Exception whilst constructing SVD\");\n        }\n",
+  "compaction": {
+    "source_lines": 331,
+    "mode": "windows",
+    "windows_total": 6,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 22.205050910946284
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 8.012223777854409
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 6.140128552418225
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 22.205050910946284
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.320490075594666
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 8.012223777854409
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 6.140128552418225
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.09030120369898
+      },
+      {
+        "start": 300,
+        "end": 331,
+        "score": 5.0911393057365855
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9123,
+  "representation_chars": 9123,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

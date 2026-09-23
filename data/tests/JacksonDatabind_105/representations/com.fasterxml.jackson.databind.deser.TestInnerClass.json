@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.TestInnerClass",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/TestInnerClass.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.TestInnerClass\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/TestInnerClass.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser;\n\nimport com.fasterxml.jackson.annotation.JsonProperty;\nimport com.fasterxml.jackson.databind.*;\n\npublic class TestInnerClass extends BaseMapTest\n{\n    static class Dog\n    {\n      public String name;\n      public Brain brain;\n\n      public Dog() { }\n      public Dog(String n, boolean thinking) {\n          name = n;\n          brain = new Brain();\n          brain.isThinking = thinking;\n      }\n\n      // note: non-static\n      public class Brain {\n          @JsonProperty(\"brainiac\")\n          public boolean isThinking;\n\n          public String parentName() { return name; }\n      }\n    }\n\n    /*\n    /**********************************************************\n    /* Tests\n    /**********************************************************\n     */\n\n    public void testSimpleNonStaticInner() throws Exception\n    {\n        // Let's actually verify by first serializing, then deserializing back\n        ObjectMapper mapper = new ObjectMapper();\n        Dog input = new Dog(\"Smurf\", true);\n        String json = mapper.writeValueAsString(input);\n        Dog output = mapper.readValue(json, Dog.class);\n        assertEquals(\"Smurf\", output.name);\n        assertNotNull(output.brain);\n        assertTrue(output.brain.isThinking);\n        // and verify correct binding...\n        assertEquals(\"Smurf\", output.brain.parentName());\n        output.name = \"Foo\";\n        assertEquals(\"Foo\", output.brain.parentName());\n\n        // also, null handling\n        input.brain = null;\n\n        output = mapper.readValue(mapper.writeValueAsString(input), Dog.class);\n        assertNull(output.brain);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 56,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1802,
+  "representation_chars": 1802,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

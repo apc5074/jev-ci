@@ -1,0 +1,25 @@
+{
+  "test_class": "org.jsoup.nodes.DocumentTest",
+  "source_file": "src/test/java/org/jsoup/nodes/DocumentTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.jsoup.nodes.DocumentTest\n\nSOURCE FILE:\nsrc/test/java/org/jsoup/nodes/DocumentTest.java\n\nTEST SOURCE:\npackage org.jsoup.nodes;\n\nimport org.jsoup.Jsoup;\nimport org.junit.Test;\n\nimport static org.junit.Assert.*;\n\n/**\n Tests for Document.\n\n @author Jonathan Hedley, jonathan@hedley.net */\npublic class DocumentTest {\n    @Test public void setTextPreservesDocumentStructure() {\n        Document doc = Jsoup.parse(\"<p>Hello</p>\");\n        doc.text(\"Replaced\");\n        assertEquals(\"Replaced\", doc.text());\n        assertEquals(\"Replaced\", doc.body().text());\n        assertEquals(1, doc.select(\"head\").size());\n    }\n    \n    @Test public void testTitles() {\n        Document noTitle = Jsoup.parse(\"<p>Hello</p>\");\n        Document withTitle = Jsoup.parse(\"<title>First</title><title>Ignore</title><p>Hello</p>\");\n        \n        assertEquals(\"\", noTitle.title());\n        noTitle.title(\"Hello\");\n        assertEquals(\"Hello\", noTitle.title());\n        assertEquals(\"Hello\", noTitle.select(\"title\").first().text());\n        \n        assertEquals(\"First\", withTitle.title());\n        withTitle.title(\"Hello\");\n        assertEquals(\"Hello\", withTitle.title());\n        assertEquals(\"Hello\", withTitle.select(\"title\").first().text());\n    }\n\n    @Test public void testOutputEncoding() {\n        Document doc = Jsoup.parse(\"<p title=π>π & < > </p>\");\n        // default is utf-8\n        assertEquals(\"<p title=\\\"π\\\">π &amp; &lt; &gt; </p>\", doc.body().html());\n        assertEquals(\"UTF-8\", doc.outputSettings().charset().displayName());\n\n        doc.outputSettings().charset(\"ascii\");\n        assertEquals(Entities.EscapeMode.base, doc.outputSettings().escapeMode());\n        assertEquals(\"<p title=\\\"&#960;\\\">&#960; &amp; &lt; &gt; </p>\", doc.body().html());\n\n        doc.outputSettings().escapeMode(Entities.EscapeMode.extended);\n        assertEquals(\"<p title=\\\"&pi;\\\">&pi; &amp; &lt; &gt; </p>\", doc.body().html());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 49,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1937,
+  "representation_chars": 1937,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

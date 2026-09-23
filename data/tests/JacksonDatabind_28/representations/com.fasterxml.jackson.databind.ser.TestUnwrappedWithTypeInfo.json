@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.ser.TestUnwrappedWithTypeInfo",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/ser/TestUnwrappedWithTypeInfo.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.ser.TestUnwrappedWithTypeInfo\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/ser/TestUnwrappedWithTypeInfo.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.ser;\n\nimport com.fasterxml.jackson.annotation.JsonProperty;\nimport com.fasterxml.jackson.annotation.JsonTypeInfo;\nimport com.fasterxml.jackson.annotation.JsonTypeName;\nimport com.fasterxml.jackson.annotation.JsonUnwrapped;\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.JsonMappingException;\nimport com.fasterxml.jackson.databind.ObjectMapper;\nimport com.fasterxml.jackson.databind.SerializationFeature;\n\n// Tests for [#81]\npublic class TestUnwrappedWithTypeInfo extends BaseMapTest\n{\n\n\t@JsonTypeInfo(use=JsonTypeInfo.Id.NAME, property=\"@type\")\n\t@JsonTypeName(\"OuterType\")\n\tstatic class Outer {\n\n\t\tprivate @JsonProperty String p1;\n\t\tpublic String getP1() { return p1; }\n\t\tpublic void setP1(String p1) { this.p1 = p1; }\n\n\n\t\tprivate Inner inner;\n\t\tpublic void setInner(Inner inner) { this.inner = inner; }\n\n\t\t@JsonUnwrapped\n\t\tpublic Inner getInner() {\n\t\t\treturn inner;\n\t\t}\n\t}\n\n\t@JsonTypeInfo(use=JsonTypeInfo.Id.NAME, property=\"@type\")\n\t@JsonTypeName(\"InnerType\")\n\tstatic class Inner {\n\n\t\tprivate @JsonProperty String p2;\n\t\tpublic String getP2() { return p2; }\n\t\tpublic void setP2(String p2) { this.p2 = p2; }\n\n\t}\n    \n    /*\n    /**********************************************************\n    /* Tests, serialization\n    /**********************************************************\n     */\n\n\t// [Issue#81]\n\tpublic void testDefaultUnwrappedWithTypeInfo() throws Exception\n\t{\n\t    Outer outer = new Outer();\n\t    outer.setP1(\"101\");\n\n\t    Inner inner = new Inner();\n\t    inner.setP2(\"202\");\n\t    outer.setInner(inner);\n\n\t    ObjectMapper mapper = new ObjectMapper();\n\n\t    try {\n\t        mapper.writeValueAsString(outer);\n\t         fail(\"Expected exception to be thrown.\");\n\t    } catch (JsonMappingException ex) {\n\t        verifyException(ex, \"requires use of type information\");\n\t    }\n\t}\n\n\tpublic void testUnwrappedWithTypeInfoAndFeatureDisabled() throws Exception\n\t{\n\t\tOuter outer = new Outer();\n\t\touter.setP1(\"101\");\n\n\t\tInner inner = new Inner();\n\t\tinner.setP2(\"202\");\n\t\touter.setInner(inner);\n\n\t\tObjectMapper mapper = new ObjectMapper();\n\t\tmapper = mapper.disable(SerializationFeature.FAIL_ON_UNWRAPPED_TYPE_IDENTIFIERS);\n\n\t\tString json = mapper.writeValueAsString(outer);\n\t\tassertEquals(\"{\\\"@type\\\":\\\"OuterType\\\",\\\"p1\\\":\\\"101\\\",\\\"p2\\\":\\\"202\\\"}\", json);\n\t}\n}",
+  "compaction": {
+    "source_lines": 85,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2522,
+  "representation_chars": 2522,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

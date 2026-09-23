@@ -1,0 +1,101 @@
+{
+  "test_class": "org.apache.commons.math3.geometry.euclidean.threed.RotationTest",
+  "source_file": "src/test/java/org/apache/commons/math3/geometry/euclidean/threed/RotationTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.geometry.euclidean.threed.RotationTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/geometry/euclidean/threed/RotationTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math3.geometry.euclidean.threed;\n\nimport org.apache.commons.math3.exception.MathArithmeticException;\nimport org.apache.commons.math3.exception.MathIllegalArgumentException;\nimport org.apache.commons.math3.util.FastMath;\nimport org.apache.commons.math3.util.MathUtils;\nimport org.junit.Assert;\nimport org.junit.Test;\n\n\npublic class RotationTest {\n\n  @Test\n  public void testIdentity() {\n\n    Rotation r = Rotation.IDENTITY;\n    checkVector(r.applyTo(Vector3D.PLUS_I), Vector3D.PLUS_I);\n    checkVector(r.applyTo(Vector3D.PLUS_J), Vector3D.PLUS_J);\n    checkVector(r.applyTo(Vector3D.PLUS_K), Vector3D.PLUS_K);\n    checkAngle(r.getAngle(), 0);\n\n    r = new Rotation(-1, 0, 0, 0, false);\n    checkVector(r.applyTo(Vector3D.PLUS_I), Vector3D.PLUS_I);\n    checkVector(r.applyTo(Vector3D.PLUS_J), Vector3D.PLUS_J);\n    checkVector(r.applyTo(Vector3D.PLUS_K), Vector3D.PLUS_K);\n    checkAngle(r.getAngle(), 0);\n\n    r = new Rotation(42, 0, 0, 0, true);\n    checkVector(r.applyTo(Vector3D.PLUS_I), Vector3D.PLUS_I);\n    checkVector(r.applyTo(Vector3D.PLUS_J), Vector3D.PLUS_J);\n    checkVector(r.applyTo(Vector3D.PLUS_K), Vector3D.PLUS_K);\n    checkAngle(r.getAngle(), 0);\n\n  }\n\n  @Test\n  public void testAxisAngle() throws MathIllegalArgumentException {\n\n    Rotation r = new Rotation(new Vector3D(10, 10, 10), 2 * FastMath.PI / 3);\n    checkVector(r.applyTo(Vector3D.PLUS_I), Vector3D.PLUS_J);\n    checkVector(r.applyTo(Vector3D.PLUS_J), Vector3D.PLUS_K);\n    checkVector(r.applyTo(Vector3D.PLUS_K), Vector3D.PLUS_I);\n    double s = 1 / FastMath.sqrt(3);\n    checkVector(r.getAxis(), new Vector3D(s, s, s));\n    checkAngle(r.getAngle(), 2 * FastMath.PI / 3);\n\n    try {\n      new Rotation(new Vector3D(0, 0, 0), 2 * FastMath.PI / 3);\n      Assert.fail(\"an exception should have been thrown\");\n    } catch (MathIllegalArgumentException e) {\n    }\n\n    r = new Rotation(Vector3D.PLUS_K, 1.5 * FastMath.PI);\n    checkVector(r.getAxis(), new Vector3D(0, 0, -1));\n    checkAngle(r.getAngle(), 0.5 * FastMath.PI);\n\n    r = new Rotation(Vector3D.PLUS_J, FastMath.PI);\n    checkVector(r.getAxis(), Vector3D.PLUS_J);\n    checkAngle(r.getAngle(), FastMath.PI);\n\n    checkVector(Rotation.IDENTITY.getAxis(), Vector3D.PLUS_I);\n\n  }\n    Assert.assertTrue(FastMath.abs(d02) < 6.0e-6);\n    Assert.assertTrue(FastMath.abs(d10) < 6.0e-6);\n    Assert.assertTrue(FastMath.abs(d11) < 6.0e-6);\n    Assert.assertTrue(FastMath.abs(d12) < 6.0e-6);\n    Assert.assertTrue(FastMath.abs(d20) < 6.0e-6);\n    Assert.assertTrue(FastMath.abs(d21) < 6.0e-6);\n    Assert.assertTrue(FastMath.abs(d22) < 6.0e-6);\n\n    Assert.assertTrue(FastMath.abs(d00) > 4.0e-7);\n    Assert.assertTrue(FastMath.abs(d01) > 4.0e-7);\n    Assert.assertTrue(FastMath.abs(d02) > 4.0e-7);\n    Assert.assertTrue(FastMath.abs(d10) > 4.0e-7);\n    Assert.assertTrue(FastMath.abs(d11) > 4.0e-7);\n    Assert.assertTrue(FastMath.abs(d12) > 4.0e-7);\n    Assert.assertTrue(FastMath.abs(d20) > 4.0e-7);\n    Assert.assertTrue(FastMath.abs(d21) > 4.0e-7);\n    Assert.assertTrue(FastMath.abs(d22) > 4.0e-7);\n\n    for (int i = 0; i < 3; ++i) {\n      for (int j = 0; j < 3; ++j) {\n        double m3tm3 = m3[i][0] * m3[j][0]\n                     + m3[i][1] * m3[j][1]\n                     + m3[i][2] * m3[j][2];\n        if (i == j) {\n          Assert.assertTrue(FastMath.abs(m3tm3 - 1.0) < 1.0e-10);\n        } else {\n          Assert.assertTrue(FastMath.abs(m3tm3) < 1.0e-10);\n        }\n      }\n    }\n\n    checkVector(r.applyTo(Vector3D.PLUS_I),\n                new Vector3D(m3[0][0], m3[1][0], m3[2][0]));\n    checkVector(r.applyTo(Vector3D.PLUS_J),\n                new Vector3D(m3[0][1], m3[1][1], m3[2][1]));\n    checkVector(r.applyTo(Vector3D.PLUS_K),\n                new Vector3D(m3[0][2], m3[1][2], m3[2][2]));\n\n    double[][] m4 = { { 1.0,  0.0,  0.0 },\n                      { 0.0, -1.0,  0.0 },\n                      { 0.0,  0.0, -1.0 } };\n    r = new Rotation(m4, 1.0e-7);\n    checkAngle(r.getAngle(), FastMath.PI);\n\n    try {\n      double[][] m5 = { { 0.0, 0.0, 1.0 },\n                        { 0.0, 1.0, 0.0 },\n                        { 1.0, 0.0, 0.0 } };\n      r = new Rotation(m5, 1.0e-7);\n      Assert.fail(\"got \" + r + \", should have caught an exception\");\n    } catch (NotARotationMatrixException e) {\n      // expected\n    }\n\n  }\n\n  @Test\n  public void testAngles()\n    throws CardanEulerSingularityException {\n\n    RotationOrder[] CardanOrders = {\n      RotationOrder.XYZ, RotationOrder.XZY, RotationOrder.YXZ,\n      RotationOrder.YZX, RotationOrder.ZXY, RotationOrder.ZYX\n    };\n\n    for (int i = 0; i < CardanOrders.length; ++i) {\n      for (double alpha1 = 0.1; alpha1 < 6.2; alpha1 += 0.3) {\n        for (double alpha2 = -1.55; alpha2 < 1.55; alpha2 += 0.3) {\n          for (double alpha3 = 0.1; alpha3 < 6.2; alpha3 += 0.3) {\n            Rotation r = new Rotation(CardanOrders[i], alpha1, alpha2, alpha3);\n            double[] angles = r.getAngles(CardanOrders[i]);\n            checkAngle(angles[0], alpha1);\n            checkAngle(angles[1], alpha2);\n            checkAngle(angles[2], alpha3);\n          }\n        }\n      }\n    }\n\n    RotationOrder[] EulerOrders = {\n    }\n\n    RotationOrder[] EulerOrders = {\n            RotationOrder.XYX, RotationOrder.XZX, RotationOrder.YXY,\n            RotationOrder.YZY, RotationOrder.ZXZ, RotationOrder.ZYZ\n          };\n\n    double[] singularEulerAngle = { 0, FastMath.PI };\n    for (int i = 0; i < EulerOrders.length; ++i) {\n      for (int j = 0; j < singularEulerAngle.length; ++j) {\n        Rotation r = new Rotation(EulerOrders[i], 0.1, singularEulerAngle[j], 0.3);\n        try {\n          r.getAngles(EulerOrders[i]);\n          Assert.fail(\"an exception should have been caught\");\n        } catch (CardanEulerSingularityException cese) {\n          // expected behavior\n        }\n      }\n    }\n\n\n  }\n\n  @Test\n  public void testQuaternion() throws MathIllegalArgumentException {\n\n    Rotation r1 = new Rotation(new Vector3D(2, -3, 5), 1.7);\n    double n = 23.5;\n    Rotation r2 = new Rotation(n * r1.getQ0(), n * r1.getQ1(),\n                               n * r1.getQ2(), n * r1.getQ3(),\n                               true);\n    for (double x = -0.9; x < 0.9; x += 0.2) {\n      for (double y = -0.9; y < 0.9; y += 0.2) {\n        for (double z = -0.9; z < 0.9; z += 0.2) {\n          Vector3D u = new Vector3D(x, y, z);\n          checkVector(r2.applyTo(u), r1.applyTo(u));\n        }\n      }\n    }\n\n    r1 = new Rotation( 0.288,  0.384,  0.36,  0.8, false);\n    checkRotation(r1, -r1.getQ0(), -r1.getQ1(), -r1.getQ2(), -r1.getQ3());\n\n  }\n\n  @Test\n  public void testCompose() throws MathIllegalArgumentException {\n\n    Rotation r1 = new Rotation(new Vector3D(2, -3, 5), 1.7);\n    Rotation r2 = new Rotation(new Vector3D(-1, 3, 2), 0.3);\n    Rotation r3 = r2.applyTo(r1);\n\n    for (double x = -0.9; x < 0.9; x += 0.2) {\n      for (double y = -0.9; y < 0.9; y += 0.2) {\n        for (double z = -0.9; z < 0.9; z += 0.2) {\n          Vector3D u = new Vector3D(x, y, z);\n          checkVector(r2.applyTo(r1.applyTo(u)), r3.applyTo(u));\n        }\n      }\n    }\n\n  }\n\n  @Test\n  public void testComposeInverse() throws MathIllegalArgumentException {\n\n    Rotation r1 = new Rotation(new Vector3D(2, -3, 5), 1.7);\n    Rotation r2 = new Rotation(new Vector3D(-1, 3, 2), 0.3);\n    Rotation r3 = r2.applyInverseTo(r1);\n\n    for (double x = -0.9; x < 0.9; x += 0.2) {\n      for (double y = -0.9; y < 0.9; y += 0.2) {\n        for (double z = -0.9; z < 0.9; z += 0.2) {\n          Vector3D u = new Vector3D(x, y, z);\n          checkVector(r2.applyInverseTo(r1.applyTo(u)), r3.applyTo(u));\n        }\n      }\n    }\n\n  }\n",
+  "compaction": {
+    "source_lines": 552,
+    "mode": "windows",
+    "windows_total": 9,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        240,
+        320
+      ],
+      [
+        360,
+        440
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 26.79896445156847
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.930952803689305
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 4.762714142812
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 26.79896445156847
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 4.1299873658427675
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 3.6405249523953103
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 2.798822043373914
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.930952803689305
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 2.9743034966098523
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 4.762714142812
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 2.3821390468874712
+      },
+      {
+        "start": 480,
+        "end": 552,
+        "score": 3.3718341411464783
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8603,
+  "representation_chars": 8603,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

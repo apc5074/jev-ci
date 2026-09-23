@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.convert.UpdateValueTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/convert/UpdateValueTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.convert.UpdateValueTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/convert/UpdateValueTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.convert;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.databind.*;\n\n/**\n * Tests for {@link ObjectMapper#updateValue}.\n *\n * @since 2.9\n */\npublic class UpdateValueTest extends BaseMapTest\n{\n    /*\n    /********************************************************\n    /* Test methods; simple containers\n    /********************************************************\n     */\n\n    private final ObjectMapper MAPPER = new ObjectMapper();\n\n    public void testMapUpdate() throws Exception\n    {\n        Map<String,Object> base = new LinkedHashMap<>();\n        base.put(\"a\", 345);\n        Map<String,Object> overrides = new LinkedHashMap<>();\n        overrides.put(\"xyz\", Boolean.TRUE);\n        overrides.put(\"foo\", \"bar\");\n        \n        Map<String,Object> ob = MAPPER.updateValue(base, overrides);\n        // first: should return first argument\n        assertSame(base, ob);\n        assertEquals(3, ob.size());\n        assertEquals(Integer.valueOf(345), ob.get(\"a\"));\n        assertEquals(\"bar\", ob.get(\"foo\"));\n        assertEquals(Boolean.TRUE, ob.get(\"xyz\"));\n    }\n\n    public void testListUpdate() throws Exception\n    {\n        List<Object> base = new ArrayList<>();\n        base.add(123456);\n        base.add(Boolean.FALSE);\n        Object[] overrides = new Object[] { Boolean.TRUE, \"zoink!\" };\n\n        List<Object> ob = MAPPER.updateValue(base, overrides);\n        // first: should return first argument\n        assertSame(base, ob);\n        assertEquals(4, ob.size());\n        assertEquals(Integer.valueOf(123456), ob.get(0));\n        assertEquals(Boolean.FALSE, ob.get(1));\n        assertEquals(overrides[0], ob.get(2));\n        assertEquals(overrides[1], ob.get(3));\n    }\n\n    public void testArrayUpdate() throws Exception\n    {\n        // Since Arrays are immutable, not sure what \"right answer\" ought to be\n        Object[] base = new Object[] { Boolean.FALSE, Integer.valueOf(3) };\n        Object[] overrides = new Object[] { Boolean.TRUE, \"zoink!\" };\n\n        Object[] ob = MAPPER.updateValue(base, overrides);\n        assertEquals(4, ob.length);\n        assertEquals(base[0], ob[0]);\n        assertEquals(base[1], ob[1]);\n        assertEquals(overrides[0], ob[2]);\n        assertEquals(overrides[1], ob[3]);\n    }\n\n    /*\n    /********************************************************\n    /* Test methods; POJOs\n    /********************************************************\n     */\n\n    public void testPOJO() throws Exception\n    {\n        Point base = new Point(42, 28);\n        Map<String,Object> overrides = new LinkedHashMap<>();\n        overrides.put(\"y\", 1234);\n        Point result = MAPPER.updateValue(base, overrides);\n        assertSame(base, result);\n        assertEquals(42, result.x);\n        assertEquals(1234, result.y);\n    }\n\n    /*\n    /********************************************************\n    /* Test methods; other\n    /********************************************************\n     */\n\n    public void testMisc() throws Exception\n    {\n        // if either is `null`, should return first arg\n        assertNull(MAPPER.updateValue(null, \"foo\"));\n        List<String> input = new ArrayList<>();\n        assertSame(input, MAPPER.updateValue(input, null));\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 101,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3412,
+  "representation_chars": 3412,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

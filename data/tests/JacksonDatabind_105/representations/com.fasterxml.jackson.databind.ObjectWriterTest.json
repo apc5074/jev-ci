@@ -1,0 +1,81 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.ObjectWriterTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/ObjectWriterTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.ObjectWriterTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/ObjectWriterTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind;\n\nimport java.io.ByteArrayOutputStream;\nimport java.io.Closeable;\nimport java.io.IOException;\nimport java.io.StringWriter;\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.JsonTypeInfo;\nimport com.fasterxml.jackson.annotation.JsonTypeName;\n\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.core.io.SerializedString;\nimport com.fasterxml.jackson.databind.node.ObjectNode;\n\n/**\n * Unit tests for checking features added to {@link ObjectWriter}, such\n * as adding of explicit pretty printer.\n */\npublic class ObjectWriterTest\n    extends BaseMapTest\n{\n    static class CloseableValue implements Closeable\n    {\n        public int x;\n\n        public boolean closed;\n        \n        @Override\n        public void close() throws IOException {\n            closed = true;\n        }\n    }\n\n    final ObjectMapper MAPPER = new ObjectMapper();\n\n    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = \"type\")\n    static class PolyBase {\n    }\n\n    @JsonTypeName(\"A\")\n    static class ImplA extends PolyBase {\n        public int value;\n        \n        public ImplA(int v) { value = v; }\n    }\n\n    @JsonTypeName(\"B\")\n    static class ImplB extends PolyBase {\n        public int b;\n        \n        public ImplB(int v) { b = v; }\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods, normal operation\n    /**********************************************************\n     */\n\n    public void testPrettyPrinter() throws Exception\n    {\n        ObjectWriter writer = MAPPER.writer();\n        HashMap<String, Integer> data = new HashMap<String,Integer>();\n        data.put(\"a\", 1);\n        \n        // default: no indentation\n        assertEquals(\"{\\\"a\\\":1}\", writer.writeValueAsString(data));\n\n        // and then with standard\n        writer = writer.withDefaultPrettyPrinter();\n\n        // pretty printer uses system-specific line feeds, so we do that as well.\n        String lf = System.getProperty(\"line.separator\");\n        assertEquals(\"{\" + lf + \"  \\\"a\\\" : 1\" + lf + \"}\", writer.writeValueAsString(data));\n\n        // and finally, again without indentation\n        writer = writer.with((PrettyPrinter) null);\n        assertEquals(\"{\\\"a\\\":1}\", writer.writeValueAsString(data));\n    }\n\n    public void testPrefetch() throws Exception\n    {\n        ObjectWriter writer = MAPPER.writer();\n        assertFalse(writer.hasPrefetchedSerializer());\n        writer = writer.forType(String.class);\n        assertTrue(writer.hasPrefetchedSerializer());\n    }\n\n    public void testObjectWriterFeatures() throws Exception\n    {\n        ObjectWriter writer = MAPPER.writer()\n                .without(JsonGenerator.Feature.QUOTE_FIELD_NAMES);                \n        Map<String,Integer> map = new HashMap<String,Integer>();\n        map.put(\"a\", 1);\n        assertEquals(\"{a:1}\", writer.writeValueAsString(map));\n        // but can also reconfigure\n        assertEquals(\"{\\\"a\\\":1}\", writer.with(JsonGenerator.Feature.QUOTE_FIELD_NAMES)\n                .writeValueAsString(map));\n    }\n\n    public void testObjectWriterWithNode() throws Exception\n    {\n        ObjectNode stuff = MAPPER.createObjectNode();\n        stuff.put(\"a\", 5);\n        ObjectWriter writer = MAPPER.writerFor(JsonNode.class);\n        String json = writer.writeValueAsString(stuff);\n        assertEquals(\"{\\\"a\\\":5}\", json);\n    }\n\n    public void testPolymorphicWithTyping() throws Exception\n    {\n        ObjectWriter writer = MAPPER.writerFor(PolyBase.class);\n        String json;\n\n        json = writer.writeValueAsString(new ImplA(3));\n        assertEquals(aposToQuotes(\"{'type':'A','value':3}\"), json);\n        json = writer.writeValueAsString(new ImplB(-5));\n        assertEquals(aposToQuotes(\"{'type':'B','b':-5}\"), json);\n    }\n\n    public void testCanSerialize() throws Exception\n    {\n        assertTrue(MAPPER.writer().canSerialize(String.class));\n        assertTrue(MAPPER.writer().canSerialize(String.class, null));\n    }\n\n    public void testNoPrefetch() throws Exception\n    {\n        ObjectWriter w = MAPPER.writer()\n                .without(SerializationFeature.EAGER_SERIALIZER_FETCH);\n        ByteArrayOutputStream out = new ByteArrayOutputStream();\n        w.writeValue(out, Integer.valueOf(3));\n        out.close();\n        assertEquals(\"3\", out.toString(\"UTF-8\"));\n    }\n\n    public void testWithCloseCloseable() throws Exception\n    {\n        ObjectWriter w = MAPPER.writer()\n        assertSame(f, w.getFactory());\n        ObjectWriter newW = w.with(Base64Variants.MODIFIED_FOR_URL);\n        assertNotSame(w, newW);\n        assertSame(newW, newW.with(Base64Variants.MODIFIED_FOR_URL));\n        \n        w = w.withAttributes(Collections.emptyMap());\n        w = w.withAttribute(\"a\", \"b\");\n        assertEquals(\"b\", w.getAttributes().getAttribute(\"a\"));\n        w = w.withoutAttribute(\"a\");\n        assertNull(w.getAttributes().getAttribute(\"a\"));\n\n        FormatSchema schema = new BogusSchema();\n        try {\n            newW = w.with(schema);\n            fail(\"Should not pass\");\n        } catch (IllegalArgumentException e) {\n            verifyException(e, \"Cannot use FormatSchema\");\n        }\n    }\n\n    public void testRootValueSettings() throws Exception\n    {\n        ObjectWriter w = MAPPER.writer();\n        \n        // First, root name:\n        ObjectWriter newW = w.withRootName(\"foo\");\n        assertNotSame(w, newW);\n        assertSame(newW, newW.withRootName(PropertyName.construct(\"foo\")));\n        w = newW;\n        newW = w.withRootName((String) null);\n        assertNotSame(w, newW);\n        assertSame(newW, newW.withRootName((PropertyName) null));\n\n        // Then root value separator\n\n        w = w.withRootValueSeparator(new SerializedString(\",\"));\n        assertSame(w, w.withRootValueSeparator(new SerializedString(\",\")));\n        assertSame(w, w.withRootValueSeparator(\",\"));\n\n         newW = w.withRootValueSeparator(\"/\");\n        assertNotSame(w, newW);\n        assertSame(newW, newW.withRootValueSeparator(\"/\"));\n\n        newW = w.withRootValueSeparator((String) null);\n        assertNotSame(w, newW);\n\n        newW = w.withRootValueSeparator((SerializableString) null);\n        assertNotSame(w, newW);\n    }\n\n    public void testFeatureSettings() throws Exception\n    {\n        ObjectWriter w = MAPPER.writer();\n        assertFalse(w.isEnabled(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES));\n        assertFalse(w.isEnabled(JsonGenerator.Feature.STRICT_DUPLICATE_DETECTION));\n        ObjectWriter newW = w.with(SerializationFeature.FAIL_ON_UNWRAPPED_TYPE_IDENTIFIERS,\n                SerializationFeature.INDENT_OUTPUT);\n        assertNotSame(w, newW);\n        assertTrue(newW.isEnabled(SerializationFeature.FAIL_ON_UNWRAPPED_TYPE_IDENTIFIERS));\n        assertTrue(newW.isEnabled(SerializationFeature.INDENT_OUTPUT));\n        assertSame(newW, newW.with(SerializationFeature.INDENT_OUTPUT));\n        assertSame(newW, newW.withFeatures(SerializationFeature.INDENT_OUTPUT));\n\n        newW = w.withFeatures(SerializationFeature.FAIL_ON_UNWRAPPED_TYPE_IDENTIFIERS,\n                SerializationFeature.INDENT_OUTPUT);\n        assertNotSame(w, newW);\n\n        newW = w.without(SerializationFeature.FAIL_ON_EMPTY_BEANS,\n                SerializationFeature.EAGER_SERIALIZER_FETCH);\n        assertNotSame(w, newW);\n        assertFalse(newW.isEnabled(SerializationFeature.FAIL_ON_EMPTY_BEANS));\n        assertFalse(newW.isEnabled(SerializationFeature.EAGER_SERIALIZER_FETCH));\n        assertSame(newW, newW.without(SerializationFeature.FAIL_ON_EMPTY_BEANS));\n        assertSame(newW, newW.withoutFeatures(SerializationFeature.FAIL_ON_EMPTY_BEANS));\n\n        assertNotSame(w, w.withoutFeatures(SerializationFeature.FAIL_ON_EMPTY_BEANS,\n                SerializationFeature.EAGER_SERIALIZER_FETCH));\n    }\n\n    public void testGeneratorFeatures() throws Exception\n",
+  "compaction": {
+    "source_lines": 300,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 17.694580762773867
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 4.425907074474826
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.358141326745844
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 17.694580762773867
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 4.425907074474826
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 4.235051427002271
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.358141326745844
+      },
+      {
+        "start": 240,
+        "end": 300,
+        "score": 2.081398702482071
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8061,
+  "representation_chars": 8061,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

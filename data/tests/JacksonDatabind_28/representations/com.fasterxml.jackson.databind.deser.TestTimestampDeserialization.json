@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.TestTimestampDeserialization",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/TestTimestampDeserialization.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.TestTimestampDeserialization\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/TestTimestampDeserialization.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser;\n\nimport java.text.DateFormat;\nimport java.text.SimpleDateFormat;\n\n\nimport com.fasterxml.jackson.databind.*;\n\npublic class TestTimestampDeserialization\n    extends BaseMapTest\n{\n    // As for TestDateDeserialization except we don't need to test date conversion routines, so\n    // just check we pick up timestamp class\n\n    public void testTimestampUtil() throws Exception\n    {\n        long now = 123456789L;\n        java.sql.Timestamp value = new java.sql.Timestamp(now);\n\n        // First from long\n        assertEquals(value, new ObjectMapper().readValue(\"\"+now, java.sql.Timestamp.class));\n\n        String dateStr = serializeTimestampAsString(value);\n        java.sql.Timestamp result = new ObjectMapper().readValue(\"\\\"\"+dateStr+\"\\\"\", java.sql.Timestamp.class);\n\n        assertEquals(\"Date: expect \"+value+\" (\"+value.getTime()+\"), got \"+result+\" (\"+result.getTime()+\")\", value.getTime(), result.getTime());\n    }\n    \n    public void testTimestampUtilSingleElementArray() throws Exception\n    {\n        final ObjectMapper mapper = new ObjectMapper();\n        mapper.enable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);\n        \n        long now = System.currentTimeMillis();\n        java.sql.Timestamp value = new java.sql.Timestamp(now);\n\n        // First from long\n        assertEquals(value, mapper.readValue(\"[\"+now+\"]\", java.sql.Timestamp.class));\n\n        String dateStr = serializeTimestampAsString(value);\n        java.sql.Timestamp result = mapper.readValue(\"[\\\"\"+dateStr+\"\\\"]\", java.sql.Timestamp.class);\n\n        assertEquals(\"Date: expect \"+value+\" (\"+value.getTime()+\"), got \"+result+\" (\"+result.getTime()+\")\", value.getTime(), result.getTime());\n    }\n\n    /*\n    /**********************************************************\n    /* Helper methods\n    /**********************************************************\n     */\n\n    private String serializeTimestampAsString(java.sql.Timestamp value)\n    {\n        /* Then from String. This is bit tricky, since JDK does not really\n         * suggest a 'standard' format. So let's try using something...\n         */\n        DateFormat df = new SimpleDateFormat(\"yyyy-MM-dd'T'HH:mm:ss.SSSZ\");\n        return df.format(value);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 60,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2434,
+  "representation_chars": 2434,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

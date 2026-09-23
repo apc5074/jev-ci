@@ -1,0 +1,247 @@
+TEST CLASS:
+com.fasterxml.jackson.databind.jsontype.ext.ExternalTypeIdTest
+
+SOURCE FILE:
+src/test/java/com/fasterxml/jackson/databind/jsontype/ext/ExternalTypeIdTest.java
+
+TEST SOURCE:
+package com.fasterxml.jackson.databind.jsontype.ext;
+
+import java.math.BigDecimal;
+import java.util.*;
+
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import com.fasterxml.jackson.databind.BaseMapTest;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+// Tests for External type id, one that exists at same level as typed Object,
+// that is, property is not within typed object but a member of its parent.
+public class ExternalTypeIdTest extends BaseMapTest
+{
+    static class ExternalBean
+    {
+        @JsonTypeInfo(use=Id.NAME, include=As.EXTERNAL_PROPERTY, property="extType")
+        public Object bean;
+
+        public ExternalBean() { }
+        public ExternalBean(int v) {
+            bean = new ValueBean(v);
+        }
+    }
+
+    // for [databind#96]
+    static class ExternalBeanWithDefault
+    {
+        @JsonTypeInfo(use=Id.CLASS, include=As.EXTERNAL_PROPERTY, property="extType",
+                defaultImpl=ValueBean.class)
+        public Object bean;
+
+        public ExternalBeanWithDefault() { }
+        public ExternalBeanWithDefault(int v) {
+            bean = new ValueBean(v);
+        }
+    }
+
+    static class ExternalBean3
+    {
+        @JsonTypeInfo(use=Id.NAME, include=As.EXTERNAL_PROPERTY, property="extType1")
+        public Object value1;
+        
+        @JsonTypeInfo(use=Id.NAME, include=As.EXTERNAL_PROPERTY, property="extType2")
+        public Object value2;
+
+        public int foo;
+        
+        @JsonTypeInfo(use=Id.NAME, include=As.EXTERNAL_PROPERTY, property="extType3")
+        public Object value3;
+        
+        public ExternalBean3() { }
+        public ExternalBean3(int v) {
+            value1 = new ValueBean(v);
+            value2 = new ValueBean(v+1);
+            value3 = new ValueBean(v+2);
+            foo = v;
+        }
+    }
+
+    static class ExternalBeanWithCreator
+    {
+        @JsonTypeInfo(use=Id.NAME, include=As.EXTERNAL_PROPERTY, property="extType")
+        public Object value;
+
+        public int foo;
+        
+        @JsonCreator
+        public ExternalBeanWithCreator(@JsonProperty("foo") int f)
+        {
+            foo = f;
+            value = new ValueBean(f);
+        }
+    }
+
+    @JsonTypeName("vbean")
+    static class ValueBean {
+        public int value;
+        Object _payload;
+
+        public Envelope928(@JsonProperty("payload")
+        @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.EXTERNAL_PROPERTY, property="class")
+        Object payload) {
+            _payload = payload;
+        }
+    }
+
+    static class Payload928 {
+        public String something;
+    }
+
+    enum Type965 { BIG_DECIMAL }
+
+    static class Wrapper965 {
+        protected Type965 typeEnum;
+
+        protected Object value;
+
+        @JsonGetter("type")
+        String getTypeString() {
+            return typeEnum.name();
+        }
+
+        @JsonSetter("type")
+        void setTypeString(String type) {
+            this.typeEnum = Type965.valueOf(type);
+        }
+
+        @JsonGetter(value = "objectValue") 
+        Object getValue() {
+            return value;
+        }
+
+        @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXTERNAL_PROPERTY, property = "type")
+        @JsonSubTypes({ @JsonSubTypes.Type(name = "BIG_DECIMAL", value = BigDecimal.class) })
+        @JsonSetter(value = "objectValue") 
+        private void setValue(Object value) {
+            this.value = value;
+        }
+    }    
+    
+    /*
+    /**********************************************************
+    /* Unit tests, serialization
+    /**********************************************************
+     */
+
+    private final ObjectMapper MAPPER = new ObjectMapper();
+    
+    public void testSimpleSerialization() throws Exception
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerSubtypes(ValueBean.class);
+        // This may look odd, but one implementation nastiness is the fact
+        // that we cannot properly serialize type id before the object,
+        // because call is made after property name (for object) has already
+        // been written out. So we'll write it after...
+        // Deserializer will work either way as it cannot rely on ordering
+        // anyway.
+        assertEquals("{\"bean\":{\"value\":11},\"extType\":\"vbean\"}",
+                mapper.writeValueAsString(new ExternalBean(11)));
+    }
+
+    // If trying to use with Class, should just become "PROPERTY" instead:
+    public void testImproperExternalIdSerialization() throws Exception
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        assertEquals("{\"extType\":\"funk\",\"i\":3}",
+                mapper.writeValueAsString(new FunkyExternalBean()));
+    }
+
+    // for [databind#942]
+    public void testExternalTypeIdWithNull() throws Exception
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerSubtypes(ValueBean.class);
+        ExternalBean b;
+        b = mapper.readValue(aposToQuotes("{'bean':null,'extType':'vbean'}"),
+        House831 result = MAPPER.readValue(JSON, House831.class);
+        assertNotNull(result);
+        assertNotNull(result.pet);
+        assertSame(Dog.class, result.pet.getClass());
+        assertEquals("dog", result.petType);
+    }
+
+    // For [databind#118]
+    // Note: String works fine, since no type id will used; other scalar types have issues
+    public void testWithScalar118() throws Exception
+    {
+        ExternalTypeWithNonPOJO input = new ExternalTypeWithNonPOJO(new java.util.Date(123L));
+        String json = MAPPER.writeValueAsString(input);
+        assertNotNull(json);
+
+        // and back just to be sure:
+        ExternalTypeWithNonPOJO result = MAPPER.readValue(json, ExternalTypeWithNonPOJO.class);
+        assertNotNull(result.value);
+        assertTrue(result.value instanceof java.util.Date);
+    }
+
+    // For [databind#118] using "natural" type(s)
+    public void testWithNaturalScalar118() throws Exception
+    {
+        ExternalTypeWithNonPOJO input = new ExternalTypeWithNonPOJO(Integer.valueOf(13));
+        String json = MAPPER.writeValueAsString(input);
+        assertNotNull(json);
+        // and back just to be sure:
+        ExternalTypeWithNonPOJO result = MAPPER.readValue(json, ExternalTypeWithNonPOJO.class);
+        assertNotNull(result.value);
+        assertTrue(result.value instanceof Integer);
+
+        // ditto with others types
+        input = new ExternalTypeWithNonPOJO(Boolean.TRUE);
+        json = MAPPER.writeValueAsString(input);
+        assertNotNull(json);
+        result = MAPPER.readValue(json, ExternalTypeWithNonPOJO.class);
+        assertNotNull(result.value);
+        assertTrue(result.value instanceof Boolean);
+
+        input = new ExternalTypeWithNonPOJO("foobar");
+        json = MAPPER.writeValueAsString(input);
+        assertNotNull(json);
+        result = MAPPER.readValue(json, ExternalTypeWithNonPOJO.class);
+        assertNotNull(result.value);
+        assertTrue(result.value instanceof String);
+        assertEquals("foobar", result.value);
+    }
+    
+    // For [databind#119]... and bit of [#167] as well
+    public void testWithAsValue() throws Exception
+    {
+        ExternalTypeWithNonPOJO input = new ExternalTypeWithNonPOJO(new AsValueThingy(12345L));
+        String json = MAPPER.writeValueAsString(input);
+        assertNotNull(json);
+        assertEquals("{\"value\":12345,\"type\":\"thingy\"}", json);
+
+        // and get it back too:
+        ExternalTypeWithNonPOJO result = MAPPER.readValue(json, ExternalTypeWithNonPOJO.class);
+        assertNotNull(result);
+        assertNotNull(result.value);
+        assertEquals(AsValueThingy.class, result.value.getClass());
+        assertEquals(12345L, ((AsValueThingy) result.value).rawDate);
+    }
+
+    // for [databind#222]
+    public void testExternalTypeWithProp222() throws Exception
+    {
+        final ObjectMapper mapper = new ObjectMapper();
+        Issue222Bean input = new Issue222Bean(13);
+        String json = mapper.writeValueAsString(input);
+        assertEquals("{\"value\":{\"x\":13},\"type\":\"foo\"}", json);
+    }
+
+    // [databind#928]
+    public void testInverseExternalId928() throws Exception
+    {
+        final String CLASS = Payload928.class.getName();
+
+        ObjectMapper mapper = new ObjectMapper();

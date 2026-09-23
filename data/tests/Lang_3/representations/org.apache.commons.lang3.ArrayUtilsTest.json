@@ -1,0 +1,311 @@
+{
+  "test_class": "org.apache.commons.lang3.ArrayUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/ArrayUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.ArrayUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/ArrayUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3;\n\nimport static org.junit.Assert.assertArrayEquals;\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertFalse;\nimport static org.junit.Assert.assertNotNull;\nimport static org.junit.Assert.assertNotSame;\nimport static org.junit.Assert.assertNull;\nimport static org.junit.Assert.assertSame;\nimport static org.junit.Assert.assertTrue;\nimport static org.junit.Assert.fail;\n\nimport java.lang.reflect.Constructor;\nimport java.lang.reflect.Modifier;\nimport java.util.Arrays;\nimport java.util.Date;\nimport java.util.Map;\n\nimport org.junit.Test;\n\n/**\n * Unit tests {@link org.apache.commons.lang3.ArrayUtils}.\n *\n * @version $Id$\n */\npublic class ArrayUtilsTest  {\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testConstructor() {\n        assertNotNull(new ArrayUtils());\n        final Constructor<?>[] cons = ArrayUtils.class.getDeclaredConstructors();\n        assertEquals(1, cons.length);\n        assertTrue(Modifier.isPublic(cons[0].getModifiers()));\n        assertTrue(Modifier.isPublic(ArrayUtils.class.getModifiers()));\n        assertFalse(Modifier.isFinal(ArrayUtils.class.getModifiers()));\n    }\n    \n    //-----------------------------------------------------------------------\n    @Test\n    public void testToString() {\n        assertEquals(\"{}\", ArrayUtils.toString(null));\n        assertEquals(\"{}\", ArrayUtils.toString(new Object[0]));\n        assertEquals(\"{}\", ArrayUtils.toString(new String[0]));\n        assertEquals(\"{<null>}\", ArrayUtils.toString(new String[] {null}));\n        assertEquals(\"{pink,blue}\", ArrayUtils.toString(new String[] {\"pink\",\"blue\"}));\n        \n        assertEquals(\"<empty>\", ArrayUtils.toString(null, \"<empty>\"));\n        assertEquals(\"{}\", ArrayUtils.toString(new Object[0], \"<empty>\"));\n        assertEquals(\"{}\", ArrayUtils.toString(new String[0], \"<empty>\"));\n        assertEquals(\"{<null>}\", ArrayUtils.toString(new String[] {null}, \"<empty>\"));\n        assertEquals(\"{pink,blue}\", ArrayUtils.toString(new String[] {\"pink\",\"blue\"}, \"<empty>\"));\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testHashCode() {\n        final long[][] array1 = new long[][] {{2,5}, {4,5}};\n        final long[][] array2 = new long[][] {{2,5}, {4,6}};\n        assertTrue(ArrayUtils.hashCode(array1) == ArrayUtils.hashCode(array1));\n        assertFalse(ArrayUtils.hashCode(array1) == ArrayUtils.hashCode(array2));\n        \n        final Object[] array3 = new Object[] {new String(new char[] {'A', 'B'})};\n        final Object[] array4 = new Object[] {\"AB\"};\n        final float[] farray3 = new float[]{2, 5};\n        this.assertIsEquals(farray1, farray2, farray3);\n\n        final double[][] darray1 = new double[][]{{2, 5}, {4, 5}};\n        final double[][] darray2 = new double[][]{{2, 5}, {4, 6}};\n        final double[] darray3 = new double[]{2, 5};\n        this.assertIsEquals(darray1, darray2, darray3);\n\n        final byte[][] byteArray1 = new byte[][]{{2, 5}, {4, 5}};\n        final byte[][] byteArray2 = new byte[][]{{2, 5}, {4, 6}};\n        final byte[] byteArray3 = new byte[]{2, 5};\n        this.assertIsEquals(byteArray1, byteArray2, byteArray3);\n\n        final char[][] charArray1 = new char[][]{{2, 5}, {4, 5}};\n        final char[][] charArray2 = new char[][]{{2, 5}, {4, 6}};\n        final char[] charArray3 = new char[]{2, 5};\n        this.assertIsEquals(charArray1, charArray2, charArray3);\n\n        final boolean[][] barray1 = new boolean[][]{{true, false}, {true, true}};\n        final boolean[][] barray2 = new boolean[][]{{true, false}, {true, false}};\n        final boolean[] barray3 = new boolean[]{false, true};\n        this.assertIsEquals(barray1, barray2, barray3);\n\n        final Object[] array3 = new Object[]{new String(new char[]{'A', 'B'})};\n        final Object[] array4 = new Object[]{\"AB\"};\n        assertTrue(ArrayUtils.isEquals(array3, array3));\n        assertTrue(ArrayUtils.isEquals(array3, array4));\n\n        assertTrue(ArrayUtils.isEquals(null, null));\n        assertFalse(ArrayUtils.isEquals(null, array4));\n    }\n    \n    //-----------------------------------------------------------------------\n    /**\n     * Tests generic array creation with parameters of same type.\n     */\n    @Test\n    public void testArrayCreation()\n    {\n        final String[] array = ArrayUtils.toArray(\"foo\", \"bar\");\n        assertEquals(2, array.length);\n        assertEquals(\"foo\", array[0]);\n        assertEquals(\"bar\", array[1]);\n    }\n\n    /**\n     * Tests generic array creation with general return type.\n     */\n    @Test\n    public void testArrayCreationWithGeneralReturnType()\n    {\n        final Object obj = ArrayUtils.toArray(\"foo\", \"bar\");\n        assertTrue(obj instanceof String[]);\n    }\n\n    /**\n     * Tests generic array creation with parameters of common base type.\n     */\n    @Test\n    public void testArrayCreationWithDifferentTypes()\n    {\n        final Number[] array = ArrayUtils.<Number>toArray(Integer.valueOf(42), Double.valueOf(Math.PI));\n        assertEquals(2, array.length);\n        assertEquals(Integer.valueOf(42), array[0]);\n        assertEquals(Double.valueOf(Math.PI), array[1]);\n    }\n\n    /**\n     * Tests generic array creation with generic type.\n     */\n    @Test\n    public void testIndirectArrayCreation()\n    {\n        final String[] array = toArrayPropagatingType(\"foo\", \"bar\");\n        assertEquals(2, array.length);\n        assertEquals(\"foo\", array[0]);\n        assertEquals(\"bar\", array[1]);\n    }\n\n    /**\n     * Tests generic empty array creation with generic type.\n     */\n    @Test\n    public void testEmptyArrayCreation()\n    {\n        final String[] array = ArrayUtils.<String>toArray();\n        assertEquals(0, array.length);\n    }\n\n    /**\n     * Tests indirect generic empty array creation with generic type.\n     */\n    @Test\n    public void testIndirectEmptyArrayCreation()\n    {\n        final String[] array = ArrayUtilsTest.<String>toArrayPropagatingType();\n        assertEquals(0, array.length);\n    }\n\n    private static <T> T[] toArrayPropagatingType(final T... items)\n    {\n        return ArrayUtils.toArray(items);\n    }\n    \n    //-----------------------------------------------------------------------\n    @Test\n    public void testToMap() {\n        Map<?, ?> map = ArrayUtils.toMap(new String[][] {{\"foo\", \"bar\"}, {\"hello\", \"world\"}});\n        \n        assertEquals(\"bar\", map.get(\"foo\"));\n        assertEquals(\"world\", map.get(\"hello\"));\n        \n        assertEquals(null, ArrayUtils.toMap(null));\n        try {\n            ArrayUtils.toMap(new String[][] {{\"foo\", \"bar\"}, {\"short\"}});\n            fail(\"exception expected\");\n        } catch (final IllegalArgumentException ex) {}\n        try {\n            ArrayUtils.toMap(new Object[] {new Object[] {\"foo\", \"bar\"}, \"illegal type\"});\n            fail(\"exception expected\");\n        } catch (final IllegalArgumentException ex) {}\n        try {\n            ArrayUtils.toMap(new Object[] {new Object[] {\"foo\", \"bar\"}, null});\n            fail(\"exception expected\");\n        } catch (final IllegalArgumentException ex) {}\n        \n        map = ArrayUtils.toMap(new Object[] {new Map.Entry<Object, Object>() {\n            @Override\n            public Object getKey() {\n                return \"foo\";\n            }\n            @Override\n            public Object getValue() {\n                return \"bar\";\n            }\n            @Override\n            public Object setValue(final Object value) {\n                throw new UnsupportedOperationException();\n            }\n            @Override\n",
+  "compaction": {
+    "source_lines": 3077,
+    "mode": "windows",
+    "windows_total": 51,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 51.829179609526584
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 21.091557209237575
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 23.281171798733585
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 51.829179609526584
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 13.595435569364312
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 21.091557209237575
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 23.281171798733585
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 15.382261742447122
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 6.25392694342678
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 2.531572440072606
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 5.775005678372324
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 2.608995774644739
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 4.481080767486612
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 12.341928711213402
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 11.094746049255939
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 3.4712724786571556
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 3.4613811944082467
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 3.51418889569202
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 3.5296633344726733
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 3.463869647684814
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 5.485721776738622
+      },
+      {
+        "start": 1080,
+        "end": 1160,
+        "score": 7.501786326374609
+      },
+      {
+        "start": 1140,
+        "end": 1220,
+        "score": 7.376305427457267
+      },
+      {
+        "start": 1200,
+        "end": 1280,
+        "score": 7.3599152135545465
+      },
+      {
+        "start": 1260,
+        "end": 1340,
+        "score": 5.5515188296449685
+      },
+      {
+        "start": 1320,
+        "end": 1400,
+        "score": 4.168189778313815
+      },
+      {
+        "start": 1380,
+        "end": 1460,
+        "score": 2.306253299765767
+      },
+      {
+        "start": 1440,
+        "end": 1520,
+        "score": 4.889543938810652
+      },
+      {
+        "start": 1500,
+        "end": 1580,
+        "score": 9.705657051759797
+      },
+      {
+        "start": 1560,
+        "end": 1640,
+        "score": 4.719918005868541
+      },
+      {
+        "start": 1620,
+        "end": 1700,
+        "score": 5.271328041515522
+      },
+      {
+        "start": 1680,
+        "end": 1760,
+        "score": 1.9541920049396277
+      },
+      {
+        "start": 1740,
+        "end": 1820,
+        "score": 0.33836080133981206
+      },
+      {
+        "start": 1800,
+        "end": 1880,
+        "score": 0.02331246412630287
+      },
+      {
+        "start": 1860,
+        "end": 1940,
+        "score": 0.02330913479673972
+      },
+      {
+        "start": 1920,
+        "end": 2000,
+        "score": 0.02327771674526649
+      },
+      {
+        "start": 1980,
+        "end": 2060,
+        "score": 0.023322362411197603
+      },
+      {
+        "start": 2040,
+        "end": 2120,
+        "score": 2.07664679463879
+      },
+      {
+        "start": 2100,
+        "end": 2180,
+        "score": 2.300047179855146
+      },
+      {
+        "start": 2160,
+        "end": 2240,
+        "score": 2.299789154629836
+      },
+      {
+        "start": 2220,
+        "end": 2300,
+        "score": 4.472628971255146
+      },
+      {
+        "start": 2280,
+        "end": 2360,
+        "score": 4.259668177468189
+      },
+      {
+        "start": 2340,
+        "end": 2420,
+        "score": 5.973331223037302
+      },
+      {
+        "start": 2400,
+        "end": 2480,
+        "score": 10.51422991381302
+      },
+      {
+        "start": 2460,
+        "end": 2540,
+        "score": 8.792032647231958
+      },
+      {
+        "start": 2520,
+        "end": 2600,
+        "score": 8.67063979931246
+      },
+      {
+        "start": 2580,
+        "end": 2660,
+        "score": 8.508494070353287
+      },
+      {
+        "start": 2640,
+        "end": 2720,
+        "score": 8.782881720936729
+      },
+      {
+        "start": 2700,
+        "end": 2780,
+        "score": 11.023543264063399
+      },
+      {
+        "start": 2760,
+        "end": 2840,
+        "score": 13.252481922839436
+      },
+      {
+        "start": 2820,
+        "end": 2900,
+        "score": 18.496514040681657
+      },
+      {
+        "start": 2880,
+        "end": 2960,
+        "score": 13.551317820879838
+      },
+      {
+        "start": 2940,
+        "end": 3020,
+        "score": 13.398475623255802
+      },
+      {
+        "start": 3000,
+        "end": 3077,
+        "score": 13.214615234136401
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8581,
+  "representation_chars": 8581,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

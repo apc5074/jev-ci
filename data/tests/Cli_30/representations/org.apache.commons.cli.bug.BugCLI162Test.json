@@ -1,0 +1,81 @@
+{
+  "test_class": "org.apache.commons.cli.bug.BugCLI162Test",
+  "source_file": "src/test/java/org/apache/commons/cli/bug/BugCLI162Test.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.cli.bug.BugCLI162Test\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/cli/bug/BugCLI162Test.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\n\npackage org.apache.commons.cli.bug;\n\nimport java.io.IOException;\nimport java.io.PrintWriter;\nimport java.io.StringWriter;\nimport java.sql.ParameterMetaData;\nimport java.sql.Types;\n\nimport junit.framework.TestCase;\n\nimport org.apache.commons.cli.HelpFormatter;\nimport org.apache.commons.cli.Option;\nimport org.apache.commons.cli.OptionGroup;\nimport org.apache.commons.cli.Options;\nimport org.apache.commons.cli.ParseException;\n\npublic class BugCLI162Test extends TestCase {\n    /** Constant for the line separator.*/\n    private static final String CR = System.getProperty(\"line.separator\");\n\n    public void testInfiniteLoop() {\n        Options options = new Options();\n        options.addOption(\"h\", \"help\", false, \"This is a looooong description\");\n        HelpFormatter formatter = new HelpFormatter();\n        formatter.setWidth(20);\n        formatter.printHelp(\"app\", options); // used to hang & crash\n    }\n\n    public void testPrintHelpLongLines() throws ParseException, IOException {\n        // Constants used for options\n        final String OPT = \"-\";\n\n        final String OPT_COLUMN_NAMES = \"l\";\n\n        final String OPT_CONNECTION = \"c\";\n\n        final String OPT_DESCRIPTION = \"e\";\n\n        final String OPT_DRIVER = \"d\";\n\n        final String OPT_DRIVER_INFO = \"n\";\n\n        final String OPT_FILE_BINDING = \"b\";\n\n        final String OPT_FILE_JDBC = \"j\";\n\n        final String OPT_FILE_SFMD = \"f\";\n\n        final String OPT_HELP = \"h\";\n\n        final String OPT_HELP_ = \"help\";\n\n        final String OPT_INTERACTIVE = \"i\";\n\n        final String OPT_JDBC_TO_SFMD = \"2\";\n\n        final String OPT_JDBC_TO_SFMD_L = \"jdbc2sfmd\";\n\n        final String OPT_METADATA = \"m\";\n\n        final String OPT_PARAM_MODES_INT = \"o\";\n\n        // Options build\n        Options commandLineOptions;\n        commandLineOptions = new Options();\n        commandLineOptions.addOption(OPT_HELP, OPT_HELP_, false, \"Prints help and quits\");\n        commandLineOptions.addOption(OPT_DRIVER, \"driver\", true, \"JDBC driver class name\");\n        commandLineOptions.addOption(OPT_DRIVER_INFO, \"info\", false, \"Prints driver information and properties. If \"\n            + OPT\n            + OPT_CONNECTION\n            + \" is not specified, all drivers on the classpath are displayed.\");\n        commandLineOptions.addOption(OPT_CONNECTION, \"url\", true, \"Connection URL\");\n        commandLineOptions.addOption(OPT_USER, \"user\", true, \"A database user name\");\n        commandLineOptions\n                .addOption(\n                        OPT_PASSWORD,\n                        OPT_PASSWORD_L,\n                        true,\n                        \"The database password for the user specified with the \"\n                            + OPT\n                            + OPT_USER\n                            + \" option. You can obfuscate the password with org.mortbay.jetty.security.Password, see http://docs.codehaus.org/display/JETTY/Securing+Passwords\");\n        commandLineOptions.addOption(OPT_SQL, OPT_SQL_L, true, \"Runs SQL or {call stored_procedure(?, ?)} or {?=call function(?, ?)}\");\n        commandLineOptions.addOption(OPT_FILE_SFMD, \"sfmd\", true, \"Writes a SFMD file for the given SQL\");\n        commandLineOptions.addOption(OPT_FILE_BINDING, \"jdbc\", true, \"Writes a JDBC binding node file for the given SQL\");\n        commandLineOptions.addOption(OPT_FILE_JDBC, \"node\", true, \"Writes a JDBC node file for the given SQL (internal debugging)\");\n        commandLineOptions.addOption(OPT_WRITE_TO_FILE, \"outfile\", true, \"Writes the SQL output to the given file\");\n        commandLineOptions.addOption(OPT_DESCRIPTION, \"description\", true,\n                \"SFMD description. A default description is used if omited. Example: \" + OPT + OPT_DESCRIPTION + \" \\\"Runs such and such\\\"\");\n        commandLineOptions.addOption(OPT_INTERACTIVE, \"interactive\", false,\n                \"Runs in interactive mode, reading and writing from the console, 'go' or '/' sends a statement\");\n        commandLineOptions.addOption(OPT_TIMING, \"printTiming\", false, \"Prints timing information\");\n        commandLineOptions.addOption(OPT_METADATA, \"printMetaData\", false, \"Prints metadata information\");\n        commandLineOptions.addOption(OPT_STACK_TRACE, \"printStack\", false, \"Prints stack traces on errors\");\n        Option option = new Option(OPT_COLUMN_NAMES, \"columnNames\", true, \"Column XML names; default names column labels. Example: \"\n            + OPT\n            + OPT_COLUMN_NAMES\n            + \" \\\"cname1 cname2\\\"\");\n        commandLineOptions.addOption(option);\n        option = new Option(OPT_PARAM_NAMES, \"paramNames\", true, \"Parameter XML names; default names are param1, param2, etc. Example: \"\n            + OPT\n            + OPT_PARAM_NAMES\n            + \" \\\"pname1 pname2\\\"\");\n        commandLineOptions.addOption(option);\n        //\n        OptionGroup pOutTypesOptionGroup = new OptionGroup();\n        String pOutTypesOptionGroupDoc = OPT + OPT_PARAM_TYPES_INT + \" and \" + OPT + OPT_PARAM_TYPES_NAME + \" are mutually exclusive.\";\n        final String typesClassName = Types.class.getName();\n        option = new Option(OPT_PARAM_TYPES_INT, \"paramTypes\", true, \"Parameter types from \"\n            + typesClassName\n            + \". \"\n            + pOutTypesOptionGroupDoc\n            + \" Example: \"\n            + OPT\n            + OPT_PARAM_TYPES_INT\n            + \" \\\"-10 12\\\"\");\n        commandLineOptions.addOption(option);\n        option = new Option(OPT_PARAM_TYPES_NAME, \"paramTypeNames\", true, \"Parameter \"\n            + typesClassName\n            + \" names. \"\n            + pOutTypesOptionGroupDoc\n            + \" Example: \"\n            + OPT\n            + OPT_PARAM_TYPES_NAME\n            + \" \\\"CURSOR VARCHAR\\\"\");\n        commandLineOptions.addOption(option);\n        commandLineOptions.addOptionGroup(pOutTypesOptionGroup);\n        //\n        OptionGroup modesOptionGroup = new OptionGroup();\n        String modesOptionGroupDoc = OPT + OPT_PARAM_MODES_INT + \" and \" + OPT + OPT_PARAM_MODES_NAME + \" are mutually exclusive.\";\n        option = new Option(OPT_PARAM_MODES_INT, \"paramModes\", true, \"Parameters modes (\"\n            + ParameterMetaData.parameterModeIn\n            + \"=IN, \"\n            + ParameterMetaData.parameterModeInOut\n            + \"=INOUT, \"\n            + ParameterMetaData.parameterModeOut\n            + \"=OUT, \"\n            + ParameterMetaData.parameterModeUnknown\n            + \"=Unknown\"\n            + \"). \"\n            + modesOptionGroupDoc\n            + \" Example for 2 parameters, OUT and IN: \"\n            + OPT\n            + OPT_PARAM_MODES_INT\n            + \" \\\"\"\n            + ParameterMetaData.parameterModeOut\n            + \" \"\n            + ParameterMetaData.parameterModeIn\n            + \"\\\"\");\n        modesOptionGroup.addOption(option);\n        option = new Option(OPT_PARAM_MODES_NAME, \"paramModeNames\", true, \"Parameters mode names (\"\n            + PMODES\n            + \"). \"\n            + modesOptionGroupDoc\n            + \" Example for 2 parameters, OUT and IN: \"\n            + OPT\n            + OPT_PARAM_MODES_NAME\n            + \" \\\"\"\n            + _PMODE_OUT\n            + \" \"\n            + _PMODE_IN\n            + \"\\\"\");\n        modesOptionGroup.addOption(option);\n        commandLineOptions.addOptionGroup(modesOptionGroup);\n        option = new Option(null, OPT_TRIM_L, true,\n                \"Trims leading and trailing spaces from all column values. Column XML names can be optionally specified to set which columns to trim.\");\n        option.setOptionalArg(true);\n        commandLineOptions.addOption(option);\n        option = new Option(OPT_JDBC_TO_SFMD, OPT_JDBC_TO_SFMD_L, true,\n                \"Converts the JDBC file in the first argument to an SMFD file specified in the second argument.\");\n        option.setArgs(2);\n        commandLineOptions.addOption(option);\n        new HelpFormatter().printHelp(this.getClass().getName(), commandLineOptions);\n    }\n\n    public void testLongLineChunking() throws ParseException, IOException {\n        Options options = new Options();\n        options.addOption(\"x\", \"extralongarg\", false,\n                                     \"This description has ReallyLongValuesThatAreLongerThanTheWidthOfTheColumns \" +\n                                     \"and also other ReallyLongValuesThatAreHugerAndBiggerThanTheWidthOfTheColumnsBob, \" +\n                                     \"yes. \");\n        HelpFormatter formatter = new HelpFormatter();\n        StringWriter sw = new StringWriter();\n        formatter.printHelp(new PrintWriter(sw), 35, this.getClass().getName(), \"Header\", options, 0, 5, \"Footer\");\n        String expected = \"usage:\" + CR +\n                          \"       org.apache.commons.cli.bug.B\" + CR +\n                          \"       ugCLI162Test\" + CR +\n                          \"Header\" + CR +\n                          \"-x,--extralongarg     This\" + CR +\n                          \"                      description\" + CR +\n                          \"                      has\" + CR +\n                          \"                      ReallyLongVal\" + CR +\n                          \"                      uesThatAreLon\" + CR +\n                          \"                      gerThanTheWid\" + CR +\n                          \"                      thOfTheColumn\" + CR +\n                          \"                      s and also\" + CR +\n                          \"                      other\" + CR +\n                          \"                      ReallyLongVal\" + CR +\n                          \"                      uesThatAreHug\" + CR +\n                          \"                      erAndBiggerTh\" + CR +\n                          \"                      anTheWidthOfT\" + CR +\n                          \"                      heColumnsBob,\" + CR +\n",
+  "compaction": {
+    "source_lines": 285,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 12.498725906597947
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 8.70977417824942
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 10.05295977804377
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 12.498725906597947
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.038594527443056
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 8.70977417824942
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 10.05295977804377
+      },
+      {
+        "start": 240,
+        "end": 285,
+        "score": 7.511833265380437
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 10696,
+  "representation_chars": 10696,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

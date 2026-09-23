@@ -1,0 +1,91 @@
+{
+  "test_class": "org.apache.commons.cli.ValueTest",
+  "source_file": "src/test/org/apache/commons/cli/ValueTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.cli.ValueTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/cli/ValueTest.java\n\nTEST SOURCE:\n/**\n * Copyright 2001-2004 The Apache Software Foundation\n *\n * Licensed under the Apache License, Version 2.0 (the \"License\");\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of the License at\n *\n *     http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.cli;\n\nimport junit.framework.Test;\nimport junit.framework.TestCase;\nimport junit.framework.TestSuite;\n\nimport java.util.Arrays;\nimport java.util.Properties;\n\npublic class ValueTest extends TestCase\n{\n\n    public static Test suite() { \n        return new TestSuite(ValueTest.class); \n    }\n\n    private CommandLine _cl = null;\n    private CommandLine _clOptional = null;\n    private Options opts = new Options();\n\n    public ValueTest(String name)\n    {\n        super(name);\n    }\n\n    public void setUp()\n    {\n        opts.addOption(\"a\",\n                       false,\n                       \"toggle -a\");\n\n        opts.addOption(\"b\",\n                       true,\n                       \"set -b\");\n\n        opts.addOption(\"c\",\n                       \"c\",\n                       false,\n                       \"toggle -c\");\n\n        opts.addOption(\"d\",\n                       \"d\",\n                       true,\n                       \"set -d\");\n\n        opts.addOption( OptionBuilder.hasOptionalArg()\n                        .create( 'e') );\n\n        opts.addOption( OptionBuilder.hasOptionalArg()\n                        .withLongOpt( \"fish\" )\n                        .create( ) );\n\n        opts.addOption( OptionBuilder.hasOptionalArgs()\n                        .withLongOpt( \"gravy\" )\n                        .create( ) );\n\n        opts.addOption( OptionBuilder.hasOptionalArgs( 2 )\n                        .withLongOpt( \"hide\" )\n                        .create( ) );\n\n        opts.addOption( OptionBuilder.hasOptionalArgs( 2 )\n                        .create( 'i' ) );\n\n        opts.addOption( OptionBuilder.hasOptionalArgs( )\n                        .create( 'j' ) );\n\n        opts.addOption( OptionBuilder.hasArgs( ).withValueSeparator( ',' )\n                        .create( 'k' ) );\n\n        String[] args = new String[] { \"-a\",\n            \"-b\", \"foo\",\n            \"--c\",\n            \"--d\", \"bar\" \n        };\n\n        try\n        {\n            CommandLineParser parser = new PosixParser();\n            _cl = parser.parse(opts,args);\n        }\n        catch (ParseException e)\n        {\n            fail(\"Cannot setUp() CommandLine: \" + e.toString());\n        }\n    }\n\n    public void tearDown()\n    {\n\n    }\n\n    public void testShortNoArg()\n    {\n        assertTrue( _cl.hasOption(\"a\") );\n        assertNull( _cl.getOptionValue(\"a\") );\n    }\n\n    public void testShortWithArg()\n    {\n        assertTrue( _cl.hasOption(\"b\") );\n        assertNotNull( _cl.getOptionValue(\"b\") );\n        assertEquals( _cl.getOptionValue(\"b\"), \"foo\");\n    }\n\n    public void testLongNoArg()\n    {\n        assertTrue( _cl.hasOption(\"c\") );\n        assertNull( _cl.getOptionValue(\"c\") );\n    }\n\n    public void testLongWithArg()\n    {\n        assertTrue( _cl.hasOption(\"d\") );\n        assertNotNull( _cl.getOptionValue(\"d\") );\n        assertEquals( _cl.getOptionValue(\"d\"), \"bar\");\n    }\n\n    public void testShortOptionalArgNoValue()\n    {\n        String[] args = new String[] { \"-e\"\n        };\n        try\n        {\n            CommandLineParser parser = new PosixParser();\n            CommandLine cmd = parser.parse(opts,args);\n        }\n    }\n\n    public void testLongOptionalArgValue()\n    {\n        String[] args = new String[] { \"--fish\", \"face\"\n        };\n        try\n        {\n            CommandLineParser parser = new PosixParser();\n            CommandLine cmd = parser.parse(opts,args);\n            assertTrue( cmd.hasOption(\"fish\") );\n            assertEquals( \"face\", cmd.getOptionValue(\"fish\") );\n        }\n        catch (ParseException e)\n        {\n            fail(\"Cannot setUp() CommandLine: \" + e.toString());\n        }\n    }\n\n    public void testShortOptionalArgValues()\n    {\n        String[] args = new String[] { \"-j\", \"ink\", \"idea\"\n        };\n        try\n        {\n            CommandLineParser parser = new PosixParser();\n            CommandLine cmd = parser.parse(opts,args);\n            assertTrue( cmd.hasOption(\"j\") );\n            assertEquals( \"ink\", cmd.getOptionValue(\"j\") );\n            assertEquals( \"ink\", cmd.getOptionValues(\"j\")[0] );\n            assertEquals( \"idea\", cmd.getOptionValues(\"j\")[1] );\n            assertEquals( cmd.getArgs().length, 0 );\n        }\n        catch (ParseException e)\n        {\n            fail(\"Cannot setUp() CommandLine: \" + e.toString());\n        }\n    }\n\n    public void testLongOptionalArgValues()\n    {\n        String[] args = new String[] { \"--gravy\", \"gold\", \"garden\"\n        };\n        try\n        {\n            CommandLineParser parser = new PosixParser();\n            CommandLine cmd = parser.parse(opts,args);\n            assertTrue( cmd.hasOption(\"gravy\") );\n            assertEquals( \"gold\", cmd.getOptionValue(\"gravy\") );\n            assertEquals( \"gold\", cmd.getOptionValues(\"gravy\")[0] );\n            assertEquals( \"garden\", cmd.getOptionValues(\"gravy\")[1] );\n            assertEquals( cmd.getArgs().length, 0 );\n        }\n        catch (ParseException e)\n        {\n            fail(\"Cannot setUp() CommandLine: \" + e.toString());\n        }\n    }\n\n    public void testShortOptionalNArgValues()\n    {\n        String[] args = new String[] { \"-i\", \"ink\", \"idea\", \"isotope\", \"ice\"\n        };\n        try\n        {\n            CommandLineParser parser = new PosixParser();\n            CommandLine cmd = parser.parse(opts,args);\n            assertTrue( cmd.hasOption(\"i\") );\n            assertEquals( \"ink\", cmd.getOptionValue(\"i\") );\n            assertEquals( \"ink\", cmd.getOptionValues(\"i\")[0] );\n            assertEquals( \"idea\", cmd.getOptionValues(\"i\")[1] );\n            assertEquals( cmd.getArgs().length, 2 );\n            assertEquals( \"isotope\", cmd.getArgs()[0] );\n            assertEquals( \"ice\", cmd.getArgs()[1] );\n        }\n        catch (ParseException e)\n        {\n            fail(\"Cannot setUp() CommandLine: \" + e.toString());\n        }\n",
+  "compaction": {
+    "source_lines": 426,
+    "mode": "windows",
+    "windows_total": 7,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 50.61385209755585
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 12.28280546303605
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 6.286300125864829
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 50.61385209755585
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 12.28280546303605
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 5.445694228540168
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 6.286300125864829
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 6.021381297818935
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 2.250787888854429
+      },
+      {
+        "start": 360,
+        "end": 426,
+        "score": 4.735897335526191
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 6584,
+  "representation_chars": 6584,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

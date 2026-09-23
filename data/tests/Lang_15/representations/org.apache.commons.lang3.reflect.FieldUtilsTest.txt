@@ -1,0 +1,227 @@
+TEST CLASS:
+org.apache.commons.lang3.reflect.FieldUtilsTest
+
+SOURCE FILE:
+src/test/java/org/apache/commons/lang3/reflect/FieldUtilsTest.java
+
+TEST SOURCE:
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.commons.lang3.reflect;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeNotNull;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+
+import org.apache.commons.lang3.reflect.testbed.Ambig;
+import org.apache.commons.lang3.reflect.testbed.Foo;
+import org.apache.commons.lang3.reflect.testbed.PrivatelyShadowedChild;
+import org.apache.commons.lang3.reflect.testbed.PublicChild;
+import org.apache.commons.lang3.reflect.testbed.PubliclyShadowedChild;
+import org.apache.commons.lang3.reflect.testbed.StaticContainer;
+import org.apache.commons.lang3.reflect.testbed.StaticContainerChild;
+import org.junit.Before;
+import org.junit.Test;
+
+/**
+ * Unit tests FieldUtils
+ * @version $Id$
+ */
+public class FieldUtilsTest {
+
+    static final String S = "s";
+    static final String SS = "ss";
+    static final Integer I0 = Integer.valueOf(0);
+    static final Integer I1 = Integer.valueOf(1);
+    static final Double D0 = Double.valueOf(0.0);
+    static final Double D1 = Double.valueOf(1.0);
+
+    private PublicChild publicChild;
+    private PubliclyShadowedChild publiclyShadowedChild;
+    private PrivatelyShadowedChild privatelyShadowedChild;
+    private Class<?> parentClass = PublicChild.class.getSuperclass();
+
+    @Before
+    public void setUp() {
+        StaticContainer.reset();
+        publicChild = new PublicChild();
+        publiclyShadowedChild = new PubliclyShadowedChild();
+        privatelyShadowedChild = new PrivatelyShadowedChild();
+    }
+
+    @Test
+    public void testConstructor() {
+        assertNotNull(new FieldUtils());
+        Constructor<?>[] cons = FieldUtils.class.getDeclaredConstructors();
+        assertEquals(1, cons.length);
+        assertTrue(Modifier.isPublic(cons[0].getModifiers()));
+        assertTrue(Modifier.isPublic(FieldUtils.class.getModifiers()));
+        assertFalse(Modifier.isFinal(FieldUtils.class.getModifiers()));
+    }
+    
+    @Test
+    public void testGetField() {
+        assertEquals(Foo.class, FieldUtils.getField(PublicChild.class, "VALUE").getDeclaringClass());
+        assertEquals(parentClass, FieldUtils.getField(PublicChild.class, "s").getDeclaringClass());
+        assertNull(FieldUtils.getField(PublicChild.class, "b"));
+        assertNull(FieldUtils.getField(PublicChild.class, "i"));
+        assertNull(FieldUtils.getField(PublicChild.class, "d"));
+        assertEquals(Foo.class, FieldUtils.getField(PubliclyShadowedChild.class, "VALUE").getDeclaringClass());
+        assertEquals(PubliclyShadowedChild.class, FieldUtils.getField(PubliclyShadowedChild.class, "s")
+                .getDeclaringClass());
+        assertEquals(PubliclyShadowedChild.class, FieldUtils.getField(PubliclyShadowedChild.class, "b")
+                .getDeclaringClass());
+        assertEquals(PubliclyShadowedChild.class, FieldUtils.getField(PubliclyShadowedChild.class, "i")
+                .getDeclaringClass());
+        assertEquals(PubliclyShadowedChild.class, FieldUtils.getField(PubliclyShadowedChild.class, "d")
+                .getDeclaringClass());
+        assertEquals(Foo.class, FieldUtils.getField(PrivatelyShadowedChild.class, "VALUE").getDeclaringClass());
+        assertEquals(parentClass, FieldUtils.getField(PrivatelyShadowedChild.class, "s").getDeclaringClass());
+        assertNull(FieldUtils.getField(PrivatelyShadowedChild.class, "b"));
+        assertNull(FieldUtils.getField(PrivatelyShadowedChild.class, "i"));
+        assertNull(FieldUtils.getField(PrivatelyShadowedChild.class, "d"));
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testGetFieldIllegalArgumentException1() {
+        FieldUtils.getField(null, "none");
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void testGetFieldIllegalArgumentException2() {
+        FieldUtils.getField(PublicChild.class, null);
+    }
+    
+    @Test
+    public void testGetFieldForceAccess() {
+        assertEquals(PublicChild.class, FieldUtils.getField(PublicChild.class, "VALUE", true).getDeclaringClass());
+        assertEquals(parentClass, FieldUtils.getField(PublicChild.class, "s", true).getDeclaringClass());
+        assertEquals(parentClass, FieldUtils.getField(PublicChild.class, "b", true).getDeclaringClass());
+        assertEquals(parentClass, FieldUtils.getField(PublicChild.class, "i", true).getDeclaringClass());
+        assertEquals(parentClass, FieldUtils.getField(PublicChild.class, "d", true).getDeclaringClass());
+        assertEquals(Foo.class, FieldUtils.getField(PubliclyShadowedChild.class, "VALUE", true).getDeclaringClass());
+        assertEquals(PubliclyShadowedChild.class, FieldUtils.getField(PubliclyShadowedChild.class, "s", true)
+                .getDeclaringClass());
+        assertEquals(PubliclyShadowedChild.class, FieldUtils.getField(PubliclyShadowedChild.class, "b", true)
+                .getDeclaringClass());
+        assertEquals(PubliclyShadowedChild.class, FieldUtils.getField(PubliclyShadowedChild.class, "i", true)
+                .getDeclaringClass());
+        assertEquals(PubliclyShadowedChild.class, FieldUtils.getField(PubliclyShadowedChild.class, "d", true)
+                .getDeclaringClass());
+        assertEquals(Foo.class, FieldUtils.getField(PrivatelyShadowedChild.class, "VALUE", true).getDeclaringClass());
+        assertEquals(PrivatelyShadowedChild.class, FieldUtils.getField(PrivatelyShadowedChild.class, "s", true)
+                .getDeclaringClass());
+        assertEquals(PrivatelyShadowedChild.class, FieldUtils.getField(PrivatelyShadowedChild.class, "b", true)
+                .getDeclaringClass());
+        assertEquals(PrivatelyShadowedChild.class, FieldUtils.getField(PrivatelyShadowedChild.class, "i", true)
+                .getDeclaringClass());
+        assertEquals(PrivatelyShadowedChild.class, FieldUtils.getField(PrivatelyShadowedChild.class, "d", true)
+                .getDeclaringClass());
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testGetFieldForceAccessIllegalArgumentException1() {
+        FieldUtils.getField(null, "none", true);
+    }
+            fail("expected IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // pass
+        }
+    }
+
+    @Test
+    public void testReadField() throws Exception {
+        Field parentS = FieldUtils.getDeclaredField(parentClass, "s");
+        assertEquals("s", FieldUtils.readField(parentS, publicChild));
+        assertEquals("s", FieldUtils.readField(parentS, publiclyShadowedChild));
+        assertEquals("s", FieldUtils.readField(parentS, privatelyShadowedChild));
+        Field parentB = FieldUtils.getDeclaredField(parentClass, "b", true);
+        assertEquals(Boolean.FALSE, FieldUtils.readField(parentB, publicChild));
+        assertEquals(Boolean.FALSE, FieldUtils.readField(parentB, publiclyShadowedChild));
+        assertEquals(Boolean.FALSE, FieldUtils.readField(parentB, privatelyShadowedChild));
+        Field parentI = FieldUtils.getDeclaredField(parentClass, "i", true);
+        assertEquals(I0, FieldUtils.readField(parentI, publicChild));
+        assertEquals(I0, FieldUtils.readField(parentI, publiclyShadowedChild));
+        assertEquals(I0, FieldUtils.readField(parentI, privatelyShadowedChild));
+        Field parentD = FieldUtils.getDeclaredField(parentClass, "d", true);
+        assertEquals(D0, FieldUtils.readField(parentD, publicChild));
+        assertEquals(D0, FieldUtils.readField(parentD, publiclyShadowedChild));
+        assertEquals(D0, FieldUtils.readField(parentD, privatelyShadowedChild));
+        
+        try {
+            FieldUtils.readField((Field)null, publicChild);
+            fail("a null field should cause an IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+    }
+
+    @Test
+    public void testReadFieldForceAccess() throws Exception {
+        Field parentS = FieldUtils.getDeclaredField(parentClass, "s");
+        parentS.setAccessible(false);
+        assertEquals("s", FieldUtils.readField(parentS, publicChild, true));
+        assertEquals("s", FieldUtils.readField(parentS, publiclyShadowedChild, true));
+        assertEquals("s", FieldUtils.readField(parentS, privatelyShadowedChild, true));
+        Field parentB = FieldUtils.getDeclaredField(parentClass, "b", true);
+        parentB.setAccessible(false);
+        assertEquals(Boolean.FALSE, FieldUtils.readField(parentB, publicChild, true));
+        assertEquals(Boolean.FALSE, FieldUtils.readField(parentB, publiclyShadowedChild, true));
+        assertEquals(Boolean.FALSE, FieldUtils.readField(parentB, privatelyShadowedChild, true));
+        Field parentI = FieldUtils.getDeclaredField(parentClass, "i", true);
+        parentI.setAccessible(false);
+        assertEquals(I0, FieldUtils.readField(parentI, publicChild, true));
+        assertEquals(I0, FieldUtils.readField(parentI, publiclyShadowedChild, true));
+        assertEquals(I0, FieldUtils.readField(parentI, privatelyShadowedChild, true));
+        Field parentD = FieldUtils.getDeclaredField(parentClass, "d", true);
+        parentD.setAccessible(false);
+        assertEquals(D0, FieldUtils.readField(parentD, publicChild, true));
+        assertEquals(D0, FieldUtils.readField(parentD, publiclyShadowedChild, true));
+        assertEquals(D0, FieldUtils.readField(parentD, privatelyShadowedChild, true));
+        
+        try {
+            FieldUtils.readField((Field)null, publicChild, true);
+            fail("a null field should cause an IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+    }
+
+    @Test
+    public void testReadNamedField() throws Exception {
+        assertEquals("s", FieldUtils.readField(publicChild, "s"));
+        assertEquals("ss", FieldUtils.readField(publiclyShadowedChild, "s"));
+        assertEquals("s", FieldUtils.readField(privatelyShadowedChild, "s"));
+        
+        try {
+            FieldUtils.readField(publicChild, null);
+            fail("a null field name should cause an IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+        
+        try {
+            FieldUtils.readField((Object)null, "none");
+            fail("a null target should cause an IllegalArgumentException");

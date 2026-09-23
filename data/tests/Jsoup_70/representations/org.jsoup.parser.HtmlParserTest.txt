@@ -1,0 +1,247 @@
+TEST CLASS:
+org.jsoup.parser.HtmlParserTest
+
+SOURCE FILE:
+src/test/java/org/jsoup/parser/HtmlParserTest.java
+
+TEST SOURCE:
+package org.jsoup.parser;
+
+import org.jsoup.Jsoup;
+import org.jsoup.TextUtil;
+import org.jsoup.helper.StringUtil;
+import org.jsoup.integration.ParseTest;
+import org.jsoup.nodes.Comment;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Entities;
+import org.jsoup.nodes.FormElement;
+import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
+import org.jsoup.safety.Whitelist;
+import org.jsoup.select.Elements;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+/**
+ Tests for the Parser
+
+ @author Jonathan Hedley, jonathan@hedley.net */
+public class HtmlParserTest {
+
+    @Test public void parsesSimpleDocument() {
+        String html = "<html><head><title>First!</title></head><body><p>First post! <img src=\"foo.png\" /></p></body></html>";
+        Document doc = Jsoup.parse(html);
+        // need a better way to verify these:
+        Element p = doc.body().child(0);
+        assertEquals("p", p.tagName());
+        Element img = p.child(0);
+        assertEquals("foo.png", img.attr("src"));
+        assertEquals("img", img.tagName());
+    }
+
+    @Test public void parsesRoughAttributes() {
+        String html = "<html><head><title>First!</title></head><body><p class=\"foo > bar\">First post! <img src=\"foo.png\" /></p></body></html>";
+        Document doc = Jsoup.parse(html);
+
+        // need a better way to verify these:
+        Element p = doc.body().child(0);
+        assertEquals("p", p.tagName());
+        assertEquals("foo > bar", p.attr("class"));
+    }
+
+    @Test public void parsesQuiteRoughAttributes() {
+        String html = "<p =a>One<a <p>Something</p>Else";
+        // this gets a <p> with attr '=a' and an <a tag with an attribue named '<p'; and then auto-recreated
+        Document doc = Jsoup.parse(html);
+        assertEquals("<p =a>One<a <p>Something</a></p>\n" +
+                "<a <p>Else</a>", doc.body().html());
+
+        doc = Jsoup.parse("<p .....>");
+        assertEquals("<p .....></p>", doc.body().html());
+    }
+
+    @Test public void parsesComments() {
+        String html = "<html><head></head><body><img src=foo><!-- <table><tr><td></table> --><p>Hello</p></body></html>";
+        Document doc = Jsoup.parse(html);
+
+        Element body = doc.body();
+        Comment comment = (Comment) body.childNode(1); // comment should not be sub of img, as it's an empty tag
+        assertEquals(" <table><tr><td></table> ", comment.getData());
+        Element p = body.child(1);
+        TextNode text = (TextNode) p.childNode(0);
+        assertEquals("Hello", text.getWholeText());
+    }
+
+    @Test public void parsesUnterminatedComments() {
+        String html = "<p>Hello<!-- <tr><td>";
+        Document doc = Jsoup.parse(html);
+        Element p = doc.getElementsByTag("p").get(0);
+                "  // -->\n" +
+                "</script>", node.body().html());
+    }
+
+    @Test public void handleNullContextInParseFragment() {
+        String html = "<ol><li>One</li></ol><p>Two</p>";
+        List<Node> nodes = Parser.parseFragment(html, null, "http://example.com/");
+        assertEquals(1, nodes.size()); // returns <html> node (not document) -- no context means doc gets created
+        assertEquals("html", nodes.get(0).nodeName());
+        assertEquals("<html> <head></head> <body> <ol> <li>One</li> </ol> <p>Two</p> </body> </html>", StringUtil.normaliseWhitespace(nodes.get(0).outerHtml()));
+    }
+
+    @Test public void doesNotFindShortestMatchingEntity() {
+        // previous behaviour was to identify a possible entity, then chomp down the string until a match was found.
+        // (as defined in html5.) However in practise that lead to spurious matches against the author's intent.
+        String html = "One &clubsuite; &clubsuit;";
+        Document doc = Jsoup.parse(html);
+        assertEquals(StringUtil.normaliseWhitespace("One &amp;clubsuite; ♣"), doc.body().html());
+    }
+
+    @Test public void relaxedBaseEntityMatchAndStrictExtendedMatch() {
+        // extended entities need a ; at the end to match, base does not
+        String html = "&amp &quot &reg &icy &hopf &icy; &hopf;";
+        Document doc = Jsoup.parse(html);
+        doc.outputSettings().escapeMode(Entities.EscapeMode.extended).charset("ascii"); // modifies output only to clarify test
+        assertEquals("&amp; \" &reg; &amp;icy &amp;hopf &icy; &hopf;", doc.body().html());
+    }
+
+    @Test public void handlesXmlDeclarationAsBogusComment() {
+        String html = "<?xml encoding='UTF-8' ?><body>One</body>";
+        Document doc = Jsoup.parse(html);
+        assertEquals("<!--?xml encoding='UTF-8' ?--> <html> <head></head> <body> One </body> </html>", StringUtil.normaliseWhitespace(doc.outerHtml()));
+    }
+
+    @Test public void handlesTagsInTextarea() {
+        String html = "<textarea><p>Jsoup</p></textarea>";
+        Document doc = Jsoup.parse(html);
+        assertEquals("<textarea>&lt;p&gt;Jsoup&lt;/p&gt;</textarea>", doc.body().html());
+    }
+
+    // form tests
+    @Test public void createsFormElements() {
+        String html = "<body><form><input id=1><input id=2></form></body>";
+        Document doc = Jsoup.parse(html);
+        Element el = doc.select("form").first();
+
+        assertTrue("Is form element", el instanceof FormElement);
+        FormElement form = (FormElement) el;
+        Elements controls = form.elements();
+        assertEquals(2, controls.size());
+        assertEquals("1", controls.get(0).id());
+        assertEquals("2", controls.get(1).id());
+    }
+
+    @Test public void associatedFormControlsWithDisjointForms() {
+        // form gets closed, isn't parent of controls
+        String html = "<table><tr><form><input type=hidden id=1><td><input type=text id=2></td><tr></table>";
+        Document doc = Jsoup.parse(html);
+        Element el = doc.select("form").first();
+
+        assertTrue("Is form element", el instanceof FormElement);
+        FormElement form = (FormElement) el;
+        Elements controls = form.elements();
+        assertEquals(2, controls.size());
+        assertEquals("1", controls.get(0).id());
+        assertEquals("2", controls.get(1).id());
+
+        assertEquals("<table><tbody><tr><form></form><input type=\"hidden\" id=\"1\"><td><input type=\"text\" id=\"2\"></td></tr><tr></tr></tbody></table>", TextUtil.stripNewlines(doc.body().html()));
+    }
+
+    @Test public void handlesInputInTable() {
+        String h = "<body>\n" +
+                "<input type=\"hidden\" name=\"a\" value=\"\">\n" +
+                "<table>\n" +
+                "<input type=\"hidden\" name=\"b\" value=\"\" />\n" +
+                "</table>\n" +
+                "</body>";
+        Document doc = Jsoup.parse(h);
+        assertEquals(1, doc.select("table input").size());
+        assertEquals(2, doc.select("input").size());
+        assertTrue(System.currentTimeMillis() - start < 1000);
+    }
+
+    @Test public void handlesDeepStack() {
+        // inspired by http://sv.stargate.wikia.com/wiki/M2J and https://github.com/jhy/jsoup/issues/955
+        // I didn't put it in the integration tests, because explorer and intellij kept dieing trying to preview/index it
+
+        // Arrange
+        StringBuilder longBody = new StringBuilder(500000);
+        for (int i = 0; i < 25000; i++) {
+            longBody.append(i).append("<dl><dd>");
+        }
+        for (int i = 0; i < 25000; i++) {
+            longBody.append(i).append("</dd></dl>");
+        }
+
+        // Act
+        long start = System.currentTimeMillis();
+        Document doc = Parser.parseBodyFragment(longBody.toString(), "");
+
+        // Assert
+        assertEquals(2, doc.body().childNodeSize());
+        assertEquals(25000, doc.select("dd").size());
+        assertTrue(System.currentTimeMillis() - start < 1000);
+    }
+
+    @Test
+    public void testInvalidTableContents() throws IOException {
+        File in = ParseTest.getFile("/htmltests/table-invalid-elements.html");
+        Document doc = Jsoup.parse(in, "UTF-8");
+        doc.outputSettings().prettyPrint(true);
+        String rendered = doc.toString();
+        int endOfEmail = rendered.indexOf("Comment");
+        int guarantee = rendered.indexOf("Why am I here?");
+        assertTrue("Comment not found", endOfEmail > -1);
+        assertTrue("Search text not found", guarantee > -1);
+        assertTrue("Search text did not come after comment", guarantee > endOfEmail);
+    }
+
+    @Test public void testNormalisesIsIndex() {
+        Document doc = Jsoup.parse("<body><isindex action='/submit'></body>");
+        String html = doc.outerHtml();
+        assertEquals("<form action=\"/submit\"> <hr> <label>This is a searchable index. Enter search keywords: <input name=\"isindex\"></label> <hr> </form>",
+                StringUtil.normaliseWhitespace(doc.body().html()));
+    }
+
+    @Test public void testReinsertionModeForThCelss() {
+        String body = "<body> <table> <tr> <th> <table><tr><td></td></tr></table> <div> <table><tr><td></td></tr></table> </div> <div></div> <div></div> <div></div> </th> </tr> </table> </body>";
+        Document doc = Jsoup.parse(body);
+        assertEquals(1, doc.body().children().size());
+    }
+
+    @Test public void testUsingSingleQuotesInQueries() {
+        String body = "<body> <div class='main'>hello</div></body>";
+        Document doc = Jsoup.parse(body);
+        Elements main = doc.select("div[class='main']");
+        assertEquals("hello", main.text());
+    }
+
+    @Test public void testSupportsNonAsciiTags() {
+        String body = "<進捗推移グラフ>Yes</進捗推移グラフ><русский-тэг>Correct</<русский-тэг>";
+        Document doc = Jsoup.parse(body);
+        Elements els = doc.select("進捗推移グラフ");
+        assertEquals("Yes", els.text());
+        els = doc.select("русский-тэг");
+        assertEquals("Correct", els.text());
+    }
+
+    @Test public void testSupportsPartiallyNonAsciiTags() {
+        String body = "<div>Check</divá>";
+        Document doc = Jsoup.parse(body);
+        Elements els = doc.select("div");
+        assertEquals("Check", els.text());
+    }
+
+    @Test public void testFragment() {
+        // make sure when parsing a body fragment, a script tag at start goes into the body
+        String html =
+            "<script type=\"text/javascript\">console.log('foo');</script>\n" +
+                "<div id=\"somecontent\">some content</div>\n" +

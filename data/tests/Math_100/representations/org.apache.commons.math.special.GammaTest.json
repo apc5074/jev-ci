@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.math.special.GammaTest",
+  "source_file": "src/test/org/apache/commons/math/special/GammaTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math.special.GammaTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/math/special/GammaTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math.special;\n\nimport org.apache.commons.math.MathException;\nimport org.apache.commons.math.TestUtils;\n\nimport junit.framework.TestCase;\n\n/**\n * @version $Revision$ $Date$\n */\npublic class GammaTest extends TestCase {\n    /**\n     * Constructor for BetaTest.\n     * @param name\n     */\n    public GammaTest(String name) {\n        super(name);\n    }\n\n    private void testRegularizedGamma(double expected, double a, double x) {\n        try {\n            double actualP = Gamma.regularizedGammaP(a, x);\n            double actualQ = Gamma.regularizedGammaQ(a, x);\n            TestUtils.assertEquals(expected, actualP, 10e-15);\n            TestUtils.assertEquals(actualP, 1.0 - actualQ, 10e-15);\n        } catch(MathException ex){\n            fail(ex.getMessage());\n        }\n    }\n\n    private void testLogGamma(double expected, double x) {\n        double actual = Gamma.logGamma(x);\n        TestUtils.assertEquals(expected, actual, 10e-15);\n    }\n\n    public void testRegularizedGammaNanPositive() {\n        testRegularizedGamma(Double.NaN, Double.NaN, 1.0);\n    }\n\n    public void testRegularizedGammaPositiveNan() {\n        testRegularizedGamma(Double.NaN, 1.0, Double.NaN);\n    }\n    \n    public void testRegularizedGammaNegativePositive() {\n        testRegularizedGamma(Double.NaN, -1.5, 1.0);\n    }\n    \n    public void testRegularizedGammaPositiveNegative() {\n        testRegularizedGamma(Double.NaN, 1.0, -1.0);\n    }\n    \n    public void testRegularizedGammaZeroPositive() {\n        testRegularizedGamma(Double.NaN, 0.0, 1.0);\n    }\n    \n    public void testRegularizedGammaPositiveZero() {\n        testRegularizedGamma(0.0, 1.0, 0.0);\n    }\n    \n    public void testRegularizedGammaPositivePositive() {\n        testRegularizedGamma(0.632120558828558, 1.0, 1.0);\n    }\n    \n    public void testLogGammaNan() {\n        testLogGamma(Double.NaN, Double.NaN);\n    }\n    \n    public void testLogGammaNegative() {\n        testLogGamma(Double.NaN, -1.0);\n    }\n    \n    public void testLogGammaZero() {\n        testLogGamma(Double.NaN, 0.0);\n    }\n    \n    public void testLogGammaPositive() {\n        testLogGamma(0.6931471805599457, 3.0);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 95,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3118,
+  "representation_chars": 3118,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

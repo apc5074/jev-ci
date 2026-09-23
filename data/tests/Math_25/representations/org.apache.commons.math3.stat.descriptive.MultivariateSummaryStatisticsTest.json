@@ -1,0 +1,81 @@
+{
+  "test_class": "org.apache.commons.math3.stat.descriptive.MultivariateSummaryStatisticsTest",
+  "source_file": "src/test/java/org/apache/commons/math3/stat/descriptive/MultivariateSummaryStatisticsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.stat.descriptive.MultivariateSummaryStatisticsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/stat/descriptive/MultivariateSummaryStatisticsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.stat.descriptive;\n\n\nimport java.util.Locale;\n\nimport org.apache.commons.math3.exception.DimensionMismatchException;\nimport org.apache.commons.math3.TestUtils;\nimport org.apache.commons.math3.stat.descriptive.moment.Mean;\nimport org.apache.commons.math3.util.FastMath;\n\nimport org.junit.Test;\nimport org.junit.Assert;\n\n/**\n * Test cases for the {@link MultivariateSummaryStatistics} class.\n *\n * @version $Id$\n */\n\npublic class MultivariateSummaryStatisticsTest {\n\n    protected MultivariateSummaryStatistics createMultivariateSummaryStatistics(int k, boolean isCovarianceBiasCorrected) {\n        return new MultivariateSummaryStatistics(k, isCovarianceBiasCorrected);\n    }\n\n    @Test\n    public void testSetterInjection() {\n        MultivariateSummaryStatistics u = createMultivariateSummaryStatistics(2, true);\n        u.setMeanImpl(new StorelessUnivariateStatistic[] {\n                        new sumMean(), new sumMean()\n                      });\n        u.addValue(new double[] { 1, 2 });\n        u.addValue(new double[] { 3, 4 });\n        Assert.assertEquals(4, u.getMean()[0], 1E-14);\n        Assert.assertEquals(6, u.getMean()[1], 1E-14);\n        u.clear();\n        u.addValue(new double[] { 1, 2 });\n        u.addValue(new double[] { 3, 4 });\n        Assert.assertEquals(4, u.getMean()[0], 1E-14);\n        Assert.assertEquals(6, u.getMean()[1], 1E-14);\n        u.clear();\n        u.setMeanImpl(new StorelessUnivariateStatistic[] {\n                        new Mean(), new Mean()\n                      }); // OK after clear\n        u.addValue(new double[] { 1, 2 });\n        u.addValue(new double[] { 3, 4 });\n        Assert.assertEquals(2, u.getMean()[0], 1E-14);\n        Assert.assertEquals(3, u.getMean()[1], 1E-14);\n        Assert.assertEquals(2, u.getDimension());\n    }\n\n    @Test\n    public void testSetterIllegalState() {\n        MultivariateSummaryStatistics u = createMultivariateSummaryStatistics(2, true);\n        u.addValue(new double[] { 1, 2 });\n        u.addValue(new double[] { 3, 4 });\n        try {\n            u.setMeanImpl(new StorelessUnivariateStatistic[] {\n                            new sumMean(), new sumMean()\n                          });\n            Assert.fail(\"Expecting IllegalStateException\");\n        } catch (IllegalStateException ex) {\n            // expected\n        }\n    }\n\n    @Test\n    public void testToString() {\n        MultivariateSummaryStatistics stats = createMultivariateSummaryStatistics(2, true);\n        stats.addValue(new double[] {1, 3});\n        stats.addValue(new double[] {2, 2});\n        stats.addValue(new double[] {3, 1});\n        Locale d = Locale.getDefault();\n        Locale.setDefault(Locale.US);\n        final String suffix = System.getProperty(\"line.separator\");\n        Assert.assertEquals(\"MultivariateSummaryStatistics:\" + suffix+\n                     \"n: 3\" +suffix+\n                     \"min: 1.0, 1.0\" +suffix+\n                     \"max: 3.0, 3.0\" +suffix+\n                     \"mean: 2.0, 2.0\" +suffix+\n                     \"geometric mean: 1.817..., 1.817...\" +suffix+\n                     \"sum of squares: 14.0, 14.0\" +suffix+\n                     \"sum of logarithms: 1.791..., 1.791...\" +suffix+\n                     \"standard deviation: 1.0, 1.0\" +suffix+\n                     \"covariance: Array2DRowRealMatrix{{1.0,-1.0},{-1.0,1.0}}\" +suffix,\n                     stats.toString().replaceAll(\"([0-9]+\\\\.[0-9][0-9][0-9])[0-9]+\", \"$1...\"));\n        Locale.setDefault(d);\n    }\n\n    @Test\n    public void testShuffledStatistics() {\n        // the purpose of this test is only to check the get/set methods\n        // we are aware shuffling statistics like this is really not\n        // something sensible to do in production ...\n        MultivariateSummaryStatistics reference = createMultivariateSummaryStatistics(2, true);\n        MultivariateSummaryStatistics shuffled  = createMultivariateSummaryStatistics(2, true);\n\n        StorelessUnivariateStatistic[] tmp = shuffled.getGeoMeanImpl();\n        shuffled.setGeoMeanImpl(shuffled.getMeanImpl());\n        shuffled.setMeanImpl(shuffled.getMaxImpl());\n        shuffled.setMaxImpl(shuffled.getMinImpl());\n        shuffled.setMinImpl(shuffled.getSumImpl());\n        shuffled.setSumImpl(shuffled.getSumsqImpl());\n        shuffled.setSumsqImpl(shuffled.getSumLogImpl());\n        shuffled.setSumLogImpl(tmp);\n\n        for (int i = 100; i > 0; --i) {\n            reference.addValue(new double[] {i, i});\n            shuffled.addValue(new double[] {i, i});\n        }\n\n        TestUtils.assertEquals(reference.getMean(),          shuffled.getGeometricMean(), 1.0e-10);\n        TestUtils.assertEquals(reference.getMax(),           shuffled.getMean(),          1.0e-10);\n        TestUtils.assertEquals(reference.getMin(),           shuffled.getMax(),           1.0e-10);\n        TestUtils.assertEquals(reference.getSum(),           shuffled.getMin(),           1.0e-10);\n        TestUtils.assertEquals(reference.getSumSq(),         shuffled.getSum(),           1.0e-10);\n        TestUtils.assertEquals(reference.getSumLog(),        shuffled.getSumSq(),         1.0e-10);\n        TestUtils.assertEquals(reference.getGeometricMean(), shuffled.getSumLog(),        1.0e-10);\n\n    }\n\n    /**\n     * Bogus mean implementation to test setter injection.\n     * Returns the sum instead of the mean.\n        }\n    }\n\n    /** test stats */\n    @Test\n    public void testStats() {\n        MultivariateSummaryStatistics u = createMultivariateSummaryStatistics(2, true);\n        Assert.assertEquals(0, u.getN());\n        u.addValue(new double[] { 1, 2 });\n        u.addValue(new double[] { 2, 3 });\n        u.addValue(new double[] { 2, 3 });\n        u.addValue(new double[] { 3, 4 });\n        Assert.assertEquals( 4, u.getN());\n        Assert.assertEquals( 8, u.getSum()[0], 1.0e-10);\n        Assert.assertEquals(12, u.getSum()[1], 1.0e-10);\n        Assert.assertEquals(18, u.getSumSq()[0], 1.0e-10);\n        Assert.assertEquals(38, u.getSumSq()[1], 1.0e-10);\n        Assert.assertEquals( 1, u.getMin()[0], 1.0e-10);\n        Assert.assertEquals( 2, u.getMin()[1], 1.0e-10);\n        Assert.assertEquals( 3, u.getMax()[0], 1.0e-10);\n        Assert.assertEquals( 4, u.getMax()[1], 1.0e-10);\n        Assert.assertEquals(2.4849066497880003102, u.getSumLog()[0], 1.0e-10);\n        Assert.assertEquals( 4.276666119016055311, u.getSumLog()[1], 1.0e-10);\n        Assert.assertEquals( 1.8612097182041991979, u.getGeometricMean()[0], 1.0e-10);\n        Assert.assertEquals( 2.9129506302439405217, u.getGeometricMean()[1], 1.0e-10);\n        Assert.assertEquals( 2, u.getMean()[0], 1.0e-10);\n        Assert.assertEquals( 3, u.getMean()[1], 1.0e-10);\n        Assert.assertEquals(FastMath.sqrt(2.0 / 3.0), u.getStandardDeviation()[0], 1.0e-10);\n        Assert.assertEquals(FastMath.sqrt(2.0 / 3.0), u.getStandardDeviation()[1], 1.0e-10);\n        Assert.assertEquals(2.0 / 3.0, u.getCovariance().getEntry(0, 0), 1.0e-10);\n        Assert.assertEquals(2.0 / 3.0, u.getCovariance().getEntry(0, 1), 1.0e-10);\n        Assert.assertEquals(2.0 / 3.0, u.getCovariance().getEntry(1, 0), 1.0e-10);\n        Assert.assertEquals(2.0 / 3.0, u.getCovariance().getEntry(1, 1), 1.0e-10);\n        u.clear();\n        Assert.assertEquals(0, u.getN());\n    }\n\n    @Test\n    public void testN0andN1Conditions() {\n        MultivariateSummaryStatistics u = createMultivariateSummaryStatistics(1, true);\n        Assert.assertTrue(Double.isNaN(u.getMean()[0]));\n        Assert.assertTrue(Double.isNaN(u.getStandardDeviation()[0]));\n\n        /* n=1 */\n        u.addValue(new double[] { 1 });\n        Assert.assertEquals(1.0, u.getMean()[0], 1.0e-10);\n        Assert.assertEquals(1.0, u.getGeometricMean()[0], 1.0e-10);\n        Assert.assertEquals(0.0, u.getStandardDeviation()[0], 1.0e-10);\n\n        /* n=2 */\n        u.addValue(new double[] { 2 });\n        Assert.assertTrue(u.getStandardDeviation()[0] > 0);\n\n    }\n\n    @Test\n    public void testNaNContracts() {\n        MultivariateSummaryStatistics u = createMultivariateSummaryStatistics(1, true);\n        Assert.assertTrue(Double.isNaN(u.getMean()[0]));\n        Assert.assertTrue(Double.isNaN(u.getMin()[0]));\n        Assert.assertTrue(Double.isNaN(u.getStandardDeviation()[0]));\n        Assert.assertTrue(Double.isNaN(u.getGeometricMean()[0]));\n\n        u.addValue(new double[] { 1.0 });\n        Assert.assertFalse(Double.isNaN(u.getMean()[0]));\n        Assert.assertFalse(Double.isNaN(u.getMin()[0]));\n        Assert.assertFalse(Double.isNaN(u.getStandardDeviation()[0]));\n        Assert.assertFalse(Double.isNaN(u.getGeometricMean()[0]));\n\n    }\n\n    @Test\n    public void testSerialization() {\n        MultivariateSummaryStatistics u = createMultivariateSummaryStatistics(2, true);\n        // Empty test\n        TestUtils.checkSerializedEquality(u);\n        MultivariateSummaryStatistics s = (MultivariateSummaryStatistics) TestUtils.serializeAndRecover(u);\n        Assert.assertEquals(u, s);\n\n        // Add some data\n",
+  "compaction": {
+    "source_lines": 315,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 21.772781041440226
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 8.135284217856736
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 6.595550519358037
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 21.772781041440226
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 8.135284217856736
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 3.260420801552074
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 6.595550519358037
+      },
+      {
+        "start": 240,
+        "end": 315,
+        "score": 5.339998995324647
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9992,
+  "representation_chars": 9992,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

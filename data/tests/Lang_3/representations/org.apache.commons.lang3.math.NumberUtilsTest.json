@@ -1,0 +1,171 @@
+{
+  "test_class": "org.apache.commons.lang3.math.NumberUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/math/NumberUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.math.NumberUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/math/NumberUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3.math;\n\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertFalse;\nimport static org.junit.Assert.assertNotNull;\nimport static org.junit.Assert.assertTrue;\nimport static org.junit.Assert.fail;\n\nimport java.lang.reflect.Constructor;\nimport java.lang.reflect.Modifier;\nimport java.math.BigDecimal;\nimport java.math.BigInteger;\n\nimport org.junit.Test;\n\n/**\n * Unit tests {@link org.apache.commons.lang3.math.NumberUtils}.\n *\n * @version $Id$\n */\npublic class NumberUtilsTest {\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testConstructor() {\n        assertNotNull(new NumberUtils());\n        final Constructor<?>[] cons = NumberUtils.class.getDeclaredConstructors();\n        assertEquals(1, cons.length);\n        assertTrue(Modifier.isPublic(cons[0].getModifiers()));\n        assertTrue(Modifier.isPublic(NumberUtils.class.getModifiers()));\n        assertFalse(Modifier.isFinal(NumberUtils.class.getModifiers()));\n    }\n\n    //---------------------------------------------------------------------\n\n    /**\n     * Test for {@link NumberUtils#toInt(String)}.\n     */\n    @Test\n    public void testToIntString() {\n        assertTrue(\"toInt(String) 1 failed\", NumberUtils.toInt(\"12345\") == 12345);\n        assertTrue(\"toInt(String) 2 failed\", NumberUtils.toInt(\"abc\") == 0);\n        assertTrue(\"toInt(empty) failed\", NumberUtils.toInt(\"\") == 0);\n        assertTrue(\"toInt(null) failed\", NumberUtils.toInt(null) == 0);\n    }\n\n    /**\n     * Test for {@link NumberUtils#toInt(String, int)}.\n     */\n    @Test\n    public void testToIntStringI() {\n        assertTrue(\"toInt(String,int) 1 failed\", NumberUtils.toInt(\"12345\", 5) == 12345);\n        assertTrue(\"toInt(String,int) 2 failed\", NumberUtils.toInt(\"1234.5\", 5) == 5);\n    }\n\n    /**\n     * Test for {@link NumberUtils#toLong(String)}.\n     */\n    @Test\n    public void testToLongString() {\n        assertTrue(\"toLong(String) 1 failed\", NumberUtils.toLong(\"12345\") == 12345l);\n        assertTrue(\"toLong(String) 2 failed\", NumberUtils.toLong(\"abc\") == 0l);\n        assertTrue(\"toLong(String) 3 failed\", NumberUtils.toLong(\"1L\") == 0l);\n        assertTrue(\"toLong(String) 4 failed\", NumberUtils.toLong(\"1l\") == 0l);\n        assertTrue(\"toShort(String) 2 failed\", NumberUtils.toShort(\"abc\") == 0);\n        assertTrue(\"toShort(empty) failed\", NumberUtils.toShort(\"\") == 0);\n        assertTrue(\"toShort(null) failed\", NumberUtils.toShort(null) == 0);\n    }\n\n    /**\n     * Test for {@link NumberUtils#toShort(String, short)}.\n     */\n    @Test\n    public void testToShortStringI() {\n        assertTrue(\"toShort(String,short) 1 failed\", NumberUtils.toShort(\"12345\", (short) 5) == 12345);\n        assertTrue(\"toShort(String,short) 2 failed\", NumberUtils.toShort(\"1234.5\", (short) 5) == 5);\n    }\n\n    @Test\n    public void testCreateNumber() {\n        // a lot of things can go wrong\n        assertEquals(\"createNumber(String) 1 failed\", Float.valueOf(\"1234.5\"), NumberUtils.createNumber(\"1234.5\"));\n        assertEquals(\"createNumber(String) 2 failed\", Integer.valueOf(\"12345\"), NumberUtils.createNumber(\"12345\"));\n        assertEquals(\"createNumber(String) 3 failed\", Double.valueOf(\"1234.5\"), NumberUtils.createNumber(\"1234.5D\"));\n        assertEquals(\"createNumber(String) 3 failed\", Double.valueOf(\"1234.5\"), NumberUtils.createNumber(\"1234.5d\"));\n        assertEquals(\"createNumber(String) 4 failed\", Float.valueOf(\"1234.5\"), NumberUtils.createNumber(\"1234.5F\"));\n        assertEquals(\"createNumber(String) 4 failed\", Float.valueOf(\"1234.5\"), NumberUtils.createNumber(\"1234.5f\"));\n        assertEquals(\"createNumber(String) 5 failed\", Long.valueOf(Integer.MAX_VALUE + 1L), NumberUtils.createNumber(\"\"\n            + (Integer.MAX_VALUE + 1L)));\n        assertEquals(\"createNumber(String) 6 failed\", Long.valueOf(12345), NumberUtils.createNumber(\"12345L\"));\n        assertEquals(\"createNumber(String) 6 failed\", Long.valueOf(12345), NumberUtils.createNumber(\"12345l\"));\n        assertEquals(\"createNumber(String) 7 failed\", Float.valueOf(\"-1234.5\"), NumberUtils.createNumber(\"-1234.5\"));\n        assertEquals(\"createNumber(String) 8 failed\", Integer.valueOf(\"-12345\"), NumberUtils.createNumber(\"-12345\"));\n        assertTrue(\"createNumber(String) 9a failed\", 0xFADE == NumberUtils.createNumber(\"0xFADE\").intValue());\n        assertTrue(\"createNumber(String) 9b failed\", 0xFADE == NumberUtils.createNumber(\"0Xfade\").intValue());\n        assertTrue(\"createNumber(String) 10a failed\", -0xFADE == NumberUtils.createNumber(\"-0xFADE\").intValue());\n        assertTrue(\"createNumber(String) 10b failed\", -0xFADE == NumberUtils.createNumber(\"-0Xfade\").intValue());\n        assertEquals(\"createNumber(String) 11 failed\", Double.valueOf(\"1.1E200\"), NumberUtils.createNumber(\"1.1E200\"));\n        assertEquals(\"createNumber(String) 12 failed\", Float.valueOf(\"1.1E20\"), NumberUtils.createNumber(\"1.1E20\"));\n        assertEquals(\"createNumber(String) 13 failed\", Double.valueOf(\"-1.1E200\"), NumberUtils.createNumber(\"-1.1E200\"));\n        assertEquals(\"createNumber(String) 14 failed\", Double.valueOf(\"1.1E-200\"), NumberUtils.createNumber(\"1.1E-200\"));\n        assertEquals(\"createNumber(null) failed\", null, NumberUtils.createNumber(null));\n        assertEquals(\"createNumber(String) failed\", new BigInteger(\"12345678901234567890\"), NumberUtils\n                .createNumber(\"12345678901234567890L\"));\n\n        assertEquals(\"createNumber(String) 15 failed\", new BigDecimal(\"1.1E-700\"), NumberUtils\n                    .createNumber(\"1.1E-700F\"));\n\n        assertEquals(\"createNumber(String) 16 failed\", Long.valueOf(\"10\" + Integer.MAX_VALUE), NumberUtils\n                .createNumber(\"10\" + Integer.MAX_VALUE + \"L\"));\n        assertEquals(\"createNumber(String) 17 failed\", Long.valueOf(\"10\" + Integer.MAX_VALUE), NumberUtils\n                .createNumber(\"10\" + Integer.MAX_VALUE));\n        assertEquals(\"createNumber(String) 18 failed\", new BigInteger(\"10\" + Long.MAX_VALUE), NumberUtils\n                .createNumber(\"10\" + Long.MAX_VALUE));\n\n        // LANG-521\n        assertEquals(\"createNumber(String) LANG-521 failed\", Float.valueOf(\"2.\"), NumberUtils.createNumber(\"2.\"));\n\n        // LANG-638\n        assertFalse(\"createNumber(String) succeeded\", checkCreateNumber(\"1eE\"));\n\n        // LANG-693\n        assertEquals(\"createNumber(String) LANG-693 failed\", Double.valueOf(Double.MAX_VALUE), NumberUtils\n                    .createNumber(\"\" + Double.MAX_VALUE));\n\n        // LANG-822\n        // ensure that the underlying negative number would create a BigDecimal\n        final Number bigNum = NumberUtils.createNumber(\"-1.1E-700F\");\n        assertNotNull(bigNum);\n        assertEquals(BigDecimal.class, bigNum.getClass());\n    }\n\n    @Test(expected=NumberFormatException.class)\n    // Check that the code fails to create a valid number when preceeded by -- rather than -\n    public void testCreateNumberFailure_1() {\n        NumberUtils.createNumber(\"--1.1E-700F\");\n    }\n\n    @Test(expected=NumberFormatException.class)\n    // Check that the code fails to create a valid number when both e and E are present (with decimal)\n    public void testCreateNumberFailure_2() {\n        NumberUtils.createNumber(\"-1.1E+0-7e00\");\n    }\n\n    @Test(expected=NumberFormatException.class)\n    // Check that the code fails to create a valid number when both e and E are present (no decimal)\n    public void testCreateNumberFailure_3() {\n        NumberUtils.createNumber(\"-11E+0-7e00\");\n    }\n\n    @Test(expected=NumberFormatException.class)\n    // Check that the code fails to create a valid number when both e and E are present (no decimal)\n    public void testCreateNumberFailure_4() {\n        NumberUtils.createNumber(\"1eE+00001\");\n    }\n\n    // Tests to show when magnitude causes switch to next Number type\n    // Will probably need to be adjusted if code is changed to check precision (LANG-693)\n    @Test\n    public void testCreateNumberMagnitude() {\n        // Test Float.MAX_VALUE, and same with +1 in final digit to check conversion changes to next Number type\n        assertEquals(Float.valueOf(Float.MAX_VALUE),  NumberUtils.createNumber(\"3.4028235e+38\"));\n        assertEquals(Double.valueOf(3.4028236e+38),   NumberUtils.createNumber(\"3.4028236e+38\"));\n\n        // Test Double.MAX_VALUE\n        assertEquals(Double.valueOf(Double.MAX_VALUE),          NumberUtils.createNumber(\"1.7976931348623157e+308\"));\n        // Test with +2 in final digit (+1 does not cause roll-over to BigDecimal)\n        assertEquals(new BigDecimal(\"1.7976931348623159e+308\"), NumberUtils.createNumber(\"1.7976931348623159e+308\"));\n\n        assertEquals(Integer.valueOf(0x12345678), NumberUtils.createNumber(\"0x12345678\"));\n        assertEquals(Long.valueOf(0x123456789L),  NumberUtils.createNumber(\"0x123456789\"));\n\n        assertEquals(Long.valueOf(0x7fffffffffffffffL),      NumberUtils.createNumber(\"0x7fffffffffffffff\"));\n        // Does not appear to be a way to create a literal BigInteger of this magnitude\n        assertEquals(new BigInteger(\"7fffffffffffffff0\",16), NumberUtils.createNumber(\"0x7fffffffffffffff0\"));\n\n        assertEquals(Long.valueOf(0x7fffffffffffffffL),      NumberUtils.createNumber(\"#7fffffffffffffff\"));\n        assertEquals(new BigInteger(\"7fffffffffffffff0\",16), NumberUtils.createNumber(\"#7fffffffffffffff0\"));\n\n        assertEquals(Integer.valueOf(017777777777), NumberUtils.createNumber(\"017777777777\")); // 31 bits\n        assertEquals(Long.valueOf(037777777777L),   NumberUtils.createNumber(\"037777777777\")); // 32 bits\n\n        assertEquals(Long.valueOf(0777777777777777777777L),      NumberUtils.createNumber(\"0777777777777777777777\")); // 63 bits\n        assertEquals(new BigInteger(\"1777777777777777777777\",8), NumberUtils.createNumber(\"01777777777777777777777\"));// 64 bits\n    }\n\n    @Test\n    public void testCreateFloat() {\n        assertEquals(\"createFloat(String) failed\", Float.valueOf(\"1234.5\"), NumberUtils.createFloat(\"1234.5\"));\n        assertEquals(\"createFloat(null) failed\", null, NumberUtils.createFloat(null));\n        this.testCreateFloatFailure(\"\");\n        this.testCreateFloatFailure(\" \");\n        this.testCreateFloatFailure(\"\\b\\t\\n\\f\\r\");\n        // Funky whitespaces\n        this.testCreateFloatFailure(\"\\u00A0\\uFEFF\\u000B\\u000C\\u001C\\u001D\\u001E\\u001F\");\n    }\n\n    protected void testCreateFloatFailure(final String str) {\n        try {\n            final Float value = NumberUtils.createFloat(str);\n            fail(\"createFloat(\\\"\" + str + \"\\\") should have failed: \" + value);\n        } catch (final NumberFormatException ex) {\n            // empty\n        }\n",
+  "compaction": {
+    "source_lines": 1366,
+    "mode": "windows",
+    "windows_total": 23,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        180,
+        260
+      ],
+      [
+        240,
+        320
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 47.976621739861976
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 26.287085494868194
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 42.74540161057554
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 47.976621739861976
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 12.42846551178709
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 12.445754876054195
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 26.287085494868194
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 42.74540161057554
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 18.95092333569656
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 21.025105606131223
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 18.306044208301063
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 2.7113904650926184
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 3.6318083397581926
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 2.6729497449229767
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 2.6427683184294537
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 9.18845038901514
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 4.088096471075272
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 3.447063823808311
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 4.77002685563191
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 3.146856408092889
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 3.1377169051848095
+      },
+      {
+        "start": 1080,
+        "end": 1160,
+        "score": 14.565956130089742
+      },
+      {
+        "start": 1140,
+        "end": 1220,
+        "score": 6.949405092702428
+      },
+      {
+        "start": 1200,
+        "end": 1280,
+        "score": 12.373575340394252
+      },
+      {
+        "start": 1260,
+        "end": 1340,
+        "score": 25.42469838459802
+      },
+      {
+        "start": 1320,
+        "end": 1366,
+        "score": 8.759713678155025
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 11611,
+  "representation_chars": 11611,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.jsontype.TestAbstractContainers",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/jsontype/TestAbstractContainers.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.jsontype.TestAbstractContainers\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/jsontype/TestAbstractContainers.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.jsontype;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.databind.*;\n\n/**\n * For [Issue#292]\n */\n@SuppressWarnings(\"serial\")\npublic class TestAbstractContainers extends BaseMapTest\n{\n    // Polymorphic abstract Map type, wrapper\n    \n    @JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property=\"type\")\n    @JsonSubTypes({ \n        @JsonSubTypes.Type(value = MapWrapper.class, name = \"wrapper\"),\n    })\n    static class MapWrapper {\n        public  IDataValueMap map = new DataValueMap();     // This does NOT work\n    }\n\n    @JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property=\"_type_\")\n    @JsonSubTypes({ \n        @JsonSubTypes.Type(value = DataValueMap.class,  name = \"DataValueMap\")\n    })\n    public interface IDataValueMap extends Map<String, String> { }\n\n    static class DataValueMap extends HashMap<String, String> implements IDataValueMap { }\n\n    @JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property=\"type\")\n    @JsonSubTypes({ \n        @JsonSubTypes.Type(value = ListWrapper.class, name = \"wrapper\"),\n    })\n    static class ListWrapper {\n        public IDataValueList list = new DataValueList();     // This does NOT work\n    }\n\n    @JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property=\"type\")\n    @JsonSubTypes({ \n        @JsonSubTypes.Type(value = DataValueList.class,  name = \"list\")\n    })\n    public interface IDataValueList extends List<String> { }\n\n    static class DataValueList extends LinkedList<String> implements IDataValueList { }\n   \n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n\n    public void testAbstractLists() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        ListWrapper w = new ListWrapper();\n        w.list.add(\"x\");\n\n        String json = mapper.writeValueAsString(w);\n        Object o = mapper.readValue(json, ListWrapper.class);\n        assertEquals(ListWrapper.class, o.getClass());\n        ListWrapper out = (ListWrapper) o;\n        assertEquals(1, out.list.size());\n        assertEquals(\"x\", out.list.get(0));\n   }\n    \n    public void testAbstractMaps() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        MapWrapper w = new MapWrapper();\n        w.map.put(\"key1\", \"name1\");\n\n        String json = mapper.writeValueAsString(w);\n        Object o = mapper.readValue(json, MapWrapper.class);\n        assertEquals(MapWrapper.class, o.getClass());\n        MapWrapper out = (MapWrapper) o;\n        assertEquals(1, out.map.size());\n   }\n}\n",
+  "compaction": {
+    "source_lines": 80,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2942,
+  "representation_chars": 2942,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

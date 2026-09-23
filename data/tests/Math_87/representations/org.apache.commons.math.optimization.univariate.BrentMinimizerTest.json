@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.math.optimization.univariate.BrentMinimizerTest",
+  "source_file": "src/test/org/apache/commons/math/optimization/univariate/BrentMinimizerTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math.optimization.univariate.BrentMinimizerTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/math/optimization/univariate/BrentMinimizerTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math.optimization.univariate;\n\nimport junit.framework.Test;\nimport junit.framework.TestCase;\nimport junit.framework.TestSuite;\n\nimport org.apache.commons.math.MathException;\nimport org.apache.commons.math.analysis.QuinticFunction;\nimport org.apache.commons.math.analysis.SinFunction;\nimport org.apache.commons.math.analysis.UnivariateRealFunction;\nimport org.apache.commons.math.optimization.GoalType;\nimport org.apache.commons.math.optimization.UnivariateRealOptimizer;\n\n/**\n * @version $Revision$ $Date$ \n */\npublic final class BrentMinimizerTest extends TestCase {\n\n    public BrentMinimizerTest(String name) {\n        super(name);\n    }\n\n    public static Test suite() {\n        TestSuite suite = new TestSuite(BrentMinimizerTest.class);\n        suite.setName(\"BrentOptimizer Tests\");\n        return suite;\n    }\n\n    public void testSinMin() throws MathException {\n        UnivariateRealFunction f = new SinFunction();\n        UnivariateRealOptimizer minimizer = new BrentOptimizer();\n        assertEquals(3 * Math.PI / 2, minimizer.optimize(f, GoalType.MINIMIZE, 4, 5), 70 * minimizer.getAbsoluteAccuracy());\n        assertTrue(minimizer.getIterationCount() <= 50);\n        assertEquals(3 * Math.PI / 2, minimizer.optimize(f, GoalType.MINIMIZE, 1, 5), 70 * minimizer.getAbsoluteAccuracy());\n        assertTrue(minimizer.getIterationCount() <= 50);\n    }\n\n   public void testQuinticMin() throws MathException {\n        // The quintic function has zeros at 0, +-0.5 and +-1.\n        // The function has extrema (first derivative is zero) at 0.27195613 and 0.82221643,\n        UnivariateRealFunction f = new QuinticFunction();\n        UnivariateRealOptimizer minimizer = new BrentOptimizer();\n        assertEquals(-0.27195613, minimizer.optimize(f, GoalType.MINIMIZE, -0.3, -0.2), 1.0e-8);\n        assertEquals( 0.82221643, minimizer.optimize(f, GoalType.MINIMIZE,  0.3,  0.9), 1.0e-8);\n        assertTrue(minimizer.getIterationCount() <= 50);\n\n        // search in a large interval\n        assertEquals(-0.27195613, minimizer.optimize(f, GoalType.MINIMIZE, -1.0, 0.2), 1.0e-8);\n        assertTrue(minimizer.getIterationCount() <= 50);\n\n   }\n    \n    public void testMinEndpoints() throws Exception {\n        UnivariateRealFunction f = new SinFunction();\n        UnivariateRealOptimizer solver = new BrentOptimizer();\n        \n        // endpoint is minimum\n        double result = solver.optimize(f, GoalType.MINIMIZE, 3 * Math.PI / 2, 5);\n        assertEquals(3 * Math.PI / 2, result, 70 * solver.getAbsoluteAccuracy());\n\n        result = solver.optimize(f, GoalType.MINIMIZE, 4, 3 * Math.PI / 2);\n        assertEquals(3 * Math.PI / 2, result, 70 * solver.getAbsoluteAccuracy());\n\n    }\n    \n}\n",
+  "compaction": {
+    "source_lines": 82,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3719,
+  "representation_chars": 3719,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

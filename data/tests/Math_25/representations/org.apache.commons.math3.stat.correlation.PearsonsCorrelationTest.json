@@ -1,0 +1,81 @@
+{
+  "test_class": "org.apache.commons.math3.stat.correlation.PearsonsCorrelationTest",
+  "source_file": "src/test/java/org/apache/commons/math3/stat/correlation/PearsonsCorrelationTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.stat.correlation.PearsonsCorrelationTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/stat/correlation/PearsonsCorrelationTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.stat.correlation;\n\nimport org.apache.commons.math3.TestUtils;\nimport org.apache.commons.math3.distribution.TDistribution;\nimport org.apache.commons.math3.linear.RealMatrix;\nimport org.apache.commons.math3.linear.BlockRealMatrix;\nimport org.apache.commons.math3.util.FastMath;\nimport org.junit.Assert;\nimport org.junit.Test;\n\n\npublic class PearsonsCorrelationTest {\n\n    protected final double[] longleyData = new double[] {\n            60323,83.0,234289,2356,1590,107608,1947,\n            61122,88.5,259426,2325,1456,108632,1948,\n            60171,88.2,258054,3682,1616,109773,1949,\n            61187,89.5,284599,3351,1650,110929,1950,\n            63221,96.2,328975,2099,3099,112075,1951,\n            63639,98.1,346999,1932,3594,113270,1952,\n            64989,99.0,365385,1870,3547,115094,1953,\n            63761,100.0,363112,3578,3350,116219,1954,\n            66019,101.2,397469,2904,3048,117388,1955,\n            67857,104.6,419180,2822,2857,118734,1956,\n            68169,108.4,442769,2936,2798,120445,1957,\n            66513,110.8,444546,4681,2637,121950,1958,\n            68655,112.6,482704,3813,2552,123366,1959,\n            69564,114.2,502601,3931,2514,125368,1960,\n            69331,115.7,518173,4806,2572,127852,1961,\n            70551,116.9,554894,4007,2827,130081,1962\n        };\n\n    protected final double[] swissData = new double[] {\n            80.2,17.0,15,12,9.96,\n            83.1,45.1,6,9,84.84,\n            92.5,39.7,5,5,93.40,\n            85.8,36.5,12,7,33.77,\n            76.9,43.5,17,15,5.16,\n            76.1,35.3,9,7,90.57,\n            83.8,70.2,16,7,92.85,\n            92.4,67.8,14,8,97.16,\n            82.4,53.3,12,7,97.67,\n            82.9,45.2,16,13,91.38,\n            87.1,64.5,14,6,98.61,\n            64.1,62.0,21,12,8.52,\n            66.9,67.5,14,7,2.27,\n            68.9,60.7,19,12,4.43,\n            61.7,69.3,22,5,2.82,\n            68.3,72.6,18,2,24.20,\n            71.7,34.0,17,8,3.30,\n            55.7,19.4,26,28,12.11,\n            54.3,15.2,31,20,2.15,\n            65.1,73.0,19,9,2.84,\n            65.5,59.8,22,10,5.23,\n            65.0,55.1,14,3,4.52,\n            56.6,50.9,22,12,15.14,\n            57.4,54.1,20,6,4.20,\n            72.5,71.2,12,1,2.40,\n            74.2,58.1,14,8,5.23,\n            72.0,63.5,6,3,2.56,\n            60.5,60.8,16,10,7.72,\n            58.3,26.8,25,19,18.46,\n            65.4,49.5,15,8,6.10,\n            75.5,85.9,3,2,99.71,\n                0.971329459192119, 0.9911491900672053, 0.9952734837647849, 0.6682566045621746,\n                0.4172451498349454, 0.993952846232926, 1.0000000000000000\n        };\n        TestUtils.assertEquals(\"correlation matrix\", createRealMatrix(rData, 7, 7), correlationMatrix, 10E-15);\n\n        double[] rPvalues = new double[] {\n                4.38904690369668e-10,\n                8.36353208910623e-12, 7.8159700933611e-14,\n                0.0472894097790304, 0.01030636128354301, 0.01316878049026582,\n                0.0749178049642416, 0.06971758330341182, 0.0830166169296545, 0.510948586323452,\n                3.693245043123738e-09, 4.327782576751815e-11, 1.167954621905665e-13, 0.00331028281967516, 0.1652293725106684,\n                3.95834476307755e-10, 1.114663916723657e-13, 1.332267629550188e-15, 0.00466039138541463, 0.1078477071581498, 7.771561172376096e-15\n        };\n        RealMatrix rPMatrix = createLowerTriangularRealMatrix(rPvalues, 7);\n        fillUpper(rPMatrix, 0d);\n        TestUtils.assertEquals(\"correlation p values\", rPMatrix, corrInstance.getCorrelationPValues(), 10E-15);\n    }\n\n    /**\n     * Test R Swiss fertility dataset against R.\n     */\n    @Test\n    public void testSwissFertility() {\n         RealMatrix matrix = createRealMatrix(swissData, 47, 5);\n         PearsonsCorrelation corrInstance = new PearsonsCorrelation(matrix);\n         RealMatrix correlationMatrix = corrInstance.getCorrelationMatrix();\n         double[] rData = new double[] {\n               1.0000000000000000, 0.3530791836199747, -0.6458827064572875, -0.6637888570350691,  0.4636847006517939,\n                 0.3530791836199747, 1.0000000000000000,-0.6865422086171366, -0.6395225189483201, 0.4010950530487398,\n                -0.6458827064572875, -0.6865422086171366, 1.0000000000000000, 0.6984152962884830, -0.5727418060641666,\n                -0.6637888570350691, -0.6395225189483201, 0.6984152962884830, 1.0000000000000000, -0.1538589170909148,\n                 0.4636847006517939, 0.4010950530487398, -0.5727418060641666, -0.1538589170909148, 1.0000000000000000\n         };\n         TestUtils.assertEquals(\"correlation matrix\", createRealMatrix(rData, 5, 5), correlationMatrix, 10E-15);\n\n         double[] rPvalues = new double[] {\n                 0.01491720061472623,\n                 9.45043734069043e-07, 9.95151527133974e-08,\n                 3.658616965962355e-07, 1.304590105694471e-06, 4.811397236181847e-08,\n                 0.001028523190118147, 0.005204433539191644, 2.588307925380906e-05, 0.301807756132683\n         };\n         RealMatrix rPMatrix = createLowerTriangularRealMatrix(rPvalues, 5);\n         fillUpper(rPMatrix, 0d);\n         TestUtils.assertEquals(\"correlation p values\", rPMatrix, corrInstance.getCorrelationPValues(), 10E-15);\n    }\n\n    /**\n     * Test p-value near 0. JIRA: MATH-371\n     */\n    @Test\n    public void testPValueNearZero() {\n        /*\n         * Create a dataset that has r -> 1, p -> 0 as dimension increases.\n         * Prior to the fix for MATH-371, p vanished for dimension >= 14.\n         * Post fix, p-values diminish smoothly, vanishing at dimension = 127.\n         * Tested value is ~1E-303.\n         */\n        int dimension = 120;\n        double[][] data = new double[dimension][2];\n        for (int i = 0; i < dimension; i++) {\n            data[i][0] = i;\n            data[i][1] = i + 1/((double)i + 1);\n        }\n        PearsonsCorrelation corrInstance = new PearsonsCorrelation(data);\n        Assert.assertTrue(corrInstance.getCorrelationPValues().getEntry(0, 1) > 0);\n    }\n\n\n    /**\n     * Constant column\n     */\n    @Test\n    public void testConstant() {\n        double[] noVariance = new double[] {1, 1, 1, 1};\n        double[] values = new double[] {1, 2, 3, 4};\n        Assert.assertTrue(Double.isNaN(new PearsonsCorrelation().correlation(noVariance, values)));\n    }\n\n\n    /**\n     * Insufficient data\n     */\n\n    @Test\n    public void testInsufficientData() {\n        double[] one = new double[] {1};\n        double[] two = new double[] {2};\n        try {\n            new PearsonsCorrelation().correlation(one, two);\n            Assert.fail(\"Expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException ex) {\n            // Expected\n        }\n        RealMatrix matrix = new BlockRealMatrix(new double[][] {{0},{1}});\n        try {\n            new PearsonsCorrelation(matrix);\n            Assert.fail(\"Expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException ex) {\n            // Expected\n        }\n    }\n\n    /**\n     * Verify that direct t-tests using standard error estimates are consistent\n     * with reported p-values\n     */\n    @Test\n    public void testStdErrorConsistency() {\n        TDistribution tDistribution = new TDistribution(45);\n        RealMatrix matrix = createRealMatrix(swissData, 47, 5);\n        PearsonsCorrelation corrInstance = new PearsonsCorrelation(matrix);\n        RealMatrix rValues = corrInstance.getCorrelationMatrix();\n        RealMatrix pValues = corrInstance.getCorrelationPValues();\n        RealMatrix stdErrors = corrInstance.getCorrelationStandardErrors();\n        for (int i = 0; i < 5; i++) {\n            for (int j = 0; j < i; j++) {\n                double t = FastMath.abs(rValues.getEntry(i, j)) / stdErrors.getEntry(i, j);\n                double p = 2 * (1 - tDistribution.cumulativeProbability(t));\n                Assert.assertEquals(p, pValues.getEntry(i, j), 10E-15);\n            }\n        }\n    }\n\n    /**\n     * Verify that creating correlation from covariance gives same results as\n     * direct computation from the original matrix\n     */\n    @Test\n    public void testCovarianceConsistency() {\n        RealMatrix matrix = createRealMatrix(longleyData, 16, 7);\n        PearsonsCorrelation corrInstance = new PearsonsCorrelation(matrix);\n        Covariance covInstance = new Covariance(matrix);\n        PearsonsCorrelation corrFromCovInstance = new PearsonsCorrelation(covInstance);\n        TestUtils.assertEquals(\"correlation values\", corrInstance.getCorrelationMatrix(),\n                corrFromCovInstance.getCorrelationMatrix(), 10E-15);\n        TestUtils.assertEquals(\"p values\", corrInstance.getCorrelationPValues(),\n                corrFromCovInstance.getCorrelationPValues(), 10E-15);\n        TestUtils.assertEquals(\"standard errors\", corrInstance.getCorrelationStandardErrors(),\n                corrFromCovInstance.getCorrelationStandardErrors(), 10E-15);\n\n",
+  "compaction": {
+    "source_lines": 316,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.490201554357338
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 3.3326570772520334
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 8.04517895403048
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.490201554357338
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 1.1390324988204232
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 3.3326570772520334
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 8.04517895403048
+      },
+      {
+        "start": 240,
+        "end": 316,
+        "score": 3.2810663635885504
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9872,
+  "representation_chars": 9872,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

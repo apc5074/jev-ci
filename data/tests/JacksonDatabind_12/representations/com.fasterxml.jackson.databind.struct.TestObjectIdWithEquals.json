@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.struct.TestObjectIdWithEquals",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/struct/TestObjectIdWithEquals.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.struct.TestObjectIdWithEquals\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/struct/TestObjectIdWithEquals.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.struct;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.databind.*;\n\npublic class TestObjectIdWithEquals extends BaseMapTest\n{\n    @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property=\"id\", scope=Foo.class)\n    static class Foo {\n        public int id;\n\n        public List<Bar> bars = new ArrayList<Bar>();\n        public List<Bar> otherBars = new ArrayList<Bar>();\n\n        public Foo() { }\n        public Foo(int i) { id = i; }\n    }\n\n    @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property=\"id\", scope=Bar.class)\n    static class Bar\n    {\n        public int id;\n\n        public Bar() { }\n        public Bar(int i) {\n            id = i;\n        }\n        \n        @Override\n        public int hashCode() {\n            return id;\n        }\n\n        @Override\n        public boolean equals(Object obj) {\n            if (!(obj instanceof Bar)) {\n                return false;\n            }\n            return ((Bar) obj).id == id;\n        }\n    }\n\n    /*\n    /******************************************************\n    /* Test methods\n    /******************************************************\n     */\n\n    public void testSimpleEquals() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        // Verify default state too\n        assertFalse(mapper.isEnabled(SerializationFeature.USE_EQUALITY_FOR_OBJECT_ID));\n        mapper.enable(SerializationFeature.USE_EQUALITY_FOR_OBJECT_ID);\n\n        Foo foo = new Foo(1);\n\n        Bar bar1 = new Bar(1);\n        Bar bar2 = new Bar(2);\n        // this is another bar which is supposed to be \"equal\" to bar1\n        // due to the same ID and \n        // Bar class' equals() method will return true.\n        Bar anotherBar1 = new Bar(1);\n\n        foo.bars.add(bar1);\n        foo.bars.add(bar2);\n        // this anotherBar1 object will confuse the serializer.\n        foo.otherBars.add(anotherBar1);\n        foo.otherBars.add(bar2);\n\n        String json = mapper.writeValueAsString(foo);\n        assertEquals(\"{\\\"id\\\":1,\\\"bars\\\":[{\\\"id\\\":1},{\\\"id\\\":2}],\\\"otherBars\\\":[1,2]}\", json);\n\n        Foo foo2 = mapper.readValue(json, Foo.class);       \n        assertNotNull(foo2);\n        assertEquals(foo.id, foo2.id);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 80,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2508,
+  "representation_chars": 2508,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

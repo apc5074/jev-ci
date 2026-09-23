@@ -1,0 +1,116 @@
+{
+  "test_class": "org.apache.commons.math3.linear.SymmLQTest",
+  "source_file": "src/test/java/org/apache/commons/math3/linear/SymmLQTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.linear.SymmLQTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/linear/SymmLQTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.linear;\n\nimport java.util.Arrays;\n\nimport org.apache.commons.math3.exception.DimensionMismatchException;\nimport org.apache.commons.math3.util.FastMath;\nimport org.apache.commons.math3.util.IterationEvent;\nimport org.apache.commons.math3.util.IterationListener;\nimport org.junit.Assert;\nimport org.junit.Test;\n\npublic class SymmLQTest {\n\n    public void saundersTest(final int n, final boolean goodb,\n                             final boolean precon, final double shift,\n                             final double pertbn) {\n        final RealLinearOperator a = new RealLinearOperator() {\n\n            @Override\n            public RealVector operate(final RealVector x) {\n                if (x.getDimension() != n) {\n                    throw new DimensionMismatchException(x.getDimension(), n);\n                }\n                final double[] y = new double[n];\n                for (int i = 0; i < n; i++) {\n                    y[i] = (i + 1) * 1.1 / n * x.getEntry(i);\n                }\n                return new ArrayRealVector(y, false);\n            }\n\n            @Override\n            public int getRowDimension() {\n                return n;\n            }\n\n            @Override\n            public int getColumnDimension() {\n                return n;\n            }\n        };\n        final double shiftm = shift;\n        final double pertm = FastMath.abs(pertbn);\n        final RealLinearOperator minv;\n        if (precon) {\n            minv = new RealLinearOperator() {\n                @Override\n                public int getRowDimension() {\n                    return n;\n                }\n\n                @Override\n                public int getColumnDimension() {\n                    return n;\n                }\n\n                @Override\n                public RealVector operate(final RealVector x) {\n                    if (x.getDimension() != n) {\n                        throw new DimensionMismatchException(x.getDimension(),\n                                                             n);\n                    }\n                    final double[] y = new double[n];\n                    for (int i = 0; i < n; i++) {\n                        double d = (i + 1) * 1.1 / n;\n                        d = FastMath.abs(d - shiftm);\n                        if (i % 10 == 0) {\n                            d += pertm;\n                        }\n                        y[i] = x.getEntry(i) / d;\n                    }\n                    return new ArrayRealVector(y, false);\n                }\n            };\n        } else {\n            minv = null;\n        }\n        final RealVector xtrue = new ArrayRealVector(n);\n        for (int i = 0; i < n; i++) {\n            xtrue.setEntry(i, n - i);\n        }\n        final RealVector b = a.operate(xtrue);\n        b.combineToSelf(1.0, -shift, xtrue);\n        final SymmLQ solver = new SymmLQ(2 * n, 1E-12, true);\n        final RealVector x = solver.solve(a, minv, b, goodb, shift);\n        final RealVector y = a.operate(x);\n        final RealVector r1 = new ArrayRealVector(n);\n        for (int i = 0; i < n; i++) {\n            final double bi = b.getEntry(i);\n            final double yi = y.getEntry(i);\n            final double xi = x.getEntry(i);\n            r1.setEntry(i, bi - yi + shift * xi);\n        }\n        final double enorm = x.subtract(xtrue).getNorm() / xtrue.getNorm();\n        final double etol = 1E-5;\n        Assert.assertTrue(\"enorm=\" + enorm + \", \" +\n        solver.getIterationManager().getIterations(), enorm <= etol);\n    }\n\n    @Test\n    public void testSolveSaunders1() {\n        saundersTest(1, false, false, 0., 0.);\n    }\n\n    @Test\n    public void testSolveSaunders2() {\n        saundersTest(2, false, false, 0., 0.);\n    }\n\n    @Test\n    public void testSolveSaunders3() {\n        saundersTest(1, false, true, 0., 0.);\n    }\n\n    @Test\n    public void testSolveSaunders4() {\n        saundersTest(2, false, true, 0., 0.);\n    }\n\n    @Test\n    public void testSolveSaunders5() {\n        saundersTest(5, false, true, 0., 0.);\n    }\n\n    @Test\n        final IterativeLinearSolver solver;\n        /*\n         * count[0] = number of calls to initializationPerformed\n         * count[1] = number of calls to iterationStarted\n         * count[2] = number of calls to iterationPerformed\n         * count[3] = number of calls to terminationPerformed\n         */\n        final int[] count = new int[] {0, 0, 0, 0};\n        final RealVector xFromListener = new ArrayRealVector(n);\n        final IterationListener listener = new IterationListener() {\n\n            public void initializationPerformed(final IterationEvent e) {\n                ++count[0];\n            }\n\n            public void iterationPerformed(final IterationEvent e) {\n                ++count[2];\n                Assert.assertEquals(\"iteration performed\",\n                                    count[2],\n                                    e.getIterations() - 1);\n            }\n\n            public void iterationStarted(final IterationEvent e) {\n                ++count[1];\n                Assert.assertEquals(\"iteration started\",\n                                    count[1],\n                                    e.getIterations() - 1);\n            }\n\n            public void terminationPerformed(final IterationEvent e) {\n                ++count[3];\n                final IterativeLinearSolverEvent ilse;\n                ilse = (IterativeLinearSolverEvent) e;\n                xFromListener.setSubVector(0, ilse.getSolution());\n            }\n        };\n        solver = new SymmLQ(maxIterations, 1E-10, true);\n        solver.getIterationManager().addIterationListener(listener);\n        final RealVector b = new ArrayRealVector(n);\n        for (int j = 0; j < n; j++) {\n            Arrays.fill(count, 0);\n            b.set(0.);\n            b.setEntry(j, 1.);\n            final RealVector xFromSolver = solver.solve(a, b);\n            String msg = String.format(\"column %d (initialization)\", j);\n            Assert.assertEquals(msg, 1, count[0]);\n            msg = String.format(\"column %d (finalization)\", j);\n            Assert.assertEquals(msg, 1, count[3]);\n            /*\n             *  Check that solution is not \"over-refined\". When the last\n             *  iteration has occurred, no further refinement should be\n             *  performed.\n             */\n            for (int i = 0; i < n; i++){\n                msg = String.format(\"row %d, column %d\", i, j);\n                final double expected = xFromSolver.getEntry(i);\n                final double actual = xFromListener.getEntry(i);\n                Assert.assertEquals(msg, expected, actual, 0.0);\n            }\n        }\n    }\n\n    @Test(expected = NonSelfAdjointOperatorException.class)\n    public void testNonSelfAdjointOperator() {\n        final RealLinearOperator a;\n        a = new Array2DRowRealMatrix(new double[][] {\n            {1., 2., 3.},\n            {2., 4., 5.},\n            {2.999, 5., 6.}\n        });\n        final RealVector b;\n        b = new ArrayRealVector(new double[] {1., 1., 1.});\n        new SymmLQ(100, 1., true).solve(a, b);\n    }\n\n    @Test(expected = NonSelfAdjointOperatorException.class)\n    public void testNonSelfAdjointPreconditioner() {\n        final RealLinearOperator a = new Array2DRowRealMatrix(new double[][] {\n            {1., 2., 3.},\n            {2., 4., 5.},\n",
+  "compaction": {
+    "source_lines": 688,
+    "mode": "windows",
+    "windows_total": 12,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        480,
+        560
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 36.256545014584454
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.79897457552454
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 16.92621358942008
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 36.256545014584454
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.79897457552454
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 2.4603717785064037
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 3.3143977912876794
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 2.9554047931357683
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 4.6397896044459825
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 4.137227341090824
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 6.481464055726453
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 16.92621358942008
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 5.565889665689991
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 4.7574893371261515
+      },
+      {
+        "start": 660,
+        "end": 688,
+        "score": 4.333211358594675
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8287,
+  "representation_chars": 8287,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

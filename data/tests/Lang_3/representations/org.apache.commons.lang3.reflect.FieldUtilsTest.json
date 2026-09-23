@@ -1,0 +1,151 @@
+{
+  "test_class": "org.apache.commons.lang3.reflect.FieldUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/reflect/FieldUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.reflect.FieldUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/reflect/FieldUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3.reflect;\n\nimport static org.junit.Assert.assertArrayEquals;\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertFalse;\nimport static org.junit.Assert.assertNotNull;\nimport static org.junit.Assert.assertNull;\nimport static org.junit.Assert.assertTrue;\nimport static org.junit.Assert.fail;\nimport static org.junit.Assume.assumeNotNull;\n\nimport java.lang.reflect.Constructor;\nimport java.lang.reflect.Field;\nimport java.lang.reflect.Modifier;\nimport java.util.ArrayList;\nimport java.util.List;\n\nimport org.apache.commons.lang3.ArrayUtils;\nimport org.apache.commons.lang3.reflect.testbed.Ambig;\nimport org.apache.commons.lang3.reflect.testbed.Foo;\nimport org.apache.commons.lang3.reflect.testbed.PrivatelyShadowedChild;\nimport org.apache.commons.lang3.reflect.testbed.PublicChild;\nimport org.apache.commons.lang3.reflect.testbed.PubliclyShadowedChild;\nimport org.apache.commons.lang3.reflect.testbed.StaticContainer;\nimport org.apache.commons.lang3.reflect.testbed.StaticContainerChild;\nimport org.junit.Before;\nimport org.junit.Test;\n\n/**\n * Unit tests FieldUtils\n * \n * @version $Id$\n */\npublic class FieldUtilsTest {\n\n    static final String S = \"s\";\n    static final String SS = \"ss\";\n    static final Integer I0 = Integer.valueOf(0);\n    static final Integer I1 = Integer.valueOf(1);\n    static final Double D0 = Double.valueOf(0.0);\n    static final Double D1 = Double.valueOf(1.0);\n\n    private PublicChild publicChild;\n    private PubliclyShadowedChild publiclyShadowedChild;\n    private PrivatelyShadowedChild privatelyShadowedChild;\n    private final Class<?> parentClass = PublicChild.class.getSuperclass();\n\n    @Before\n    public void setUp() {\n        StaticContainer.reset();\n        publicChild = new PublicChild();\n        publiclyShadowedChild = new PubliclyShadowedChild();\n        privatelyShadowedChild = new PrivatelyShadowedChild();\n    }\n\n    @Test\n    public void testConstructor() {\n        assertNotNull(new FieldUtils());\n        final Constructor<?>[] cons = FieldUtils.class.getDeclaredConstructors();\n        assertEquals(1, cons.length);\n        assertTrue(Modifier.isPublic(cons[0].getModifiers()));\n        assertTrue(Modifier.isPublic(FieldUtils.class.getModifiers()));\n        assertFalse(Modifier.isFinal(FieldUtils.class.getModifiers()));\n    }\n        assertEquals(PubliclyShadowedChild.class, FieldUtils.getField(PubliclyShadowedChild.class, \"i\", true).getDeclaringClass());\n        assertEquals(PubliclyShadowedChild.class, FieldUtils.getField(PubliclyShadowedChild.class, \"d\", true).getDeclaringClass());\n        assertEquals(Foo.class, FieldUtils.getField(PrivatelyShadowedChild.class, \"VALUE\", true).getDeclaringClass());\n        assertEquals(PrivatelyShadowedChild.class, FieldUtils.getField(PrivatelyShadowedChild.class, \"s\", true).getDeclaringClass());\n        assertEquals(PrivatelyShadowedChild.class, FieldUtils.getField(PrivatelyShadowedChild.class, \"b\", true).getDeclaringClass());\n        assertEquals(PrivatelyShadowedChild.class, FieldUtils.getField(PrivatelyShadowedChild.class, \"i\", true).getDeclaringClass());\n        assertEquals(PrivatelyShadowedChild.class, FieldUtils.getField(PrivatelyShadowedChild.class, \"d\", true).getDeclaringClass());\n    }\n\n    @Test(expected = IllegalArgumentException.class)\n    public void testGetFieldForceAccessIllegalArgumentException1() {\n        FieldUtils.getField(null, \"none\", true);\n    }\n\n    @Test(expected = IllegalArgumentException.class)\n    public void testGetFieldForceAccessIllegalArgumentException2() {\n        FieldUtils.getField(PublicChild.class, null, true);\n    }\n\n    @Test\n    public void testGetAllFields() {\n        assertArrayEquals(new Field[0], FieldUtils.getAllFields(Object.class));\n        final Field[] fieldsNumber = Number.class.getDeclaredFields();\n        assertArrayEquals(fieldsNumber, FieldUtils.getAllFields(Number.class));\n        final Field[] fieldsInteger = Integer.class.getDeclaredFields();\n        assertArrayEquals(ArrayUtils.addAll(fieldsInteger, fieldsNumber), FieldUtils.getAllFields(Integer.class));\n        assertEquals(5, FieldUtils.getAllFields(PublicChild.class).length);\n    }\n\n    private <T> List<T> asArrayList(T... values) {\n        final ArrayList<T> arrayList = new ArrayList<T>();\n        for (T t : values) {\n            arrayList.add(t);\n        }\n        return arrayList;\n    }\n\n    @Test\n    public void testGetAllFieldsList() {\n        assertEquals(0, FieldUtils.getAllFieldsList(Object.class).size());\n        final List<Field> fieldsNumber = asArrayList(Number.class.getDeclaredFields());\n        assertEquals(fieldsNumber, FieldUtils.getAllFieldsList(Number.class));\n        final List<Field> fieldsInteger = asArrayList(Integer.class.getDeclaredFields());\n        final List<Field> allFieldsInteger = new ArrayList<Field>(fieldsInteger);\n        allFieldsInteger.addAll(fieldsNumber);\n        assertEquals(allFieldsInteger, FieldUtils.getAllFieldsList(Integer.class));\n        assertEquals(5, FieldUtils.getA[...TEST TRUNCATED...].class, \"s\"));\n        assertNull(FieldUtils.getDeclaredField(PublicChild.class, \"b\"));\n        assertNull(FieldUtils.getDeclaredField(PublicChild.class, \"i\"));\n        assertNull(FieldUtils.getDeclaredField(PublicChild.class, \"d\"));\n        assertNull(FieldUtils.getDeclaredField(PubliclyShadowedChild.class, \"VALUE\"));\n        assertEquals(PubliclyShadowedChild.class, FieldUtils.getDeclaredField(PubliclyShadowedChild.class, \"s\").getDeclaringClass());\n        assertEquals(PubliclyShadowedChild.class, FieldUtils.getDeclaredField(PubliclyShadowedChild.class, \"b\").getDeclaringClass());\n        assertEquals(PubliclyShadowedChild.class, FieldUtils.getDeclaredField(PubliclyShadowedChild.class, \"i\").getDeclaringClass());\n        assertEquals(PubliclyShadowedChild.class, FieldUtils.getDeclaredField(PubliclyShadowedChild.class, \"d\").getDeclaringClass());\n        assertNull(FieldUtils.getDeclaredField(PrivatelyShadowedChild.class, \"VALUE\"));\n        assertNull(FieldUtils.getDeclaredField(PrivatelyShadowedChild.class, \"s\"));\n        assertNull(FieldUtils.getDeclaredField(PrivatelyShadowedChild.class, \"b\"));\n        assertNull(FieldUtils.getDeclaredField(PrivatelyShadowedChild.class, \"i\"));\n        assertNull(FieldUtils.getDeclaredField(PrivatelyShadowedChild.class, \"d\"));\n    }\n\n    @Test(expected = IllegalArgumentException.class)\n    public void testGetDeclaredFieldAccessIllegalArgumentException1() {\n        FieldUtils.getDeclaredField(null, \"none\");\n    }\n\n    @Test(expected = IllegalArgumentException.class)\n    public void testGetDeclaredFieldAccessIllegalArgumentException2() {\n        FieldUtils.getDeclaredField(PublicChild.class, null);\n    }\n\n    @Test\n    public void testGetDeclaredFieldForceAccess() {\n            FieldUtils.writeField(publicChild, \"b\", Boolean.TRUE);\n            fail(\"Expected IllegalArgumentException\");\n        } catch (final IllegalArgumentException e) {\n            // pass\n        }\n        try {\n            FieldUtils.writeField(publicChild, \"i\", Integer.valueOf(1));\n            fail(\"Expected IllegalArgumentException\");\n        } catch (final IllegalArgumentException e) {\n            // pass\n        }\n        try {\n            FieldUtils.writeField(publicChild, \"d\", Double.valueOf(1.0));\n            fail(\"Expected IllegalArgumentException\");\n        } catch (final IllegalArgumentException e) {\n            // pass\n        }\n\n        FieldUtils.writeField(publiclyShadowedChild, \"s\", \"S\");\n        assertEquals(\"S\", FieldUtils.readField(publiclyShadowedChild, \"s\"));\n        FieldUtils.writeField(publiclyShadowedChild, \"b\", Boolean.FALSE);\n        assertEquals(Boolean.FALSE, FieldUtils.readField(publiclyShadowedChild, \"b\"));\n        FieldUtils.writeField(publiclyShadowedChild, \"i\", Integer.valueOf(0));\n        assertEquals(Integer.valueOf(0), FieldUtils.readField(publiclyShadowedChild, \"i\"));\n        FieldUtils.writeField(publiclyShadowedChild, \"d\", Double.valueOf(0.0));\n        assertEquals(Double.valueOf(0.0), FieldUtils.readField(publiclyShadowedChild, \"d\"));\n\n        FieldUtils.writeField(privatelyShadowedChild, \"s\", \"S\");\n        assertEquals(\"S\", FieldUtils.readField(privatelyShadowedChild, \"s\"));\n        try {\n            FieldUtils.writeField(privatelyShadowedChild, \"b\", Boolean.TRUE);\n            fail(\"Expected IllegalArgumentException\");\n        } catch (final IllegalArgumentException e) {\n            // pass\n        }\n        try {\n            FieldUtils.writeField(privatelyShadowedChild, \"i\", Integer.valueOf(1));\n            fail(\"Expected IllegalArgumentException\");\n        } catch (final IllegalArgumentException e) {\n            // pass\n        }\n        try {\n            FieldUtils.writeField(privatelyShadowedChild, \"d\", Double.valueOf(1.0));\n            fail(\"Expected IllegalArgumentException\");\n        } catch (final IllegalArgumentException e) {\n            // pass\n        }\n    }\n\n    @Test\n    public void testWriteNamedFieldForceAccess() throws Exception {\n        FieldUtils.writeField(publicChild, \"s\", \"S\", true);\n        assertEquals(\"S\", FieldUtils.readField(publicChild, \"s\", true));\n        FieldUtils.writeField(publicChild, \"b\", Boolean.TRUE, true);\n        assertEquals(Boolean.TRUE, FieldUtils.readField(publicChild, \"b\", true));\n        FieldUtils.writeField(publicChild, \"i\", Integer.valueOf(1), true);\n        assertEquals(Integer.valueOf(1), FieldUtils.readField(publicChild, \"i\", true));\n        FieldUtils.writeField(publicChild, \"d\", Double.valueOf(1.0), true);\n        assertEquals(Double.valueOf(1.0), FieldUtils.readField(publicChild, \"d\", true));\n\n        FieldUtils.writeField(publiclyShadowedChild, \"s\", \"S\", true);\n        assertEquals(\"S\", FieldUtils.readField(publiclyShadowedChild, \"s\", true));\n        FieldUtils.writeField(publiclyShadowedChild, \"b\", Boolean.FALSE, true);\n        assertEquals(Boolean.FALSE, FieldUtils.readField(publiclyShadowedChild, \"b\", true));\n        FieldUtils.writeField(publiclyShadowedChild, \"i\", Integer.valueOf(0), true);\n        assertEquals(Integer.valueOf(0), FieldUtils.readField(publiclyShadowedChild, \"i\", true));\n        FieldUtils.writeField(publiclyShadowedChild, \"d\", Double.valueOf(0.0), true);\n        assertEquals(Double.valueOf(0.0), FieldUtils.readField(publiclyShadowedChild, \"d\", true));\n\n        FieldUtils.writeField(privatelyShadowedChild, \"s\", \"S\", true);\n        assertEquals(\"S\", FieldUtils.readField(privatelyShadowedChild, \"s\", true));\n        FieldUtils.writeField(privatelyShadowedChild, \"b\", Boolean.FALSE, true);\n        assertEquals(Boolean.FALSE, FieldUtils.readField(privatelyShadowedChild, \"b\", true));\n        FieldUtils.writeField(privatelyShadowedChild, \"i\", Integer.valueOf(0), true);\n        assertEquals(Integer.valueOf(0), FieldUtils.readField(privatelyShadowedChild, \"i\", true));\n        FieldUtils.writeField(privatelyShadowedChild, \"d\", Double.valueOf(0.0), true);\n        assertEquals(Double.valueOf(0.0), FieldUtils.readField(privatelyShadowedChild, \"d\", true));\n    }\n\n    @Test\n",
+  "compaction": {
+    "source_lines": 1153,
+    "mode": "windows",
+    "windows_total": 19,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        960,
+        1040
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 48.36983063872252
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 14.458056122067616
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 6.921662781737343
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 48.36983063872252
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 4.342852245392744
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 14.458056122067616
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 1.4475705879216403
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 2.6041250672468443
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 2.698342944341778
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 3.6949379703189686
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 2.7107803312961596
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 2.7995765728175197
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 2.771552310804486
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 2.709417777012252
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 1.4062307943267778
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 1.4290673039162831
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 1.4200859546840177
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 1.4225605717310101
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 6.743114663569499
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 6.921662781737343
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 6.906424096352104
+      },
+      {
+        "start": 1080,
+        "end": 1153,
+        "score": 6.77761382785216
+      }
+    ]
+  },
+  "representation_truncated": true,
+  "original_representation_chars": 12212,
+  "representation_chars": 12000,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

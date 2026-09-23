@@ -1,0 +1,86 @@
+{
+  "test_class": "org.apache.commons.lang3.RangeTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/RangeTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.RangeTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/RangeTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.lang3;\n\nimport static org.junit.Assert.*;\n\nimport java.util.Comparator;\n\nimport org.junit.Before;\nimport org.junit.Test;\n\n/**\n * <p>\n * Tests the methods in the {@link org.apache.commons.lang3.Range} class.\n * </p>\n * \n * @version $Id$\n */\n@SuppressWarnings(\"boxing\")\npublic class RangeTest {\n\n    private Range<Byte> byteRange;\n    private Range<Byte> byteRange2;\n    private Range<Byte> byteRange3;\n\n    private Range<Integer> intRange;\n    private Range<Long> longRange;\n    private Range<Float> floatRange;\n    private Range<Double> doubleRange;\n\n    @SuppressWarnings(\"cast\") // intRange\n    @Before\n    public void setUp() {\n        byteRange   = Range.between((byte) 0, (byte) 5);\n        byteRange2  = Range.between((byte) 0, (byte) 5);\n        byteRange3  = Range.between((byte) 0, (byte) 10);\n\n        intRange    = Range.between((int) 10, (int) 20);\n        longRange   = Range.between((long) 10, (long) 20);\n        floatRange  = Range.between((float) 10, (float) 20);\n        doubleRange = Range.between((double) 10, (double) 20);\n    }\n\n    //-----------------------------------------------------------------------\n    @SuppressWarnings({ \"rawtypes\", \"unchecked\" })\n    @Test\n    public void testComparableConstructors() {\n        Comparable c = \n            new Comparable() { \n                public int compareTo(Object other) {\n                    return 1;\n                }\n            };\n        Range r1 = Range.is(c);\n        Range r2 = Range.between(c, c);\n        assertEquals(true, r1.isNaturalOrdering());\n        assertEquals(true, r2.isNaturalOrdering());\n    }\n\n    @Test\n    public void testIsWithCompare(){\n        Comparator<Integer> c = new Comparator<Integer>(){\n            public int compare(Integer o1, Integer o2) {\n                return 0; // all integers are equal\n            }\n        };\n        Range<Integer> ri = Range.is(10);\n        assertFalse(\"should not contain null\",ri.contains(null));\n        assertTrue(\"should contain 10\",ri.contains(10));\n        assertFalse(\"should not contain 11\",ri.contains(11));\n        ri = Range.is(10,c);\n        assertFalse(\"should not contain null\",ri.contains(null));\n        assertTrue(\"should contain 10\",ri.contains(10));\n        assertTrue(\"should contain 11\",ri.contains(11));\n    }\n\n    @Test\n    public void testBetweenWithCompare(){\n        // TODO add tests with a better comparator\n        Comparator<Integer> c = new Comparator<Integer>(){\n            public int compare(Integer o1, Integer o2) {\n                return 0; // all integers are equal\n            }\n        };\n        Range<Integer> rb = Range.between(-10,20);\n        assertFalse(\"should not contain null\",rb.contains(null));\n        assertTrue(\"should contain 10\",rb.contains(10));\n        assertTrue(\"should contain -10\",rb.contains(-10));\n        assertFalse(\"should not contain 21\",rb.contains(21));\n        assertFalse(\"should not contain -11\",rb.contains(-11));\n        rb = Range.between(-10,20,c);\n        assertFalse(\"should not contain null\",rb.contains(null));\n        assertTrue(\"should contain 10\",rb.contains(10));\n        assertTrue(\"should contain -10\",rb.contains(-10));\n        assertTrue(\"should contain 21\",rb.contains(21));\n        assertTrue(\"should contain -11\",rb.contains(-11));\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testRangeOfChars() {\n        Range<Character> chars = Range.between('a', 'z');\n        assertTrue(chars.contains('b'));\n        assertFalse(chars.contains('B'));\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testEqualsObject() {\n        assertEquals(byteRange, byteRange);\n        assertEquals(byteRange, byteRange2);\n        assertEquals(byteRange2, byteRange2);\n        assertTrue(byteRange.equals(byteRange));\n        assertTrue(byteRange2.equals(byteRange2));\n        assertTrue(byteRange3.equals(byteRange3));\n        assertFalse(byteRange2.equals(byteRange3));\n        assertFalse(byteRange2.equals(null));\n        assertFalse(byteRange2.equals(\"Ni!\"));\n    }\n\n    @Test\n    public void testHashCode() {\n        assertEquals(byteRange.hashCode(), byteRange2.hashCode());\n        assertFalse(byteRange.hashCode() == byteRange3.hashCode());\n        \n        assertEquals(intRange.hashCode(), intRange.hashCode());\n        assertTrue(intRange.hashCode() != 0);\n    }\n\n    @Test\n    public void testToString() {\n        assertNotNull(byteRange.toString());\n        \n        String str = intRange.toString();\n        assertEquals(\"[10..20]\", str);\n        assertEquals(\"[-20..-10]\", Range.between(-20, -10).toString());\n    }\n\n    @Test\n    public void testToStringFormat() {\n        String str = intRange.toString(\"From %1$s to %2$s\");\n        assertEquals(\"From 10 to 20\", str);\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testGetMinimum() {\n        assertEquals(10, (int) intRange.getMinimum());\n        assertEquals(10L, (long) longRange.getMinimum());\n        assertEquals(10f, floatRange.getMinimum(), 0.00001f);\n        assertEquals(10d, doubleRange.getMinimum(), 0.00001d);\n    }\n\n    @Test\n    public void testGetMaximum() {\n        assertEquals(20, (int) intRange.getMaximum());\n        assertEquals(20L, (long) longRange.getMaximum());\n        assertEquals(20f, floatRange.getMaximum(), 0.00001f);\n        assertEquals(20d, doubleRange.getMaximum(), 0.00001d);\n    }\n\n    @Test\n    public void testContains() {\n        assertFalse(intRange.contains(null));\n        \n        assertFalse(intRange.contains(5));\n        assertTrue(intRange.contains(10));\n        assertTrue(intRange.contains(15));\n        assertTrue(intRange.contains(20));\n        assertFalse(intRange.contains(25));\n    }\n\n    @Test\n    public void testIsAfter() {\n        assertFalse(intRange.isAfter(null));\n        \n        assertTrue(intRange.isAfter(5));\n        assertFalse(intRange.isAfter(10));\n        assertFalse(intRange.isAfter(15));\n        assertFalse(intRange.isAfter(20));\n        assertFalse(intRange.isAfter(25));\n    }\n\n    @Test\n    public void testIsStartedBy() {\n",
+  "compaction": {
+    "source_lines": 372,
+    "mode": "windows",
+    "windows_total": 6,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 32.20140122367789
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 8.760272858833522
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 10.63981923195523
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 32.20140122367789
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 8.760272858833522
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 10.63981923195523
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 2.8684231696211233
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 1.5674728388739612
+      },
+      {
+        "start": 300,
+        "end": 372,
+        "score": 6.02805338750311
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7134,
+  "representation_chars": 7134,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

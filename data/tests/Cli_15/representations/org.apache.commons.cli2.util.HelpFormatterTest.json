@@ -1,0 +1,101 @@
+{
+  "test_class": "org.apache.commons.cli2.util.HelpFormatterTest",
+  "source_file": "src/test/org/apache/commons/cli2/util/HelpFormatterTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.cli2.util.HelpFormatterTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/cli2/util/HelpFormatterTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one\n * or more contributor license agreements.  See the NOTICE file\n * distributed with this work for additional information\n * regarding copyright ownership.  The ASF licenses this file\n * to you under the Apache License, Version 2.0 (the\n * \"License\"); you may not use this file except in compliance\n * with the License.  You may obtain a copy of the License at\n *\n * http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing,\n * software distributed under the License is distributed on an\n * \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY\n * KIND, either express or implied.  See the License for the\n * specific language governing permissions and limitations\n * under the License.\n */\npackage org.apache.commons.cli2.util;\n\nimport java.io.BufferedReader;\nimport java.io.IOException;\nimport java.io.PrintWriter;\nimport java.io.StringReader;\nimport java.io.StringWriter;\n\nimport java.util.Collections;\nimport java.util.Comparator;\nimport java.util.HashSet;\nimport java.util.Iterator;\nimport java.util.List;\nimport java.util.Set;\n\nimport junit.framework.TestCase;\n\nimport org.apache.commons.cli2.DisplaySetting;\nimport org.apache.commons.cli2.Group;\nimport org.apache.commons.cli2.Option;\nimport org.apache.commons.cli2.OptionException;\nimport org.apache.commons.cli2.builder.DefaultOptionBuilder;\nimport org.apache.commons.cli2.builder.GroupBuilder;\nimport org.apache.commons.cli2.option.ArgumentTest;\nimport org.apache.commons.cli2.option.DefaultOptionTest;\nimport org.apache.commons.cli2.resource.ResourceConstants;\nimport org.apache.commons.cli2.resource.ResourceHelper;\n\npublic class HelpFormatterTest\n    extends TestCase {\n    private ResourceHelper resources = ResourceHelper.getResourceHelper();\n    private HelpFormatter helpFormatter;\n    private Option verbose;\n    private Group options;\n\n    public void setUp() {\n        helpFormatter = new HelpFormatter(\"|*\", \"*-*\", \"*|\", 80);\n        helpFormatter.setDivider(\"+------------------------------------------------------------------------------+\");\n        helpFormatter.setHeader(\"Apache Commons CLI\");\n        helpFormatter.setFooter(\"Copyright 2003\\nApache Software Foundation\");\n        helpFormatter.setShellCommand(\"ant\");\n\n        verbose =\n            new DefaultOptionBuilder().withLongName(\"verbose\")\n                                      .withDescription(\"print the version information and exit\")\n                                      .create();\n\n        options =\n            new GroupBuilder().withName(\"options\").withOption(DefaultOptionTest.buildHelpOption())\n                              .withOption(ArgumentTest.buildTargetsArgument())\n                              .withOption(new DefaultOptionBuilder().withLongName(\"diagnostics\")\n                                                                    .withDescription(\"print information that might be helpful to diagnose or report problems.\")\n                                                                    .create())\n                              .withOption(new DefaultOptionBuilder().withLongName(\"projecthelp\")\n                                                                    .withDescription(\"print project help information\")\n                                                                    .create()).withOption(verbose)\n                              .create();\n\n        helpFormatter.setGroup(options);\n    }\n\n    public void testPrint()\n        assertEquals(\"hello     \", writer.toString());\n    }\n\n    public void testPad_Null()\n        throws IOException {\n        final StringWriter writer = new StringWriter();\n        HelpFormatter.pad(null, 10, new PrintWriter(writer));\n        assertEquals(\"          \", writer.toString());\n    }\n\n    public void testPad_TooLong()\n        throws IOException {\n        final StringWriter writer = new StringWriter();\n        HelpFormatter.pad(\"hello world\", 10, new PrintWriter(writer));\n        assertEquals(\"hello world\", writer.toString());\n    }\n\n    public void testPad_TooShort()\n        throws IOException {\n        final StringWriter writer = new StringWriter();\n        HelpFormatter.pad(\"hello world\", -5, new PrintWriter(writer));\n        assertEquals(\"hello world\", writer.toString());\n    }\n\n    public void testGutters()\n        throws IOException {\n        helpFormatter = new HelpFormatter(null, null, null, 80);\n        helpFormatter.setShellCommand(\"ant\");\n\n        final Set lusage = new HashSet();\n        lusage.add(DisplaySetting.DISPLAY_ALIASES);\n        lusage.add(DisplaySetting.DISPLAY_GROUP_NAME);\n        helpFormatter.setLineUsageSettings(lusage);\n\n        // test line usage\n        assertEquals(\"incorrect line usage\", lusage, helpFormatter.getLineUsageSettings());\n\n        final Set fusage = new HashSet();\n        fusage.add(DisplaySetting.DISPLAY_PARENT_CHILDREN);\n        fusage.add(DisplaySetting.DISPLAY_GROUP_ARGUMENT);\n        fusage.add(DisplaySetting.DISPLAY_GROUP_OUTER);\n        fusage.add(DisplaySetting.DISPLAY_GROUP_EXPANDED);\n        fusage.add(DisplaySetting.DISPLAY_ARGUMENT_BRACKETED);\n        fusage.add(DisplaySetting.DISPLAY_ARGUMENT_NUMBERED);\n        fusage.add(DisplaySetting.DISPLAY_SWITCH_ENABLED);\n        fusage.add(DisplaySetting.DISPLAY_SWITCH_DISABLED);\n        fusage.add(DisplaySetting.DISPLAY_PROPERTY_OPTION);\n        fusage.add(DisplaySetting.DISPLAY_PARENT_CHILDREN);\n        fusage.add(DisplaySetting.DISPLAY_PARENT_ARGUMENT);\n        fusage.add(DisplaySetting.DISPLAY_OPTIONAL);\n        helpFormatter.setFullUsageSettings(fusage);\n\n        // test line usage\n        assertEquals(\"incorrect full usage\", fusage, helpFormatter.getFullUsageSettings());\n\n        final Set dsettings = new HashSet();\n        dsettings.add(DisplaySetting.DISPLAY_GROUP_NAME);\n        dsettings.add(DisplaySetting.DISPLAY_GROUP_EXPANDED);\n        dsettings.add(DisplaySetting.DISPLAY_GROUP_ARGUMENT);\n\n        helpFormatter.setDisplaySettings(dsettings);\n\n        verbose =\n            new DefaultOptionBuilder().withLongName(\"verbose\")\n                                      .withDescription(\"print the version information and exit\")\n                                      .create();\n\n        options =\n            new GroupBuilder().withName(\"options\").withOption(DefaultOptionTest.buildHelpOption())\n                              .withOption(ArgumentTest.buildTargetsArgument())\n                              .withOption(new DefaultOptionBuilder().withLongName(\"diagnostics\")\n                                                                    .withDescription(\"print information that might be helpful to diagnose or report problems.\")\n                                                                    .create())\n                              .withOption(new DefaultOptionBuilder().withLongName(\"projecthelp\")\n                                                                    .withDescription(\"print project help information\")\n                                                                    .create()).withOption(verbose)\n                              .create();\n\n        helpFormatter.setGroup(options);\n\n        // test default gutters\n        assertEquals(\"incorrect left gutter\", HelpFormatter.DEFAULT_GUTTER_LEFT,\n                     helpFormatter.getGutterLeft());\n        assertEquals(\"incorrect right gutter\", HelpFormatter.DEFAULT_GUTTER_RIGHT,\n                     helpFormatter.getGutterRight());\n        assertEquals(\"incorrect center gutter\", HelpFormatter.DEFAULT_GUTTER_CENTER,\n                     helpFormatter.getGutterCenter());\n\n        final StringWriter writer = new StringWriter();\n        helpFormatter.setPrintWriter(new PrintWriter(writer));\n        helpFormatter.print();\n\n        final BufferedReader reader = new BufferedReader(new StringReader(writer.toString()));\n        assertEquals(\"Usage:                                                                          \",\n                     reader.readLine());\n        assertEquals(\"ant [--help --diagnostics --projecthelp --verbose] [<target1> [<target2> ...]]  \",\n                     reader.readLine());\n        assertEquals(\"options                                                                         \",\n                     reader.readLine());\n        assertEquals(\"  --help (-?,-h)         Displays the help                                      \",\n                     reader.readLine());\n        assertEquals(\"  --diagnostics          print information that might be helpful to diagnose or \",\n                     reader.readLine());\n        assertEquals(\"                         report problems.                                       \",\n                     reader.readLine());\n        assertEquals(\"  --projecthelp          print project help information                         \",\n                     reader.readLine());\n        assertEquals(\"  --verbose              print the version information and exit                 \",\n                     reader.readLine());\n        assertEquals(\"  target [target ...]    The targets ant should build                           \",\n                     reader.readLine());\n        assertNull(reader.readLine());\n    }\n}\n\n\nclass OptionComparator implements Comparator {\n    public int compare(Object o1,\n                       Object o2) {\n        Option opt1 = (Option) o1;\n        Option opt2 = (Option) o2;\n\n        return -opt1.getPreferredName().compareTo(opt2.getPreferredName());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 545,
+    "mode": "windows",
+    "windows_total": 9,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        420,
+        500
+      ],
+      [
+        480,
+        545
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 34.34590809866932
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 9.82527836106411
+      },
+      {
+        "start": 480,
+        "end": 545,
+        "score": 9.123055244738817
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 34.34590809866932
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 8.71617973587087
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 2.8498033968173497
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 2.2806779423398185
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 3.860433400378583
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 3.768043772005653
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 5.939863225839398
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 9.82527836106411
+      },
+      {
+        "start": 480,
+        "end": 545,
+        "score": 9.123055244738817
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9646,
+  "representation_chars": 9646,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

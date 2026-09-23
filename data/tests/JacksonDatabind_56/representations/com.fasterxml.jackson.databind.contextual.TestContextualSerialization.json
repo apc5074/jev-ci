@@ -1,0 +1,81 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.contextual.TestContextualSerialization",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/contextual/TestContextualSerialization.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.contextual.TestContextualSerialization\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/contextual/TestContextualSerialization.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.contextual;\n\nimport java.io.IOException;\nimport java.lang.annotation.*;\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonSerialize;\nimport com.fasterxml.jackson.databind.module.SimpleModule;\nimport com.fasterxml.jackson.databind.ser.ContextualSerializer;\nimport com.fasterxml.jackson.databind.ser.ResolvableSerializer;\n\n/**\n * Test cases to verify that it is possible to define serializers\n * that can use contextual information (like field/method\n * annotations) for configuration.\n */\npublic class TestContextualSerialization extends BaseMapTest\n{\n    /*\n    /**********************************************************\n    /* Helper classes\n    /**********************************************************\n     */\n\n    /* NOTE: important; MUST be considered a 'Jackson' annotation to be seen\n     * (or recognized otherwise via AnnotationIntrospect.isHandled())\n     */\n    @Target({ElementType.FIELD, ElementType.TYPE, ElementType.METHOD})\n    @Retention(RetentionPolicy.RUNTIME)\n    @JacksonAnnotation\n    public @interface Prefix {\n        public String value();\n    }\n\n    static class ContextualBean\n    {\n        protected final String _value;\n\n        public ContextualBean(String s) { _value = s; }\n\n        @Prefix(\"see:\")\n        public String getValue() { return _value; }\n    }\n\n    // For [JACKSON-569]\n    static class AnnotatedContextualBean\n    {\n        @Prefix(\"prefix->\")\n        @JsonSerialize(using=AnnotatedContextualSerializer.class)\n        protected final String value;\n\n        public AnnotatedContextualBean(String s) { value = s; }\n    }\n\n    \n    @Prefix(\"wrappedBean:\")\n    static class ContextualBeanWrapper\n    {\n        @Prefix(\"wrapped:\")\n        public ContextualBean wrapped;\n        \n        public ContextualBeanWrapper(String s) {\n            wrapped = new ContextualBean(s);\n        }\n    }\n    \n    static class ContextualArrayBean\n    {\n        @Prefix(\"array->\")\n        public final String[] beans;\n        \n        public ContextualArrayBean(String... strings) {\n            beans = strings;\n        }\n    }\n\n    \n    /**\n     * Annotation-based contextual serializer that simply prepends piece of text.\n     */\n    static class AnnotatedContextualSerializer\n        extends JsonSerializer<String>\n        implements ContextualSerializer\n    {\n        protected final String _prefix;\n        \n        public AnnotatedContextualSerializer() { this(\"\"); }\n        public AnnotatedContextualSerializer(String p) {\n            _prefix = p;\n        }\n\n        @Override\n        public void serialize(String value, JsonGenerator jgen, SerializerProvider provider) throws IOException\n        {\n            jgen.writeString(_prefix + value);\n        }\n\n        @Override\n        public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property)\n                throws JsonMappingException\n        {\n            String prefix = \"UNKNOWN\";\n            Prefix ann = null;\n            if (property != null) {\n                ann = property.getAnnotation(Prefix.class);\n                if (ann == null) {\n                    ann = property.getContextAnnotation(Prefix.class);\n                }\n            }\n            if (ann != null) {\n                prefix = ann.value();\n            }\n            return new AnnotatedContextualSerializer(prefix);\n        }\n    }\n\n    static class ContextualAndResolvable\n        extends JsonSerializer<String>\n        implements ContextualSerializer, ResolvableSerializer\n    {\n        protected int isContextual;\n        protected int isResolved;\n\n        public ContextualAndResolvable() { this(0, 0); }\n        \n        public ContextualAndResolvable(int resolved, int contextual)\n        {\n            isContextual = contextual;\n            isResolved = resolved;\n        }\n        \n        @Override\n        public void serialize(String value, JsonGenerator jgen, SerializerProvider provider) throws IOException\n        {\n            jgen.writeString(\"contextual=\"+isContextual+\",resolved=\"+isResolved);\n        }\n\n        @Override\n        public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property)\n                throws JsonMappingException\n        {\n            return new ContextualAndResolvable(isResolved, isContextual+1);\n        }\n\n        @Override\n        public void resolve(SerializerProvider provider) {\n            ++isResolved;\n        }\n    }\n    \n    /*\n    /**********************************************************\n    /* Unit tests\n    /**********************************************************\n     */\n    \n    }\n\n    // Serializer should get passed property context even if contained in a Collection.\n    public void testMethodAnnotationInList() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        SimpleModule module = new SimpleModule(\"test\", Version.unknownVersion());\n        module.addSerializer(String.class, new AnnotatedContextualSerializer());\n        mapper.registerModule(module);\n        ContextualListBean beans = new ContextualListBean(\"abc\");\n        assertEquals(\"{\\\"beans\\\":[\\\"list->abc\\\"]}\", mapper.writeValueAsString(beans));\n    }\n\n    // Serializer should get passed property context even if contained in a Collection.\n    public void testMethodAnnotationInMap() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        SimpleModule module = new SimpleModule(\"test\", Version.unknownVersion());\n        module.addSerializer(String.class, new AnnotatedContextualSerializer());\n        mapper.registerModule(module);\n        ContextualMapBean map = new ContextualMapBean();\n        map.beans.put(\"first\", \"In Map\");\n        assertEquals(\"{\\\"beans\\\":{\\\"first\\\":\\\"map->In Map\\\"}}\", mapper.writeValueAsString(map));\n    }\n\n    public void testContextualViaAnnotation() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        AnnotatedContextualBean bean = new AnnotatedContextualBean(\"abc\");\n        assertEquals(\"{\\\"value\\\":\\\"prefix->abc\\\"}\", mapper.writeValueAsString(bean));\n    }\n\n    /*\n    // [JACKSON-647]: is resolve() called for contextual instances?\n    public void testResolveOnContextual() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        SimpleModule module = new SimpleModule(\"test\", Version.unknownVersion());\n        module.addSerializer(String.class, new ContextualAndResolvable());\n        mapper.registerModule(module);\n        assertEquals(quote(\"contextual=1,resolved=1\"), mapper.writeValueAsString(\"abc\"));\n    }\n\n    public void testContextualArrayElement() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        ContextualArrayElementBean beans = new ContextualArrayElementBean(\"456\");\n        assertEquals(\"{\\\"beans\\\":[\\\"elem->456\\\"]}\", mapper.writeValueAsString(beans));\n    }\n    */\n}\n",
+  "compaction": {
+    "source_lines": 291,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        240,
+        291
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.32743260493058
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 6.4219994632745605
+      },
+      {
+        "start": 240,
+        "end": 291,
+        "score": 4.427702882408119
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.32743260493058
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.171928910320971
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 6.4219994632745605
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 2.4470710185271694
+      },
+      {
+        "start": 240,
+        "end": 291,
+        "score": 4.427702882408119
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7206,
+  "representation_chars": 7206,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

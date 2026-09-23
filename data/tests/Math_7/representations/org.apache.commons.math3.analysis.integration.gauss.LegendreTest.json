@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.math3.analysis.integration.gauss.LegendreTest",
+  "source_file": "src/test/java/org/apache/commons/math3/analysis/integration/gauss/LegendreTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.analysis.integration.gauss.LegendreTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/analysis/integration/gauss/LegendreTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.analysis.integration.gauss;\n\nimport org.apache.commons.math3.analysis.function.Cos;\nimport org.apache.commons.math3.analysis.function.Inverse;\nimport org.apache.commons.math3.analysis.function.Log;\nimport org.apache.commons.math3.analysis.UnivariateFunction;\nimport org.junit.Test;\nimport org.junit.Assert;\n\n/**\n * Test of the {@link LegendreRuleFactory}.\n *\n * @version $Id$\n */\npublic class LegendreTest {\n    private static GaussIntegratorFactory factory = new GaussIntegratorFactory();\n\n    @Test\n    public void testCos() {\n        final UnivariateFunction cos = new Cos();\n\n        final GaussIntegrator integrator = factory.legendre(7, 0, Math.PI / 2);\n        final double s = integrator.integrate(cos);\n        // System.out.println(\"s=\" + s + \" e=\" + 1);\n        Assert.assertEquals(1, s, Math.ulp(1d));\n    }\n\n\n    @Test\n    public void testInverse() {\n        final UnivariateFunction inv = new Inverse();\n        final UnivariateFunction log = new Log();\n\n        final double lo = 12.34;\n        final double hi = 456.78;\n\n        final GaussIntegrator integrator = factory.legendre(60, lo, hi);\n        final double s = integrator.integrate(inv);\n        final double expected = log.value(hi) - log.value(lo);\n        // System.out.println(\"s=\" + s + \" e=\" + expected);\n        Assert.assertEquals(expected, s, 1e-14);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 59,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2367,
+  "representation_chars": 2367,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

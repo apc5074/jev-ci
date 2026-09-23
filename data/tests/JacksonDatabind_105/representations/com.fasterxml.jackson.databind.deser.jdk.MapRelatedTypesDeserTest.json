@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.jdk.MapRelatedTypesDeserTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/jdk/MapRelatedTypesDeserTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.jdk.MapRelatedTypesDeserTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/jdk/MapRelatedTypesDeserTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser.jdk;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.core.type.TypeReference;\nimport com.fasterxml.jackson.databind.*;\n\npublic class MapRelatedTypesDeserTest\n    extends BaseMapTest\n{\n    private final ObjectMapper MAPPER = new ObjectMapper();\n\n    /*\n    /**********************************************************\n    /* Test methods, Map.Entry\n    /**********************************************************\n     */\n\n    public void testMapEntrySimpleTypes() throws Exception\n    {\n        List<Map.Entry<String,Long>> stuff = MAPPER.readValue(aposToQuotes(\"[{'a':15},{'b':42}]\"),\n                new TypeReference<List<Map.Entry<String,Long>>>() { });\n        assertNotNull(stuff);\n        assertEquals(2, stuff.size());\n        assertNotNull(stuff.get(1));\n        assertEquals(\"b\", stuff.get(1).getKey());\n        assertEquals(Long.valueOf(42), stuff.get(1).getValue());\n    }\n\n    public void testMapEntryWithStringBean() throws Exception\n    {\n        List<Map.Entry<Integer,StringWrapper>> stuff = MAPPER.readValue(aposToQuotes(\"[{'28':'Foo'},{'13':'Bar'}]\"),\n                new TypeReference<List<Map.Entry<Integer,StringWrapper>>>() { });\n        assertNotNull(stuff);\n        assertEquals(2, stuff.size());\n        assertNotNull(stuff.get(1));\n        assertEquals(Integer.valueOf(13), stuff.get(1).getKey());\n        \n        StringWrapper sw = stuff.get(1).getValue();\n        assertEquals(\"Bar\", sw.str);\n    }\n\n    public void testMapEntryFail() throws Exception\n    {\n        try {\n            /*List<Map.Entry<Integer,StringWrapper>> stuff =*/ MAPPER.readValue(aposToQuotes(\"[{'28':'Foo','13':'Bar'}]\"),\n                    new TypeReference<List<Map.Entry<Integer,StringWrapper>>>() { });\n            fail(\"Should not have passed\");\n        } catch (Exception e) {\n            verifyException(e, \"more than one entry in JSON\");\n        }\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods, other exotic Map types\n    /**********************************************************\n     */\n    \n    // [databind#810]\n    public void testReadProperties() throws Exception\n    {\n        Properties props = MAPPER.readValue(aposToQuotes(\"{'a':'foo', 'b':123, 'c':true}\"),\n                Properties.class);\n        assertEquals(3, props.size());\n        assertEquals(\"foo\", props.getProperty(\"a\"));\n        assertEquals(\"123\", props.getProperty(\"b\"));\n        assertEquals(\"true\", props.getProperty(\"c\"));\n    }\n\n    // JDK singletonMap\n    public void testSingletonMapRoundtrip() throws Exception\n    {\n        final TypeReference<?> type = new TypeReference<Map<String,IntWrapper>>() { };\n\n        String json = MAPPER.writeValueAsString(Collections.singletonMap(\"value\", new IntWrapper(5)));\n        Map<String,IntWrapper> result = MAPPER.readValue(json, type);\n        assertNotNull(result);\n        assertEquals(1, result.size());\n        IntWrapper w = result.get(\"value\");\n        assertNotNull(w);\n        assertEquals(5, w.i);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 84,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3242,
+  "representation_chars": 3242,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

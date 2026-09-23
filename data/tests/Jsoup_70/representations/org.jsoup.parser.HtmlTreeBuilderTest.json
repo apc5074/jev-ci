@@ -1,0 +1,25 @@
+{
+  "test_class": "org.jsoup.parser.HtmlTreeBuilderTest",
+  "source_file": "src/test/java/org/jsoup/parser/HtmlTreeBuilderTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.jsoup.parser.HtmlTreeBuilderTest\n\nSOURCE FILE:\nsrc/test/java/org/jsoup/parser/HtmlTreeBuilderTest.java\n\nTEST SOURCE:\npackage org.jsoup.parser;\n\nimport org.junit.Test;\n\nimport java.util.Arrays;\n\nimport static org.junit.Assert.assertArrayEquals;\n\npublic class HtmlTreeBuilderTest {\n    @Test\n    public void ensureSearchArraysAreSorted() {\n        String[][] arrays = {\n            HtmlTreeBuilder.TagsSearchInScope,\n            HtmlTreeBuilder.TagSearchList,\n            HtmlTreeBuilder.TagSearchButton,\n            HtmlTreeBuilder.TagSearchTableScope,\n            HtmlTreeBuilder.TagSearchSelectScope,\n            HtmlTreeBuilder.TagSearchEndTags,\n            HtmlTreeBuilder.TagSearchSpecial\n        };\n\n        for (String[] array : arrays) {\n            String[] copy = Arrays.copyOf(array, array.length);\n            Arrays.sort(array);\n            assertArrayEquals(array, copy);\n        }\n    }\n}\n",
+  "compaction": {
+    "source_lines": 28,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 919,
+  "representation_chars": 919,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

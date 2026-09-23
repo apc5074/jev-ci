@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.objectid.TestObjectId154",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/objectid/TestObjectId154.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.objectid.TestObjectId154\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/objectid/TestObjectId154.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.objectid;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.databind.*;\n\npublic class TestObjectId154 extends BaseMapTest\n{\n    @JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property=\"@id\")\n    @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property=\"@class\")\n    public static class BaseEntity {  }\n\n    public static class Foo extends BaseEntity {\n        public BaseEntity ref;\n    }\n\n    public static class Bar extends BaseEntity\n    {\n        public Foo next;\n    }\n\n    public void testObjectAndTypeId() throws Exception\n    {\n        final ObjectMapper mapper = new ObjectMapper();\n\n        Bar inputRoot = new Bar();\n        Foo inputChild = new Foo();\n        inputRoot.next = inputChild;\n        inputChild.ref = inputRoot;\n\n        String json = mapper.writerWithDefaultPrettyPrinter()\n                .writeValueAsString(inputRoot);\n        \n        BaseEntity resultRoot = mapper.readValue(json, BaseEntity.class);\n        assertNotNull(resultRoot);\n        assertTrue(resultRoot instanceof Bar);\n        Bar first = (Bar) resultRoot;\n\n        assertNotNull(first.next);\n        assertTrue(first.next instanceof Foo);\n        Foo second = (Foo) first.next;\n        assertNotNull(second.ref);\n        assertSame(first, second.ref);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 44,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1543,
+  "representation_chars": 1543,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

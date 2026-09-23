@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.util.ISO8601UtilsTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/util/ISO8601UtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.util.ISO8601UtilsTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/util/ISO8601UtilsTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.util;\n\nimport java.util.*;\nimport java.text.ParsePosition;\n\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.util.ISO8601Utils;\n\n/**\n * @see ISO8601Utils\n */\npublic class ISO8601UtilsTest extends BaseMapTest\n{\n    private Date date;\n    private Date dateZeroMillis;\n\n    @Override\n    public void setUp()\n    {\n        Calendar cal = new GregorianCalendar(2007, 8 - 1, 13, 19, 51, 23);\n        cal.setTimeZone(TimeZone.getTimeZone(\"GMT\"));\n        cal.set(Calendar.MILLISECOND, 789);\n        date = cal.getTime();\n        cal.set(Calendar.MILLISECOND, 0);\n        dateZeroMillis = cal.getTime();\n    }\n\n    public void testFormat() {\n        String result = ISO8601Utils.format(date);\n        assertEquals(\"2007-08-13T19:51:23Z\", result);\n    }\n\n    public void testFormatMillis() {\n        String result = ISO8601Utils.format(date, true);\n        assertEquals(\"2007-08-13T19:51:23.789Z\", result);\n\n        result = ISO8601Utils.format(date, false);\n        assertEquals(\"2007-08-13T19:51:23Z\", result);\n    }\n\n    public void testFormatTimeZone() {\n        String result = ISO8601Utils.format(date, false, TimeZone.getTimeZone(\"GMT+02:00\"));\n        assertEquals(\"2007-08-13T21:51:23+02:00\", result);\n        result = ISO8601Utils.format(date, true, TimeZone.getTimeZone(\"GMT+02:00\"));\n        assertEquals(\"2007-08-13T21:51:23.789+02:00\", result);\n        result = ISO8601Utils.format(date, true, TimeZone.getTimeZone(\"GMT\"));\n        assertEquals(\"2007-08-13T19:51:23.789Z\", result);\n    }\n\n    public void testParse() throws java.text.ParseException {\n        Date d = ISO8601Utils.parse(\"2007-08-13T19:51:23.789Z\", new ParsePosition(0));\n        assertEquals(date, d);\n\n        d = ISO8601Utils.parse(\"2007-08-13T19:51:23Z\", new ParsePosition(0));\n        assertEquals(dateZeroMillis, d);\n\n        d = ISO8601Utils.parse(\"2007-08-13T21:51:23.789+02:00\", new ParsePosition(0));\n        assertEquals(date, d);\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 61,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2166,
+  "representation_chars": 2166,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

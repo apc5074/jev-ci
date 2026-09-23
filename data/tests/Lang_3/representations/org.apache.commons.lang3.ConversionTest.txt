@@ -1,0 +1,247 @@
+TEST CLASS:
+org.apache.commons.lang3.ConversionTest
+
+SOURCE FILE:
+src/test/java/org/apache/commons/lang3/ConversionTest.java
+
+TEST SOURCE:
+/*******************************************************************************
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *******************************************************************************/
+package org.apache.commons.lang3;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.util.UUID;
+
+import org.junit.Test;
+
+
+/**
+ * Unit tests {@link Conversion}.
+ * 
+ * @version $Id$
+ */
+public class ConversionTest {
+
+    /**
+     * Tests {@link Conversion#hexDigitToInt(char)}.
+     */
+    @Test
+    public void testHexDigitToInt() {
+        assertEquals(0, Conversion.hexDigitToInt('0'));
+        assertEquals(1, Conversion.hexDigitToInt('1'));
+        assertEquals(2, Conversion.hexDigitToInt('2'));
+        assertEquals(3, Conversion.hexDigitToInt('3'));
+        assertEquals(4, Conversion.hexDigitToInt('4'));
+        assertEquals(5, Conversion.hexDigitToInt('5'));
+        assertEquals(6, Conversion.hexDigitToInt('6'));
+        assertEquals(7, Conversion.hexDigitToInt('7'));
+        assertEquals(8, Conversion.hexDigitToInt('8'));
+        assertEquals(9, Conversion.hexDigitToInt('9'));
+        assertEquals(10, Conversion.hexDigitToInt('A'));
+        assertEquals(10, Conversion.hexDigitToInt('a'));
+        assertEquals(11, Conversion.hexDigitToInt('B'));
+        assertEquals(11, Conversion.hexDigitToInt('b'));
+        assertEquals(12, Conversion.hexDigitToInt('C'));
+        assertEquals(12, Conversion.hexDigitToInt('c'));
+        assertEquals(13, Conversion.hexDigitToInt('D'));
+        assertEquals(13, Conversion.hexDigitToInt('d'));
+        assertEquals(14, Conversion.hexDigitToInt('E'));
+        assertEquals(14, Conversion.hexDigitToInt('e'));
+        assertEquals(15, Conversion.hexDigitToInt('F'));
+        assertEquals(15, Conversion.hexDigitToInt('f'));
+        try {
+            Conversion.hexDigitToInt('G');
+            fail("Thrown " + IllegalArgumentException.class.getName() + " expected");
+        } catch (final IllegalArgumentException e) {
+            // OK
+        }
+    }
+
+    /**
+     * Tests {@link Conversion#hexDigitMsb0ToInt(char)}.
+     */
+    @Test
+    public void testHexDigitMsb0ToInt() {
+        assertEquals(0x0, Conversion.hexDigitMsb0ToInt('0'));
+        assertEquals(0x8, Conversion.hexDigitMsb0ToInt('1'));
+        assertEquals(0x4, Conversion.hexDigitMsb0ToInt('2'));
+        assertEquals(0xC, Conversion.hexDigitMsb0ToInt('3'));
+        assertEquals(
+            '9', Conversion.binaryToHexDigitMsb0_4bits(new boolean[]{true, false, false, true}));
+        assertEquals(
+            'a', Conversion.binaryToHexDigitMsb0_4bits(new boolean[]{true, false, true, false}));
+        assertEquals(
+            'b', Conversion.binaryToHexDigitMsb0_4bits(new boolean[]{true, false, true, true}));
+        assertEquals(
+            'c', Conversion.binaryToHexDigitMsb0_4bits(new boolean[]{true, true, false, false}));
+        assertEquals(
+            'd', Conversion.binaryToHexDigitMsb0_4bits(new boolean[]{true, true, false, true}));
+        assertEquals(
+            'e', Conversion.binaryToHexDigitMsb0_4bits(new boolean[]{true, true, true, false}));
+        assertEquals(
+            'f', Conversion.binaryToHexDigitMsb0_4bits(new boolean[]{true, true, true, true}));
+        try {
+            Conversion.binaryToHexDigitMsb0_4bits(new boolean[]{});
+            fail("Thrown " + IllegalArgumentException.class.getName() + " expected");
+        } catch (final IllegalArgumentException e) {
+            // OK
+        }
+    }
+
+    /**
+     * Tests {@link Conversion#binaryToHexDigitMsb0_4bits(boolean[], int)}.
+     */
+    @Test
+    public void testBinaryToHexDigitMsb0_4bits_2args() {
+        // boolean[] shortArray = new boolean[]{true,true,false};
+        // assertEquals('6', Conversion.BinaryToHexDigitMsb0(shortArray,0));
+        // assertEquals('3', Conversion.BinaryToHexDigitMsb0(shortArray,1));
+        // assertEquals('1', Conversion.BinaryToHexDigitMsb0(shortArray,2));
+        final boolean[] shortArray = new boolean[]{true, true, false, true};
+        assertEquals('d', Conversion.binaryToHexDigitMsb0_4bits(shortArray, 0));
+        final boolean[] longArray = new boolean[]{true, false, true, false, false, true, true};
+        assertEquals('a', Conversion.binaryToHexDigitMsb0_4bits(longArray, 0));
+        assertEquals('4', Conversion.binaryToHexDigitMsb0_4bits(longArray, 1));
+        assertEquals('9', Conversion.binaryToHexDigitMsb0_4bits(longArray, 2));
+        assertEquals('3', Conversion.binaryToHexDigitMsb0_4bits(longArray, 3));
+        // assertEquals('6', Conversion.BinaryToHexDigitMsb0(longArray,4));
+        // assertEquals('3', Conversion.BinaryToHexDigitMsb0(longArray,5));
+        // assertEquals('1', Conversion.BinaryToHexDigitMsb0(longArray,6));
+        final boolean[] maxLengthArray = new boolean[]{
+            true, false, true, false, false, true, true, true};
+        assertEquals('a', Conversion.binaryToHexDigitMsb0_4bits(maxLengthArray, 0));
+        assertEquals('4', Conversion.binaryToHexDigitMsb0_4bits(maxLengthArray, 1));
+        assertEquals('9', Conversion.binaryToHexDigitMsb0_4bits(maxLengthArray, 2));
+        assertEquals('3', Conversion.binaryToHexDigitMsb0_4bits(maxLengthArray, 3));
+        assertEquals('7', Conversion.binaryToHexDigitMsb0_4bits(maxLengthArray, 4));
+        // assertEquals('7', Conversion.BinaryToHexDigitMsb0(longArray,5));
+        // assertEquals('3', Conversion.BinaryToHexDigitMsb0(longArray,6));
+        // assertEquals('1', Conversion.BinaryToHexDigitMsb0(longArray,7));
+        final boolean[] javaDocCheck = new boolean[]{
+            true, false, false, true, true, false, true, false};
+        assertEquals('d', Conversion.binaryToHexDigitMsb0_4bits(javaDocCheck, 3));
+
+    }
+
+    /**
+     * Tests {@link Conversion#binaryToHexDigit(boolean[])}.
+     */
+    @Test
+    public void testBinaryBeMsb0ToHexDigit() {
+        assertEquals(
+            '0', Conversion.binaryBeMsb0ToHexDigit(new boolean[]{false, false, false, false}));
+        assertEquals(
+            '1', Conversion.binaryBeMsb0ToHexDigit(new boolean[]{false, false, false, true}));
+        assertEquals(
+            '2', Conversion.binaryBeMsb0ToHexDigit(new boolean[]{false, false, true, false}));
+        assertEquals(
+            '3', Conversion.binaryBeMsb0ToHexDigit(new boolean[]{false, false, true, true}));
+        assertEquals(
+            '4', Conversion.binaryBeMsb0ToHexDigit(new boolean[]{false, true, false, false}));
+        assertEquals(
+            '5', Conversion.binaryBeMsb0ToHexDigit(new boolean[]{false, true, false, true}));
+        assertEquals(
+            '6', Conversion.binaryBeMsb0ToHexDigit(new boolean[]{false, true, true, false}));
+        assertEquals(
+            '7', Conversion.binaryBeMsb0ToHexDigit(new boolean[]{false, true, true, true}));
+        assertEquals(
+            '8', Conversion.binaryBeMsb0ToHexDigit(new boolean[]{true, false, false, false}));
+        }
+    }
+
+    /**
+     * Tests {@link Conversion#intToHexDigitMsb0(int)}.
+     */
+    @Test
+    public void testIntToHexDigitMsb0() {
+        assertEquals('0', Conversion.intToHexDigitMsb0(0));
+        assertEquals('8', Conversion.intToHexDigitMsb0(1));
+        assertEquals('4', Conversion.intToHexDigitMsb0(2));
+        assertEquals('c', Conversion.intToHexDigitMsb0(3));
+        assertEquals('2', Conversion.intToHexDigitMsb0(4));
+        assertEquals('a', Conversion.intToHexDigitMsb0(5));
+        assertEquals('6', Conversion.intToHexDigitMsb0(6));
+        assertEquals('e', Conversion.intToHexDigitMsb0(7));
+        assertEquals('1', Conversion.intToHexDigitMsb0(8));
+        assertEquals('9', Conversion.intToHexDigitMsb0(9));
+        assertEquals('5', Conversion.intToHexDigitMsb0(10));
+        assertEquals('d', Conversion.intToHexDigitMsb0(11));
+        assertEquals('3', Conversion.intToHexDigitMsb0(12));
+        assertEquals('b', Conversion.intToHexDigitMsb0(13));
+        assertEquals('7', Conversion.intToHexDigitMsb0(14));
+        assertEquals('f', Conversion.intToHexDigitMsb0(15));
+        try {
+            Conversion.intToHexDigitMsb0(16);
+            fail("Thrown " + IllegalArgumentException.class.getName() + " expected");
+        } catch (final IllegalArgumentException e) {
+            // OK
+        }
+    }
+
+    static String dbgPrint(final boolean[] src) {
+        final StringBuilder sb = new StringBuilder();
+        for (final boolean e : src) {
+            if (e) {
+                sb.append("1,");
+            } else {
+                sb.append("0,");
+            }
+        }
+        final String out = sb.toString();
+        return out.substring(0, out.length() - 1);
+    }
+
+    // org.junit.Assert(boolean[], boolean[]) does not exist in JUnit 4.2
+    static void assertBinaryEquals(final boolean[] expected, final boolean[] actual) {
+        assertEquals(expected.length, actual.length);
+        for (int i = 0; i < expected.length; i++ ) {
+            try {
+                assertEquals(expected[i], actual[i]);
+            } catch (final Throwable e) {
+                final String msg = "Mismatch at index "
+                    + i
+                    + " between:\n"
+                    + dbgPrint(expected)
+                    + " and\n"
+                    + dbgPrint(actual);
+                fail(msg + "\n" + e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Tests {@link Conversion#intArrayToLong(int[], int, long, int, int)}.
+     */
+    @Test
+    public void testIntArrayToLong() {
+        final int[] src = new int[]{0xCDF1F0C1, 0x0F123456, 0x78000000};
+        assertEquals(0x0000000000000000L, Conversion.intArrayToLong(src, 0, 0L, 0, 0));
+        assertEquals(0x0000000000000000L, Conversion.intArrayToLong(src, 1, 0L, 0, 0));
+        assertEquals(0x00000000CDF1F0C1L, Conversion.intArrayToLong(src, 0, 0L, 0, 1));
+        assertEquals(0x0F123456CDF1F0C1L, Conversion.intArrayToLong(src, 0, 0L, 0, 2));
+        assertEquals(0x000000000F123456L, Conversion.intArrayToLong(src, 1, 0L, 0, 1));
+        assertEquals(
+            0x123456789ABCDEF0L, Conversion.intArrayToLong(src, 0, 0x123456789ABCDEF0L, 0, 0));
+        assertEquals(
+            0x1234567878000000L, Conversion.intArrayToLong(src, 2, 0x123456789ABCDEF0L, 0, 1));
+        // assertEquals(0x0F12345678000000L,Conversion.intsToLong(src,1,0x123456789ABCDEF0L,32,2));
+    }

@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.introspect.AutoDetect1947Test",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/introspect/AutoDetect1947Test.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.introspect.AutoDetect1947Test\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/introspect/AutoDetect1947Test.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.introspect;\n\nimport com.fasterxml.jackson.annotation.JsonProperty;\n\nimport com.fasterxml.jackson.databind.*;\n\n// Test(s) for [databind#1947], regression for 2.9\npublic class AutoDetect1947Test extends BaseMapTest\n{\n    static class Entity1947 {\n        public int shouldBeDetected;\n        public String shouldNotBeDetected;\n\n        @JsonProperty\n        public int getShouldBeDetected() {\n            return shouldBeDetected;\n        }\n\n        public void setShouldBeDetected(int shouldBeDetected) {\n            this.shouldBeDetected = shouldBeDetected;\n        }\n\n        public String getShouldNotBeDetected() {\n            return shouldNotBeDetected;\n        }\n\n        public void setShouldNotBeDetected(String shouldNotBeDetected) {\n            this.shouldNotBeDetected = shouldNotBeDetected;\n        }\n    }\n    public void testDisablingAll() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper()\n                .disable(MapperFeature.AUTO_DETECT_SETTERS)\n                .disable(MapperFeature.AUTO_DETECT_FIELDS)\n                .disable(MapperFeature.AUTO_DETECT_GETTERS)\n                .disable(MapperFeature.AUTO_DETECT_CREATORS)\n                .disable(MapperFeature.AUTO_DETECT_IS_GETTERS);\n        String json = mapper.writeValueAsString(new Entity1947());\n        JsonNode n = mapper.readTree(json);\n        assertEquals(1, n.size());\n        assertTrue(n.has(\"shouldBeDetected\"));\n        assertFalse(n.has(\"shouldNotBeDetected\"));\n    }\n}\n",
+  "compaction": {
+    "source_lines": 45,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1700,
+  "representation_chars": 1700,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.views.ViewsWithSchemaTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/views/ViewsWithSchemaTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.views.ViewsWithSchemaTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/views/ViewsWithSchemaTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.views;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.jsonFormatVisitors.*;\n\npublic class ViewsWithSchemaTest extends BaseMapTest\n{\n    interface ViewBC { }\n    interface ViewAB { }\n\n    @JsonPropertyOrder({ \"a\", \"b\", \"c\" })\n    static class POJO {\n        @JsonView({ ViewAB.class })\n        public int a;\n\n        @JsonView({ ViewAB.class, ViewBC.class })\n        public int b;\n        \n        @JsonView({ ViewBC.class })\n        public int c;\n    }\n\n    static class ListingVisitor extends JsonFormatVisitorWrapper.Base\n    {\n        public final List<String> names = new ArrayList<String>();\n\n        @Override\n        public JsonObjectFormatVisitor expectObjectFormat(JavaType type) {\n            return new JsonObjectFormatVisitor.Base() {\n                @Override\n                public void optionalProperty(BeanProperty writer) {\n                    names.add(writer.getName());\n                }\n\n                @Override\n                public void optionalProperty(String name,\n                        JsonFormatVisitable handler, JavaType propertyTypeHint) {\n                    names.add(name);\n                }\n            };\n        }\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n    \n    private final ObjectMapper MAPPER = new ObjectMapper();\n\n    public void testSchemaWithViews() throws Exception\n    {\n        ListingVisitor v = new ListingVisitor();\n        MAPPER.writerWithView(ViewBC.class)\n            .acceptJsonFormatVisitor(POJO.class, v);\n        assertEquals(Arrays.asList(\"b\", \"c\"), v.names);\n\n        v = new ListingVisitor();\n        MAPPER.writerWithView(ViewAB.class)\n            .acceptJsonFormatVisitor(POJO.class, v);\n        assertEquals(Arrays.asList(\"a\", \"b\"), v.names);\n    }\n\n    public void testSchemaWithoutViews() throws Exception\n    {\n        ListingVisitor v = new ListingVisitor();\n        MAPPER.acceptJsonFormatVisitor(POJO.class, v);\n        assertEquals(Arrays.asList(\"a\", \"b\", \"c\"), v.names);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 74,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2395,
+  "representation_chars": 2395,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

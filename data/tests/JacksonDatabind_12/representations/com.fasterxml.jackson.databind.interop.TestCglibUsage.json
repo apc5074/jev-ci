@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.interop.TestCglibUsage",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/interop/TestCglibUsage.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.interop.TestCglibUsage\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/interop/TestCglibUsage.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.interop;\n\n\nimport java.io.*;\nimport java.lang.reflect.Method;\nimport java.util.*;\n\nimport net.sf.cglib.proxy.Enhancer;\nimport net.sf.cglib.proxy.MethodInterceptor;\nimport net.sf.cglib.proxy.MethodProxy;\n\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.test.BaseTest;\n\n/**\n * Unit test for checking that we can serialize CGLib generated proxies.\n */\npublic class TestCglibUsage\n    extends BaseTest\n{\n    /*\n    /**********************************************************\n    /* Helper classes\n    /**********************************************************\n     */\n\n    interface BeanInterface {\n        public int getX();\n    }\n\n    /*\n    /**********************************************************\n    /* Tests\n    /**********************************************************\n     */\n\n    public void testSimpleProxied() throws Exception\n    {\n        Enhancer enh = new Enhancer();\n        enh.setInterfaces(new Class[] { BeanInterface.class });\n        enh.setCallback(new MethodInterceptor() {\n            @Override\n            public Object intercept(Object obj, Method method,\n                                        Object[] args, MethodProxy proxy)\n                    throws Throwable\n                {\n                    if (\"getX\".equals(method.getName ())) {\n                        return Integer.valueOf(13);\n                    }\n                    return proxy.invokeSuper(obj, args);\n                }\n            });\n        BeanInterface bean = (BeanInterface) enh.create();\n        ObjectMapper mapper = new ObjectMapper();\n        Map<String,Object> result = writeAndMap(mapper, bean);\n        assertEquals(1, result.size());\n        assertEquals(Integer.valueOf(13), result.get(\"x\"));\n    }\n\n    /*\n    /**********************************************************\n    /* Helper methods\n    /**********************************************************\n     */\n\n    @SuppressWarnings(\"unchecked\")\n\tprivate Map<String,Object> writeAndMap(ObjectMapper m, Object value)\n        throws IOException\n    {\n        StringWriter sw = new StringWriter();\n        m.writeValue(sw, value);\n        return (Map<String,Object>) m.readValue(sw.toString(), Object.class);\n    }\n}\n\n",
+  "compaction": {
+    "source_lines": 75,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2415,
+  "representation_chars": 2415,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

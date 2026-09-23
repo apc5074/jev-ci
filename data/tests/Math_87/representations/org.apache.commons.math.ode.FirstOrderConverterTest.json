@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.math.ode.FirstOrderConverterTest",
+  "source_file": "src/test/org/apache/commons/math/ode/FirstOrderConverterTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math.ode.FirstOrderConverterTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/math/ode/FirstOrderConverterTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math.ode;\n\nimport org.apache.commons.math.ode.DerivativeException;\nimport org.apache.commons.math.ode.FirstOrderConverter;\nimport org.apache.commons.math.ode.IntegratorException;\nimport org.apache.commons.math.ode.SecondOrderDifferentialEquations;\nimport org.apache.commons.math.ode.nonstiff.ClassicalRungeKuttaIntegrator;\n\nimport junit.framework.*;\n\npublic class FirstOrderConverterTest\n  extends TestCase {\n\n  public FirstOrderConverterTest(String name) {\n    super(name);\n  }\n\n  public void testDoubleDimension() {\n    for (int i = 1; i < 10; ++i) {\n      SecondOrderDifferentialEquations eqn2 = new Equations(i, 0.2);\n      FirstOrderConverter eqn1 = new FirstOrderConverter(eqn2);\n      assertTrue(eqn1.getDimension() == (2 * eqn2.getDimension()));\n    }\n  }\n  \n  public void testDecreasingSteps()\n    throws DerivativeException, IntegratorException {\n      \n    double previousError = Double.NaN;\n    for (int i = 0; i < 10; ++i) {\n\n      double step  = Math.pow(2.0, -(i + 1));\n      double error = integrateWithSpecifiedStep(4.0, 0.0, 1.0, step)\n                   - Math.sin(4.0);\n      if (i > 0) {\n        assertTrue(Math.abs(error) < Math.abs(previousError));\n      }\n      previousError = error;\n      \n    }\n  }\n\n  public void testSmallStep()\n    throws DerivativeException, IntegratorException {\n    double error = integrateWithSpecifiedStep(4.0, 0.0, 1.0, 1.0e-4)\n                   - Math.sin(4.0);\n    assertTrue(Math.abs(error) < 1.0e-10);\n  }\n\n  public void testBigStep()\n    throws DerivativeException, IntegratorException {\n    double error = integrateWithSpecifiedStep(4.0, 0.0, 1.0, 0.5)\n                   - Math.sin(4.0);\n    assertTrue(Math.abs(error) > 0.1);\n  }\n  \n  public static Test suite() {\n    return new TestSuite(FirstOrderConverterTest.class);\n  }\n\n  private static class Equations\n    implements SecondOrderDifferentialEquations {\n      \n    private static final long serialVersionUID = -7926271579508637558L;\n\n    private int n;\n\n      private double omega2;\n      \n      public Equations(int n, double omega) {\n        this.n = n;\n        omega2 = omega * omega;\n      }\n      \n      public int getDimension() {\n        return n;\n      }\n      \n      public void computeSecondDerivatives(double t, double[] y, double[] yDot,\n                                           double[] yDDot) {\n        for (int i = 0; i < n; ++i) {\n          yDDot[i] = -omega2 * y[i];\n        }\n    }\n      \n  }\n\n  private double integrateWithSpecifiedStep(double omega,\n                                            double t0, double t,\n                                            double step)\n  throws DerivativeException, IntegratorException {\n    double[] y0 = new double[2];\n    y0[0] = Math.sin(omega * t0);\n    y0[1] = omega * Math.cos(omega * t0);\n    ClassicalRungeKuttaIntegrator i = new ClassicalRungeKuttaIntegrator(step);\n    double[] y = new double[2];\n    i.integrate(new FirstOrderConverter(new Equations(1, omega)), t0, y0, t, y);\n    return y[0];\n  }\n\n}\n",
+  "compaction": {
+    "source_lines": 118,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3976,
+  "representation_chars": 3976,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.type.PolymorphicList036Test",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/type/PolymorphicList036Test.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.type.PolymorphicList036Test\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/type/PolymorphicList036Test.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.type;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.JsonCreator;\nimport com.fasterxml.jackson.databind.*;\n\n// For [databind#936], losing parametric type information it seems\npublic class PolymorphicList036Test extends BaseMapTest\n{\n    // note: would prefer using CharSequence, but while abstract, that's deserialized\n    // just fine as ... String\n    static class StringyList<T extends java.io.Serializable> implements Collection<T> {\n        private Collection<T> _stuff;\n\n        @JsonCreator\n        public StringyList(Collection<T> src) {\n            _stuff = new ArrayList<T>(src);\n        }\n\n        public StringyList() {\n            _stuff = new ArrayList<T>();\n        }\n        \n        @Override\n        public boolean add(T arg) {\n            return _stuff.add(arg);\n        }\n\n        @Override\n        public boolean addAll(Collection<? extends T> args) {\n            return _stuff.addAll(args);\n        }\n\n        @Override\n        public void clear() {\n            _stuff.clear();\n        }\n\n        @Override\n        public boolean contains(Object arg) {\n            return _stuff.contains(arg);\n        }\n\n        @Override\n        public boolean containsAll(Collection<?> args) {\n            return _stuff.containsAll(args);\n        }\n\n        @Override\n        public boolean isEmpty() {\n            return _stuff.isEmpty();\n        }\n\n        @Override\n        public Iterator<T> iterator() {\n            return _stuff.iterator();\n        }\n\n        @Override\n        public boolean remove(Object arg) {\n            return _stuff.remove(arg);\n        }\n\n        @Override\n        public boolean removeAll(Collection<?> args) {\n            return _stuff.removeAll(args);\n        }\n\n        @Override\n        public boolean retainAll(Collection<?> args) {\n            return _stuff.retainAll(args);\n        }\n\n        @Override\n        public int size() {\n            return _stuff.size();\n        }\n\n        @Override\n        public Object[] toArray() {\n            return _stuff.toArray();\n        }\n\n        @Override\n        public <X> X[] toArray(X[] arg) {\n            return _stuff.toArray(arg);\n        }\n    }\n\n    private final ObjectMapper MAPPER = new ObjectMapper();\n    \n    public void testPolymorphicWithOverride() throws Exception\n    {\n        JavaType type = MAPPER.getTypeFactory().constructCollectionType(StringyList.class, String.class);\n        \n        StringyList<String> list = new StringyList<String>();\n        list.add(\"value 1\");\n        list.add(\"value 2\");\n        \n        String serialized = MAPPER.writeValueAsString(list);\n//        System.out.println(serialized);\n        \n        StringyList<String> deserialized = MAPPER.readValue(serialized, type);\n//        System.out.println(deserialized);\n        \n        assertNotNull(deserialized);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 109,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3040,
+  "representation_chars": 3040,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

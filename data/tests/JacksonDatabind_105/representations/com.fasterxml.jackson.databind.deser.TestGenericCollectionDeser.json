@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.TestGenericCollectionDeser",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/TestGenericCollectionDeser.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.TestGenericCollectionDeser\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/TestGenericCollectionDeser.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.JsonCreator;\nimport com.fasterxml.jackson.annotation.JsonValue;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\n\n@SuppressWarnings(\"serial\")\npublic class TestGenericCollectionDeser\n    extends BaseMapTest\n{\n    static class ListSubClass extends ArrayList<StringWrapper> { }\n\n    /**\n     * Map class that should behave like {@link ListSubClass}, but by\n     * using annotations.\n     */\n    @JsonDeserialize(contentAs=StringWrapper.class)\n    static class AnnotatedStringList extends ArrayList<Object> { }\n\n    @JsonDeserialize(contentAs=BooleanElement.class)\n    static class AnnotatedBooleanList extends ArrayList<Object> { }\n\n    protected static class BooleanElement {\n        public Boolean b;\n\n        @JsonCreator\n        public BooleanElement(Boolean value) { b = value; }\n\n        @JsonValue public Boolean value() { return b; }\n    }\n    \n    /*\n    /**********************************************************\n    /* Tests for sub-classing\n    /**********************************************************\n     */\n\n    /**\n     * Verifying that sub-classing works ok wrt generics information\n     */\n    public void testListSubClass() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        ListSubClass result = mapper.readValue(\"[ \\\"123\\\" ]\", ListSubClass.class);\n        assertEquals(1, result.size());\n        Object value = result.get(0);\n        assertEquals(StringWrapper.class, value.getClass());\n        StringWrapper bw = (StringWrapper) value;\n        assertEquals(\"123\", bw.str);\n    }\n\n    /*\n    /**********************************************************\n    /* Tests for annotations\n    /**********************************************************\n     */\n\n    // Verifying that sub-classing works ok wrt generics information\n    public void testAnnotatedLStringist() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        AnnotatedStringList result = mapper.readValue(\"[ \\\"...\\\" ]\", AnnotatedStringList.class);\n        assertEquals(1, result.size());\n        Object ob = result.get(0);\n        assertEquals(StringWrapper.class, ob.getClass());\n        assertEquals(\"...\", ((StringWrapper) ob).str);\n    }\n\n    public void testAnnotatedBooleanList() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        AnnotatedBooleanList result = mapper.readValue(\"[ false ]\", AnnotatedBooleanList.class);\n        assertEquals(1, result.size());\n        Object ob = result.get(0);\n        assertEquals(BooleanElement.class, ob.getClass());\n        assertFalse(((BooleanElement) ob).b);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 81,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2936,
+  "representation_chars": 2936,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

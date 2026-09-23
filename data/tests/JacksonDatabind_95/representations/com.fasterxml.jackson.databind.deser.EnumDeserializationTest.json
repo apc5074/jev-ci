@@ -1,0 +1,101 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.EnumDeserializationTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/EnumDeserializationTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.EnumDeserializationTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/EnumDeserializationTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser;\n\nimport java.io.IOException;\nimport java.util.*;\nimport java.util.concurrent.TimeUnit;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.core.type.TypeReference;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\nimport com.fasterxml.jackson.databind.deser.std.FromStringDeserializer;\nimport com.fasterxml.jackson.databind.deser.std.StdDeserializer;\nimport com.fasterxml.jackson.databind.module.SimpleModule;\n\n@SuppressWarnings(\"serial\")\npublic class EnumDeserializationTest\n    extends BaseMapTest\n{\n    enum TestEnum { JACKSON, RULES, OK; }\n\n    /**\n     * Alternative version that annotates which deserializer to use\n     */\n    @JsonDeserialize(using=DummyDeserializer.class)\n    enum AnnotatedTestEnum {\n        JACKSON, RULES, OK;\n    }\n\n    public static class DummyDeserializer extends StdDeserializer<Object>\n    {\n        public DummyDeserializer() { super(Object.class); }\n        @Override\n        public Object deserialize(JsonParser jp, DeserializationContext ctxt)\n        {\n            return AnnotatedTestEnum.OK;\n        }\n    }\n\n    public static class LcEnumDeserializer extends StdDeserializer<TestEnum>\n    {\n        public LcEnumDeserializer() { super(TestEnum.class); }\n        @Override\n        public TestEnum deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException\n        {\n            return TestEnum.valueOf(jp.getText().toUpperCase());\n        }\n    }\n    \n    protected enum LowerCaseEnum {\n        A, B, C;\n        private LowerCaseEnum() { }\n        @Override\n        public String toString() { return name().toLowerCase(); }\n    }\n\n    protected enum EnumWithJsonValue {\n        A(\"foo\"), B(\"bar\");\n        private final String name;\n        private EnumWithJsonValue(String n) {\n            name = n;\n        }\n        @JsonValue\n        @Override\n        public String toString() { return name; }\n    }\n\n    static class ClassWithEnumMapKey {\n        @JsonProperty Map<TestEnum, String> map;\n    }\n\n    // [databind#677]\n    static enum EnumWithPropertyAnno {\n        @JsonProperty(\"a\")\n        A,\n\n        // For this value, force use of anonymous sub-class, to ensure things still work\n        @JsonProperty(\"b\")\n        B {\n            @Override\n        ;\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n\n    protected final ObjectMapper MAPPER = new ObjectMapper();\n\n    public void testSimple() throws Exception\n    {\n        // First \"good\" case with Strings\n        String JSON = \"\\\"OK\\\" \\\"RULES\\\"  null\";\n        // multiple main-level mappings, need explicit parser:\n        JsonParser jp = MAPPER.getFactory().createParser(JSON);\n\n        assertEquals(TestEnum.OK, MAPPER.readValue(jp, TestEnum.class));\n        assertEquals(TestEnum.RULES, MAPPER.readValue(jp, TestEnum.class));\n\n        /* should be ok; nulls are typeless; handled by mapper, not by\n         * deserializer\n         */\n        assertNull(MAPPER.readValue(jp, TestEnum.class));\n\n        // and no more content beyond that...\n        assertFalse(jp.hasCurrentToken());\n\n        // Then alternative with index (0 means first entry)\n        assertEquals(TestEnum.JACKSON, MAPPER.readValue(\" 0 \", TestEnum.class));\n\n        // Then error case: unrecognized value\n        try {\n            /*Object result =*/ MAPPER.readValue(\"\\\"NO-SUCH-VALUE\\\"\", TestEnum.class);\n            fail(\"Expected an exception for bogus enum value...\");\n        } catch (JsonMappingException jex) {\n            verifyException(jex, \"value not one of declared\");\n        }\n        jp.close();\n    }\n\n    /**\n     * Enums are considered complex if they have code (and hence sub-classes)... an\n     * example is TimeUnit\n     */\n    public void testComplexEnum() throws Exception\n    {\n        String json = MAPPER.writeValueAsString(TimeUnit.SECONDS);\n        assertEquals(quote(\"SECONDS\"), json);\n        TimeUnit result = MAPPER.readValue(json, TimeUnit.class);\n        assertSame(TimeUnit.SECONDS, result);\n    }\n    \n    /**\n     * Testing to see that annotation override works\n     */\n    public void testAnnotated() throws Exception\n    {\n        AnnotatedTestEnum e = MAPPER.readValue(\"\\\"JACKSON\\\"\", AnnotatedTestEnum.class);\n        /* dummy deser always returns value OK, independent of input;\n         * only works if annotation is used\n         */\n        assertEquals(AnnotatedTestEnum.OK, e);\n    }\n\n    public void testEnumMaps() throws Exception\n    {\n        EnumMap<TestEnum,String> value = MAPPER.readValue(\"{\\\"OK\\\":\\\"value\\\"}\",\n                new TypeReference<EnumMap<TestEnum,String>>() { });\n        assertEquals(\"value\", value.get(TestEnum.OK));\n    }\n\n    public void testSubclassedEnums() throws Exception\n    {\n        EnumWithSubClass value = MAPPER.readValue(\"\\\"A\\\"\", EnumWithSubClass.class);\n        assertEquals(EnumWithSubClass.A, value);\n    }\n\n    public void testToStringEnums() throws Exception\n    {\n        ObjectReader reader = MAPPER.reader(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL);\n        ClassWithEnumMapKey result = reader.forType(ClassWithEnumMapKey.class)\n                .readValue(\"{\\\"map\\\":{\\\"NO-SUCH-VALUE\\\":\\\"val\\\"}}\");\n        assertTrue(result.map.containsKey(null));\n    }\n    \n    public void testDoNotAllowUnknownEnumValuesAsMapKeysWhenReadAsNullDisabled() throws Exception\n    {\n        assertFalse(MAPPER.isEnabled(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL));\n         try {\n             MAPPER.readValue(\"{\\\"map\\\":{\\\"NO-SUCH-VALUE\\\":\\\"val\\\"}}\", ClassWithEnumMapKey.class);\n             fail(\"Expected an exception for bogus enum value...\");\n         } catch (JsonMappingException jex) {\n             verifyException(jex, \"Can not deserialize Map key of type com.fasterxml.jackson.databind.deser\");\n         }\n    }\n\n    // [databind#141]: allow mapping of empty String into null\n    public void testEnumsWithEmpty() throws Exception\n    {\n       final ObjectMapper mapper = new ObjectMapper();\n       mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);\n       TestEnum result = mapper.readValue(\"\\\"\\\"\", TestEnum.class);\n       assertNull(result);\n    }\n\n    public void testGenericEnumDeserialization() throws Exception\n    {\n       final ObjectMapper mapper = new ObjectMapper();\n       SimpleModule module = new SimpleModule(\"foobar\");\n       module.addDeserializer(Enum.class, new LcEnumDeserializer());\n       mapper.registerModule(module);\n       // not sure this is totally safe but...\n       assertEquals(TestEnum.JACKSON, mapper.readValue(quote(\"jackson\"), TestEnum.class));\n    }\n\n    // [databind#381]\n    public void testUnwrappedEnum() throws Exception {\n        final ObjectMapper mapper = new ObjectMapper();\n        mapper.enable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);\n        \n        assertEquals(TestEnum.JACKSON, mapper.readValue(\"[\" + quote(\"JACKSON\") + \"]\", TestEnum.class));\n    }\n    \n    public void testUnwrappedEnumException() throws Exception {\n        final ObjectMapper mapper = new ObjectMapper();\n        mapper.disable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);\n        try {\n            Object v = mapper.readValue(\"[\" + quote(\"JACKSON\") + \"]\",\n                    TestEnum.class);\n            fail(\"Exception was not thrown on deserializing a single array element of type enum; instead got: \"+v);\n        } catch (JsonMappingException exp) {\n            //exception as thrown correctly\n            verifyException(exp, \"Can not deserialize\");\n        }\n    }\n\n    // [databind#149]: 'stringified' indexes for enums\n    public void testIndexAsString() throws Exception\n    {\n        // first, regular index ought to work fine\n        TestEnum en = MAPPER.readValue(\"2\", TestEnum.class);\n        assertSame(TestEnum.values()[2], en);\n\n        // but also with quoted Strings\n        en = MAPPER.readValue(quote(\"1\"), TestEnum.class);\n        assertSame(TestEnum.values()[1], en);\n    }\n\n    public void testEnumWithJsonPropertyRename() throws Exception\n    {\n        String json = MAPPER.writeValueAsString(new EnumWithPropertyAnno[] {\n                EnumWithPropertyAnno.B, EnumWithPropertyAnno.A\n        });\n        assertEquals(\"[\\\"b\\\",\\\"a\\\"]\", json);\n\n        // and while not really proper place, let's also verify deser while we're at it\n        EnumWithPropertyAnno[] result = MAPPER.readValue(json, EnumWithPropertyAnno[].class);\n        assertNotNull(result);\n",
+  "compaction": {
+    "source_lines": 532,
+    "mode": "windows",
+    "windows_total": 9,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        180,
+        260
+      ],
+      [
+        360,
+        440
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 22.421350797193725
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 26.00693285570635
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 19.020497685047133
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 22.421350797193725
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 9.720519879752144
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 14.768649744950393
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 26.00693285570635
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 11.519106698830496
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 18.800922007964807
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 19.020497685047133
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 12.139103669451176
+      },
+      {
+        "start": 480,
+        "end": 532,
+        "score": 9.983283141574157
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8814,
+  "representation_chars": 8814,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

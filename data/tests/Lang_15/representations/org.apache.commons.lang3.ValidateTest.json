@@ -1,0 +1,131 @@
+{
+  "test_class": "org.apache.commons.lang3.ValidateTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/ValidateTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.ValidateTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/ValidateTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one\n * or more contributor license agreements.  See the NOTICE file\n * distributed with this work for additional information\n * regarding copyright ownership.  The ASF licenses this file\n * to you under the Apache License, Version 2.0 (the\n * \"License\"); you may not use this file except in compliance\n * with the License.  You may obtain a copy of the License at\n *\n * http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing,\n * software distributed under the License is distributed on an\n * \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY\n * KIND, either express or implied.  See the License for the\n * specific language governing permissions and limitations\n * under the License.\n */\npackage org.apache.commons.lang3;\n\nimport java.lang.reflect.Constructor;\nimport java.lang.reflect.Modifier;\nimport java.util.AbstractList;\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.Collection;\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\n\nimport junit.framework.TestCase;\n\n/**\n * Unit tests {@link org.apache.commons.lang3.Validate}.\n *\n * @version $Id$\n */\npublic class ValidateTest extends TestCase {\n\n    public ValidateTest(String name) {\n        super(name);\n    }\n\n    //-----------------------------------------------------------------------\n    public void testIsTrue1() {\n        Validate.isTrue(true);\n        try {\n            Validate.isTrue(false);\n            fail(\"Expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException ex) {\n            assertEquals(\"The validated expression is false\", ex.getMessage());\n        }\n    }\n\n    //-----------------------------------------------------------------------\n    public void testIsTrue2() {\n        Validate.isTrue(true, \"MSG\");\n        try {\n            Validate.isTrue(false, \"MSG\");\n            fail(\"Expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException ex) {\n            assertEquals(\"MSG\", ex.getMessage());\n        }\n    }\n\n    //-----------------------------------------------------------------------\n    public void testIsTrue3() {\n        Validate.isTrue(true, \"MSG\", 6);\n        try {\n            Validate.isTrue(false, \"MSG\", 6);\n            fail(\"Expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException ex) {\n            assertEquals(\"MSG\", ex.getMessage());\n        }\n    }\n\n    //-----------------------------------------------------------------------\n    public void testIsTrue4() {\n        Validate.isTrue(true, \"MSG\", 7);\n        try {\n        catch (IllegalArgumentException e)\n        {\n            assertEquals(\"Does not match\", e.getMessage());\n        }\n    }\n    \n    public void testInclusiveBetween()\n    {\n        Validate.inclusiveBetween(\"a\", \"c\", \"b\");\n        Validate.inclusiveBetween(0, 2, 1);\n        Validate.inclusiveBetween(0, 2, 2);\n        try {\n            Validate.inclusiveBetween(0, 5, 6);\n            fail(\"Expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException e) {\n            assertEquals(\"The value 6 is not in the specified inclusive range of 0 to 5\", e.getMessage());\n        }\n    }\n    \n    public void testInclusiveBetween_withMessage()\n    {\n        Validate.inclusiveBetween(\"a\", \"c\", \"b\", \"Error\");\n        Validate.inclusiveBetween(0, 2, 1, \"Error\");\n        Validate.inclusiveBetween(0, 2, 2, \"Error\");\n        try {\n            Validate.inclusiveBetween(0, 5, 6, \"Error\");\n            fail(\"Expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException e) {\n            assertEquals(\"Error\", e.getMessage());\n        }\n    }\n    \n    public void testExclusiveBetween()\n    {\n        Validate.exclusiveBetween(\"a\", \"c\", \"b\");\n        Validate.exclusiveBetween(0, 2, 1);\n        try {\n            Validate.exclusiveBetween(0, 5, 6);\n            fail(\"Expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException e) {\n            assertEquals(\"The value 6 is not in the specified exclusive range of 0 to 5\", e.getMessage());\n        }\n        try {\n            Validate.exclusiveBetween(0, 5, 5);\n            fail(\"Expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException e) {\n            assertEquals(\"The value 5 is not in the specified exclusive range of 0 to 5\", e.getMessage());\n        }\n    }\n    \n    public void testExclusiveBetween_withMessage()\n    {\n        Validate.exclusiveBetween(\"a\", \"c\", \"b\", \"Error\");\n        Validate.exclusiveBetween(0, 2, 1, \"Error\");\n        try {\n            Validate.exclusiveBetween(0, 5, 6, \"Error\");\n            fail(\"Expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException e) {\n            assertEquals(\"Error\", e.getMessage());\n        }\n        try {\n            Validate.exclusiveBetween(0, 5, 5, \"Error\");\n            fail(\"Expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException e) {\n            assertEquals(\"Error\", e.getMessage());\n        }\n    }\n\n    public void testIsInstanceOf() {\n        Validate.isInstanceOf(String.class, \"hi\");\n        Validate.isInstanceOf(Integer.class, 1);\n    }\n    \n    public void testIsInstanceOfExceptionMessage() {\n        try {\n            Validate.isInstanceOf(List.class, \"hi\");\n            fail(\"Expecting IllegalArgumentException\");\n        } catch(IllegalArgumentException e) {\n            assertEquals(\"Expected type: java.util.List, actual: java.lang.String\", e.getMessage());\n        }\n    }\n    \n    public void testIsInstanceOf_withMessage() {\n        Validate.isInstanceOf(String.class, \"hi\", \"Error\");\n        Validate.isInstanceOf(Integer.class, 1, \"Error\");\n        try {\n            Validate.isInstanceOf(List.class, \"hi\", \"Error\");\n            fail(\"Expecting IllegalArgumentException\");\n        } catch(IllegalArgumentException e) {\n            assertEquals(\"Error\", e.getMessage());\n        }\n    }\n    \n    public void testIsAssignable() {\n        Validate.isAssignableFrom(CharSequence.class, String.class);\n        Validate.isAssignableFrom(AbstractList.class, ArrayList.class);\n    }\n    \n    public void testIsAssignableExceptionMessage() {\n        try {\n            Validate.isAssignableFrom(List.class, String.class);\n            fail(\"Expecting IllegalArgumentException\");\n        } catch(IllegalArgumentException e) {\n            assertEquals(\"Cannot assign a java.lang.String to a java.util.List\", e.getMessage());\n        }\n    }\n    \n    public void testIsAssignable_withMessage() {\n        Validate.isAssignableFrom(CharSequence.class, String.class, \"Error\");\n        Validate.isAssignableFrom(AbstractList.class, ArrayList.class, \"Error\");\n        try {\n            Validate.isAssignableFrom(List.class, String.class, \"Error\");\n            fail(\"Expecting IllegalArgumentException\");\n        } catch(IllegalArgumentException e) {\n            assertEquals(\"Error\", e.getMessage());\n        }\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 899,
+    "mode": "windows",
+    "windows_total": 15,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        780,
+        860
+      ],
+      [
+        840,
+        899
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 41.355457718777096
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 13.501512493906048
+      },
+      {
+        "start": 840,
+        "end": 899,
+        "score": 15.05739785221259
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 41.355457718777096
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 1.8085514463064167
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 3.634612698610308
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 10.206227662448335
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 7.776212984138863
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 0.801452332209741
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 0.7658485551856679
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 3.1695764522710306
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 4.580950327366088
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 9.634969528011426
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 9.409608689485287
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 5.894117105603954
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 10.608370070424924
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 13.501512493906048
+      },
+      {
+        "start": 840,
+        "end": 899,
+        "score": 15.05739785221259
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7138,
+  "representation_chars": 7138,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "test_class": "org.apache.commons.lang3.concurrent.TimedSemaphoreTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/concurrent/TimedSemaphoreTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.concurrent.TimedSemaphoreTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/concurrent/TimedSemaphoreTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3.concurrent;\n\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertFalse;\nimport static org.junit.Assert.assertNotNull;\nimport static org.junit.Assert.assertTrue;\nimport static org.junit.Assert.fail;\n\nimport java.util.concurrent.CountDownLatch;\nimport java.util.concurrent.ScheduledExecutorService;\nimport java.util.concurrent.ScheduledFuture;\nimport java.util.concurrent.ScheduledThreadPoolExecutor;\nimport java.util.concurrent.TimeUnit;\n\nimport org.easymock.EasyMock;\nimport org.junit.Test;\n\n/**\n * Test class for TimedSemaphore.\n *\n * @version $Id$\n */\npublic class TimedSemaphoreTest {\n    /** Constant for the time period. */\n    private static final long PERIOD = 500;\n\n    /** Constant for the time unit. */\n    private static final TimeUnit UNIT = TimeUnit.MILLISECONDS;\n\n    /** Constant for the default limit. */\n    private static final int LIMIT = 10;\n\n    /**\n     * Tests creating a new instance.\n     */\n    @Test\n    public void testInit() {\n        final ScheduledExecutorService service = EasyMock\n                .createMock(ScheduledExecutorService.class);\n        EasyMock.replay(service);\n        final TimedSemaphore semaphore = new TimedSemaphore(service, PERIOD, UNIT,\n                LIMIT);\n        EasyMock.verify(service);\n        assertEquals(\"Wrong service\", service, semaphore.getExecutorService());\n        assertEquals(\"Wrong period\", PERIOD, semaphore.getPeriod());\n        assertEquals(\"Wrong unit\", UNIT, semaphore.getUnit());\n        assertEquals(\"Statistic available\", 0, semaphore\n                .getLastAcquiresPerPeriod());\n        assertEquals(\"Average available\", 0.0, semaphore\n                .getAverageCallsPerPeriod(), .05);\n        assertFalse(\"Already shutdown\", semaphore.isShutdown());\n        assertEquals(\"Wrong limit\", LIMIT, semaphore.getLimit());\n    }\n\n    /**\n     * Tries to create an instance with a negative period. This should cause an\n     * exception.\n     */\n    @Test(expected = IllegalArgumentException.class)\n    public void testInitInvalidPeriod() {\n        new TimedSemaphore(0L, UNIT, LIMIT);\n    }\n\n    /**\n     */\n    @Test\n    public void testShutdownOwnExecutor() {\n        final TimedSemaphore semaphore = new TimedSemaphore(PERIOD, UNIT, LIMIT);\n        semaphore.shutdown();\n        assertTrue(\"Not shutdown\", semaphore.isShutdown());\n        assertTrue(\"Executor not shutdown\", semaphore.getExecutorService()\n                .isShutdown());\n    }\n\n    /**\n     * Tests the shutdown() method for a shared executor service before a task\n     * was started. This should do pretty much nothing.\n     */\n    @Test\n    public void testShutdownSharedExecutorNoTask() {\n        final ScheduledExecutorService service = EasyMock\n                .createMock(ScheduledExecutorService.class);\n        EasyMock.replay(service);\n        final TimedSemaphore semaphore = new TimedSemaphore(service, PERIOD, UNIT,\n                LIMIT);\n        semaphore.shutdown();\n        assertTrue(\"Not shutdown\", semaphore.isShutdown());\n        EasyMock.verify(service);\n    }\n\n    /**\n     * Prepares an executor service mock to expect the start of the timer.\n     *\n     * @param service the mock\n     * @param future the future\n     */\n    private void prepareStartTimer(final ScheduledExecutorService service,\n            final ScheduledFuture<?> future) {\n        service.scheduleAtFixedRate((Runnable) EasyMock.anyObject(), EasyMock\n                .eq(PERIOD), EasyMock.eq(PERIOD), EasyMock.eq(UNIT));\n        EasyMock.expectLastCall().andReturn(future);\n    }\n\n    /**\n     * Tests the shutdown() method for a shared executor after the task was\n     * started. In this case the task must be canceled.\n     */\n    @Test\n    public void testShutdownSharedExecutorTask() throws InterruptedException {\n        final ScheduledExecutorService service = EasyMock\n                .createMock(ScheduledExecutorService.class);\n        final ScheduledFuture<?> future = EasyMock.createMock(ScheduledFuture.class);\n        prepareStartTimer(service, future);\n        EasyMock.expect(Boolean.valueOf(future.cancel(false))).andReturn(Boolean.TRUE);\n        EasyMock.replay(service, future);\n        final TimedSemaphoreTestImpl semaphore = new TimedSemaphoreTestImpl(service,\n                PERIOD, UNIT, LIMIT);\n        semaphore.acquire();\n        semaphore.shutdown();\n        assertTrue(\"Not shutdown\", semaphore.isShutdown());\n        EasyMock.verify(service, future);\n    }\n\n    /**\n     * Tests multiple invocations of the shutdown() method.\n     */\n    @Test\n    public void testShutdownMultipleTimes() throws InterruptedException {\n        final ScheduledExecutorService service = EasyMock\n                .createMock(ScheduledExecutorService.class);\n        final ScheduledFuture<?> future = EasyMock.createMock(ScheduledFuture.class);\n        prepareStartTimer(service, future);\n        EasyMock.expect(Boolean.valueOf(future.cancel(false))).andReturn(Boolean.TRUE);\n        EasyMock.replay(service, future);\n        final TimedSemaphoreTestImpl semaphore = new TimedSemaphoreTestImpl(service,\n                PERIOD, UNIT, LIMIT);\n        semaphore.acquire();\n        for (int i = 0; i < 10; i++) {\n            semaphore.shutdown();\n        }\n        EasyMock.verify(service, future);\n    }\n\n    /**\n            periodEnds++;\n        }\n\n        /**\n         * Either returns the mock future or calls the super method.\n         */\n        @Override\n        protected ScheduledFuture<?> startTimer() {\n            return schedFuture != null ? schedFuture : super.startTimer();\n        }\n    }\n\n    /**\n     * A test thread class that will be used by tests for triggering the\n     * semaphore. The thread calls the semaphore a configurable number of times.\n     * When this is done, it can notify the main thread.\n     */\n    private static class SemaphoreThread extends Thread {\n        /** The semaphore. */\n        private final TimedSemaphore semaphore;\n\n        /** A latch for communication with the main thread. */\n        private final CountDownLatch latch;\n\n        /** The number of acquire() calls. */\n        private final int count;\n\n        /** The number of invocations of the latch. */\n        private final int latchCount;\n\n        public SemaphoreThread(final TimedSemaphore b, final CountDownLatch l, final int c, final int lc) {\n            semaphore = b;\n            latch = l;\n            count = c;\n            latchCount = lc;\n        }\n\n        /**\n         * Calls acquire() on the semaphore for the specified number of times.\n         * Optionally the latch will also be triggered to synchronize with the\n         * main test thread.\n         */\n        @Override\n        public void run() {\n            try {\n                for (int i = 0; i < count; i++) {\n                    semaphore.acquire();\n\n                    if (i < latchCount) {\n                        latch.countDown();\n                    }\n                }\n            } catch (final InterruptedException iex) {\n                Thread.currentThread().interrupt();\n            }\n        }\n    }\n}\n",
+  "compaction": {
+    "source_lines": 478,
+    "mode": "windows",
+    "windows_total": 8,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        420,
+        478
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 17.178819126462514
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 9.678466891300255
+      },
+      {
+        "start": 420,
+        "end": 478,
+        "score": 11.173443260482582
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 17.178819126462514
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 3.998754055499989
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 9.678466891300255
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 9.078058223790759
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 2.9179096084021596
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 4.416462806962791
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 7.73803199395771
+      },
+      {
+        "start": 420,
+        "end": 478,
+        "score": 11.173443260482582
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8087,
+  "representation_chars": 8087,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

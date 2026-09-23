@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.views.DefaultViewTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/views/DefaultViewTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.views.DefaultViewTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/views/DefaultViewTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.views;\n\nimport java.io.IOException;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.databind.*;\n\n// for [databind#507], supporting default views\npublic class DefaultViewTest extends BaseMapTest\n{\n    // Classes that represent views\n    static class ViewA { }\n    static class ViewAA extends ViewA { }\n    static class ViewB { }\n    static class ViewBB extends ViewB { }\n\n    @JsonView(ViewA.class)\n    @JsonPropertyOrder({ \"a\", \"b\" })\n    static class Defaulting {\n        public int a = 3;\n\n        @JsonView(ViewB.class)\n        public int b = 5;\n    }\n\n    /*\n    /**********************************************************\n    /* Unit tests\n    /**********************************************************\n     */    \n\n    private final ObjectMapper MAPPER = new ObjectMapper();\n\n    public void testDeserialization() throws IOException\n    {\n        final String JSON = aposToQuotes(\"{'a':1,'b':2}\");\n\n        // first: no views:\n        Defaulting result = MAPPER.readerFor(Defaulting.class)\n                .readValue(JSON);\n        assertEquals(result.a, 1);\n        assertEquals(result.b, 2);\n\n        // Then views; first A, then B(B)\n        result = MAPPER.readerFor(Defaulting.class)\n                .withView(ViewA.class)\n                .readValue(JSON);\n        assertEquals(result.a, 1);\n        assertEquals(result.b, 5);\n\n        result = MAPPER.readerFor(Defaulting.class)\n                .withView(ViewBB.class)\n                .readValue(JSON);\n        assertEquals(result.a, 3);\n        assertEquals(result.b, 2);\n    }\n\n    public void testSerialization() throws IOException\n    {\n        assertEquals(aposToQuotes(\"{'a':3,'b':5}\"),\n                MAPPER.writeValueAsString(new Defaulting()));\n\n        assertEquals(aposToQuotes(\"{'a':3}\"),\n                MAPPER.writerWithView(ViewA.class)\n                    .writeValueAsString(new Defaulting()));\n        assertEquals(aposToQuotes(\"{'b':5}\"),\n                MAPPER.writerWithView(ViewB.class)\n                    .writeValueAsString(new Defaulting()));\n    }\n}\n",
+  "compaction": {
+    "source_lines": 71,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2271,
+  "representation_chars": 2271,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

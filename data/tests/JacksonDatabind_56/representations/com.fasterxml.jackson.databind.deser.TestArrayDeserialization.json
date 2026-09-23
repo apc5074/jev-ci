@@ -1,0 +1,106 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.TestArrayDeserialization",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/TestArrayDeserialization.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.TestArrayDeserialization\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/TestArrayDeserialization.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser;\n\nimport java.io.*;\nimport java.util.*;\n\nimport static org.junit.Assert.*;\n\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.core.type.TypeReference;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\nimport com.fasterxml.jackson.databind.jsontype.TypeSerializer;\nimport com.fasterxml.jackson.databind.module.SimpleModule;\n\n/**\n * This unit test suite tries to verify that the \"Native\" java type\n * mapper can properly re-construct Java array objects from Json arrays.\n */\npublic class TestArrayDeserialization\n    extends BaseMapTest\n{\n    public final static class Bean1\n    {\n        int _x, _y;\n        List<Bean2> _beans;\n\n        // Just for deserialization:\n        @SuppressWarnings(\"unused\")\n        private Bean1() { }\n\n        public Bean1(int x, int y, List<Bean2> beans)\n        {\n            _x = x;\n            _y = y;\n            _beans = beans;\n        }\n\n        public int getX() { return _x; }\n        public int getY() { return _y; }\n        public List<Bean2> getBeans() { return _beans; }\n\n        public void setX(int x) { _x = x; }\n        public void setY(int y) { _y = y; }\n        public void setBeans(List<Bean2> b) { _beans = b; }\n\n        @Override public boolean equals(Object o) {\n            if (!(o instanceof Bean1)) return false;\n            Bean1 other = (Bean1) o;\n            return (_x == other._x)\n                && (_y == other._y)\n                && _beans.equals(other._beans)\n                ;\n        }\n    }\n\n    /**\n     * Simple bean that just gets serialized as a String value.\n     * Deserialization from String value will be done via single-arg\n     * constructor.\n     */\n    public final static class Bean2\n        implements JsonSerializable // so we can output as simple String\n    {\n        final String _desc;\n\n        public Bean2(String d)\n        {\n            _desc = d;\n        }\n\n        @Override\n        public void serialize(JsonGenerator jgen, SerializerProvider provider)\n            throws IOException, JsonGenerationException\n        {\n            jgen.writeString(_desc);\n        }\n\n        @Override public String toString() { return _desc; }\n\n        @Override public boolean equals(Object o) {\n            if (!(o instanceof Bean2)) return false;\n            Bean2 other = (Bean2) o;\n            return _desc.equals(other._desc);\n        }\n\n        @Override\n        public void serializeWithType(JsonGenerator jgen,\n                SerializerProvider provider, TypeSerializer typeSer)\n                throws IOException, JsonProcessingException {\n        }\n    }\t\n\n    static class ObjectWrapper {\n        public Object wrapped;\n    }\n\n    static class ObjectArrayWrapper {\n        public Object[] wrapped;\n    }\n\n    static class CustomNonDeserArrayDeserializer extends JsonDeserializer<NonDeserializable[]>\n    {\n        @Override\n        public NonDeserializable[] deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException\n        {\n            List<NonDeserializable> list = new ArrayList<NonDeserializable>();\n            while (jp.nextToken() != JsonToken.END_ARRAY) {\n                list.add(new NonDeserializable(jp.getText(), false));\n            }\n            return list.toArray(new NonDeserializable[list.size()]);\n        }\n    }\n\n    static class NonDeserializable {\n        protected String value;\n        \n        public NonDeserializable(String v, boolean bogus) {\n            value = v;\n        }\n    }\n\n    static class Product { \n        public String name; \n        public List<Things> thelist; \n    }\n\n    static class Things {\n        public String height;\n        public String width;\n    }\n\n    static class HiddenBinaryBean890 {\n        @JsonDeserialize(as=byte[].class)\n        public Object someBytes;\n    }\n\n    /*\n    /**********************************************************\n    /* Tests for \"untyped\" arrays, Object[]\n    /**********************************************************\n    /*\n    /**********************************************************\n    /* Tests for String arrays, char[]\n    /**********************************************************\n     */\n\n    public void testStringArray() throws Exception\n    {\n        final String[] STRS = new String[] {\n            \"a\", \"b\", \"abcd\", \"\", \"???\", \"\\\"quoted\\\"\", \"lf: \\n\",\n        };\n        StringWriter sw = new StringWriter();\n        JsonGenerator jg = MAPPER.getFactory().createGenerator(sw);\n        jg.writeStartArray();\n        for (String str : STRS) {\n            jg.writeString(str);\n        }\n        jg.writeEndArray();\n        jg.close();\n\n        String[] result = MAPPER.readValue(sw.toString(), String[].class);\n        assertNotNull(result);\n\n        assertEquals(STRS.length, result.length);\n        for (int i = 0; i < STRS.length; ++i) {\n            assertEquals(STRS[i], result[i]);\n        }\n\n        // [#479]: null handling was busted in 2.4.0\n        result = MAPPER.readValue(\" [ null ]\", String[].class);\n        assertNotNull(result);\n        assertEquals(1, result.length);\n        assertNull(result[0]);\n    }\n\n    public void testCharArray() throws Exception\n    {\n        final String TEST_STR = \"Let's just test it? Ok!\";\n        char[] result = MAPPER.readValue(\"\\\"\"+TEST_STR+\"\\\"\", char[].class);\n        assertEquals(TEST_STR, new String(result));\n\n        // And just for [JACKSON-289], let's verify that fluffy arrays work too\n        result = MAPPER.readValue(\"[\\\"a\\\",\\\"b\\\",\\\"c\\\"]\", char[].class);\n        assertEquals(\"abc\", new String(result));\n    }\n\n    /*\n    /**********************************************************\n    /* Tests for primitive arrays\n    /**********************************************************\n     */\n\n    public void testBooleanArray() throws Exception\n    {\n        boolean[] result = MAPPER.readValue(\"[ true, false, false ]\", boolean[].class);\n        assertNotNull(result);\n        assertEquals(3, result.length);\n        assertTrue(result[0]);\n        assertFalse(result[1]);\n        assertFalse(result[2]);\n    }\n\n    public void testByteArrayAsNumbers() throws Exception\n    {\n        final int LEN = 37000;\n        StringBuilder sb = new StringBuilder();\n        sb.append('[');\n        for (int i = 0; i < LEN; ++i) {\n            int value = i - 128;\n            sb.append((value < 256) ? value : (value & 0x7F));\n            sb.append(',');\n        }\n        sb.append(\"0]\");\n        byte[] result = MAPPER.readValue(sb.toString(), byte[].class);\n        assertNotNull(result);\n        assertEquals(LEN+1, result.length);\n        for (int i = 0; i < LEN; ++i) {\n            int value = i - 128;\n            byte exp = (byte) ((value < 256) ? value : (value & 0x7F));\n            if (exp != result[i]) {\n",
+  "compaction": {
+    "source_lines": 588,
+    "mode": "windows",
+    "windows_total": 10,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        240,
+        320
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 23.385721105201206
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 9.7299616776432
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 9.525914617461444
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 23.385721105201206
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 9.7299616776432
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 5.2007385287020895
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 8.800012321114568
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 9.525914617461444
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 8.8905584009144
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 4.858497260649252
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 5.38882678965701
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 9.467496528039746
+      },
+      {
+        "start": 540,
+        "end": 588,
+        "score": 8.490550026048773
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 6973,
+  "representation_chars": 6973,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

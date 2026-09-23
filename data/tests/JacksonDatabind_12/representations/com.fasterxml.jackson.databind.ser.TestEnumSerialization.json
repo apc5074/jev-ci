@@ -1,0 +1,81 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.ser.TestEnumSerialization",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/ser/TestEnumSerialization.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.ser.TestEnumSerialization\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/ser/TestEnumSerialization.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.ser;\n\nimport java.io.*;\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.JsonFormat;\nimport com.fasterxml.jackson.annotation.JsonFormat.Shape;\nimport com.fasterxml.jackson.annotation.JsonProperty;\nimport com.fasterxml.jackson.annotation.JsonValue;\n\nimport com.fasterxml.jackson.core.*;\n\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonSerialize;\nimport com.fasterxml.jackson.databind.jsontype.TypeSerializer;\nimport com.fasterxml.jackson.databind.module.SimpleModule;\nimport com.fasterxml.jackson.databind.ser.std.StdSerializer;\nimport com.fasterxml.jackson.databind.ser.std.ToStringSerializer;\n\n/**\n * Unit tests for verifying serialization of simple basic non-structured\n * types; primitives (and/or their wrappers), Strings.\n */\npublic class TestEnumSerialization\n    extends BaseMapTest\n{\n    /*\n    /**********************************************************\n    /* Helper enums\n    /**********************************************************\n     */\n\n    /**\n     * Test enumeration for verifying Enum serialization functionality.\n     */\n    protected enum TestEnum {\n        A, B, C;\n        private TestEnum() { }\n\n        @Override public String toString() { return name().toLowerCase(); }\n    }\n\n    /**\n     * Alternative version that forces use of \"toString-serializer\".\n     */\n    @JsonSerialize(using=ToStringSerializer.class)\n    protected enum AnnotatedTestEnum {\n        A2, B2, C2;\n        private AnnotatedTestEnum() { }\n\n        @Override public String toString() { return name().toLowerCase(); }\n    }\n\n    protected enum EnumWithJsonValue {\n        A(\"foo\"), B(\"bar\");\n        private final String name;\n        private EnumWithJsonValue(String n) {\n            name = n;\n        }\n        @JsonValue\n        @Override\n        public String toString() { return name; }\n    }\n    \n    protected static interface ToStringMixin {\n        @Override\n        @JsonValue public String toString();\n    }\n\n    protected enum SerializableEnum implements JsonSerializable\n    {\n        A, B, C;\n\n        private SerializableEnum() { }\n\n        @Override\n        public void serializeWithType(JsonGenerator jgen, SerializerProvider provider, TypeSerializer typeSer)\n                throws IOException, JsonProcessingException\n        {\n            serialize(jgen, provider);\n        }\n\n        @Override\n        public void serialize(JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException\n        {\n            jgen.writeString(\"foo\");\n        }\n    }\n\n    protected enum LowerCaseEnum {\n        A, B, C;\n        private LowerCaseEnum() { }\n        @Override\n        public String toString() { return name().toLowerCase(); }\n    }\n\n    static class MapBean {\n        public Map<TestEnum,Integer> map = new HashMap<TestEnum,Integer>();\n        \n        public void add(TestEnum key, int value) {\n            map.put(key, Integer.valueOf(value));\n        }\n    }\n\n    // [JACKSON-757]\n    static enum NOT_OK {\n        V1(\"v1\"); \n        protected String key;\n        // any runtime-persistent annotation is fine\n        NOT_OK(@JsonProperty String key) { this.key = key; }\n    }\n\n    static enum OK {\n        V1(\"v1\");\n        protected String key;\n        OK(String key) { this.key = key; }\n    }\n    \n    // Types for [https://github.com/FasterXML/jackson-databind/issues/24]\n    // (Enums as JSON Objects)\n\n    @JsonFormat(shape=JsonFormat.Shape.OBJECT)\n    static enum PoNUM {\n        A(\"a1\"), B(\"b2\");\n\n        @JsonProperty\n        protected final String value;\n        \n        private PoNUM(String v) { value = v; }\n\n        public String getValue() { return value; }\n    }\n\n    static class PoNUMContainer {\n        @JsonFormat(shape=Shape.NUMBER)\n        public OK text = OK.V1;\n    }\n    \n    @JsonFormat(shape=JsonFormat.Shape.ARRAY) // not supported as of now\n    static enum BrokenPoNum\n    }\n\n    // [JACKSON-576]\n    public void testMapWithEnumKeys() throws Exception\n    {\n        MapBean bean = new MapBean();\n        bean.add(TestEnum.B, 3);\n        String json = mapper.writeValueAsString(bean);\n        assertEquals(\"{\\\"map\\\":{\\\"b\\\":3}}\", json);\n    }\n\n    // [JACKSON-684]\n    public void testAsIndex() throws Exception\n    {\n        // By default, serialize using name\n        ObjectMapper m = new ObjectMapper();\n        assertFalse(m.isEnabled(SerializationFeature.WRITE_ENUMS_USING_INDEX));\n        assertEquals(quote(\"B\"), m.writeValueAsString(TestEnum.B));\n\n        // but we can change (dynamically, too!) it to be number-based\n        m.enable(SerializationFeature.WRITE_ENUMS_USING_INDEX);\n        assertEquals(\"1\", m.writeValueAsString(TestEnum.B));\n    }\n\n    // [JACKSON-757]\n    public void testAnnotationsOnEnumCtor() throws Exception\n    {\n        assertEquals(quote(\"V1\"), mapper.writeValueAsString(OK.V1));\n        assertEquals(quote(\"V1\"), mapper.writeValueAsString(NOT_OK.V1));\n        assertEquals(quote(\"V2\"), mapper.writeValueAsString(NOT_OK2.V2));\n    }\n\n    // Tests for [issue#24]\n\n    public void testEnumAsObjectValid() throws Exception {\n        assertEquals(\"{\\\"value\\\":\\\"a1\\\"}\", mapper.writeValueAsString(PoNUM.A));\n    }\n\n    public void testEnumAsIndexViaAnnotations() throws Exception {\n        assertEquals(\"{\\\"text\\\":0}\", mapper.writeValueAsString(new PoNUMContainer()));\n    }\n    \n    public void testEnumAsObjectBroken() throws Exception\n    {\n        try {\n            String json = mapper.writeValueAsString(BrokenPoNum.A);\n            fail(\"Should not have succeeded, produced: \"+json);\n        } catch (JsonMappingException e) {\n            verifyException(e, \"Unsupported serialization shape\");\n        }\n    }\n    \n    // [Issue#227]\n    public void testGenericEnumSerializer() throws Exception\n    {\n        // By default, serialize using name\n        ObjectMapper m = new ObjectMapper();\n        SimpleModule module = new SimpleModule(\"foobar\");\n        module.addSerializer(Enum.class, new LowerCasingEnumSerializer());\n        m.registerModule(module);\n        assertEquals(quote(\"b\"), m.writeValueAsString(TestEnum.B));\n    }\n}\n\n// [JACKSON-757], non-inner enum\nenum NOT_OK2 {\n    V2(\"v2\"); \n    protected String key;\n    // any runtime-persistent annotation is fine\n    NOT_OK2(@JsonProperty String key) { this.key = key; }\n}\n",
+  "compaction": {
+    "source_lines": 311,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        240,
+        311
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.575874281552544
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 8.233083343225054
+      },
+      {
+        "start": 240,
+        "end": 311,
+        "score": 6.261752730175025
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.575874281552544
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 8.233083343225054
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 3.786061658013486
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 3.5008210721037942
+      },
+      {
+        "start": 240,
+        "end": 311,
+        "score": 6.261752730175025
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 6516,
+  "representation_chars": 6516,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

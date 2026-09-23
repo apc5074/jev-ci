@@ -1,0 +1,25 @@
+{
+  "test_class": "org.jsoup.nodes.AttributeTest",
+  "source_file": "src/test/java/org/jsoup/nodes/AttributeTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.jsoup.nodes.AttributeTest\n\nSOURCE FILE:\nsrc/test/java/org/jsoup/nodes/AttributeTest.java\n\nTEST SOURCE:\npackage org.jsoup.nodes;\n\nimport static org.junit.Assert.*;\n\nimport org.junit.Test;\n\npublic class AttributeTest {\n    @Test public void html() {\n        Attribute attr = new Attribute(\"key\", \"value &\");\n        assertEquals(\"key=\\\"value &amp;\\\"\", attr.html());\n        assertEquals(attr.html(), attr.toString());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 13,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 440,
+  "representation_chars": 440,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

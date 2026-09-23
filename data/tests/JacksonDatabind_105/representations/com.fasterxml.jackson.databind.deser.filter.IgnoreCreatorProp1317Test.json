@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.filter.IgnoreCreatorProp1317Test",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/filter/IgnoreCreatorProp1317Test.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.filter.IgnoreCreatorProp1317Test\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/filter/IgnoreCreatorProp1317Test.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser.filter;\n\nimport java.beans.ConstructorProperties;\n\nimport com.fasterxml.jackson.annotation.JsonIgnore;\n\nimport com.fasterxml.jackson.databind.*;\n\npublic class IgnoreCreatorProp1317Test extends BaseMapTest\n{\n    static class Testing {\n        @JsonIgnore\n        public String ignore;\n\n        String notIgnore;\n\n        public Testing() {}\n\n        @ConstructorProperties({\"ignore\", \"notIgnore\"})\n        public Testing(String ignore, String notIgnore) {\n            super();\n            this.ignore = ignore;\n            this.notIgnore = notIgnore;\n        }\n\n        public String getIgnore() {\n            return ignore;\n        }\n\n        public void setIgnore(String ignore) {\n            this.ignore = ignore;\n        }\n\n        public String getNotIgnore() {\n            return notIgnore;\n        }\n\n        public void setNotIgnore(String notIgnore) {\n            this.notIgnore = notIgnore;\n        }\n    }\n\n    public void testThatJsonIgnoreWorksWithConstructorProperties() throws Exception {\n        ObjectMapper om = objectMapper();\n        Testing testing = new Testing(\"shouldBeIgnored\", \"notIgnore\");\n        String json = om.writeValueAsString(testing);\n//        System.out.println(json);\n        assertFalse(json.contains(\"shouldBeIgnored\"));\n    }\n}\n",
+  "compaction": {
+    "source_lines": 50,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1513,
+  "representation_chars": 1513,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

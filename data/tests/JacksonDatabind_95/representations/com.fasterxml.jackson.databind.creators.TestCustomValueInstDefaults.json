@@ -1,0 +1,101 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.creators.TestCustomValueInstDefaults",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/creators/TestCustomValueInstDefaults.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.creators.TestCustomValueInstDefaults\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/creators/TestCustomValueInstDefaults.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.creators;\n\nimport java.io.IOException;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.core.Version;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.deser.SettableBeanProperty;\nimport com.fasterxml.jackson.databind.deser.ValueInstantiator;\nimport com.fasterxml.jackson.databind.deser.ValueInstantiators;\nimport com.fasterxml.jackson.databind.deser.impl.PropertyValueBuffer;\nimport com.fasterxml.jackson.databind.deser.std.StdValueInstantiator;\nimport com.fasterxml.jackson.databind.module.SimpleModule;\n\n/**\n * Exercises a custom value instantiator with an overridden\n * {@link ValueInstantiator#createFromObjectWith(DeserializationContext, SettableBeanProperty[], PropertyValueBuffer)}\n * as well as the {@link PropertyValueBuffer#hasParameter(SettableBeanProperty)}\n * and {@link PropertyValueBuffer#getParameter(SettableBeanProperty)} methods.\n */\n@SuppressWarnings(\"serial\")\npublic class TestCustomValueInstDefaults extends BaseTest\n{\n    static class Bucket\n    {\n        static final int DEFAULT_A = 111;\n        static final int DEFAULT_B = 222;\n        static final String DEFAULT_C = \"defaultC\";\n        static final String DEFAULT_D = \"defaultD\";\n\n        final int a;\n        final int b;\n        final String c;\n        final String d;\n\n        @JsonCreator\n        public Bucket(\n                @JsonProperty(\"a\") int a,\n                @JsonProperty(\"b\") int b,\n                @JsonProperty(\"c\") String c,\n                @JsonProperty(\"d\") String d)\n        {\n            this.a = a;\n            this.b = b;\n            this.c = c;\n            this.d = d;\n        }\n    }\n\n    static class BigBucket\n    {\n        static final int DEFAULT_I = 555;\n        static final String DEFAULT_S = \"defaultS\";\n\n        final int\n                i01, i02, i03, i04, i05, i06, i07, i08,\n                i09, i10, i11, i12, i13, i14, i15, i16;\n\n        final String\n                s01, s02, s03, s04, s05, s06, s07, s08,\n                s09, s10, s11, s12, s13, s14, s15, s16;\n\n        @JsonCreator\n        public BigBucket(\n                @JsonProperty(\"i01\") int i01,\n                @JsonProperty(\"i02\") int i02,\n                @JsonProperty(\"i03\") int i03,\n                @JsonProperty(\"i04\") int i04,\n                @JsonProperty(\"i05\") int i05,\n                @JsonProperty(\"i06\") int i06,\n                @JsonProperty(\"i07\") int i07,\n                @JsonProperty(\"i08\") int i08,\n                @JsonProperty(\"i09\") int i09,\n                @JsonProperty(\"i10\") int i10,\n                @JsonProperty(\"i11\") int i11,\n                @JsonProperty(\"i12\") int i12,\n                @JsonProperty(\"i13\") int i13,\n                @JsonProperty(\"i14\") int i14,\n                @JsonProperty(\"i15\") int i15,\n                @JsonProperty(\"i16\") int i16,\n            this.p12 = p12;\n            this.p13 = p13;\n            this.p14 = p14;\n            this.p15 = p15;\n            this.p16 = p16;\n            this.p17 = p17;\n            this.p18 = p18;\n            this.p19 = p19;\n            this.p20 = p20;\n            this.p21 = p21;\n            this.p22 = p22;\n            this.p23 = p23;\n            this.p24 = p24;\n            this.p25 = p25;\n            this.p26 = p26;\n            this.p27 = p27;\n            this.p28 = p28;\n            this.p29 = p29;\n            this.p30 = p30;\n            this.p31 = p31;\n            this.p32 = p32;\n        }\n\n        public final String p1, p2, p3, p4;\n        public final String p5, p6, p7, p8;\n        public final String p9, p10, p11, p12;\n        public final String p13, p14, p15, p16;\n        public final String p17, p18, p19, p20;\n        public final String p21, p22, p23, p24;\n        public final String p25, p26, p27, p28;\n        public final String p29, p30, p31, p32;\n    }\n\n    static class VerifyingValueInstantiator extends StdValueInstantiator {\n        protected VerifyingValueInstantiator(StdValueInstantiator src) {\n            super(src);\n        }\n\n        @Override\n        public Object createFromObjectWith(DeserializationContext ctxt, SettableBeanProperty[] props, PropertyValueBuffer buffer) throws IOException {\n            for (SettableBeanProperty prop : props) {\n                assertTrue(\"prop \" + prop.getName() + \" was expected to have buffer.hasParameter(prop) be true but was false\", buffer.hasParameter(prop));\n            }\n            return super.createFromObjectWith(ctxt, props, buffer);\n        }\n    }\n\n    // [databind#1432]\n    \n    public static class ClassWith32Module extends SimpleModule {\n        public ClassWith32Module() {\n            super(\"test\", Version.unknownVersion());\n        }\n\n        @Override\n        public void setupModule(SetupContext context) {\n            context.addValueInstantiators(new ValueInstantiators.Base() {\n                @Override\n                public ValueInstantiator findValueInstantiator(DeserializationConfig config,\n                        BeanDescription beanDesc, ValueInstantiator defaultInstantiator) {\n                    if (beanDesc.getBeanClass() == ClassWith32Props.class) {\n                        return new VerifyingValueInstantiator((StdValueInstantiator)\n                                defaultInstantiator);\n                    }\n                    return defaultInstantiator;\n                }\n            });\n        }\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n    \n    // When all values are in the source, no defaults should be used.\n    public void testAllPresent() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        assertEquals(9, aAbsent.b);\n        assertEquals(\"y\", aAbsent.c);\n        assertEquals(\"z\", aAbsent.d);\n\n        Bucket bAbsent = mapper.readValue(\n                \"{\\\"a\\\":8,\\\"c\\\":\\\"y\\\",\\\"d\\\":\\\"z\\\"}\",\n                Bucket.class);\n\n        assertEquals(8, bAbsent.a);\n        assertEquals(Bucket.DEFAULT_B, bAbsent.b);\n        assertEquals(\"y\", bAbsent.c);\n        assertEquals(\"z\", bAbsent.d);\n\n        Bucket cAbsent = mapper.readValue(\n                \"{\\\"a\\\":8,\\\"b\\\":9,\\\"d\\\":\\\"z\\\"}\",\n                Bucket.class);\n\n        assertEquals(8, cAbsent.a);\n        assertEquals(9, cAbsent.b);\n        assertEquals(Bucket.DEFAULT_C, cAbsent.c);\n        assertEquals(\"z\", cAbsent.d);\n\n        Bucket dAbsent = mapper.readValue(\n                \"{\\\"a\\\":8,\\\"b\\\":9,\\\"c\\\":\\\"y\\\"}\",\n                Bucket.class);\n\n        assertEquals(8, dAbsent.a);\n        assertEquals(9, dAbsent.b);\n        assertEquals(\"y\", dAbsent.c);\n        assertEquals(Bucket.DEFAULT_D, dAbsent.d);\n    }\n\n    // Ensure that 0 is not mistaken for a missing int value.\n    public void testPresentZeroPrimitive() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.registerModule(new BucketModule());\n\n        Bucket aZeroRestAbsent = mapper.readValue(\n                \"{\\\"a\\\":0}\",\n                Bucket.class);\n\n        assertEquals(0, aZeroRestAbsent.a);\n        assertEquals(Bucket.DEFAULT_B, aZeroRestAbsent.b);\n        assertEquals(Bucket.DEFAULT_C, aZeroRestAbsent.c);\n        assertEquals(Bucket.DEFAULT_D, aZeroRestAbsent.d);\n    }\n\n    // Ensure that null is not mistaken for a missing String value.\n    public void testPresentNullReference() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.registerModule(new BucketModule());\n\n        Bucket cNullRestAbsent = mapper.readValue(\n                \"{\\\"c\\\":null}\",\n                Bucket.class);\n\n        assertEquals(Bucket.DEFAULT_A, cNullRestAbsent.a);\n        assertEquals(Bucket.DEFAULT_B, cNullRestAbsent.b);\n        assertEquals(null, cNullRestAbsent.c);\n        assertEquals(Bucket.DEFAULT_D, cNullRestAbsent.d);\n    }\n\n    // When we have more than 32 creator parameters, the buffer will use a\n    // BitSet instead of a primitive int to keep track of which parameters it\n    // has seen.  Ensure that nothing breaks in that case.\n    public void testMoreThan32CreatorParams() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.registerModule(new BucketModule());\n\n        BigBucket big = mapper.readValue(\n                \"{\\\"i03\\\":0,\\\"i11\\\":1,\\\"s05\\\":null,\\\"s08\\\":\\\"x\\\"}\",\n                BigBucket.class);\n\n        assertEquals(BigBucket.DEFAULT_I, big.i01);\n        assertEquals(BigBucket.DEFAULT_I, big.i02);\n        assertEquals(0, big.i03);\n        assertEquals(BigBucket.DEFAULT_I, big.i04);\n",
+  "compaction": {
+    "source_lines": 555,
+    "mode": "windows",
+    "windows_total": 9,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        300,
+        380
+      ],
+      [
+        420,
+        500
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 23.957064571295756
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 15.568896939734746
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 16.758828531724184
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 23.957064571295756
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 15.035177360207287
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 8.588710885838092
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.185530244579092
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 2.4684213638339436
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 15.568896939734746
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 8.008456702126473
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 16.758828531724184
+      },
+      {
+        "start": 480,
+        "end": 555,
+        "score": 15.005434037454963
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8783,
+  "representation_chars": 8783,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

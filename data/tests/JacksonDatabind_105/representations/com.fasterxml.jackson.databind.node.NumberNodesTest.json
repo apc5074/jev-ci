@@ -1,0 +1,91 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.node.NumberNodesTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/node/NumberNodesTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.node.NumberNodesTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/node/NumberNodesTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.node;\n\nimport java.math.BigDecimal;\nimport java.math.BigInteger;\n\nimport com.fasterxml.jackson.core.JsonGenerator;\nimport com.fasterxml.jackson.core.JsonParser;\nimport com.fasterxml.jackson.core.JsonToken;\nimport com.fasterxml.jackson.databind.*;\n\n/**\n * Basic tests for {@link JsonNode} implementations that\n * contain numeric values.\n */\npublic class NumberNodesTest extends NodeTestBase\n{\n    private final ObjectMapper MAPPER = objectMapper();\n    \n    public void testShort()\n    {\n        ShortNode n = ShortNode.valueOf((short) 1);\n        assertStandardEquals(n);\n        assertTrue(0 != n.hashCode());\n        assertEquals(JsonToken.VALUE_NUMBER_INT, n.asToken());\n        assertEquals(JsonParser.NumberType.INT, n.numberType());\t// should be SHORT\n        assertEquals(1, n.intValue());\n        assertEquals(1L, n.longValue());\n        assertEquals(BigDecimal.ONE, n.decimalValue());\n        assertEquals(BigInteger.ONE, n.bigIntegerValue());\n        assertEquals(\"1\", n.asText());\n\n        assertNodeNumbers(n, 1, 1.0);\n\n        assertTrue(ShortNode.valueOf((short) 0).canConvertToInt());\n        assertTrue(ShortNode.valueOf(Short.MAX_VALUE).canConvertToInt());\n        assertTrue(ShortNode.valueOf(Short.MIN_VALUE).canConvertToInt());\n\n        assertTrue(ShortNode.valueOf((short) 0).canConvertToLong());\n        assertTrue(ShortNode.valueOf(Short.MAX_VALUE).canConvertToLong());\n        assertTrue(ShortNode.valueOf(Short.MIN_VALUE).canConvertToLong());\n    }\n\n    public void testIntViaMapper() throws Exception\n    {\n        int value = -90184;\n        JsonNode result = MAPPER.readTree(String.valueOf(value));\n        assertTrue(result.isNumber());\n        assertTrue(result.isIntegralNumber());\n        assertTrue(result.isInt());\n        assertType(result, IntNode.class);\n        assertFalse(result.isLong());\n        assertFalse(result.isFloatingPointNumber());\n        assertFalse(result.isDouble());\n        assertFalse(result.isNull());\n        assertFalse(result.isTextual());\n        assertFalse(result.isMissingNode());\n\n        assertEquals(value, result.numberValue().intValue());\n        assertEquals(value, result.intValue());\n        assertEquals(String.valueOf(value), result.asText());\n        assertEquals((double) value, result.doubleValue());\n        assertEquals((long) value, result.longValue());\n\n        // also, equality should work ok\n        assertEquals(result, IntNode.valueOf(value));\n    }\n\n    public void testInt()\n    {\n        IntNode n = IntNode.valueOf(1);\n        assertStandardEquals(n);\n        assertTrue(0 != n.hashCode());\n        assertEquals(JsonToken.VALUE_NUMBER_INT, n.asToken());\n        assertEquals(JsonParser.NumberType.INT, n.numberType());\n        assertEquals(1, n.intValue());\n        assertEquals(1L, n.longValue());\n        assertEquals(BigDecimal.ONE, n.decimalValue());\n        assertEquals(BigInteger.ONE, n.bigIntegerValue());\n        assertEquals(\"1\", n.asText());\n        // 2.4\n    {\n        double value = 3.04;\n        JsonNode result = MAPPER.readTree(String.valueOf(value));\n        assertTrue(result.isNumber());\n        assertFalse(result.isNull());\n        assertType(result, DoubleNode.class);\n        assertTrue(result.isFloatingPointNumber());\n        assertTrue(result.isDouble());\n        assertFalse(result.isInt());\n        assertFalse(result.isLong());\n        assertFalse(result.isIntegralNumber());\n        assertFalse(result.isTextual());\n        assertFalse(result.isMissingNode());\n\n        assertEquals(value, result.doubleValue());\n        assertEquals(value, result.numberValue().doubleValue());\n        assertEquals((int) value, result.intValue());\n        assertEquals((long) value, result.longValue());\n        assertEquals(String.valueOf(value), result.asText());\n\n        // also, equality should work ok\n        assertEquals(result, DoubleNode.valueOf(value));\n    }\n\n    // @since 2.2\n    public void testFloat()\n    {\n        FloatNode n = FloatNode.valueOf(0.45f);\n        assertStandardEquals(n);\n        assertTrue(0 != n.hashCode());\n        assertEquals(JsonToken.VALUE_NUMBER_FLOAT, n.asToken());\n        assertEquals(JsonParser.NumberType.FLOAT, n.numberType());\n        assertEquals(0, n.intValue());\n        \n        // NOTE: conversion to double NOT as simple as with exact numbers like 0.25:\n        assertEquals(0.45f, n.floatValue());\n        assertEquals(\"0.45\", n.asText());\n\n        // so; as double we'll get more complex number; however, should round-trip\n        // to something that gets printed the same way. But not exact value, alas, hence:\n        assertEquals(\"0.45\",  String.valueOf((float) n.doubleValue()));\n\n        assertNotNull(n.decimalValue());\n        // possibly surprisingly, however, this will produce same output:\n        assertEquals(BigInteger.ZERO, n.bigIntegerValue());\n        assertEquals(\"0.45\", n.asText());\n\n        // 1.6:\n        assertNodeNumbers(FloatNode.valueOf(4.5f), 4, 4.5f);\n\n        assertTrue(FloatNode.valueOf(0).canConvertToInt());\n        assertTrue(FloatNode.valueOf(Integer.MAX_VALUE).canConvertToInt());\n        assertTrue(FloatNode.valueOf(Integer.MIN_VALUE).canConvertToInt());\n\n        // rounding errors if we just add/sub 1... so:\n        assertFalse(FloatNode.valueOf(1000L + Integer.MAX_VALUE).canConvertToInt());\n        assertFalse(FloatNode.valueOf(-1000L + Integer.MIN_VALUE).canConvertToInt());\n\n        assertTrue(FloatNode.valueOf(0L).canConvertToLong());\n        assertTrue(FloatNode.valueOf(Integer.MAX_VALUE).canConvertToLong());\n        assertTrue(FloatNode.valueOf(Integer.MIN_VALUE).canConvertToLong());\n    }\n    \n    public void testDecimalNode() throws Exception\n    {\n        DecimalNode n = DecimalNode.valueOf(BigDecimal.ONE);\n        assertStandardEquals(n);\n        assertTrue(n.equals(new DecimalNode(BigDecimal.ONE)));\n        assertEquals(JsonToken.VALUE_NUMBER_FLOAT, n.asToken());\n        assertEquals(JsonParser.NumberType.BIG_DECIMAL, n.numberType());\n        assertTrue(n.isNumber());\n        assertFalse(n.isIntegralNumber());\n        assertFalse(n.isArray());\n        assertTrue(n.isBigDecimal());\n        assertEquals(BigDecimal.ONE, n.numberValue());\n        assertEquals(1, n.intValue());\n        assertEquals(1L, n.longValue());\n        assertEquals(BigDecimal.ONE, n.decimalValue());\n        assertEquals(\"1\", n.asText());\n\n        assertTrue(BigIntegerNode.valueOf(BigInteger.valueOf(Long.MIN_VALUE)).canConvertToLong());\n    }\n\n    public void testBigDecimalAsPlain() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper()\n                .enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS)\n                .enable(JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN);\n        final String INPUT = \"{\\\"x\\\":1e2}\";\n        final JsonNode node = mapper.readTree(INPUT);\n        String result = mapper.writeValueAsString(node);\n        assertEquals(\"{\\\"x\\\":100}\", result);\n\n        // also via ObjectWriter:\n        assertEquals(\"{\\\"x\\\":100}\", mapper.writer().writeValueAsString(node));\n\n        // and once more for [core#175]:\n        BigDecimal bigDecimal = new BigDecimal(100);\n        JsonNode tree = mapper.valueToTree(bigDecimal);\n        assertEquals(\"100\", mapper.writeValueAsString(tree));\n    }\n\n    // Related to [databind#333]\n    public void testCanonicalNumbers() throws Exception\n    {\n        JsonNodeFactory f = new JsonNodeFactory();\n        NumericNode n = f.numberNode(123);\n        assertTrue(n.isInt());\n        n = f.numberNode(1L + Integer.MAX_VALUE);\n        assertFalse(n.isInt());\n        assertTrue(n.isLong());\n\n        // 19-May-2015, tatu: Actually, no, coercion should not happen by default.\n        //   But it should be possible to change it if necessary.\n        // but \"too small\" number will be 'int'...\n        n = f.numberNode(123L);\n        assertTrue(n.isLong());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 399,
+    "mode": "windows",
+    "windows_total": 7,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        180,
+        260
+      ],
+      [
+        360,
+        399
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 16.237819068052282
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 8.47974700991846
+      },
+      {
+        "start": 360,
+        "end": 399,
+        "score": 9.358826719072244
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 16.237819068052282
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.3850078303715145
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 1.9479242766743436
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 8.47974700991846
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.452141921957774
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 2.9035967294240983
+      },
+      {
+        "start": 360,
+        "end": 399,
+        "score": 9.358826719072244
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8055,
+  "representation_chars": 8055,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

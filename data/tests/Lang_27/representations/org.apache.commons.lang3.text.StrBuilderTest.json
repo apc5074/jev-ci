@@ -1,0 +1,206 @@
+{
+  "test_class": "org.apache.commons.lang3.text.StrBuilderTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/text/StrBuilderTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.text.StrBuilderTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/text/StrBuilderTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.lang3.text;\n\nimport java.io.Reader;\nimport java.io.Writer;\nimport java.util.Arrays;\n\nimport junit.framework.TestCase;\n\nimport org.apache.commons.lang3.ArrayUtils;\n\n/**\n * Unit tests for {@link org.apache.commons.lang3.text.StrBuilder}.\n * \n * @author Michael Heuer\n * @version $Id$\n */\npublic class StrBuilderTest extends TestCase {\n\n    /**\n     * Create a new test case with the specified name.\n     * \n     * @param name\n     *            name\n     */\n    public StrBuilderTest(String name) {\n        super(name);\n    }\n\n    //-----------------------------------------------------------------------\n    public void testConstructors() {\n        StrBuilder sb0 = new StrBuilder();\n        assertEquals(32, sb0.capacity());\n        assertEquals(0, sb0.length());\n        assertEquals(0, sb0.size());\n\n        StrBuilder sb1 = new StrBuilder(32);\n        assertEquals(32, sb1.capacity());\n        assertEquals(0, sb1.length());\n        assertEquals(0, sb1.size());\n\n        StrBuilder sb2 = new StrBuilder(0);\n        assertEquals(32, sb2.capacity());\n        assertEquals(0, sb2.length());\n        assertEquals(0, sb2.size());\n\n        StrBuilder sb3 = new StrBuilder(-1);\n        assertEquals(32, sb3.capacity());\n        assertEquals(0, sb3.length());\n        assertEquals(0, sb3.size());\n\n        StrBuilder sb4 = new StrBuilder(1);\n        assertEquals(1, sb4.capacity());\n        assertEquals(0, sb4.length());\n        assertEquals(0, sb4.size());\n\n        StrBuilder sb5 = new StrBuilder((String) null);\n        assertEquals(32, sb5.capacity());\n        assertEquals(0, sb5.length());\n        assertEquals(0, sb5.size());\n\n        StrBuilder sb6 = new StrBuilder(\"\");\n        assertEquals(32, sb6.capacity());\n        assertEquals(0, sb6.length());\n        \n        sb.append(\" A1 junction with A2\");\n        assertEquals(6, sb.indexOf(A_NUMBER_MATCHER, 5));\n        assertEquals(6, sb.indexOf(A_NUMBER_MATCHER, 6));\n        assertEquals(23, sb.indexOf(A_NUMBER_MATCHER, 7));\n        assertEquals(23, sb.indexOf(A_NUMBER_MATCHER, 22));\n        assertEquals(23, sb.indexOf(A_NUMBER_MATCHER, 23));\n        assertEquals(-1, sb.indexOf(A_NUMBER_MATCHER, 24));\n    }\n\n    public void testLastIndexOf_StrMatcher() {\n        StrBuilder sb = new StrBuilder();\n        assertEquals(-1, sb.lastIndexOf((StrMatcher) null));\n        assertEquals(-1, sb.lastIndexOf(StrMatcher.charMatcher('a')));\n        \n        sb.append(\"ab bd\");\n        assertEquals(0, sb.lastIndexOf(StrMatcher.charMatcher('a')));\n        assertEquals(3, sb.lastIndexOf(StrMatcher.charMatcher('b')));\n        assertEquals(2, sb.lastIndexOf(StrMatcher.spaceMatcher()));\n        assertEquals(4, sb.lastIndexOf(StrMatcher.charMatcher('d')));\n        assertEquals(-1, sb.lastIndexOf(StrMatcher.noneMatcher()));\n        assertEquals(-1, sb.lastIndexOf((StrMatcher) null));\n        \n        sb.append(\" A1 junction\");\n        assertEquals(6, sb.lastIndexOf(A_NUMBER_MATCHER));\n    }\n\n    public void testLastIndexOf_StrMatcher_int() {\n        StrBuilder sb = new StrBuilder();\n        assertEquals(-1, sb.lastIndexOf((StrMatcher) null, 2));\n        assertEquals(-1, sb.lastIndexOf(StrMatcher.charMatcher('a'), 2));\n        assertEquals(-1, sb.lastIndexOf(StrMatcher.charMatcher('a'), 0));\n        assertEquals(-1, sb.lastIndexOf(StrMatcher.charMatcher('a'), -1));\n        \n        sb.append(\"ab bd\");\n        assertEquals(-1, sb.lastIndexOf(StrMatcher.charMatcher('a'), -2));\n        assertEquals(0, sb.lastIndexOf(StrMatcher.charMatcher('a'), 0));\n        assertEquals(0, sb.lastIndexOf(StrMatcher.charMatcher('a'), 2));\n        assertEquals(0, sb.lastIndexOf(StrMatcher.charMatcher('a'), 20));\n        \n        assertEquals(-1, sb.lastIndexOf(StrMatcher.charMatcher('b'), -1));\n        assertEquals(-1, sb.lastIndexOf(StrMatcher.charMatcher('b'), 0));\n        assertEquals(1, sb.lastIndexOf(StrMatcher.charMatcher('b'), 1));\n        assertEquals(1, sb.lastIndexOf(StrMatcher.charMatcher('b'), 2));\n        assertEquals(3, sb.lastIndexOf(StrMatcher.charMatcher('b'), 3));\n        assertEquals(3, sb.lastIndexOf(StrMatcher.charMatcher('b'), 4));\n        assertEquals(3, sb.lastIndexOf(StrMatcher.charMatcher('b'), 5));\n        assertEquals(3, sb.lastIndexOf(StrMatcher.charMatcher('b'), 6));\n        \n        assertEquals(-1, sb.lastIndexOf(StrMatcher.spaceMatcher(), -2));\n        assertEquals(-1, sb.lastIndexOf(StrMatcher.spaceMatcher(), 0));\n        assertEquals(2, sb.lastIndexOf(StrMatcher.spaceMatcher(), 2));\n        assertEquals(2, sb.lastIndexOf(StrMatcher.spaceMatcher(), 4));\n        assertEquals(2, sb.lastIndexOf(StrMatcher.spaceMatcher(), 20));\n        \n        assertEquals(-1, sb.lastIndexOf(StrMatcher.noneMatcher(), 0));\n        assertEquals(-1, sb.lastIndexOf((StrMatcher) null, 0));\n        \n        sb.append(\" A1 junction with A2\");\n        assertEquals(-1, sb.lastIndexOf(A_NUMBER_MATCHER, 5));\n        assertEquals(-1, sb.lastIndexOf(A_NUMBER_MATCHER, 6)); // A matches, 1 is outside bounds\n        assertEquals(6, sb.lastIndexOf(A_NUMBER_MATCHER, 7));\n        assertEquals(6, sb.lastIndexOf(A_NUMBER_MATCHER, 22));\n        assertEquals(6, sb.lastIndexOf(A_NUMBER_MATCHER, 23)); // A matches, 2 is outside bounds\n        assertEquals(23, sb.lastIndexOf(A_NUMBER_MATCHER, 24));\n    }\n\n    static final StrMatcher A_NUMBER_MATCHER = new StrMatcher() {\n        @Override\n        public int isMatch(char[] buffer, int pos, int bufferStart, int bufferEnd) {\n            if (buffer[pos] == 'A') {\n                pos++;\n                if (pos < bufferEnd && buffer[pos] >= '0' && buffer[pos] <= '9') {\n                    return 2;\n                }\n            }\n            return 0;\n        }\n    };\n\n    //-----------------------------------------------------------------------\n    public void testAsTokenizer() throws Exception {\n        // from Javadoc\n        StrBuilder b = new StrBuilder();\n        b.append(\"a b \");\n        StrTokenizer t = b.asTokenizer();\n        \n        String[] tokens1 = t.getTokenArray();\n        assertEquals(2, tokens1.length);\n        assertEquals(\"a\", tokens1[0]);\n        assertEquals(\"b\", tokens1[1]);\n        assertEquals(2, t.size());\n        \n        b.append(\"c d \");\n        String[] tokens2 = t.getTokenArray();\n        assertEquals(2, tokens2.length);\n        assertEquals(\"a\", tokens2[0]);\n        assertEquals(\"b\", tokens2[1]);\n        assertEquals(2, t.size());\n        assertEquals(\"a\", t.next());\n        assertEquals(\"b\", t.next());\n        \n        t.reset();\n        String[] tokens3 = t.getTokenArray();\n        assertEquals(4, tokens3.length);\n        assertEquals(\"a\", tokens3[0]);\n        assertEquals(\"b\", tokens3[1]);\n        assertEquals(\"c\", tokens3[2]);\n        assertEquals(\"d\", tokens3[3]);\n        assertEquals(4, t.size());\n        assertEquals(\"a\", t.next());\n        assertEquals(\"b\", t.next());\n        assertEquals(\"c\", t.next());\n        assertEquals(\"d\", t.next());\n        \n        assertEquals(\"a b c d \", t.getContent());\n    }\n\n    // -----------------------------------------------------------------------\n    public void testAsReader() throws Exception {\n        StrBuilder sb = new StrBuilder(\"some text\");\n        Reader reader = sb.asReader();\n        assertEquals(true, reader.ready());\n        char[] buf = new char[40];\n        assertEquals(9, reader.read(buf));\n        assertEquals(\"some text\", new String(buf, 0, 9));\n        \n        assertEquals(-1, reader.read());\n        assertEquals(false, reader.ready());\n        assertEquals(0, reader.skip(2));\n        assertEquals(0, reader.skip(-1));\n        \n        assertEquals(true, reader.markSupported());\n        reader = sb.asReader();\n        assertEquals('s', reader.read());\n        reader.mark(-1);\n        char[] array = new char[3];\n        assertEquals(3, reader.read(array, 0, 3));\n        assertEquals('o', array[0]);\n        assertEquals('m', array[1]);\n",
+  "compaction": {
+    "source_lines": 1776,
+    "mode": "windows",
+    "windows_total": 30,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        1440,
+        1520
+      ],
+      [
+        1500,
+        1580
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 33.990993814081165
+      },
+      {
+        "start": 1440,
+        "end": 1520,
+        "score": 11.539327420408322
+      },
+      {
+        "start": 1500,
+        "end": 1580,
+        "score": 14.55225278520792
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 33.990993814081165
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 1.0548379376181316
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 4.084891658226482
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 7.364852201014678
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.076613936327844
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 2.0914747577086095
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 11.494506992171193
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 5.361947580035622
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 1.3389632385896337
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 1.637510609590731
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 3.3845385075885313
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 1.2125506634837324
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 1.0920956224937068
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 2.864185663082887
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 2.5741060427191247
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 1.7965494811166003
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 0.6413725775328534
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 3.2100034189039985
+      },
+      {
+        "start": 1080,
+        "end": 1160,
+        "score": 9.35408551763592
+      },
+      {
+        "start": 1140,
+        "end": 1220,
+        "score": 5.942986736628431
+      },
+      {
+        "start": 1200,
+        "end": 1280,
+        "score": 2.0609608767783096
+      },
+      {
+        "start": 1260,
+        "end": 1340,
+        "score": 0.5145728870590566
+      },
+      {
+        "start": 1320,
+        "end": 1400,
+        "score": 0.48688847457739537
+      },
+      {
+        "start": 1380,
+        "end": 1460,
+        "score": 2.527051936461928
+      },
+      {
+        "start": 1440,
+        "end": 1520,
+        "score": 11.539327420408322
+      },
+      {
+        "start": 1500,
+        "end": 1580,
+        "score": 14.55225278520792
+      },
+      {
+        "start": 1560,
+        "end": 1640,
+        "score": 1.2423651964451097
+      },
+      {
+        "start": 1620,
+        "end": 1700,
+        "score": 1.1445527862223788
+      },
+      {
+        "start": 1680,
+        "end": 1760,
+        "score": 7.27585376277611
+      },
+      {
+        "start": 1740,
+        "end": 1776,
+        "score": 1.7459075152565913
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8868,
+  "representation_chars": 8868,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

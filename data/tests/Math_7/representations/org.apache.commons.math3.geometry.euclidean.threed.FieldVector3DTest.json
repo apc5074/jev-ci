@@ -1,0 +1,116 @@
+{
+  "test_class": "org.apache.commons.math3.geometry.euclidean.threed.FieldVector3DTest",
+  "source_file": "src/test/java/org/apache/commons/math3/geometry/euclidean/threed/FieldVector3DTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.geometry.euclidean.threed.FieldVector3DTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/geometry/euclidean/threed/FieldVector3DTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math3.geometry.euclidean.threed;\n\nimport java.text.DecimalFormat;\nimport java.text.DecimalFormatSymbols;\nimport java.text.NumberFormat;\nimport java.util.Locale;\n\nimport org.apache.commons.math3.analysis.differentiation.DerivativeStructure;\nimport org.apache.commons.math3.exception.DimensionMismatchException;\nimport org.apache.commons.math3.exception.MathArithmeticException;\nimport org.apache.commons.math3.random.Well1024a;\nimport org.apache.commons.math3.util.FastMath;\nimport org.apache.commons.math3.util.Precision;\nimport org.junit.Assert;\nimport org.junit.Test;\n\npublic class FieldVector3DTest {\n\n    @Test\n    public void testConstructors() throws DimensionMismatchException {\n        double cosAlpha = 1 / 2.0;\n        double sinAlpha = FastMath.sqrt(3) / 2.0;\n        double cosDelta = FastMath.sqrt(2) / 2.0;\n        double sinDelta = -FastMath.sqrt(2) / 2.0;\n        FieldVector3D<DerivativeStructure> u = new FieldVector3D<DerivativeStructure>(2,\n                new FieldVector3D<DerivativeStructure>(new DerivativeStructure(2, 1, 0,  FastMath.PI / 3),\n                        new DerivativeStructure(2, 1, 1, -FastMath.PI / 4)));\n        checkVector(u, 2 * cosAlpha * cosDelta, 2 * sinAlpha * cosDelta, 2 * sinDelta);\n        Assert.assertEquals(-2 * sinAlpha * cosDelta, u.getX().getPartialDerivative(1, 0), 1.0e-12);\n        Assert.assertEquals(+2 * cosAlpha * cosDelta, u.getY().getPartialDerivative(1, 0), 1.0e-12);\n        Assert.assertEquals(0,                        u.getZ().getPartialDerivative(1, 0), 1.0e-12);\n        Assert.assertEquals(-2 * cosAlpha * sinDelta, u.getX().getPartialDerivative(0, 1), 1.0e-12);\n        Assert.assertEquals(-2 * sinAlpha * sinDelta, u.getY().getPartialDerivative(0, 1), 1.0e-12);\n        Assert.assertEquals(2 * cosDelta,             u.getZ().getPartialDerivative(0, 1), 1.0e-12);\n\n        checkVector(new FieldVector3D<DerivativeStructure>(2, createVector(1, 0,  0, 3)),\n                                   2, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2);\n        checkVector(new FieldVector3D<DerivativeStructure>(new DerivativeStructure(4, 1, 3,  2.0),\n                                   createVector(1, 0,  0, 4)),\n                                   2, 0, 0, 2, 0, 0, 1, 0, 2, 0, 0, 0, 0, 2, 0);\n        checkVector(new FieldVector3D<DerivativeStructure>(new DerivativeStructure(4, 1, 3,  2.0),\n                                   new Vector3D(1, 0,  0)),\n                                   2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0);\n\n        checkVector(new FieldVector3D<DerivativeStructure>(2, createVector(1, 0,  0, 3),\n                                   -3, createVector(0, 0, -1, 3)),\n                                   2, 0, 3, -1, 0, 0, 0, -1, 0, 0, 0, -1);\n        checkVector(new FieldVector3D<DerivativeStructure>(new DerivativeStructure(4, 1, 3,  2.0),\n                                   createVector(1, 0,  0, 4),\n                                   new DerivativeStructure(4, 1, 3, -3.0),\n                                   createVector(0, 0, -1, 4)),\n                                   2, 0, 3, -1, 0, 0, 1, 0, -1, 0, 0, 0, 0, -1, -1);\n        checkVector(new FieldVector3D<DerivativeStructure>(new DerivativeStructure(4, 1, 3,  2.0),\n                                   new Vector3D(1, 0,  0),\n                                   new DerivativeStructure(4, 1, 3, -3.0),\n                                   new Vector3D(0, 0, -1)),\n                                   2, 0, 3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, -1);\n\n        checkVector(new FieldVector3D<DerivativeStructure>(2, createVector(1, 0, 0, 3),\n                                   5, createVector(0, 1, 0, 3),\n                                   -3, createVector(0, 0, -1, 3)),\n                                   2, 5, 3, 4, 0, 0, 0, 4, 0, 0, 0, 4);\n        checkVector(new FieldVector3D<DerivativeStructure>(new DerivativeStructure(4, 1, 3,  2.0),\n            new DerivativeStructure(3, 1, 1,  5),\n            new DerivativeStructure(3, 1, 0, -3)\n        }),\n        2, 5, -3, 0, 0, 1, 0, 1, 0, 1, 0, 0);\n\n    }\n\n    @Test\n    public void testEquals() {\n        FieldVector3D<DerivativeStructure> u1 = createVector(1, 2, 3, 3);\n        FieldVector3D<DerivativeStructure> v  = createVector(1, 2, 3 + 10 * Precision.EPSILON, 3);\n        Assert.assertTrue(u1.equals(u1));\n        Assert.assertTrue(u1.equals(new FieldVector3D<DerivativeStructure>(new DerivativeStructure(3, 1, 0, 1.0),\n                                                   new DerivativeStructure(3, 1, 1, 2.0),\n                                                   new DerivativeStructure(3, 1, 2, 3.0))));\n        Assert.assertFalse(u1.equals(new FieldVector3D<DerivativeStructure>(new DerivativeStructure(3, 1, 1.0),\n                                                    new DerivativeStructure(3, 1, 1, 2.0),\n                                                    new DerivativeStructure(3, 1, 2, 3.0))));\n        Assert.assertFalse(u1.equals(new FieldVector3D<DerivativeStructure>(ne[...TEST TRUNCATED...]g() {\n        Assert.assertEquals(\"{3; 2; 1}\", createVector(3, 2, 1, 3).toString());\n        NumberFormat format = new DecimalFormat(\"0.000\", new DecimalFormatSymbols(Locale.US));\n        Assert.assertEquals(\"{3.000; 2.000; 1.000}\", createVector(3, 2, 1, 3).toString(format));\n    }\n\n    @Test(expected=DimensionMismatchException.class)\n    public void testWrongDimension() throws DimensionMismatchException {\n        new FieldVector3D<DerivativeStructure>(new DerivativeStructure[] {\n            new DerivativeStructure(3, 1, 0, 2),\n            new DerivativeStructure(3, 1, 0, 5)\n        });\n    }\n\n    @Test\n    public void testCoordinates() {\n        FieldVector3D<DerivativeStructure> v = createVector(1, 2, 3, 3);\n        Assert.assertTrue(FastMath.abs(v.getX().getReal() - 1) < 1.0e-12);\n        Assert.assertTrue(FastMath.abs(v.getY().getReal() - 2) < 1.0e-12);\n        Assert.assertTrue(FastMath.abs(v.getZ().getReal() - 3) < 1.0e-12);\n        DerivativeStructure[] coordinates = v.toArray();\n        Assert.assertTrue(FastMath.abs(coordinates[0].getReal() - 1) < 1.0e-12);\n        Assert.assertTrue(FastMath.abs(coordinates[1].getReal() - 2) < 1.0e-12);\n        Assert.assertTrue(FastMath.abs(coordinates[2].getReal() - 3) < 1.0e-12);\n            double sNaive = ux * vx + uy * vy + uz * vz;\n\n            FieldVector3D<DerivativeStructure> uds = createVector(ux, uy, uz, 3);\n            FieldVector3D<DerivativeStructure> vds = createVector(vx, vy, vz, 3);\n            Vector3D v = new Vector3D(vx, vy, vz);\n\n            DerivativeStructure sAccurate = FieldVector3D.dotProduct(uds, vds);\n            Assert.assertEquals(sNaive, sAccurate.getReal(), 2.5e-16 * sNaive);\n            Assert.assertEquals(ux + vx, sAccurate.getPartialDerivative(1, 0, 0), 2.5e-16 * sNaive);\n            Assert.assertEquals(uy + vy, sAccurate.getPartialDerivative(0, 1, 0), 2.5e-16 * sNaive);\n            Assert.assertEquals(uz + vz, sAccurate.getPartialDerivative(0, 0, 1), 2.5e-16 * sNaive);\n\n            sAccurate = FieldVector3D.dotProduct(uds, v);\n            Assert.assertEquals(sNaive, sAccurate.getReal(), 2.5e-16 * sNaive);\n            Assert.assertEquals(vx, sAccurate.getPartialDerivative(1, 0, 0), 2.5e-16 * sNaive);\n            Assert.assertEquals(vy, sAccurate.getPartialDerivative(0, 1, 0), 2.5e-16 * sNaive);\n            Assert.assertEquals(vz, sAccurate.getPartialDerivative(0, 0, 1), 2.5e-16 * sNaive);\n\n        }\n    }\n\n    @Test\n    public void testAccurateCrossProduct() {\n        // the vectors u1 and u2 are nearly but not exactly anti-parallel\n        // (7.31e-16 degrees from 180 degrees) naive cross product (i.e.\n        // computing u1.x * u2.x + u1.y * u2.y + u1.z * u2.z\n        // leads to a result of   [0.0009765, -0.0001220, -0.0039062],\n        // instead of the correct [0.0006913, -0.0001254, -0.0007909]\n        final FieldVector3D<DerivativeStructure> u1 = createVector(-1321008684645961.0 /   268435456.0,\n                                         -5774608829631843.0 /   268435456.0,\n                                         -7645843051051357.0 /  8589934592.0, 3);\n        final FieldVector3D<DerivativeStructure> u2 = createVector( 1796571811118507.0 /  2147483648.0,\n                                          7853468008299307.0 /  2147483648.0,\n                                          2599586637357461.0 / 17179869184.0, 3);\n        final FieldVector3D<DerivativeStructure> u3 = createVector(12753243807587107.0 / 18446744073709551616.0, \n                                         -2313766922703915.0 / 18446744073709551616.0, \n                                          -227970081415313.0 /   288230376151711744.0, 3);\n        FieldVector3D<DerivativeStructure> cNaive = new FieldVector3D<DerivativeStructure>(u1.getY().multiply(u2.getZ()).subtract(u1.getZ().multiply(u2.getY())),\n                                       u1.getZ().multiply(u2.getX()).subtract(u1.getX().multiply(u2.getZ())),\n                                       u1.getX().multiply(u2.getY()).subtract(u1.getY().multiply(u2.getX())));\n        FieldVector3D<DerivativeStructure> cAccurate = FieldVector3D.crossProduct(u1, u2);\n        Assert.assertTrue(FieldVector3D.distance(u3, cNaive).getReal() > 2.9 * u3.getNorm().getReal());\n        Assert.assertEquals(0.0, FieldVector3D.distance(u3, cAccurate).getReal(), 1.0e-30 * cAccurate.getNorm().getReal());\n    }\n\n    @Test\n    public void testCrossProduct() {\n        // we compare accurate versus naive cross product implementations\n        // on regular vectors (i.e. not extreme cases like in the previous test)\n        Well1024a random = new Well1024a(885362227452043214l);\n        for (int i = 0; i < 10000; ++i) {\n            double ux = random.nextDouble();\n            double uy = random.nextDouble();\n            double uz = random.nextDouble();\n            double vx = random.nextDouble();\n            double vy = random.nextDouble();\n            double vz = random.nextDouble();\n            Vector3D cNaive = new Vector3D(uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx);\n\n            FieldVector3D<DerivativeStructure> uds = createVector(ux, uy, uz, 3);\n            FieldVector3D<DerivativeStructure> vds = createVector(vx, vy, vz, 3);\n            Vector3D v = new Vector3D(vx, vy, vz);\n\n            checkVector(FieldVector3D.crossProduct(uds, vds),\n                        cNaive.getX(), cNaive.getY(), cNaive.getZ(),\n                        0, vz - uz, uy - vy,\n                        uz - vz, 0, vx - ux,\n                        vy - uy, ux - vx, 0);\n\n            checkVector(FieldVector3D.crossProduct(uds, v),\n                        cNaive.getX(), cNaive.getY(), cNaive.getZ(),\n                          0,  vz, -vy,\n                        -vz,   0,  vx,\n                         vy, -vx,   0);\n\n        }\n    }\n\n    private FieldVector3D<DerivativeStructure> createVector(double x, double y, double z, int params) {\n        return new FieldVector3D<DerivativeStructure>(new DerivativeStructure(params, 1, 0, x),\n",
+  "compaction": {
+    "source_lines": 730,
+    "mode": "windows",
+    "windows_total": 12,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        600,
+        680
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 33.55068089296145
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 16.332120223257686
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 16.268818250716308
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 33.55068089296145
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 4.703232075854004
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 16.332120223257686
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 2.6427937260987946
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 0.8631054619217804
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 1.229711482312771
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 0.2704028326839599
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 7.1151434653009815
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 5.833405302243709
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 11.387079933620319
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 16.268818250716308
+      },
+      {
+        "start": 660,
+        "end": 730,
+        "score": 3.2833744644327254
+      }
+    ]
+  },
+  "representation_truncated": true,
+  "original_representation_chars": 14020,
+  "representation_chars": 12000,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

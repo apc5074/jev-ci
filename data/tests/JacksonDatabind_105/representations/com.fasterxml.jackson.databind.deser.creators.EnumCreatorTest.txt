@@ -1,0 +1,207 @@
+TEST CLASS:
+com.fasterxml.jackson.databind.deser.creators.EnumCreatorTest
+
+SOURCE FILE:
+src/test/java/com/fasterxml/jackson/databind/deser/creators/EnumCreatorTest.java
+
+TEST SOURCE:
+package com.fasterxml.jackson.databind.deser.creators;
+
+import java.math.BigDecimal;
+import java.util.*;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.deser.Deserializers;
+import com.fasterxml.jackson.databind.deser.std.EnumDeserializer;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+
+public class EnumCreatorTest extends BaseMapTest
+{
+    protected enum EnumWithCreator {
+        A, B;
+
+        @JsonCreator
+        public static EnumWithCreator fromEnum(String str) {
+            if ("enumA".equals(str)) return A;
+            if ("enumB".equals(str)) return B;
+            return null;
+        }
+    }
+
+    protected enum EnumWithBDCreator {
+        E5, E8;
+
+        @JsonCreator
+        public static EnumWithBDCreator create(BigDecimal bd) {
+            if (bd.longValue() == 5L) return E5;
+            if (bd.longValue() == 8L) return E8;
+            return null;
+        }
+    }
+
+    protected enum TestEnumFromInt
+    {
+        ENUM_A(1), ENUM_B(2), ENUM_C(3);
+        
+        private final int id;
+        
+        private TestEnumFromInt(int id) {
+            this.id = id;
+        }
+        
+        @JsonCreator public static TestEnumFromInt fromId(int id) {
+            for (TestEnumFromInt e: values()) {
+                if (e.id == id) return e;
+            }
+            return null;
+        }
+    }
+
+    static enum EnumWithPropertiesModeJsonCreator {
+        TEST1,
+        TEST2,
+        TEST3;
+       
+        @JsonGetter("name")
+        public String getName() {
+            return name();
+        }
+       
+        @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+        public static EnumWithPropertiesModeJsonCreator create(@JsonProperty("name") String name) {
+            return EnumWithPropertiesModeJsonCreator.valueOf(name);
+        }
+    }
+
+    static enum EnumWithDelegateModeJsonCreator {
+        TEST1,
+        TEST2,
+        TEST3;
+
+        @JsonGetter("name")
+        public String getName() {
+            return name();
+        }
+
+        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+        public static EnumWithDelegateModeJsonCreator create(JsonNode json) {
+            return EnumWithDelegateModeJsonCreator.valueOf(json.get("name").asText());
+        }
+    }
+    
+    // [databind#324]: exception from creator method
+    protected enum TestEnum324
+    {
+        A, B;
+        
+        @JsonCreator public static TestEnum324 creator(String arg) {
+            throw new RuntimeException("Foobar!");
+        }
+    }
+
+    // [databind#745]
+    static class DelegatingDeserializers extends Deserializers.Base
+    {
+        @Override
+        public JsonDeserializer<?> findEnumDeserializer(final Class<?> type, final DeserializationConfig config, final BeanDescription beanDesc) throws JsonMappingException {
+            final Collection<AnnotatedMethod> factoryMethods = beanDesc.getFactoryMethods();
+            if (factoryMethods != null) {
+                for (AnnotatedMethod am : factoryMethods) {
+                    final JsonCreator creator = am.getAnnotation(JsonCreator.class);
+                    if (creator != null) {
+                        return EnumDeserializer.deserializerForCreator(config, type, am, null, null);
+                    }
+                }
+            }
+            return null;
+        }
+    }
+
+    // [databind#745]
+    static class DelegatingDeserializersModule extends SimpleModule
+    {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public void setupModule(final SetupContext context) {
+            context.addDeserializers(new DelegatingDeserializers());
+        }
+    }
+
+    // [databind#929]: support multi-arg enum creator
+    static enum Enum929
+    {
+        A, B, C;
+
+        @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+        static Enum929 forValues(@JsonProperty("id") int intProp,
+                                 @JsonProperty("name") String name)
+        {
+            return Enum929.valueOf(name);
+        }
+    }
+
+    static enum MyEnum960
+    {
+        VALUE, BOGUS;
+        
+        @JsonCreator
+        public static MyEnum960 getInstance() {
+            return VALUE;
+        }
+    }
+
+    static class MyEnum960Wrapper {
+        public MyEnum960 value;
+    }
+
+    static enum Enum1291 {
+
+        V1("val1"),
+        V2("val2"),
+        V3("val3"),
+        V4("val4"),
+        V5("val5"),
+        V6("val6");
+
+        private final String name;
+
+        Enum1291(String name) {
+            this.name = name;
+        }
+
+        public static Enum1291 fromString(String name) {
+            for (Enum1291 type : Enum1291.values()) {
+                if (type.name.equals(name)) {
+                    return type;
+                }
+            }
+            return Enum1291.valueOf(name.toUpperCase());
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+
+    /*
+    /**********************************************************
+    /* Test methods
+    /**********************************************************
+     */
+
+    protected final ObjectMapper MAPPER = new ObjectMapper();
+
+    public void testCreatorEnums() throws Exception {
+        EnumWithCreator value = MAPPER.readValue("\"enumA\"", EnumWithCreator.class);
+        assertEquals(EnumWithCreator.A, value);
+    }
+

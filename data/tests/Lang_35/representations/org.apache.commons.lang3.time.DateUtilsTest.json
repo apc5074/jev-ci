@@ -1,0 +1,186 @@
+{
+  "test_class": "org.apache.commons.lang3.time.DateUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/time/DateUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.time.DateUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/time/DateUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3.time;\n\nimport java.lang.reflect.Constructor;\nimport java.lang.reflect.Modifier;\nimport java.text.DateFormat;\nimport java.text.ParseException;\nimport java.text.SimpleDateFormat;\nimport java.util.Calendar;\nimport java.util.Date;\nimport java.util.GregorianCalendar;\nimport java.util.Iterator;\nimport java.util.Locale;\nimport java.util.NoSuchElementException;\nimport java.util.TimeZone;\n\nimport junit.framework.AssertionFailedError;\nimport junit.framework.TestCase;\n\nimport org.apache.commons.lang3.SystemUtils;\n\n/**\n * Unit tests {@link org.apache.commons.lang3.time.DateUtils}.\n *\n * @author <a href=\"mailto:sergek@lokitech.com\">Serge Knystautas</a>\n * @author <a href=\"mailto:steve@mungoknotwise.com\">Steven Caswell</a>\n */\npublic class DateUtilsTest extends TestCase {\n\n    private static final long MILLIS_TEST;\n    static {\n        GregorianCalendar cal = new GregorianCalendar(2000, 6, 5, 4, 3, 2);\n        cal.set(Calendar.MILLISECOND, 1);\n        MILLIS_TEST = cal.getTime().getTime();\n    }\n\n    DateFormat dateParser = null;\n    DateFormat dateTimeParser = null;\n    DateFormat timeZoneDateParser = null;\n    Date dateAmPm1 = null;\n    Date dateAmPm2 = null;\n    Date dateAmPm3 = null;\n    Date dateAmPm4 = null;\n    Date date0 = null;\n    Date date1 = null;\n    Date date2 = null;\n    Date date3 = null;\n    Date date4 = null;\n    Date date5 = null;\n    Date date6 = null;\n    Date date7 = null;\n    Date date8 = null;\n    Calendar calAmPm1 = null;\n    Calendar calAmPm2 = null;\n    Calendar calAmPm3 = null;\n    Calendar calAmPm4 = null;\n    Calendar cal1 = null;\n    Calendar cal2 = null;\n    Calendar cal3 = null;\n    Calendar cal4 = null;\n    Calendar cal5 = null;\n    Calendar cal6 = null;\n    Calendar cal7 = null;\n    Calendar cal8 = null;\n    TimeZone zone = null;\n        \n        try {\n            DateUtils.truncate((Date) null, Calendar.SECOND);\n            fail();\n        } catch (IllegalArgumentException ex) {}\n        try {\n            DateUtils.truncate((Calendar) null, Calendar.SECOND);\n            fail();\n        } catch (IllegalArgumentException ex) {}\n        try {\n            DateUtils.truncate((Object) null, Calendar.SECOND);\n            fail();\n        } catch (IllegalArgumentException ex) {}\n        try {\n            DateUtils.truncate(\"\", Calendar.SECOND);\n            fail();\n        } catch (ClassCastException ex) {}\n\n        // Fix for http://issues.apache.org/bugzilla/show_bug.cgi?id=25560\n        // Test truncate across beginning of daylight saving time\n        TimeZone.setDefault(zone);\n        dateTimeParser.setTimeZone(zone);\n        assertEquals(\"truncate MET date across DST change-over\",\n                dateTimeParser.parse(\"March 30, 2003 00:00:00.000\"),\n                DateUtils.truncate(date3, Calendar.DATE));\n        assertEquals(\"truncate MET date across DST change-over\",\n                dateTimeParser.parse(\"March 30, 2003 00:00:00.000\"),\n                DateUtils.truncate((Object) cal3, Calendar.DATE));\n        // Test truncate across end of daylight saving time\n        assertEquals(\"truncate MET date across DST change-over\",\n                dateTimeParser.parse(\"October 26, 2003 00:00:00.000\"),\n                DateUtils.truncate(date8, Calendar.DATE));\n        assertEquals(\"truncate MET date across DST change-over\",\n                dateTimeParser.parse(\"October 26, 2003 00:00:00.000\"),\n                DateUtils.truncate((Object) cal8, Calendar.DATE));\n        TimeZone.setDefault(defaultZone);\n        dateTimeParser.setTimeZone(defaultZone);\n        \n        // Bug 31395, large dates\n        Date endOfTime = new Date(Long.MAX_VALUE); // fyi: Sun Aug 17 07:12:55 CET 292278994 -- 807 millis\n        GregorianCalendar endCal = new GregorianCalendar();\n        endCal.setTime(endOfTime);\n        try {\n            DateUtils.truncate(endCal, Calendar.DATE);\n            fail();\n        } catch (ArithmeticException ex) {}\n        endCal.set(Calendar.YEAR, 280000001);\n        try {\n            DateUtils.truncate(endCal, Calendar.DATE);\n            fail();\n        } catch (ArithmeticException ex) {}\n        endCal.set(Calendar.YEAR, 280000000);\n        Calendar cal = DateUtils.truncate(endCal, Calendar.DATE);\n        assertEquals(0, cal.get(Calendar.HOUR));\n    }\n\n    /**\n     * Tests for LANG-59\n     *\n     * see http://issues.apache.org/jira/browse/LANG-59\n     */\n    public void testTruncateLang59() throws Exception {\n        if (!SystemUtils.isJavaVersionAtLeast(1.4f)) {\n            this.warn(\"WARNING: Test for LANG-59 not run since the current version is \" + SystemUtils.JAVA_VERSION);\n            return;\n        }\n\n        // Set TimeZone to Mountain Time\n        TimeZone MST_MDT = TimeZone.getTimeZone(\"MST7MDT\");\n        TimeZone.setDefault(MST_MDT);\n        DateFormat format = new SimpleDateFormat(\"yyyy-MM-dd HH:mm:ss.SSS z\");\n        format.setTimeZone(MST_MDT);\n\n        Date oct31_01MDT = new Date(1099206000000L); \n\n        Date oct31MDT             = new Date(oct31_01MDT.getTime()       - 3600000L); // - 1 hour\n        Date oct31_01_02MDT       = new Date(oct31_01MDT.getTime()       + 120000L);  // + 2 minutes\n        Date oct31_01_02_03MDT    = new Date(oct31_01_02MDT.getTime()    + 3000L);    // + 3 seconds\n        Date oct31_01_02_03_04MDT = new Date(oct31_01_02_03MDT.getTime() + 4L);       // + 4 milliseconds\n\n     */\n    private static void assertWeekIterator(Iterator<?> it, Calendar start) {\n        Calendar end = (Calendar) start.clone();\n        end.add(Calendar.DATE, 6);\n\n        assertWeekIterator(it, start, end);\n    }\n\n    /**\n     * Convenience method for when working with Date objects\n     */\n    private static void assertWeekIterator(Iterator<?> it, Date start, Date end) {\n        Calendar calStart = Calendar.getInstance();\n        calStart.setTime(start);\n        Calendar calEnd = Calendar.getInstance();\n        calEnd.setTime(end);\n\n        assertWeekIterator(it, calStart, calEnd);\n    }\n\n    /**\n     * This checks that this is a 7 divisble iterator of Calendar objects\n     * that are dates (no time), and exactly 1 day spaced after each other\n     * (in addition to the proper start and stop dates)\n     */\n    private static void assertWeekIterator(Iterator<?> it, Calendar start, Calendar end) {\n        Calendar cal = (Calendar) it.next();\n        assertEquals(\"\", start, cal, 0);\n        Calendar last = null;\n        int count = 1;\n        while (it.hasNext()) {\n            //Check this is just a date (no time component)\n            assertEquals(\"\", cal, DateUtils.truncate(cal, Calendar.DATE), 0);\n\n            last = cal;\n            cal = (Calendar) it.next();\n            count++;\n\n            //Check that this is one day more than the last date\n            last.add(Calendar.DATE, 1);\n            assertEquals(\"\", last, cal, 0);\n        }\n        if (count % 7 != 0) {\n            throw new AssertionFailedError(\"There were \" + count + \" days in this iterator\");\n        }\n        assertEquals(\"\", end, cal, 0);\n    }\n\n    /**\n     * Used to check that Calendar objects are close enough\n     * delta is in milliseconds\n     */\n    private static void assertEquals(String message, Calendar cal1, Calendar cal2, long delta) {\n        if (Math.abs(cal1.getTime().getTime() - cal2.getTime().getTime()) > delta) {\n            throw new AssertionFailedError(\n                    message + \" expected \" + cal1.getTime() + \" but got \" + cal2.getTime());\n        }\n    }\n\n    void warn(String msg) {\n        System.err.println(msg);\n    }\n}\n\n",
+  "compaction": {
+    "source_lines": 1564,
+    "mode": "windows",
+    "windows_total": 26,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        1020,
+        1100
+      ],
+      [
+        1500,
+        1564
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 38.33274452612193
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 23.4153432958896
+      },
+      {
+        "start": 1500,
+        "end": 1564,
+        "score": 17.96137188808173
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 38.33274452612193
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 3.9054660038622266
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 16.06831028610109
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 8.999738481445517
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 8.543264902246754
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 3.9757187663395093
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 3.9708860687607355
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 11.973800222423232
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 11.272774821059475
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 13.571963614851962
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 3.4379718070952876
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 5.755748884019468
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 17.273361724975732
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 15.452952562832225
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 3.174416236175142
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 1.7264831718529883
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 9.645447374983306
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 23.4153432958896
+      },
+      {
+        "start": 1080,
+        "end": 1160,
+        "score": 12.26910257880741
+      },
+      {
+        "start": 1140,
+        "end": 1220,
+        "score": 8.509052374663336
+      },
+      {
+        "start": 1200,
+        "end": 1280,
+        "score": 1.8012977491975402
+      },
+      {
+        "start": 1260,
+        "end": 1340,
+        "score": 13.465942410807854
+      },
+      {
+        "start": 1320,
+        "end": 1400,
+        "score": 16.2667558093369
+      },
+      {
+        "start": 1380,
+        "end": 1460,
+        "score": 17.822668754541365
+      },
+      {
+        "start": 1440,
+        "end": 1520,
+        "score": 14.152580815143242
+      },
+      {
+        "start": 1500,
+        "end": 1564,
+        "score": 17.96137188808173
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8477,
+  "representation_chars": 8477,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

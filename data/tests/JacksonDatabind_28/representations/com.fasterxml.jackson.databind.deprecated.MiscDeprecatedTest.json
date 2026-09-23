@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deprecated.MiscDeprecatedTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deprecated/MiscDeprecatedTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deprecated.MiscDeprecatedTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deprecated/MiscDeprecatedTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deprecated;\n\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.ser.std.EnumMapSerializer;\nimport com.fasterxml.jackson.databind.util.EnumValues;\n\n@SuppressWarnings(\"deprecation\")\npublic class MiscDeprecatedTest extends BaseMapTest\n{\n    private final ObjectMapper MAPPER = objectMapper();\n\n    @SuppressWarnings(\"unchecked\")\n    public void testOldEnumMapSerializer() throws Exception\n    {\n        /*\n        public EnumMapSerializer(JavaType valueType, boolean staticTyping, EnumValues keyEnums,\n                TypeSerializer vts, JsonSerializer<Object> valueSerializer)\n                */\n        // to be removed from 2.7 or so:\n        Class<?> enumClass = ABC.class;\n        EnumMapSerializer ser = new EnumMapSerializer(MAPPER.constructType(String.class), true,\n                EnumValues.construct(MAPPER.getSerializationConfig(), (Class<Enum<?>>) enumClass),\n                null, /* value serializer */ null);\n        \n        // ... and?\n        assertNotNull(ser);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 28,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1235,
+  "representation_chars": 1235,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

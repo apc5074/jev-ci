@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.util.CompactStringObjectMapTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/util/CompactStringObjectMapTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.util.CompactStringObjectMapTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/util/CompactStringObjectMapTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.util;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.databind.BaseMapTest;\n\npublic class CompactStringObjectMapTest extends BaseMapTest\n{\n    public void testBig()\n    {\n        Map<String,String> all = new LinkedHashMap<>();\n        for (int i = 0; i < 1000; ++i) {\n            String key = \"key\"+i;\n            all.put(key, key);\n        }\n        CompactStringObjectMap map = CompactStringObjectMap.construct(all);\n        assertEquals(1000, map.keys().size());\n\n        for (String key : all.keySet()) {\n            assertEquals(key, map.find(key));\n        }\n\n        // and then bogus empty keys\n        assertNull(map.find(\"key1000\"));\n        assertNull(map.find(\"keyXXX\"));\n        assertNull(map.find(\"\"));\n    }\n}\n",
+  "compaction": {
+    "source_lines": 28,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 953,
+  "representation_chars": 953,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

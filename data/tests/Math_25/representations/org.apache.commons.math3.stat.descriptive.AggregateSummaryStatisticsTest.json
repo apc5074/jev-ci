@@ -1,0 +1,81 @@
+{
+  "test_class": "org.apache.commons.math3.stat.descriptive.AggregateSummaryStatisticsTest",
+  "source_file": "src/test/java/org/apache/commons/math3/stat/descriptive/AggregateSummaryStatisticsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.stat.descriptive.AggregateSummaryStatisticsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/stat/descriptive/AggregateSummaryStatisticsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math3.stat.descriptive;\n\nimport java.util.ArrayList;\nimport java.util.Collection;\n\n\nimport org.apache.commons.math3.TestUtils;\nimport org.apache.commons.math3.distribution.RealDistribution;\nimport org.apache.commons.math3.distribution.UniformRealDistribution;\nimport org.apache.commons.math3.distribution.IntegerDistribution;\nimport org.apache.commons.math3.distribution.UniformIntegerDistribution;\nimport org.apache.commons.math3.util.Precision;\nimport org.junit.Assert;\nimport org.junit.Test;\n\n\n/**\n * Test cases for {@link AggregateSummaryStatistics}\n *\n */\npublic class AggregateSummaryStatisticsTest {\n\n    /**\n     * Tests the standard aggregation behavior\n     */\n    @Test\n    public void testAggregation() {\n        AggregateSummaryStatistics aggregate = new AggregateSummaryStatistics();\n        SummaryStatistics setOneStats = aggregate.createContributingStatistics();\n        SummaryStatistics setTwoStats = aggregate.createContributingStatistics();\n\n        Assert.assertNotNull(\"The set one contributing stats are null\", setOneStats);\n        Assert.assertNotNull(\"The set two contributing stats are null\", setTwoStats);\n        Assert.assertNotSame(\"Contributing stats objects are the same\", setOneStats, setTwoStats);\n\n        setOneStats.addValue(2);\n        setOneStats.addValue(3);\n        setOneStats.addValue(5);\n        setOneStats.addValue(7);\n        setOneStats.addValue(11);\n        Assert.assertEquals(\"Wrong number of set one values\", 5, setOneStats.getN());\n        Assert.assertTrue(\"Wrong sum of set one values\", Precision.equals(28.0, setOneStats.getSum(), 1));\n\n        setTwoStats.addValue(2);\n        setTwoStats.addValue(4);\n        setTwoStats.addValue(8);\n        Assert.assertEquals(\"Wrong number of set two values\", 3, setTwoStats.getN());\n        Assert.assertTrue(\"Wrong sum of set two values\", Precision.equals(14.0, setTwoStats.getSum(), 1));\n\n        Assert.assertEquals(\"Wrong number of aggregate values\", 8, aggregate.getN());\n        Assert.assertTrue(\"Wrong aggregate sum\", Precision.equals(42.0, aggregate.getSum(), 1));\n    }\n\n    /**\n     * Verify that aggregating over a partition gives the same results\n     * as direct computation.\n     *\n     *  1) Randomly generate a dataset of 10-100 values\n     *     from [-100, 100]\n     *  2) Divide the dataset it into 2-5 partitions\n     *  3) Create an AggregateSummaryStatistic and ContributingStatistics\n     *     for each partition\n     *  4) Compare results from the AggregateSummaryStatistic with values\n            subSampleStats[i] = new SummaryStatistics();\n        }\n        Collection<SummaryStatistics> aggregate = new ArrayList<SummaryStatistics>();\n        for (int i = 0; i < 5; i++) {\n            for (int j = 0; j < subSamples[i].length; j++) {\n                subSampleStats[i].addValue(subSamples[i][j]);\n            }\n            aggregate.add(subSampleStats[i]);\n        }\n\n        // Compare values\n        StatisticalSummaryValues aggregatedStats = AggregateSummaryStatistics.aggregate(aggregate);\n        assertEquals(totalStats.getSummary(), aggregatedStats, 10E-12);\n    }\n\n    @Test\n    public void testAggregateSpecialValues() {\n        double[] totalSample = {Double.POSITIVE_INFINITY, 2, 3, Double.NaN, 5};\n        double[][] subSamples = {{Double.POSITIVE_INFINITY, 2}, {3}, {Double.NaN}, {5}};\n\n        // Compute combined stats directly\n        SummaryStatistics totalStats = new SummaryStatistics();\n        for (int i = 0; i < totalSample.length; i++) {\n            totalStats.addValue(totalSample[i]);\n        }\n\n        // Now compute subsample stats individually and aggregate\n        SummaryStatistics[] subSampleStats = new SummaryStatistics[5];\n        for (int i = 0; i < 4; i++) {\n            subSampleStats[i] = new SummaryStatistics();\n        }\n        Collection<SummaryStatistics> aggregate = new ArrayList<SummaryStatistics>();\n        for (int i = 0; i < 4; i++) {\n            for (int j = 0; j < subSamples[i].length; j++) {\n                subSampleStats[i].addValue(subSamples[i][j]);\n            }\n            aggregate.add(subSampleStats[i]);\n        }\n\n        // Compare values\n        StatisticalSummaryValues aggregatedStats = AggregateSummaryStatistics.aggregate(aggregate);\n        assertEquals(totalStats.getSummary(), aggregatedStats, 10E-12);\n\n    }\n\n    /**\n     * Verifies that a StatisticalSummary and a StatisticalSummaryValues are equal up\n     * to delta, with NaNs, infinities returned in the same spots. For max, min, n, values\n     * have to agree exactly, delta is used only for sum, mean, variance, std dev.\n     */\n    protected static void assertEquals(StatisticalSummary expected, StatisticalSummary observed, double delta) {\n        TestUtils.assertEquals(expected.getMax(), observed.getMax(), 0);\n        TestUtils.assertEquals(expected.getMin(), observed.getMin(), 0);\n        Assert.assertEquals(expected.getN(), observed.getN());\n        TestUtils.assertEquals(expected.getSum(), observed.getSum(), delta);\n        TestUtils.assertEquals(expected.getMean(), observed.getMean(), delta);\n        TestUtils.assertEquals(expected.getStandardDeviation(), observed.getStandardDeviation(), delta);\n        TestUtils.assertEquals(expected.getVariance(), observed.getVariance(), delta);\n    }\n\n\n    /**\n     * Generates a random sample of double values.\n     * Sample size is random, between 10 and 100 and values are\n     * uniformly distributed over [-100, 100].\n     *\n     * @return array of random double values\n     */\n    private double[] generateSample() {\n        final IntegerDistribution size = new UniformIntegerDistribution(10, 100);\n        final RealDistribution randomData = new UniformRealDistribution(-100, 100);\n        final int sampleSize = size.sample();\n        final double[] out = randomData.sample(sampleSize);\n        return out;\n    }\n\n    /**\n     * Generates a partition of <sample> into up to 5 sequentially selected\n     * subsamples with randomly selected partition points.\n     *\n     * @param sample array to partition\n     * @return rectangular array with rows = subsamples\n     */\n    private double[][] generatePartition(double[] sample) {\n        final int length = sample.length;\n        final double[][] out = new double[5][];\n        int cur = 0;          // beginning of current partition segment\n        int offset = 0;       // end of current partition segment\n        int sampleCount = 0;  // number of segments defined \n        for (int i = 0; i < 5; i++) {\n            if (cur == length || offset == length) {\n                break;\n            }\n            final int next;\n            if (i == 4 || cur == length - 1) {\n                next = length - 1;\n            } else {\n                next = (new UniformIntegerDistribution(cur, length - 1)).sample();\n            }\n            final int subLength = next - cur + 1;\n            out[i] = new double[subLength];\n            System.arraycopy(sample, offset, out[i], 0, subLength);\n            cur = next + 1;\n            sampleCount++;\n            offset += subLength;\n        }\n        if (sampleCount < 5) {\n            double[][] out2 = new double[sampleCount][];\n            for (int j = 0; j < sampleCount; j++) {\n                final int curSize = out[j].length;\n                out2[j] = new double[curSize];\n                System.arraycopy(out[j], 0, out2[j], 0, curSize);\n            }\n            return out2;\n        } else {\n            return out;\n        }\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 300,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        180,
+        260
+      ],
+      [
+        240,
+        300
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.11982002395993
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 5.452946913690436
+      },
+      {
+        "start": 240,
+        "end": 300,
+        "score": 4.978569024232481
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.11982002395993
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.763014853323556
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 0.6757959496227377
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 5.452946913690436
+      },
+      {
+        "start": 240,
+        "end": 300,
+        "score": 4.978569024232481
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8495,
+  "representation_chars": 8495,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

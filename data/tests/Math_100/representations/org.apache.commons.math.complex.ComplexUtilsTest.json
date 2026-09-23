@@ -1,0 +1,116 @@
+{
+  "test_class": "org.apache.commons.math.complex.ComplexUtilsTest",
+  "source_file": "src/test/org/apache/commons/math/complex/ComplexUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math.complex.ComplexUtilsTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/math/complex/ComplexUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math.complex;\n\nimport org.apache.commons.math.TestUtils;\n\nimport junit.framework.TestCase;\n\n/**\n * @version $Revision$ $Date$\n */\npublic class ComplexUtilsTest extends TestCase {\n    \n    private double inf = Double.POSITIVE_INFINITY;\n    private double negInf = Double.NEGATIVE_INFINITY;\n    private double nan = Double.NaN;\n    private double pi = Math.PI;\n    \n    private Complex oneInf = new Complex(1, inf);\n    private Complex oneNegInf = new Complex(1, negInf);\n    private Complex infOne = new Complex(inf, 1);\n    private Complex negInfOne = new Complex(negInf, 1);\n    private Complex negInfInf = new Complex(negInf, inf);\n    private Complex infNegInf = new Complex(inf, negInf);\n    private Complex infInf = new Complex(inf, inf);\n    private Complex negInfNegInf = new Complex(negInf, negInf);\n    private Complex infNaN = new Complex(inf, nan);\n    private Complex negInfNaN = new Complex(negInf, nan);\n    private Complex nanInf = new Complex(nan, inf);\n    private Complex nanNegInf = new Complex(nan, negInf);\n    private Complex zeroNaN = new Complex(0, nan);\n    private Complex nanZero = new Complex(nan, 0);\n    private Complex infZero = new Complex(inf, 0);\n    private Complex zeroInf = new Complex(0, inf);\n    private Complex negInfZero = new Complex(negInf, 0);\n\n    /** @deprecated to be removed in 2.0 */\n    public void testAcos() {\n        Complex z = new Complex(3, 4);\n        Complex expected = new Complex(0.936812, -2.30551);\n        TestUtils.assertEquals(expected, ComplexUtils.acos(z), 1.0e-5);\n        TestUtils.assertEquals(new Complex(Math.acos(0), 0), \n                ComplexUtils.acos(Complex.ZERO), 1.0e-12);\n    }\n\n    /** @deprecated to be removed in 2.0 */\n    public void testAcosInf() {\n        TestUtils.assertSame(Complex.NaN, ComplexUtils.acos(oneInf));\n        TestUtils.assertSame(Complex.NaN, ComplexUtils.acos(oneNegInf));\n        TestUtils.assertSame(Complex.NaN, ComplexUtils.acos(infOne));\n        TestUtils.assertSame(Complex.NaN, ComplexUtils.acos(negInfOne));\n        TestUtils.assertSame(Complex.NaN, ComplexUtils.acos(infInf));\n        TestUtils.assertSame(Complex.NaN, ComplexUtils.acos(infNegInf));\n        TestUtils.assertSame(Complex.NaN, ComplexUtils.acos(negInfInf));\n        TestUtils.assertSame(Complex.NaN, ComplexUtils.acos(negInfNegInf));\n    }\n\n    /** @deprecated to be removed in 2.0 */\n    public void testAcosNaN() {\n        assertTrue(ComplexUtils.acos(Complex.NaN).isNaN());\n    }\n\n    /** @deprecated to be removed in 2.0 */\n    public void testAcosNull() {\n        try {\n            fail(\"Expecting NullPointerException\");\n        } catch (NullPointerException ex) {\n            // expected\n        }\n    }\n\n    /** @deprecated to be removed in 2.0 */\n    public void testSinh() {\n        Complex z = new Complex(3, 4);\n        Complex expected = new Complex(-6.54812, -7.61923);\n        TestUtils.assertEquals(expected, ComplexUtils.sinh(z), 1.0e-5);\n    }\n\n    /** @deprecated to be removed in 2.0 */\n    public void testSinhNaN() {\n        assertTrue(ComplexUtils.sinh(Complex.NaN).isNaN());\n    }\n\n    /** @deprecated to be removed in 2.0 */\n    public void testSinhInf() {\n        TestUtils.assertSame(Complex.NaN, ComplexUtils.sinh(oneInf));\n        TestUtils.assertSame(Complex.NaN, ComplexUtils.sinh(oneNegInf));\n        TestUtils.assertSame(infInf, ComplexUtils.sinh(infOne));\n        TestUtils.assertSame(negInfInf, ComplexUtils.sinh(negInfOne));\n        TestUtils.assertSame(Complex.NaN, ComplexUtils.sinh(infInf));\n        TestUtils.assertSame(Complex.NaN, ComplexUtils.sinh(infNegInf));\n        TestUtils.assertSame(Complex.NaN, ComplexUtils.sinh(negInfInf));\n        TestUtils.assertSame(Complex.NaN, ComplexUtils.sinh(negInfNegInf));\n    }\n\n    /** @deprecated to be removed in 2.0 */\n    public void testsinhNull() {\n        try {\n            ComplexUtils.sinh(null); \n            fail(\"Expecting NullPointerException\");\n        } catch (NullPointerException ex) {\n            // expected\n        }\n    }\n\n    /** @deprecated to be removed in 2.0 */\n    public void testSqrtRealPositive() {\n        Complex z = new Complex(3, 4);\n        Complex expected = new Complex(2, 1);\n        TestUtils.assertEquals(expected, ComplexUtils.sqrt(z), 1.0e-5);\n    }\n\n    /** @deprecated to be removed in 2.0 */\n    public void testSqrtRealZero() {\n        Complex z = new Complex(0.0, 4);\n        Complex expected = new Complex(1.41421, 1.41421);\n        TestUtils.assertEquals(expected, ComplexUtils.sqrt(z), 1.0e-5);\n    }\n\n    /** @deprecated to be removed in 2.0 */\n    public void testSqrtRealNegative() {\n        Complex z = new Complex(-3.0, 4);\n        Complex expected = new Complex(1, 2);\n        TestUtils.assertEquals(expected, ComplexUtils.sqrt(z), 1.0e-5);\n    }\n\n    /** @deprecated to be removed in 2.0 */\n    public void testSqrtImaginaryZero() {\n        Complex z = new Complex(-3.0, 0.0);\n        Complex expected = new Complex(0.0, 1.73205);\n        TestUtils.assertEquals(expected, ComplexUtils.sqrt(z), 1.0e-5);\n    }\n\n    /** @deprecated to be removed in 2.0 */\n    public void testSqrtImaginaryNegative() {\n        Complex z = new Complex(-3.0, -4.0);\n        Complex expected = new Complex(1.0, -2.0);\n        TestUtils.assertEquals(expected, ComplexUtils.sqrt(z), 1.0e-5);\n    }\n\n    /** @deprecated to be removed in 2.0 */\n    public void testSqrtPolar() {\n        double r = 1;\n        for (int i = 0; i < 5; i++) {\n            r += i;\n            double theta = 0;\n            for (int j =0; j < 11; j++) {\n                theta += pi /12;\n                Complex z = ComplexUtils.polar2Complex(r, theta);\n                Complex sqrtz = ComplexUtils.polar2Complex(Math.sqrt(r), theta / 2);\n                TestUtils.assertEquals(sqrtz, ComplexUtils.sqrt(z), 10e-12);\n            }\n        }       \n    }\n\n    /** @deprecated to be removed in 2.0 */\n    public void testSqrtNaN() {\n        assertTrue(ComplexUtils.sqrt(Complex.NaN).isNaN());\n    }\n\n    /** @deprecated to be removed in 2.0 */\n    public void testSqrtInf() {\n        TestUtils.assertSame(infNaN, ComplexUtils.sqrt(oneInf));\n        TestUtils.assertSame(infNaN, ComplexUtils.sqrt(oneNegInf));\n        TestUtils.assertSame(infZero, ComplexUtils.sqrt(infOne));\n        TestUtils.assertSame(zeroInf, ComplexUtils.sqrt(negInfOne));\n        TestUtils.assertSame(infNaN, ComplexUtils.sqrt(infInf));\n        TestUtils.assertSame(infNaN, ComplexUtils.sqrt(infNegInf));\n        TestUtils.assertSame(nanInf, ComplexUtils.sqrt(negInfInf));\n        TestUtils.assertSame(nanNegInf, ComplexUtils.sqrt(negInfNegInf));\n    }\n\n    /** @deprecated to be removed in 2.0 */\n    public void testSqrtNull() {\n        try {\n            ComplexUtils.sqrt(null); \n            fail(\"Expecting NullPointerException\");\n        } catch (NullPointerException ex) {\n            // expected\n        }\n    }\n\n    /** @deprecated to be removed in 2.0 */\n    public void testSqrt1z() {\n        Complex z = new Complex(3, 4);\n        Complex expected = new Complex(4.08033, -2.94094);\n        TestUtils.assertEquals(expected, ComplexUtils.sqrt1z(z), 1.0e-5);\n    }\n\n    /** @deprecated to be removed in 2.0 */\n    public void testSqrt1zNaN() {\n        assertTrue(ComplexUtils.sqrt1z(Complex.NaN).isNaN());\n    }\n\n    /** @deprecated to be removed in 2.0 */\n    public void testSqrt1zNull() {\n        try {\n            ComplexUtils.sqrt1z(null); \n            fail(\"Expecting NullPointerException\");\n        } catch (NullPointerException ex) {\n            // expected\n        }\n    }\n\n    /** @deprecated to be removed in 2.0 */\n",
+  "compaction": {
+    "source_lines": 698,
+    "mode": "windows",
+    "windows_total": 12,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        480,
+        560
+      ],
+      [
+        540,
+        620
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 20.269035612845308
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 7.953863638614724
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 12.286523254172671
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 20.269035612845308
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 0.5301187457824944
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 0.550476467616501
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 1.3621565295281024
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 1.7766596392617846
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 7.707270430450111
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 0.9520564656500098
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 1.5279136346681113
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 7.953863638614724
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 12.286523254172671
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 0.5528002683885038
+      },
+      {
+        "start": 660,
+        "end": 698,
+        "score": 0.5242846660229885
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8560,
+  "representation_chars": 8560,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

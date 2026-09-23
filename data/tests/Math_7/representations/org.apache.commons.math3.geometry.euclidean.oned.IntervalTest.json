@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.math3.geometry.euclidean.oned.IntervalTest",
+  "source_file": "src/test/java/org/apache/commons/math3/geometry/euclidean/oned/IntervalTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.geometry.euclidean.oned.IntervalTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/geometry/euclidean/oned/IntervalTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.geometry.euclidean.oned;\n\nimport org.apache.commons.math3.geometry.partitioning.Region;\nimport org.apache.commons.math3.util.FastMath;\nimport org.apache.commons.math3.util.Precision;\nimport org.junit.Assert;\nimport org.junit.Test;\n\npublic class IntervalTest {\n\n    @Test\n    public void testInterval() {\n        Interval interval = new Interval(2.3, 5.7);\n        Assert.assertEquals(3.4, interval.getSize(), 1.0e-10);\n        Assert.assertEquals(4.0, interval.getBarycenter(), 1.0e-10);\n        Assert.assertEquals(Region.Location.BOUNDARY, interval.checkPoint(2.3, 1.0e-10));\n        Assert.assertEquals(Region.Location.BOUNDARY, interval.checkPoint(5.7, 1.0e-10));\n        Assert.assertEquals(Region.Location.OUTSIDE,  interval.checkPoint(1.2, 1.0e-10));\n        Assert.assertEquals(Region.Location.OUTSIDE,  interval.checkPoint(8.7, 1.0e-10));\n        Assert.assertEquals(Region.Location.INSIDE,   interval.checkPoint(3.0, 1.0e-10));\n        Assert.assertEquals(2.3, interval.getInf(), 1.0e-10);\n        Assert.assertEquals(5.7, interval.getSup(), 1.0e-10);\n    }\n\n    @Test\n    public void testTolerance() {\n        Interval interval = new Interval(2.3, 5.7);\n        Assert.assertEquals(Region.Location.OUTSIDE,  interval.checkPoint(1.2, 1.0));\n        Assert.assertEquals(Region.Location.BOUNDARY, interval.checkPoint(1.2, 1.2));\n        Assert.assertEquals(Region.Location.OUTSIDE,  interval.checkPoint(8.7, 2.9));\n        Assert.assertEquals(Region.Location.BOUNDARY, interval.checkPoint(8.7, 3.1));\n        Assert.assertEquals(Region.Location.INSIDE,   interval.checkPoint(3.0, 0.6));\n        Assert.assertEquals(Region.Location.BOUNDARY, interval.checkPoint(3.0, 0.8));\n    }\n\n    @Test\n    public void testInfinite() {\n        Interval interval = new Interval(9.0, Double.POSITIVE_INFINITY);\n        Assert.assertEquals(Region.Location.BOUNDARY, interval.checkPoint(9.0, 1.0e-10));\n        Assert.assertEquals(Region.Location.OUTSIDE,  interval.checkPoint(8.4, 1.0e-10));\n        for (double e = 1.0; e <= 6.0; e += 1.0) {\n            Assert.assertEquals(Region.Location.INSIDE,\n                                interval.checkPoint(FastMath.pow(10.0, e), 1.0e-10));\n        }\n        Assert.assertTrue(Double.isInfinite(interval.getSize()));\n        Assert.assertEquals(9.0, interval.getInf(), 1.0e-10);\n        Assert.assertTrue(Double.isInfinite(interval.getSup()));\n\n    }\n\n    @Test\n    public void testSinglePoint() {\n        Interval interval = new Interval(1.0, 1.0);\n        Assert.assertEquals(0.0, interval.getSize(), Precision.SAFE_MIN);\n        Assert.assertEquals(1.0, interval.getBarycenter(), Precision.EPSILON);\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 74,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3667,
+  "representation_chars": 3667,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

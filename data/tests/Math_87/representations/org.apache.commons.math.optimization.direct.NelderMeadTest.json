@@ -1,0 +1,76 @@
+{
+  "test_class": "org.apache.commons.math.optimization.direct.NelderMeadTest",
+  "source_file": "src/test/org/apache/commons/math/optimization/direct/NelderMeadTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math.optimization.direct.NelderMeadTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/math/optimization/direct/NelderMeadTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math.optimization.direct;\n\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertNotNull;\nimport static org.junit.Assert.assertNull;\nimport static org.junit.Assert.assertTrue;\nimport static org.junit.Assert.fail;\n\nimport org.apache.commons.math.ConvergenceException;\nimport org.apache.commons.math.FunctionEvaluationException;\nimport org.apache.commons.math.MathException;\nimport org.apache.commons.math.MaxEvaluationsExceededException;\nimport org.apache.commons.math.MaxIterationsExceededException;\nimport org.apache.commons.math.analysis.MultivariateRealFunction;\nimport org.apache.commons.math.optimization.GoalType;\nimport org.apache.commons.math.optimization.OptimizationException;\nimport org.apache.commons.math.optimization.RealPointValuePair;\nimport org.apache.commons.math.optimization.SimpleScalarValueChecker;\nimport org.junit.Test;\n\npublic class NelderMeadTest {\n\n  @Test\n  public void testFunctionEvaluationExceptions() {\n      MultivariateRealFunction wrong =\n          new MultivariateRealFunction() {\n            private static final long serialVersionUID = 4751314470965489371L;\n            public double value(double[] x) throws FunctionEvaluationException {\n                if (x[0] < 0) {\n                    throw new FunctionEvaluationException(x, \"{0}\", \"oops\");\n                } else if (x[0] > 1) {\n                    throw new FunctionEvaluationException(new RuntimeException(\"oops\"), x);\n                } else {\n                    return x[0] * (1 - x[0]);\n                }\n            }\n      };\n      try {\n          NelderMead optimizer = new NelderMead(0.9, 1.9, 0.4, 0.6);\n          optimizer.optimize(wrong, GoalType.MINIMIZE, new double[] { -1.0 });\n          fail(\"an exception should have been thrown\");\n      } catch (FunctionEvaluationException ce) {\n          // expected behavior\n          assertNull(ce.getCause());\n      } catch (Exception e) {\n          fail(\"wrong exception caught: \" + e.getMessage());\n      } \n      try {\n          NelderMead optimizer = new NelderMead(0.9, 1.9, 0.4, 0.6);\n          optimizer.optimize(wrong, GoalType.MINIMIZE, new double[] { +2.0 });\n          fail(\"an exception should have been thrown\");\n      } catch (FunctionEvaluationException ce) {\n          // expected behavior\n          assertNotNull(ce.getCause());\n      } catch (Exception e) {\n          fail(\"wrong exception caught: \" + e.getMessage());\n      } \n  }\n\n  @Test\n  public void testMinimizeMaximize()\n      throws FunctionEvaluationException, ConvergenceException {\n\n      // the following function has 4 local extrema:\n      final double xM        = -3.841947088256863675365;\n      final double yM        = -1.391745200270734924416;\n      final double xP        =  0.2286682237349059125691;\n      final double yP        = -yM;\n      final double valueXmYm =  0.2373295333134216789769; // local  maximum\n      final double valueXmYp = -valueXmYm;                // local  minimum\n      final double valueXpYm = -0.7290400707055187115322; // global minimum\n      final double valueXpYp = -valueXpYm;                // global maximum\n      MultivariateRealFunction fourExtrema = new MultivariateRealFunction() {\n          private static final long serialVersionUID = -7039124064449091152L;\n          public double value(double[] variables) throws FunctionEvaluationException {\n              final double x = variables[0];\n              final double y = variables[1];\n              return ((x == 0) || (y == 0)) ? 0 : (Math.atan(x) * Math.atan(x + 2) * Math.atan(y) * Math.atan(y) / (x * y));\n          }\n      };\n\n      NelderMead optimizer = new NelderMead();\n      optimizer.setConvergenceChecker(new SimpleScalarValueChecker(1.0e-10, 1.0e-30));\n      optimizer.setMaxIterations(100);\n      optimizer.setStartConfiguration(new double[] { 0.2, 0.2 });\n      RealPointValuePair optimum;\n\n      // minimization\n      optimum = optimizer.optimize(fourExtrema, GoalType.MINIMIZE, new double[] { -3.0, 0 });\n      assertEquals(xM,        optimum.getPoint()[0], 2.0e-7);\n      assertEquals(yP,        optimum.getPoint()[1], 2.0e-5);\n      assertEquals(valueXmYp, optimum.getValue(),    6.0e-12);\n      assertTrue(optimizer.getEvaluations() > 60);\n      assertTrue(optimizer.getEvaluations() < 90);\n\n      optimum = optimizer.optimize(fourExtrema, GoalType.MINIMIZE, new double[] { +1, 0 });\n      assertEquals(xP,        optimum.getPoint()[0], 5.0e-6);\n      assertEquals(yM,        optimum.getPoint()[1], 6.0e-6);\n      assertEquals(valueXpYm, optimum.getValue(),    1.0e-11);              \n      assertTrue(optimizer.getEvaluations() > 60);\n      assertTrue(optimizer.getEvaluations() < 90);\n\n      // maximization\n      optimum = optimizer.optimize(fourExtrema, GoalType.MAXIMIZE, new double[] { -3.0, 0.0 });\n      assertEquals(xM,        optimum.getPoint()[0], 1.0e-5);\n      assertEquals(yM,        optimum.getPoint()[1], 3.0e-6);\n      assertEquals(valueXmYm, optimum.getValue(),    3.0e-12);\n      assertTrue(optimizer.getEvaluations() > 60);\n      assertTrue(optimizer.getEvaluations() < 90);\n\n      optimum = optimizer.optimize(fourExtrema, GoalType.MAXIMIZE, new double[] { +1, 0 });\n      assertEquals(xP,        optimum.getPoint()[0], 4.0e-6);\n      assertEquals(yP,        optimum.getPoint()[1], 5.0e-6);\n      assertEquals(valueXpYp, optimum.getValue(),    7.0e-12);\n      assertTrue(optimizer.getEvaluations() > 60);\n      assertTrue(optimizer.getEvaluations() < 90);\n\n  }\n\n  @Test\n  public void testRosenbrock()\n    throws FunctionEvaluationException, ConvergenceException {\n\n          optimizer.setMaxIterations(20);\n          optimizer.optimize(powell, GoalType.MINIMIZE, new double[] { 3.0, -1.0, 0.0, 1.0 });\n      } catch (OptimizationException oe) {\n          if (oe.getCause() instanceof ConvergenceException) {\n              throw (ConvergenceException) oe.getCause();\n          }\n          throw oe;\n      }\n  }\n\n  @Test(expected = MaxEvaluationsExceededException.class)\n  public void testMaxEvaluations() throws MathException {\n      try {\n          Powell powell = new Powell();\n          NelderMead optimizer = new NelderMead();\n          optimizer.setConvergenceChecker(new SimpleScalarValueChecker(-1.0, 1.0e-3));\n          optimizer.setMaxEvaluations(20);\n          optimizer.optimize(powell, GoalType.MINIMIZE, new double[] { 3.0, -1.0, 0.0, 1.0 });\n      } catch (OptimizationException oe) {\n          if (oe.getCause() instanceof ConvergenceException) {\n              throw (ConvergenceException) oe.getCause();\n          }\n          throw oe;\n      }\n  }\n\n  private class Rosenbrock implements MultivariateRealFunction {\n\n      private int count;\n\n      public Rosenbrock() {\n          count = 0;\n      }\n\n      public double value(double[] x) throws FunctionEvaluationException {\n          ++count;\n          double a = x[1] - x[0] * x[0];\n          double b = 1.0 - x[0];\n          return 100 * a * a + b * b;\n      }\n\n      public int getCount() {\n          return count;\n      }\n\n  }\n\n  private class Powell implements MultivariateRealFunction {\n\n      private int count;\n\n      public Powell() {\n          count = 0;\n      }\n\n      public double value(double[] x) throws FunctionEvaluationException {\n          ++count;\n          double a = x[0] + 10 * x[1];\n          double b = x[2] - x[3];\n          double c = x[1] - 2 * x[2];\n          double d = x[0] - x[3];\n          return a * a + 5 * b * b + c * c * c * c + 10 * d * d * d * d;\n      }\n\n      public int getCount() {\n          return count;\n      }\n\n  }\n\n}\n",
+  "compaction": {
+    "source_lines": 251,
+    "mode": "windows",
+    "windows_total": 4,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        180,
+        251
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.659500022179117
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 6.073431119485156
+      },
+      {
+        "start": 180,
+        "end": 251,
+        "score": 6.632301056886364
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.659500022179117
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 6.073431119485156
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 3.0630136683338494
+      },
+      {
+        "start": 180,
+        "end": 251,
+        "score": 6.632301056886364
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8529,
+  "representation_chars": 8529,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

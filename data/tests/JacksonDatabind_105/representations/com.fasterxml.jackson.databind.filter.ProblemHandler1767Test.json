@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.filter.ProblemHandler1767Test",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/filter/ProblemHandler1767Test.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.filter.ProblemHandler1767Test\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/filter/ProblemHandler1767Test.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.filter;\n\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.deser.DeserializationProblemHandler;\n\npublic class ProblemHandler1767Test extends BaseMapTest\n{\n    static class IntHandler\n            extends DeserializationProblemHandler\n    {\n        @Override\n        public Object handleWeirdStringValue(DeserializationContext ctxt,\n                Class<?> targetType,\n                String valueToConvert,\n                String failureMsg)\n        {\n            if (targetType != Integer.TYPE) {\n                return NOT_HANDLED;\n            }\n            return 1;\n        }\n    }\n\n    static class TestBean {\n        int a;\n\n        public int getA() {\n            return a;\n        }\n\n        public void setA(int a) {\n            this.a = a;\n        }\n\n    }\n\n    public void testPrimitivePropertyWithHandler() throws Exception {\n        final ObjectMapper mapper = new ObjectMapper();\n        mapper.addHandler(new IntHandler());\n        TestBean result = mapper.readValue(aposToQuotes(\"{'a': 'not-a-number'}\"), TestBean.class);\n        assertNotNull(result);\n        assertEquals(1, result.a);\n    }\n    \n}\n",
+  "compaction": {
+    "source_lines": 45,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1366,
+  "representation_chars": 1366,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

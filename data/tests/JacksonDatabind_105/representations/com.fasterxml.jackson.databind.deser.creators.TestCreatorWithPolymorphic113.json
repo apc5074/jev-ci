@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.creators.TestCreatorWithPolymorphic113",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/creators/TestCreatorWithPolymorphic113.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.creators.TestCreatorWithPolymorphic113\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/creators/TestCreatorWithPolymorphic113.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser.creators;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.databind.*;\n\n/**\n * Test(s) for [Issue#113], problems with polymorphic types, JsonCreator.\n */\npublic class TestCreatorWithPolymorphic113 extends BaseMapTest\n{\n    @JsonIgnoreProperties(ignoreUnknown = true)\n    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = \"_class\")\n    @JsonSubTypes({  @JsonSubTypes.Type(Dog.class) })\n    public static abstract class Animal {\n        public final static String ID = \"id\";\n\n        private String id;\n\n        @JsonCreator\n        public Animal(@JsonProperty(ID) String id) {\n            this.id = id;\n        }\n\n        @JsonProperty(ID)\n        public String getId() {\n            return id;\n        }\n    }\n\n    @JsonIgnoreProperties(ignoreUnknown = true)\n    public static class Dog extends Animal {\n        @JsonCreator\n        public Dog(@JsonProperty(ID) String id) {\n            super(id);\n        }\n    }\n\n    @JsonIgnoreProperties(ignoreUnknown = true)\n    public static class AnimalWrapper {\n        private Animal animal;\n\n        @JsonCreator\n        public AnimalWrapper(@JsonProperty(\"animal\") Animal animal) {\n            this.animal = animal;\n        }\n\n        public Animal getAnimal() {\n            return animal;\n        }\n    }\n\n    public void testSubtypes() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        String id = \"nice dogy\";\n        String json = mapper.writeValueAsString(new AnimalWrapper(new Dog(id)));\n//System.err.println(\"JSON = \"+json);\n        AnimalWrapper wrapper = mapper.readValue(json, AnimalWrapper.class);\n        assertEquals(id, wrapper.getAnimal().getId());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 62,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1968,
+  "representation_chars": 1968,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

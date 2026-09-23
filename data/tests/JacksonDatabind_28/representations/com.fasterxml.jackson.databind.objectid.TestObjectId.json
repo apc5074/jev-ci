@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.objectid.TestObjectId",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/objectid/TestObjectId.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.objectid.TestObjectId\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/objectid/TestObjectId.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.objectid;\n\nimport java.util.ArrayList;\nimport java.util.List;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.databind.*;\n\npublic class TestObjectId extends BaseMapTest\n{\n    @JsonPropertyOrder({\"a\", \"b\"})\n    static class Wrapper {\n        public ColumnMetadata a, b;\n    }\n    \n    @JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property=\"@id\")\n    static class ColumnMetadata {\n      private final String name;\n      private final String type;\n      private final String comment;\n\n      @JsonCreator\n      public ColumnMetadata(\n        @JsonProperty(\"name\") String name,\n        @JsonProperty(\"type\") String type,\n        @JsonProperty(\"comment\") String comment\n      ) {\n        this.name = name;\n        this.type = type;\n        this.comment = comment;\n      }\n\n      @JsonProperty(\"name\")\n      public String getName() {\n        return name;\n      }\n\n      @JsonProperty(\"type\")\n      public String getType() {\n        return type;\n      }\n\n      @JsonProperty(\"comment\")\n      public String getComment() {\n        return comment;\n      }    \n    }\n\n    /* Problem in which always-as-id reference may prevent initial\n     * serialization of a POJO.\n     */\n    \n    static class Company {\n        public List<Employee> employees;\n\n        public void add(Employee e) {\n            if (employees == null) {\n                employees = new ArrayList<Employee>();\n            }\n            employees.add(e);\n        }\n    }\n\n    @JsonIdentityInfo(property=\"id\",\n            generator=ObjectIdGenerators.PropertyGenerator.class)\n    public static class Employee {\n        public int id;\n     \n        public String name;\n     \n        @JsonIdentityReference(alwaysAsId=true)\n        public Employee manager;\n\n        @JsonIdentityReference(alwaysAsId=true)\n        public List<Employee> reports;\n    \n        public Employee() { }\n        public Employee(int id, String name, Employee manager) {\n            this.id = id;\n            this.name = name;\n            this.manager = manager;\n            reports = new ArrayList<Employee>();\n        }\n\n        public Employee addReport(Employee e) {\n            reports.add(e);\n            return this;\n        }\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n    \n    private final ObjectMapper MAPPER = new ObjectMapper();\n    \n    public void testColumnMetadata() throws Exception\n    {\n        ColumnMetadata col = new ColumnMetadata(\"Billy\", \"employee\", \"comment\");\n        Wrapper w = new Wrapper();\n        w.a = col;\n        w.b = col;\n        String json = MAPPER.writeValueAsString(w);\n        \n        Wrapper deserialized = MAPPER.readValue(json, Wrapper.class);\n        assertNotNull(deserialized);\n        assertNotNull(deserialized.a);\n        assertNotNull(deserialized.b);\n        \n        assertEquals(\"Billy\", deserialized.a.getName());\n        assertEquals(\"employee\", deserialized.a.getType());\n        assertEquals(\"comment\", deserialized.a.getComment());\n\n        assertSame(deserialized.a, deserialized.b);\n    }\n\n    // For [databind#188]\n    public void testMixedRefsIssue188() throws Exception\n    {\n        Company comp = new Company();\n        Employee e1 = new Employee(1, \"First\", null);\n        Employee e2 = new Employee(2, \"Second\", e1);\n        e1.addReport(e2);\n        comp.add(e1);\n        comp.add(e2);\n\n        String json = MAPPER.writeValueAsString(comp);\n        \n        assertEquals(\"{\\\"employees\\\":[\"\n                +\"{\\\"id\\\":1,\\\"name\\\":\\\"First\\\",\\\"manager\\\":null,\\\"reports\\\":[2]},\"\n                +\"{\\\"id\\\":2,\\\"name\\\":\\\"Second\\\",\\\"manager\\\":1,\\\"reports\\\":[]}\"\n                +\"]}\",\n                json);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 138,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3994,
+  "representation_chars": 3994,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

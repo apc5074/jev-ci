@@ -1,0 +1,81 @@
+{
+  "test_class": "org.apache.commons.math3.distribution.MultivariateNormalMixtureModelDistributionTest",
+  "source_file": "src/test/java/org/apache/commons/math3/distribution/MultivariateNormalMixtureModelDistributionTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.distribution.MultivariateNormalMixtureModelDistributionTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/distribution/MultivariateNormalMixtureModelDistributionTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.distribution;\n\nimport java.util.List;\nimport java.util.ArrayList;\nimport org.apache.commons.math3.exception.NotPositiveException;\nimport org.apache.commons.math3.exception.MathArithmeticException;\nimport org.apache.commons.math3.util.Pair;\nimport org.junit.Assert;\nimport org.junit.Test;\n\n/**\n * Test that demonstrates the use of {@link MixtureMultivariateRealDistribution}\n * in order to create a mixture model composed of {@link MultivariateNormalDistribution\n * normal distributions}.\n */\npublic class MultivariateNormalMixtureModelDistributionTest {\n\n    @Test\n    public void testNonUnitWeightSum() {\n        final double[] weights = { 1, 2 };\n        final double[][] means = { { -1.5, 2.0 },\n                                   { 4.0, 8.2 } };\n        final double[][][] covariances = { { { 2.0, -1.1 },\n                                             { -1.1, 2.0 } },\n                                           { { 3.5, 1.5 },\n                                             { 1.5, 3.5 } } };\n        final MultivariateNormalMixtureModelDistribution d\n            = create(weights, means, covariances);\n\n        final List<Pair<Double, MultivariateNormalDistribution>> comp = d.getComponents();\n\n        Assert.assertEquals(1d / 3, comp.get(0).getFirst(), Math.ulp(1d));\n        Assert.assertEquals(2d / 3, comp.get(1).getFirst(), Math.ulp(1d));\n    }\n\n    @Test(expected=MathArithmeticException.class)\n    public void testWeightSumOverFlow() {\n        final double[] weights = { 0.5 * Double.MAX_VALUE, 0.51 * Double.MAX_VALUE };\n        final double[][] means = { { -1.5, 2.0 },\n                                   { 4.0, 8.2 } };\n        final double[][][] covariances = { { { 2.0, -1.1 },\n                                             { -1.1, 2.0 } },\n                                           { { 3.5, 1.5 },\n                                             { 1.5, 3.5 } } };\n        final MultivariateNormalMixtureModelDistribution d\n            = create(weights, means, covariances);\n    }\n\n    @Test(expected=NotPositiveException.class)\n    public void testPreconditionPositiveWeights() {\n        final double[] negativeWeights = { -0.5, 1.5 };\n        final double[][] means = { { -1.5, 2.0 },\n                                   { 4.0, 8.2 } };\n        final double[][][] covariances = { { { 2.0, -1.1 },\n                                             { -1.1, 2.0 } },\n                                           { { 3.5, 1.5 },\n                                             { 1.5, 3.5 } } };\n        final MultivariateNormalMixtureModelDistribution d\n            = create(negativeWeights, means, covariances);\n    }\n\n    /**\n     * Test the accuracy of the density calculation.\n     */\n    @Test\n    public void testDensities() {\n        final double[] weights = { 0.3, 0.7 };\n        final double[][] means = { { -1.5, 2.0 },\n                                   { 4.0, 8.2 } };\n        final double[][][] covariances = { { { 2.0, -1.1 },\n                                             { -1.1, 2.0 } },\n                                           { { 3.5, 1.5 },\n                                             { 1.5, 3.5 } } };\n        final MultivariateNormalMixtureModelDistribution d\n            = create(weights, means, covariances);\n\n        // Test vectors\n        final double[][] testValues = { { -1.5, 2 },\n                                        { 4, 8.2 },\n                                        { 1.5, -2 },\n                                        { 0, 0 } };\n\n        // Densities that we should get back.\n        // Calculated by assigning weights to multivariate normal distribution\n        // and summing\n        // values from dmvnorm function in R 2.15 CRAN package Mixtools v0.4.\n        // Like: .3*dmvnorm(val,mu1,sigma1)+.7*dmvnorm(val,mu2,sigma2)\n        final double[] correctDensities = { 0.02862037278930575,\n                                            0.03523044847314091,\n                                            0.000416241365629767,\n                                            0.009932042831700297 };\n\n        for (int i = 0; i < testValues.length; i++) {\n            Assert.assertEquals(correctDensities[i], d.density(testValues[i]), Math.ulp(1d));\n        }\n    }\n\n    /**\n     * Test the accuracy of sampling from the distribution.\n     */\n    @Test\n    public void testSampling() {\n        final double[] weights = { 0.3, 0.7 };\n        final double[][] means = { { -1.5, 2.0 },\n                                   { 4.0, 8.2 } };\n        final double[][][] covariances = { { { 2.0, -1.1 },\n                                             { -1.1, 2.0 } },\n                                           { { 3.5, 1.5 },\n                                             { 1.5, 3.5 } } };\n        final MultivariateNormalMixtureModelDistribution d\n            = create(weights, means, covariances);\n        d.reseedRandomGenerator(50);\n\n        final double[][] correctSamples = getCorrectSamples();\n        final int n = correctSamples.length;\n        final double[][] samples = d.sample(n);\n\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < samples[i].length; j++) {\n                Assert.assertEquals(correctSamples[i][j], samples[i][j], 1e-16);\n            }\n        }\n    }\n\n    /**\n     * Creates a mixture of Gaussian distributions.\n     *\n     * @param weights Weights.\n     * @param means Means.\n     * @param covariances Covariances.\n     * @return the mixture distribution.\n     */\n    private MultivariateNormalMixtureModelDistribution create(double[] weights,\n                                                              double[][] means,\n                                                              double[][][] covariances) {\n        final List<Pair<Double, MultivariateNormalDistribution>> mvns\n            = new ArrayList<Pair<Double, MultivariateNormalDistribution>>();\n\n        for (int i = 0; i < weights.length; i++) {\n            final MultivariateNormalDistribution dist\n                = new MultivariateNormalDistribution(means[i], covariances[i]);\n            mvns.add(new Pair<Double, MultivariateNormalDistribution>(weights[i], dist));\n        }\n\n        return new MultivariateNormalMixtureModelDistribution(mvns);\n    }\n\n    /**\n     * Values used in {@link #testSampling()}.\n     */\n    private double[][] getCorrectSamples() {\n        // These were sampled from the MultivariateNormalMixtureModelDistribution class\n        // with seed 50.\n        //\n        // They were then fit to a MVN mixture model in R using mixtools.\n        //\n        // The optimal parameters were:\n        // - component weights: {0.3595186, 0.6404814}\n        // - mean vectors: {-1.645879, 1.989797}, {3.474328, 7.782232}\n        // - covariance matrices:\n        //     { 1.397738 -1.167732\n        //       -1.167732 1.801782 }\n        //   and\n        //     { 3.934593 2.354787\n        //       2.354787 4.428024 }\n        //\n        // It is considered fairly close to the actual test parameters,\n        // considering that the sample size is only 100.\n        return new double[][] {\n            { 6.259990922080121, 11.972954175355897 },\n            { -2.5296544304801847, 1.0031292519854365 },\n            { 0.49037886081440396, 0.9758251727325711 },\n            { 5.022970993312015, 9.289348879616787 },\n            { -1.686183146603914, 2.007244382745706 },\n            { -1.4729253946002685, 2.762166644212484 },\n            { 4.329788143963888, 11.514016497132253 },\n            { 3.008674596114442, 4.960246550446107 },\n            { 3.342379304090846, 5.937630105198625 },\n            { 2.6993068328674754, 7.42190871572571 },\n            { -2.446569340219571, 1.9687117791378763 },\n            { 1.922417883170056, 4.917616702617099 },\n            { -1.1969741543898518, 2.4576126277884387 },\n            { 2.4216948702967196, 8.227710158117134 },\n            { 6.701424725804463, 9.098666475042428 },\n",
+  "compaction": {
+    "source_lines": 299,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.53556477784188
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.376778565524556
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 7.786660160213011
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.53556477784188
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.376778565524556
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 7.786660160213011
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.024551958815184
+      },
+      {
+        "start": 240,
+        "end": 299,
+        "score": 1.641296071071768
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8938,
+  "representation_chars": 8938,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

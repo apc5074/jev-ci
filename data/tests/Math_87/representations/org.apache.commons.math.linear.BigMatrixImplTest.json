@@ -1,0 +1,126 @@
+{
+  "test_class": "org.apache.commons.math.linear.BigMatrixImplTest",
+  "source_file": "src/test/org/apache/commons/math/linear/BigMatrixImplTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math.linear.BigMatrixImplTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/math/linear/BigMatrixImplTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math.linear;\n\nimport junit.framework.Test;\nimport junit.framework.TestCase;\nimport junit.framework.TestSuite;\n\nimport java.math.BigDecimal;\n\n\n/**\n * Test cases for the {@link BigMatrixImpl} class.\n *\n * @version $Revision$ $Date$\n */\n@Deprecated\npublic final class BigMatrixImplTest extends TestCase {\n    \n    // Test data for String constructors\n    protected  String[][] testDataString = { {\"1\",\"2\",\"3\"}, {\"2\",\"5\",\"3\"}, {\"1\",\"0\",\"8\"} };\n    \n    // 3 x 3 identity matrix\n    protected double[][] id = { {1d,0d,0d}, {0d,1d,0d}, {0d,0d,1d} };\n    \n    // Test data for group operations\n    protected double[][] testData = { {1d,2d,3d}, {2d,5d,3d}, {1d,0d,8d} };\n    protected double[][] testDataLU = {{2d, 5d, 3d}, {.5d, -2.5d, 6.5d}, {0.5d, 0.2d, .2d}};\n    protected double[][] testDataPlus2 = { {3d,4d,5d}, {4d,7d,5d}, {3d,2d,10d} };\n    protected double[][] testDataMinus = { {-1d,-2d,-3d}, {-2d,-5d,-3d}, \n            {-1d,0d,-8d} };\n    protected double[] testDataRow1 = {1d,2d,3d};\n    protected double[] testDataCol3 = {3d,3d,8d};\n    protected double[][] testDataInv = \n        { {-40d,16d,9d}, {13d,-5d,-3d}, {5d,-2d,-1d} };\n    protected double[] preMultTest = {8,12,33};\n    protected double[][] testData2 ={ {1d,2d,3d}, {2d,5d,3d}};\n    protected double[][] testData2T = { {1d,2d}, {2d,5d}, {3d,3d}};\n    protected double[][] testDataPlusInv = \n        { {-39d,18d,12d}, {15d,0d,0d}, {6d,-2d,7d} };\n    \n    // lu decomposition tests\n    protected double[][] luData = { {2d,3d,3d}, {0d,5d,7d}, {6d,9d,8d} };\n    protected double[][] luDataLUDecomposition = { {6d,9d,8d}, {0d,5d,7d},\n            {0.33333333333333,0d,0.33333333333333} };\n    \n    // singular matrices\n    protected double[][] singular = { {2d,3d}, {2d,3d} };\n    protected double[][] bigSingular = {{1d,2d,3d,4d}, {2d,5d,3d,4d},\n            {7d,3d,256d,1930d}, {3d,7d,6d,8d}}; // 4th row = 1st + 2nd\n    protected double[][] detData = { {1d,2d,3d}, {4d,5d,6d}, {7d,8d,10d} };\n    protected double[][] detData2 = { {1d, 3d}, {2d, 4d}};\n    \n    // vectors\n    protected double[] testVector = {1,2,3};\n    protected double[] testVector2 = {1,2,3,4};\n    \n    // submatrix accessor tests\n    protected double[][] subTestData = {{1, 2, 3, 4}, {1.5, 2.5, 3.5, 4.5},\n            {2, 4, 6, 8}, {4, 5, 6, 7}}; \n    // array selections\n    protected double[][] subRows02Cols13 = { {2, 4}, {4, 8}};\n    protected double[][] subRows03Cols12 = { {2, 3}, {5, 6}};\n    protected double[][] subRows03Cols123 = { {2, 3, 4} , {5, 6, 7}};\n    // effective permutations\n    protected double[][] subRows20Cols123 = { {4, 6, 8} , {2, 3, 4}};\n        assertEquals(expected, matrix);   \n        \n        // dimension overflow\n        try {  \n            m.setSubMatrix(matrix.getData(),1,1);\n            fail(\"expecting MatrixIndexException\");\n        } catch (MatrixIndexException e) {\n            // expected\n        }\n        \n        // null\n        try {\n            m.setSubMatrix(null,1,1);\n            fail(\"expecting NullPointerException\");\n        } catch (NullPointerException e) {\n            // expected\n        }\n        \n        // ragged\n        try {\n            m.setSubMatrix(new BigDecimal[][] {{new BigDecimal(1)},\n                    {new BigDecimal(2), new BigDecimal(3)}}, 0, 0);\n            fail(\"expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException e) {\n            // expected\n        }\n        \n        // empty\n        try {\n            m.setSubMatrix(new BigDecimal[][] {{}}, 0, 0);\n            fail(\"expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException e) {\n            // expected\n        }\n        \n    }\n    \n    //--------------- -----------------Protected methods\n        \n    /** verifies that two matrices are close (1-norm) */              \n    protected void assertClose(String msg, BigMatrix m, BigMatrix n,\n        double tolerance) {\n        assertTrue(msg,m.subtract(n).getNorm().doubleValue() < tolerance);\n    }\n    \n    /** verifies that two vectors are close (sup norm) */\n    protected void assertClose(String msg, double[] m, double[] n,\n        double tolerance) {\n        if (m.length != n.length) {\n            fail(\"vectors not same length\");\n        }\n        for (int i = 0; i < m.length; i++) {\n            assertEquals(msg + \" \" +  i + \" elements differ\", \n                m[i],n[i],tolerance);\n        }\n    }\n    \n    /** extracts the l  and u matrices from compact lu representation */\n    protected void splitLU(BigMatrix lu, BigDecimal[][] lowerData, BigDecimal[][] upperData) throws InvalidMatrixException {\n        if (!lu.isSquare() || lowerData.length != lowerData[0].length || upperData.length != upperData[0].length ||\n                lowerData.length != upperData.length\n                || lowerData.length != lu.getRowDimension()) {\n            throw new InvalidMatrixException(\"incorrect dimensions\");\n        }    \n        int n = lu.getRowDimension();\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < n; j++) {\n                if (j < i) {\n                    lowerData[i][j] = lu.getEntry(i, j);\n                    upperData[i][j] = new BigDecimal(0);\n                } else if (i == j) {\n                    lowerData[i][j] = new BigDecimal(1);\n                    upperData[i][j] = lu.getEntry(i, j);\n                } else {\n                    lowerData[i][j] = new BigDecimal(0);\n                    upperData[i][j] = lu.getEntry(i, j);\n                }   \n            }\n        }\n    }\n    \n    /** Returns the result of applying the given row permutation to the matrix */\n    protected BigMatrix permuteRows(BigMatrix matrix, int[] permutation) {\n        if (!matrix.isSquare() || matrix.getRowDimension() != permutation.length) {\n            throw new IllegalArgumentException(\"dimension mismatch\");\n        }\n        int n = matrix.getRowDimension();\n        int m = matrix.getColumnDimension();\n        BigDecimal out[][] = new BigDecimal[m][n];\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < m; j++) {\n                out[i][j] = matrix.getEntry(permutation[i], j);\n            }\n        }\n        return new BigMatrixImpl(out);\n    }\n    \n    /** Extracts l and u matrices from lu and verifies that matrix = l times u modulo permutation */\n    protected void verifyDecomposition(BigMatrix matrix, BigMatrix lu) throws Exception{\n        int n = matrix.getRowDimension();\n        BigDecimal[][] lowerData = new BigDecimal[n][n];\n        BigDecimal[][] upperData = new BigDecimal[n][n];\n        splitLU(lu, lowerData, upperData);\n        BigMatrix lower =new BigMatrixImpl(lowerData);\n        BigMatrix upper = new BigMatrixImpl(upperData);\n        int[] permutation = ((BigMatrixImpl) matrix).getPermutation();\n        BigMatrix permuted = permuteRows(matrix, permutation);\n        assertClose(\"lu decomposition does not work\", permuted,\n                lower.multiply(upper), normTolerance);\n    }\n         \n//    /** Useful for debugging */\n//    private void dumpMatrix(BigMatrix m) {\n//          for (int i = 0; i < m.getRowDimension(); i++) {\n//              String os = \"\";\n//              for (int j = 0; j < m.getColumnDimension(); j++) {\n//                  os += m.getEntry(i, j) + \" \";\n//              }\n//              System.out.println(os);\n//          }\n//    }\n        \n}\n\n",
+  "compaction": {
+    "source_lines": 844,
+    "mode": "windows",
+    "windows_total": 14,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        720,
+        800
+      ],
+      [
+        780,
+        844
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.81117738226947
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 14.532058160037307
+      },
+      {
+        "start": 780,
+        "end": 844,
+        "score": 15.342881405042327
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.81117738226947
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 11.241030760391455
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 11.933524099691574
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 8.894461747930883
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 7.812612557255685
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 2.357407721962713
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 3.8698137186160197
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 6.024501057240418
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 5.0129185761688415
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 3.1660206177167822
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 9.056252854441047
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 13.611125454332335
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 14.532058160037307
+      },
+      {
+        "start": 780,
+        "end": 844,
+        "score": 15.342881405042327
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8316,
+  "representation_chars": 8316,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

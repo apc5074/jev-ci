@@ -1,0 +1,81 @@
+{
+  "test_class": "org.apache.commons.math3.optimization.direct.SimplexOptimizerNelderMeadTest",
+  "source_file": "src/test/java/org/apache/commons/math3/optimization/direct/SimplexOptimizerNelderMeadTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.optimization.direct.SimplexOptimizerNelderMeadTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/optimization/direct/SimplexOptimizerNelderMeadTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math3.optimization.direct;\n\n\nimport org.apache.commons.math3.exception.TooManyEvaluationsException;\nimport org.apache.commons.math3.analysis.MultivariateFunction;\nimport org.apache.commons.math3.analysis.MultivariateVectorFunction;\nimport org.apache.commons.math3.linear.Array2DRowRealMatrix;\nimport org.apache.commons.math3.linear.RealMatrix;\nimport org.apache.commons.math3.optimization.GoalType;\nimport org.apache.commons.math3.optimization.LeastSquaresConverter;\nimport org.apache.commons.math3.optimization.PointValuePair;\nimport org.apache.commons.math3.util.FastMath;\nimport org.junit.Assert;\nimport org.junit.Test;\n\npublic class SimplexOptimizerNelderMeadTest {\n    @Test\n    public void testMinimize1() {\n        SimplexOptimizer optimizer = new SimplexOptimizer(1e-10, 1e-30);\n        optimizer.setSimplex(new NelderMeadSimplex(new double[] { 0.2, 0.2 }));\n        final FourExtrema fourExtrema = new FourExtrema();\n\n        final PointValuePair optimum\n            = optimizer.optimize(100, fourExtrema, GoalType.MINIMIZE, new double[] { -3, 0 });\n        Assert.assertEquals(fourExtrema.xM, optimum.getPoint()[0], 2e-7);\n        Assert.assertEquals(fourExtrema.yP, optimum.getPoint()[1], 2e-5);\n        Assert.assertEquals(fourExtrema.valueXmYp, optimum.getValue(), 6e-12);\n        Assert.assertTrue(optimizer.getEvaluations() > 60);\n        Assert.assertTrue(optimizer.getEvaluations() < 90);\n    }\n\n    @Test\n    public void testMinimize2() {\n        SimplexOptimizer optimizer = new SimplexOptimizer(1e-10, 1e-30);\n        optimizer.setSimplex(new NelderMeadSimplex(new double[] { 0.2, 0.2 }));\n        final FourExtrema fourExtrema = new FourExtrema();\n\n        final PointValuePair optimum\n            = optimizer.optimize(100, fourExtrema, GoalType.MINIMIZE, new double[] { 1, 0 });\n        Assert.assertEquals(fourExtrema.xP, optimum.getPoint()[0], 5e-6);\n        Assert.assertEquals(fourExtrema.yM, optimum.getPoint()[1], 6e-6);\n        Assert.assertEquals(fourExtrema.valueXpYm, optimum.getValue(), 1e-11);\n        Assert.assertTrue(optimizer.getEvaluations() > 60);\n        Assert.assertTrue(optimizer.getEvaluations() < 90);\n    }\n\n    @Test\n    public void testMaximize1() {\n        SimplexOptimizer optimizer = new SimplexOptimizer(1e-10, 1e-30);\n        optimizer.setSimplex(new NelderMeadSimplex(new double[] { 0.2, 0.2 }));\n        final FourExtrema fourExtrema = new FourExtrema();\n\n        final PointValuePair optimum\n            = optimizer.optimize(100, fourExtrema, GoalType.MAXIMIZE, new double[] { -3, 0 });\n        Assert.assertEquals(fourExtrema.xM, optimum.getPoint()[0], 1e-5);\n        Assert.assertEquals(fourExtrema.yM, optimum.getPoint()[1], 3e-6);\n        Assert.assertEquals(fourExtrema.valueXmYm, optimum.getValue(), 3e-12);\n        Assert.assertTrue(optimizer.getEvaluations() > 60);\n        Assert.assertTrue(optimizer.getEvaluations() < 90);\n    }\n\n    @Test\n    public void testMaximize2() {\n        Assert.assertTrue(optimizer.getEvaluations() < 130);\n        Assert.assertTrue(optimum.getValue() < 2e-3);\n    }\n\n    @Test\n    public void testLeastSquares1() {\n\n        final RealMatrix factors =\n            new Array2DRowRealMatrix(new double[][] {\n                    { 1, 0 },\n                    { 0, 1 }\n                }, false);\n        LeastSquaresConverter ls = new LeastSquaresConverter(new MultivariateVectorFunction() {\n                public double[] value(double[] variables) {\n                    return factors.operate(variables);\n                }\n            }, new double[] { 2.0, -3.0 });\n        SimplexOptimizer optimizer = new SimplexOptimizer(-1, 1e-6);\n        optimizer.setSimplex(new NelderMeadSimplex(2));\n        PointValuePair optimum =\n            optimizer.optimize(200, ls, GoalType.MINIMIZE, new double[] { 10, 10 });\n        Assert.assertEquals( 2, optimum.getPointRef()[0], 3e-5);\n        Assert.assertEquals(-3, optimum.getPointRef()[1], 4e-4);\n        Assert.assertTrue(optimizer.getEvaluations() > 60);\n        Assert.assertTrue(optimizer.getEvaluations() < 80);\n        Assert.assertTrue(optimum.getValue() < 1.0e-6);\n    }\n\n    @Test\n    public void testLeastSquares2() {\n\n        final RealMatrix factors =\n            new Array2DRowRealMatrix(new double[][] {\n                    { 1, 0 },\n                    { 0, 1 }\n                }, false);\n        LeastSquaresConverter ls = new LeastSquaresConverter(new MultivariateVectorFunction() {\n                public double[] value(double[] variables) {\n                    return factors.operate(variables);\n                }\n            }, new double[] { 2, -3 }, new double[] { 10, 0.1 });\n        SimplexOptimizer optimizer = new SimplexOptimizer(-1, 1e-6);\n        optimizer.setSimplex(new NelderMeadSimplex(2));\n        PointValuePair optimum =\n            optimizer.optimize(200, ls, GoalType.MINIMIZE, new double[] { 10, 10 });\n        Assert.assertEquals( 2, optimum.getPointRef()[0], 5e-5);\n        Assert.assertEquals(-3, optimum.getPointRef()[1], 8e-4);\n        Assert.assertTrue(optimizer.getEvaluations() > 60);\n        Assert.assertTrue(optimizer.getEvaluations() < 80);\n        Assert.assertTrue(optimum.getValue() < 1e-6);\n    }\n\n    @Test\n    public void testLeastSquares3() {\n\n        final RealMatrix factors =\n            new Array2DRowRealMatrix(new double[][] {\n                    { 1, 0 },\n                    { 0, 1 }\n                }, false);\n        LeastSquaresConverter ls = new LeastSquaresConverter(new MultivariateVectorFunction() {\n                public double[] value(double[] variables) {\n                    return factors.operate(variables);\n                }\n            }, new double[] { 2, -3 }, new Array2DRowRealMatrix(new double [][] {\n                    { 1, 1.2 }, { 1.2, 2 }\n                }));\n        SimplexOptimizer optimizer = new SimplexOptimizer(-1, 1e-6);\n        optimizer.setSimplex(new NelderMeadSimplex(2));\n        PointValuePair optimum =\n            optimizer.optimize(200, ls, GoalType.MINIMIZE, new double[] { 10, 10 });\n        Assert.assertEquals( 2, optimum.getPointRef()[0], 2e-3);\n        Assert.assertEquals(-3, optimum.getPointRef()[1], 8e-4);\n        Assert.assertTrue(optimizer.getEvaluations() > 60);\n        Assert.assertTrue(optimizer.getEvaluations() < 80);\n        Assert.assertTrue(optimum.getValue() < 1e-6);\n    }\n\n    @Test(expected = TooManyEvaluationsException.class)\n    public void testMaxIterations() {\n        Powell powell = new Powell();\n        SimplexOptimizer optimizer = new SimplexOptimizer(-1, 1e-3);\n        optimizer.setSimplex(new NelderMeadSimplex(4));\n        optimizer.optimize(20, powell, GoalType.MINIMIZE, new double[] { 3, -1, 0, 1 });\n    }\n\n    private static class FourExtrema implements MultivariateFunction {\n        // The following function has 4 local extrema.\n        final double xM = -3.841947088256863675365;\n        final double yM = -1.391745200270734924416;\n        final double xP =  0.2286682237349059125691;\n        final double yP = -yM;\n        final double valueXmYm = 0.2373295333134216789769; // Local maximum.\n        final double valueXmYp = -valueXmYm; // Local minimum.\n        final double valueXpYm = -0.7290400707055187115322; // Global minimum.\n        final double valueXpYp = -valueXpYm; // Global maximum.\n\n        public double value(double[] variables) {\n            final double x = variables[0];\n            final double y = variables[1];\n            return (x == 0 || y == 0) ? 0 :\n                FastMath.atan(x) * FastMath.atan(x + 2) * FastMath.atan(y) * FastMath.atan(y) / (x * y);\n        }\n    }\n\n    private static class Rosenbrock implements MultivariateFunction {\n        private int count;\n\n        public Rosenbrock() {\n            count = 0;\n        }\n\n        public double value(double[] x) {\n            ++count;\n            double a = x[1] - x[0] * x[0];\n            double b = 1.0 - x[0];\n            return 100 * a * a + b * b;\n        }\n\n        public int getCount() {\n            return count;\n        }\n    }\n\n    private static class Powell implements MultivariateFunction {\n        private int count;\n\n        public Powell() {\n            count = 0;\n        }\n\n        public double value(double[] x) {\n            ++count;\n            double a = x[0] + 10 * x[1];\n            double b = x[2] - x[3];\n            double c = x[1] - 2 * x[2];\n            double d = x[0] - x[3];\n            return a * a + 5 * b * b + c * c * c * c + 10 * d * d * d * d;\n        }\n\n",
+  "compaction": {
+    "source_lines": 265,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 21.95048670186585
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 3.5229121051875403
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.623699711070956
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 21.95048670186585
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.7016439446663574
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 3.5229121051875403
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.623699711070956
+      },
+      {
+        "start": 240,
+        "end": 265,
+        "score": 1.1380852993665713
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9523,
+  "representation_chars": 9523,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

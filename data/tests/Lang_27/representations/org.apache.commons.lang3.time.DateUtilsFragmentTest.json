@@ -1,0 +1,96 @@
+{
+  "test_class": "org.apache.commons.lang3.time.DateUtilsFragmentTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/time/DateUtilsFragmentTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.time.DateUtilsFragmentTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/time/DateUtilsFragmentTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3.time;\n\nimport java.util.Calendar;\nimport java.util.Date;\n\nimport junit.framework.TestCase;\n\npublic class DateUtilsFragmentTest extends TestCase {\n\n    private static final int months = 7;   // second final prime before 12\n    private static final int days = 23;    // second final prime before 31 (and valid)\n    private static final int hours = 19;   // second final prime before 24\n    private static final int minutes = 53; // second final prime before 60\n    private static final int seconds = 47; // third final prime before 60\n    private static final int millis = 991; // second final prime before 1000\n\n    private Date aDate;\n    private Calendar aCalendar;\n\n    @Override\n    protected void setUp() {\n        aCalendar = Calendar.getInstance();\n        aCalendar.set(2005, months, days, hours, minutes, seconds);\n        aCalendar.set(Calendar.MILLISECOND, millis);\n        aDate = aCalendar.getTime();\n    }\n    \n    public void testNullDate() {\n        try {\n            DateUtils.getFragmentInMilliseconds((Date) null, Calendar.MILLISECOND);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n\n        try {\n            DateUtils.getFragmentInSeconds((Date) null, Calendar.MILLISECOND);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n\n        try {\n            DateUtils.getFragmentInMinutes((Date) null, Calendar.MILLISECOND);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n\n        try {\n            DateUtils.getFragmentInHours((Date) null, Calendar.MILLISECOND);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n\n        try {\n            DateUtils.getFragmentInDays((Date) null, Calendar.MILLISECOND);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n    }\n\n    public void testNullCalendar() {\n        try {\n            DateUtils.getFragmentInMilliseconds((Calendar) null, Calendar.MILLISECOND);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n\n        try {\n            DateUtils.getFragmentInSeconds((Calendar) null, Calendar.MILLISECOND);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n\n        try {\n            DateUtils.getFragmentInMinutes((Calendar) null, Calendar.MILLISECOND);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n\n        try {\n            DateUtils.getFragmentInHours((Calendar) null, Calendar.MILLISECOND);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n\n        try {\n            DateUtils.getFragmentInDays((Calendar) null, Calendar.MILLISECOND);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n    }\n    \n    public void testInvalidFragmentWithDate() {\n        try {\n            DateUtils.getFragmentInMilliseconds(aDate, 0);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n\n        try {\n            DateUtils.getFragmentInSeconds(aDate, 0);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n\n        try {\n            DateUtils.getFragmentInMinutes(aDate, 0);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n\n        try {\n            DateUtils.getFragmentInHours(aDate, 0);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n\n        try {\n            DateUtils.getFragmentInDays(aDate, 0);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n    }\n\n    public void testInvalidFragmentWithCalendar() {\n        try {\n            DateUtils.getFragmentInMilliseconds(aCalendar, 0);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n\n        try {\n            DateUtils.getFragmentInSeconds(aCalendar, 0);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n\n        try {\n            DateUtils.getFragmentInMinutes(aCalendar, 0);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n\n        try {\n            DateUtils.getFragmentInHours(aCalendar, 0);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n\n        try {\n            DateUtils.getFragmentInDays(aCalendar, 0);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n    }\n\n    public void testMillisecondFragmentInLargerUnitWithDate() {\n        assertEquals(0, DateUtils.getFragmentInMilliseconds(aDate, Calendar.MILLISECOND));\n        assertEquals(0, DateUtils.getFragmentInSeconds(aDate, Calendar.MILLISECOND));\n        assertEquals(0, DateUtils.getFragmentInMinutes(aDate, Calendar.MILLISECOND));\n        assertEquals(0, DateUtils.getFragmentInHours(aDate, Calendar.MILLISECOND));\n        assertEquals(0, DateUtils.getFragmentInDays(aDate, Calendar.MILLISECOND));\n    }\n\n    public void testMillisecondFragmentInLargerUnitWithCalendar() {\n        assertEquals(0, DateUtils.getFragmentInMilliseconds(aCalendar, Calendar.MILLISECOND));\n        assertEquals(0, DateUtils.getFragmentInSeconds(aCalendar, Calendar.MILLISECOND));\n        assertEquals(0, DateUtils.getFragmentInMinutes(aCalendar, Calendar.MILLISECOND));\n        assertEquals(0, DateUtils.getFragmentInHours(aCalendar, Calendar.MILLISECOND));\n        assertEquals(0, DateUtils.getFragmentInDays(aCalendar, Calendar.MILLISECOND));\n    }\n    \n    public void testSecondFragmentInLargerUnitWithDate() {\n        assertEquals(0, DateUtils.getFragmentInSeconds(aDate, Calendar.SECOND));\n        assertEquals(0, DateUtils.getFragmentInMinutes(aDate, Calendar.SECOND));\n        assertEquals(0, DateUtils.getFragmentInHours(aDate, Calendar.SECOND));\n        assertEquals(0, DateUtils.getFragmentInDays(aDate, Calendar.SECOND));\n    }\n\n    public void testSecondFragmentInLargerUnitWithCalendar() {\n        assertEquals(0, DateUtils.getFragmentInSeconds(aCalendar, Calendar.SECOND));\n        assertEquals(0, DateUtils.getFragmentInMinutes(aCalendar, Calendar.SECOND));\n        assertEquals(0, DateUtils.getFragmentInHours(aCalendar, Calendar.SECOND));\n        assertEquals(0, DateUtils.getFragmentInDays(aCalendar, Calendar.SECOND));\n    }\n    \n    public void testMinuteFragmentInLargerUnitWithDate() {\n        assertEquals(0, DateUtils.getFragmentInMinutes(aDate, Calendar.MINUTE));\n        assertEquals(0, DateUtils.getFragmentInHours(aDate, Calendar.MINUTE));\n        assertEquals(0, DateUtils.getFragmentInDays(aDate, Calendar.MINUTE));\n    }\n\n    public void testMinuteFragmentInLargerUnitWithCalendar() {\n        assertEquals(0, DateUtils.getFragmentInMinutes(aCalendar, Calendar.MINUTE));\n        assertEquals(0, DateUtils.getFragmentInHours(aCalendar, Calendar.MINUTE));\n        assertEquals(0, DateUtils.getFragmentInDays(aCalendar, Calendar.MINUTE));\n    }\n\n    public void testHourOfDayFragmentInLargerUnitWithDate() {\n        assertEquals(0, DateUtils.getFragmentInHours(aDate, Calendar.HOUR_OF_DAY));\n        assertEquals(0, DateUtils.getFragmentInDays(aDate, Calendar.HOUR_OF_DAY));\n    }\n\n    public void testHourOfDayFragmentInLargerUnitWithCalendar() {\n        assertEquals(0, DateUtils.getFragmentInHours(aCalendar, Calendar.HOUR_OF_DAY));\n",
+  "compaction": {
+    "source_lines": 497,
+    "mode": "windows",
+    "windows_total": 8,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 21.30386972979881
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.346313836781566
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 2.007520946988093
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 21.30386972979881
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.346313836781566
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 2.007520946988093
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 0.1342437979554984
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 0.13620362046663445
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 0.1366956331422256
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 0.13791723072154158
+      },
+      {
+        "start": 420,
+        "end": 497,
+        "score": 0.1371360058086913
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8011,
+  "representation_chars": 8011,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

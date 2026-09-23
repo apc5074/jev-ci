@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.cli2.bug.BugLoopingOptionLookAlikeTest",
+  "source_file": "src/test/org/apache/commons/cli2/bug/BugLoopingOptionLookAlikeTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.cli2.bug.BugLoopingOptionLookAlikeTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/cli2/bug/BugLoopingOptionLookAlikeTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one\n * or more contributor license agreements.  See the NOTICE file\n * distributed with this work for additional information\n * regarding copyright ownership.  The ASF licenses this file\n * to you under the Apache License, Version 2.0 (the\n * \"License\"); you may not use this file except in compliance\n * with the License.  You may obtain a copy of the License at\n *\n * http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing,\n * software distributed under the License is distributed on an\n * \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY\n * KIND, either express or implied.  See the License for the\n * specific language governing permissions and limitations\n * under the License.\n */\npackage org.apache.commons.cli2.bug;\n\nimport junit.framework.TestCase;\n\nimport org.apache.commons.cli2.Argument;\nimport org.apache.commons.cli2.Group;\nimport org.apache.commons.cli2.OptionException;\nimport org.apache.commons.cli2.builder.ArgumentBuilder;\nimport org.apache.commons.cli2.builder.DefaultOptionBuilder;\nimport org.apache.commons.cli2.builder.GroupBuilder;\nimport org.apache.commons.cli2.commandline.Parser;\nimport org.apache.commons.cli2.option.SourceDestArgument;\n\n/**\n * The first is a loop in Parser.parse() if I set a non-declared option. This \n * code goes into a loop in Parser.java method parse this 'while' loop runs \n * endless\n * \n * @author Steve Alberty\n */\npublic class BugLoopingOptionLookAlikeTest extends TestCase {\n\n    public void testLoopingOptionLookAlike() {\n        final DefaultOptionBuilder obuilder = new DefaultOptionBuilder();\n        final ArgumentBuilder abuilder = new ArgumentBuilder();\n        final GroupBuilder gbuilder = new GroupBuilder();\n        final Group options = gbuilder\n            .withName(\"ant\")\n            .withOption(obuilder.withShortName(\"help\").withDescription(\"print this message\").create())\n            .withOption(obuilder.withShortName(\"projecthelp\").withDescription(\"print project help information\").create())\n            .withOption(abuilder.withName(\"target\").create())\n            .create();\n        \n        final Parser parser = new Parser();\n        parser.setGroup(options);\n        try {\n            parser.parse(new String[] { \"-abcdef\",\n                    \"testfile.txt \", });\n            fail(\"OptionException\");\n        } catch (OptionException e) {\n            assertEquals(\"Unexpected -abcdef while processing ant\",e.getMessage());\n        }\n    }\n    \n    public void testLoopingOptionLookAlike2() {\n        final ArgumentBuilder abuilder = new ArgumentBuilder();\n        final GroupBuilder gbuilder = new GroupBuilder();\n        final Argument inputfile_opt = abuilder.withName(\"input\").withMinimum(1).withMaximum(1).create();\n        final Argument outputfile_opt = abuilder.withName(\"output\").withMinimum(1).withMaximum(1).create();\n        final Argument targets = new SourceDestArgument(inputfile_opt, outputfile_opt);\n        final Group options = gbuilder.withOption(targets).create();\n        final Parser parser = new Parser();\n        parser.setGroup(options);\n        try {\n            parser.parse(new String[] { \"testfile.txt\", \"testfile.txt\", \"testfile.txt\", \"testfile.txt\" });\n            fail(\"OptionException\");\n        } catch (OptionException e) {\n            assertEquals(\"Unexpected testfile.txt while processing \", e.getMessage());\n        }\n    }    \n}\n",
+  "compaction": {
+    "source_lines": 79,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3640,
+  "representation_chars": 3640,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

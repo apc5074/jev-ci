@@ -1,0 +1,81 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.TestHandlerInstantiation",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/TestHandlerInstantiation.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.TestHandlerInstantiation\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/TestHandlerInstantiation.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind;\n\nimport java.io.IOException;\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.annotation.JsonTypeInfo.As;\nimport com.fasterxml.jackson.annotation.JsonTypeInfo.Id;\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.databind.DeserializationContext;\nimport com.fasterxml.jackson.databind.JsonDeserializer;\nimport com.fasterxml.jackson.databind.JsonSerializer;\nimport com.fasterxml.jackson.databind.KeyDeserializer;\nimport com.fasterxml.jackson.databind.ObjectMapper;\nimport com.fasterxml.jackson.databind.SerializerProvider;\nimport com.fasterxml.jackson.databind.annotation.*;\nimport com.fasterxml.jackson.databind.cfg.HandlerInstantiator;\nimport com.fasterxml.jackson.databind.cfg.MapperConfig;\nimport com.fasterxml.jackson.databind.introspect.Annotated;\nimport com.fasterxml.jackson.databind.jsontype.TypeIdResolver;\nimport com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder;\nimport com.fasterxml.jackson.databind.jsontype.impl.TypeIdResolverBase;\nimport com.fasterxml.jackson.databind.type.TypeFactory;\n\npublic class TestHandlerInstantiation extends BaseMapTest\n{\n    /*\n    /**********************************************************************\n    /* Helper classes, beans\n    /**********************************************************************\n     */\n\n    @JsonDeserialize(using=MyBeanDeserializer.class)\n    @JsonSerialize(using=MyBeanSerializer.class)\n    static class MyBean\n    {\n        public String value;\n\n        public MyBean() { this(null); }\n        public MyBean(String s) { value = s; }\n    }\n\n    @SuppressWarnings(\"serial\")\n    @JsonDeserialize(keyUsing=MyKeyDeserializer.class)\n    static class MyMap extends HashMap<String,String> { }\n\n    @JsonTypeInfo(use=Id.CUSTOM, include=As.WRAPPER_ARRAY)\n    @JsonTypeIdResolver(TestCustomIdResolver.class)\n    static class TypeIdBean {\n        public int x;\n        \n        public TypeIdBean() { }\n        public TypeIdBean(int x) { this.x = x; }\n    }\n\n    static class TypeIdBeanWrapper {\n        public TypeIdBean bean;\n        \n        public TypeIdBeanWrapper() { this(null); }\n        public TypeIdBeanWrapper(TypeIdBean b) { bean = b; }\n    }\n    \n    /*\n    /**********************************************************************\n    /* Helper classes, serializers/deserializers/resolvers\n    /**********************************************************************\n     */\n    \n    static class MyBeanDeserializer extends JsonDeserializer<MyBean>\n    {\n        public String _prefix = \"\";\n\n        public MyBeanDeserializer(String p) {\n            _prefix  = p;\n        }\n        \n        @Override\n        public MyBean deserialize(JsonParser jp, DeserializationContext ctxt)\n                throws IOException, JsonProcessingException\n        {\n            return new MyBean(_prefix+jp.getText());\n        }\n    }\n\n    static class MyKeyDeserializer extends KeyDeserializer\n    {\n        public MyKeyDeserializer() { }\n        \n        @Override\n        public Object deserializeKey(String key, DeserializationContext ctxt)\n                throws IOException, JsonProcessingException\n        {\n            return \"KEY\";\n        }\n    }\n    \n    static class MyBeanSerializer extends JsonSerializer<MyBean>\n    {\n        public String _prefix = \"\";\n\n        public MyBeanSerializer(String p) {\n            _prefix  = p;\n        }\n        \n        @Override\n        public void serialize(MyBean value, JsonGenerator jgen, SerializerProvider provider)\n            throws IOException, JsonProcessingException\n        {\n            jgen.writeString(_prefix + value.value);\n        }\n    }\n    \n    // copied from \"TestCustomTypeIdResolver\"\n    static class TestCustomIdResolver extends TypeIdResolverBase\n    {\n        static List<JavaType> initTypes;\n\n        final String _id;\n        \n        public TestCustomIdResolver(String idForBean) {\n            _id = idForBean;\n        }\n\n        @Override\n        public Id getMechanism() {\n            return Id.CUSTOM;\n        }\n\n        @Override\n        public String idFromValue(Object value)\n        {\n            if (value.getClass() == TypeIdBean.class) {\n                return _id;\n            }\n            return \"unknown\";\n        }\n\n        @Override\n        public String idFromValueAndType(Object value, Class<?> type) {\n            return idFromValue(value);\n        }\n\n        @Override\n        public void init(JavaType baseType) {\n            if (initTypes != null) {\n                initTypes.add(baseType);\n            }\n        }\n\n        @Override\n        public JavaType typeFromId(DatabindContext context, String id)\n        {\n            if (id.equals(_id)) {\n                return TypeFactory.defaultInstance().constructType(TypeIdBean.class);\n            }\n            return null;\n        }\n        @Override\n        public String idFromBaseType() {\n            return \"xxx\";\n        }\n    }\n\n    /*\n    /**********************************************************************\n    /* Helper classes, handler instantiator\n    /**********************************************************************\n     */\n    \n    static class MyInstantiator extends HandlerInstantiator\n    {\n        private final String _prefix;\n        \n        public MyInstantiator(String p) {\n            _prefix = p;\n        }\n        \n        @Override\n        public JsonDeserializer<?> deserializerInstance(DeserializationConfig config,\n                Annotated annotated,\n                Class<?> deserClass)\n        {\n            if (deserClass == MyBeanDeserializer.class) {\n                return new MyBeanDeserializer(_prefix);\n            }\n            return null;\n        }\n\n        @Override\n        public KeyDeserializer keyDeserializerInstance(DeserializationConfig config,\n                Annotated annotated, Class<?> keyDeserClass)\n        {\n            if (keyDeserClass == MyKeyDeserializer.class) {\n                return new MyKeyDeserializer();\n            }\n            return null;\n            \n        }\n        \n        @Override\n",
+  "compaction": {
+    "source_lines": 271,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 14.932956321083338
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 6.525560509904036
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 9.964119449594975
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 14.932956321083338
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 6.525560509904036
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 9.964119449594975
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.71801247553335
+      },
+      {
+        "start": 240,
+        "end": 271,
+        "score": 1.0818860838323845
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 6261,
+  "representation_chars": 6261,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

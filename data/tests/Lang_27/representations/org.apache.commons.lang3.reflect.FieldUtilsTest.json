@@ -1,0 +1,131 @@
+{
+  "test_class": "org.apache.commons.lang3.reflect.FieldUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/reflect/FieldUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.reflect.FieldUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/reflect/FieldUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3.reflect;\n\nimport java.lang.reflect.Field;\n\nimport junit.framework.TestCase;\n\nimport org.apache.commons.lang3.reflect.testbed.Ambig;\nimport org.apache.commons.lang3.reflect.testbed.Foo;\nimport org.apache.commons.lang3.reflect.testbed.PrivatelyShadowedChild;\nimport org.apache.commons.lang3.reflect.testbed.PublicChild;\nimport org.apache.commons.lang3.reflect.testbed.PubliclyShadowedChild;\nimport org.apache.commons.lang3.reflect.testbed.StaticContainer;\nimport org.apache.commons.lang3.reflect.testbed.StaticContainerChild;\n\n/**\n * Unit tests FieldUtils\n * @author mbenson\n * @version $Id$\n */\npublic class FieldUtilsTest extends TestCase {\n\n    static final String S = \"s\";\n    static final String SS = \"ss\";\n    static final Integer I0 = new Integer(0);\n    static final Integer I1 = new Integer(1);\n    static final Double D0 = new Double(0.0);\n    static final Double D1 = new Double(1.0);\n\n    private PublicChild publicChild;\n    private PubliclyShadowedChild publiclyShadowedChild;\n    private PrivatelyShadowedChild privatelyShadowedChild;\n    private Class<?> parentClass = PublicChild.class.getSuperclass();\n\n    @Override\n    protected void setUp() throws Exception {\n        super.setUp();\n        StaticContainer.reset();\n        publicChild = new PublicChild();\n        publiclyShadowedChild = new PubliclyShadowedChild();\n        privatelyShadowedChild = new PrivatelyShadowedChild();\n    }\n\n    public void testGetField() {\n        assertEquals(Foo.class, FieldUtils.getField(PublicChild.class, \"VALUE\").getDeclaringClass());\n        assertEquals(parentClass, FieldUtils.getField(PublicChild.class, \"s\").getDeclaringClass());\n        assertNull(FieldUtils.getField(PublicChild.class, \"b\"));\n        assertNull(FieldUtils.getField(PublicChild.class, \"i\"));\n        assertNull(FieldUtils.getField(PublicChild.class, \"d\"));\n        assertEquals(Foo.class, FieldUtils.getField(PubliclyShadowedChild.class, \"VALUE\").getDeclaringClass());\n        assertEquals(PubliclyShadowedChild.class, FieldUtils.getField(PubliclyShadowedChild.class, \"s\")\n                .getDeclaringClass());\n        assertEquals(PubliclyShadowedChild.class, FieldUtils.getField(PubliclyShadowedChild.class, \"b\")\n                .getDeclaringClass());\n        assertEquals(PubliclyShadowedChild.class, FieldUtils.getField(PubliclyShadowedChild.class, \"i\")\n                .getDeclaringClass());\n        assertEquals(PubliclyShadowedChild.class, FieldUtils.getField(PubliclyShadowedChild.class, \"d\")\n                .getDeclaringClass());\n        assertEquals(Foo.class, FieldUtils.getField(PrivatelyShadowedChild.class, \"VALUE\").getDeclaringClass());\n        assertEquals(parentClass, FieldUtils.getField(PrivatelyShadowedChild.class, \"s\").getDeclaringClass());\n        assertNull(FieldUtils.getField(PrivatelyShadowedChild.class, \"b\"));\n        assertNull(FieldUtils.getField(PrivatelyShadowedChild.class, \"i\"));\n        assertNull(FieldUtils.getField(PrivatelyShadowedChild.class, \"d\"));\n    }\n\n            fail(\"Expected IllegalAccessException\");\n        } catch (IllegalAccessException e) {\n            // pass\n        }\n        field = StaticContainer.class.getDeclaredField(\"IMMUTABLE_PROTECTED\");\n        try {\n            FieldUtils.writeStaticField(field, \"new\", true);\n            fail(\"Expected IllegalAccessException\");\n        } catch (IllegalAccessException e) {\n            // pass\n        }\n        field = StaticContainer.class.getDeclaredField(\"IMMUTABLE_PACKAGE\");\n        try {\n            FieldUtils.writeStaticField(field, \"new\", true);\n            fail(\"Expected IllegalAccessException\");\n        } catch (IllegalAccessException e) {\n            // pass\n        }\n        field = StaticContainer.class.getDeclaredField(\"IMMUTABLE_PRIVATE\");\n        try {\n            FieldUtils.writeStaticField(field, \"new\", true);\n            fail(\"Expected IllegalAccessException\");\n        } catch (IllegalAccessException e) {\n            // pass\n        }\n    }\n\n    public void testWriteNamedStaticField() throws Exception {\n        FieldUtils.writeStaticField(StaticContainerChild.class, \"mutablePublic\", \"new\");\n        assertEquals(\"new\", StaticContainer.mutablePublic);\n        try {\n            FieldUtils.writeStaticField(StaticContainerChild.class, \"mutableProtected\", \"new\");\n            fail(\"Expected IllegalArgumentException\");\n        } catch (IllegalArgumentException e) {\n            // pass\n        }\n        try {\n            FieldUtils.writeStaticField(StaticContainerChild.class, \"mutablePackage\", \"new\");\n            fail(\"Expected IllegalArgumentException\");\n        } catch (IllegalArgumentException e) {\n            // pass\n        }\n        try {\n            FieldUtils.writeStaticField(StaticContainerChild.class, \"mutablePrivate\", \"new\");\n            fail(\"Expected IllegalArgumentException\");\n        } catch (IllegalArgumentException e) {\n            // pass\n        }\n        try {\n            FieldUtils.writeStaticField(StaticContainerChild.class, \"IMMUTABLE_PUBLIC\", \"new\");\n            fail(\"Expected IllegalAccessException\");\n        } catch (IllegalAccessException e) {\n            // pass\n        }\n        try {\n            FieldUtils.writeStaticField(StaticContainerChild.class, \"IMMUTABLE_PROTECTED\", \"new\");\n            fail(\"Expected IllegalArgumentException\");\n        } catch (IllegalArgumentException e) {\n            // pass\n        }\n        try {\n            FieldUtils.writeStaticField(StaticContainerChild.class, \"IMMUTABLE_PACKAGE\", \"new\");\n            fail(\"Expected IllegalArgumentException\");\n        } catch (IllegalArgumentException e) {\n            // pass\n        }\n        try {\n            FieldUtils.writeStaticField(StaticContainerChild.class, \"IMMUTABLE_PRIVATE\", \"new\");\n            fail(\"Expected IllegalArgumentException\");\n        } catch (IllegalArgumentException e) {\n            // pass\n        }\n    }\n\n    public void testWriteNamedStaticFieldForceAccess() throws Exception {\n        FieldUtils.writeStaticField(StaticContainerChild.class, \"mutablePublic\", \"new\", true);\n        assertEquals(\"new\", StaticContainer.mutablePublic);\n        FieldUtils.writeStaticField(StaticContainerChild.class, \"mutableProtected\", \"new\", true);\n        assertEquals(\"new\", StaticContainer.getMutableProtected());\n        FieldUtils.writeStaticField(StaticContainerChild.class, \"mutablePackage\", \"new\", true);\n        assertEquals(\"new\", StaticContainer.getMutablePackage());\n        FieldUtils.writeStaticField(StaticContainerChild.class, \"mutablePrivate\", \"new\", true);\n        assertEquals(\"new\", StaticContainer.getMutablePrivate());\n        try {\n            FieldUtils.writeStaticField(StaticContainerChild.class, \"IMMUTABLE_PUBLIC\", \"new\", true);\n            fail(\"Expected IllegalAccessException\");\n        } catch (IllegalAccessException e) {\n            // pass\n        }\n        try {\n            FieldUtils.writeStaticField(StaticContainerChild.class, \"IMMUTABLE_PROTECTED\", \"new\", true);\n            fail(\"Expected IllegalAccessException\");\n        } catch (IllegalAccessException e) {\n            // pass\n        }\n        try {\n            FieldUtils.writeStaticField(StaticContainerChild.class, \"IMMUTABLE_PACKAGE\", \"new\", true);\n            fail(\"Expected IllegalAccessException\");\n        } catch (IllegalAccessException e) {\n            // pass\n        }\n        try {\n            FieldUtils.writeStaticField(StaticContainerChild.class, \"IMMUTABLE_PRIVATE\", \"new\", true);\n            fail(\"Expected IllegalAccessException\");\n        } catch (IllegalAccessException e) {\n            // pass\n        }\n    }\n\n    public void testWriteDeclaredNamedStaticField() throws Exception {\n        FieldUtils.writeStaticField(StaticContainer.class, \"mutablePublic\", \"new\");\n        assertEquals(\"new\", StaticContainer.mutablePublic);\n        try {\n            FieldUtils.writeDeclaredStaticField(StaticContainer.class, \"mutableProtected\", \"new\");\n            fail(\"Expected IllegalArgumentException\");\n        } catch (IllegalArgumentException e) {\n            // pass\n        }\n        try {\n            FieldUtils.writeDeclaredStaticField(StaticContainer.class, \"mutablePackage\", \"new\");\n            fail(\"Expected IllegalArgumentException\");\n        } catch (IllegalArgumentException e) {\n            // pass\n        }\n        try {\n            FieldUtils.writeDeclaredStaticField(StaticContainer.class, \"mutablePrivate\", \"new\");\n            fail(\"Expected IllegalArgumentException\");\n        } catch (IllegalArgumentException e) {\n            // pass\n        }\n        try {\n            FieldUtils.writeDeclaredStaticField(StaticContainer.class, \"IMMUTABLE_PUBLIC\", \"new\");\n            fail(\"Expected IllegalAccessException\");\n        } catch (IllegalAccessException e) {\n            // pass\n        }\n        try {\n            FieldUtils.writeDeclaredStaticField(StaticContainer.class, \"IMMUTABLE_PROTECTED\", \"new\");\n            fail(\"Expected IllegalArgumentException\");\n        } catch (IllegalArgumentException e) {\n",
+  "compaction": {
+    "source_lines": 909,
+    "mode": "windows",
+    "windows_total": 15,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        480,
+        560
+      ],
+      [
+        540,
+        620
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 28.727773833951638
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 1.2883431062923811
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 1.2976404296505692
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 28.727773833951638
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 0.07603800446637081
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 0.2859542868076329
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 0.29459877931171
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 0.29780791525959377
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 0.3063132841864177
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 1.1665186899949933
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 1.2817625699500657
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 1.2883431062923811
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 1.2976404296505692
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 1.2853881617098444
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 1.2489623471032458
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 1.2755037758219736
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 1.2671351525898646
+      },
+      {
+        "start": 840,
+        "end": 909,
+        "score": 1.2566603971390622
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9970,
+  "representation_chars": 9970,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

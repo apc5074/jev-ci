@@ -1,0 +1,101 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.jdk.EnumDeserializationTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/jdk/EnumDeserializationTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.jdk.EnumDeserializationTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/jdk/EnumDeserializationTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser.jdk;\n\nimport java.io.IOException;\nimport java.util.*;\nimport java.util.concurrent.TimeUnit;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.core.type.TypeReference;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\nimport com.fasterxml.jackson.databind.deser.std.FromStringDeserializer;\nimport com.fasterxml.jackson.databind.deser.std.StdDeserializer;\nimport com.fasterxml.jackson.databind.exc.InvalidFormatException;\nimport com.fasterxml.jackson.databind.exc.MismatchedInputException;\nimport com.fasterxml.jackson.databind.module.SimpleModule;\n\n@SuppressWarnings(\"serial\")\npublic class EnumDeserializationTest\n    extends BaseMapTest\n{\n    enum TestEnum { JACKSON, RULES, OK; }\n\n    /**\n     * Alternative version that annotates which deserializer to use\n     */\n    @JsonDeserialize(using=DummyDeserializer.class)\n    enum AnnotatedTestEnum {\n        JACKSON, RULES, OK;\n    }\n\n    public static class DummyDeserializer extends StdDeserializer<Object>\n    {\n        public DummyDeserializer() { super(Object.class); }\n        @Override\n        public Object deserialize(JsonParser jp, DeserializationContext ctxt)\n        {\n            return AnnotatedTestEnum.OK;\n        }\n    }\n\n    public static class LcEnumDeserializer extends StdDeserializer<TestEnum>\n    {\n        public LcEnumDeserializer() { super(TestEnum.class); }\n        @Override\n        public TestEnum deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException\n        {\n            return TestEnum.valueOf(jp.getText().toUpperCase());\n        }\n    }\n\n    protected enum LowerCaseEnum {\n        A, B, C;\n        private LowerCaseEnum() { }\n        @Override\n        public String toString() { return name().toLowerCase(); }\n    }\n\n    protected enum EnumWithJsonValue {\n        A(\"foo\"), B(\"bar\");\n        private final String name;\n        private EnumWithJsonValue(String n) {\n            name = n;\n        }\n        @JsonValue\n        @Override\n        public String toString() { return name; }\n    }\n\n    static class ClassWithEnumMapKey {\n        @JsonProperty Map<TestEnum, String> map;\n    }\n\n    // [databind#677]\n    static enum EnumWithPropertyAnno {\n        @JsonProperty(\"a\")\n        A,\n\n        // For this value, force use of anonymous sub-class, to ensure things still work\n        @JsonProperty(\"b\")\n    static enum StrictEnumCreator {\n        A, B;\n\n        @JsonCreator public static StrictEnumCreator fromId(String value) {\n            for (StrictEnumCreator e: values()) {\n                if (e.name().toLowerCase().equals(value)) return e;\n            }\n            throw new IllegalArgumentException(value);\n        }\n    }\n\n    // // \n    \n    public enum AnEnum {\n        ZERO,\n        ONE\n    }\n\n    public static class AnEnumDeserializer extends FromStringDeserializer<AnEnum> {\n\n        public AnEnumDeserializer() {\n            super(AnEnum.class);\n        }\n\n        @Override\n        protected AnEnum _deserialize(String value, DeserializationContext ctxt) throws IOException {\n            try {\n                return AnEnum.valueOf(value);\n            } catch (IllegalArgumentException e) {\n                return (AnEnum) ctxt.handleWeirdStringValue(AnEnum.class, value,\n                        \"Undefined AnEnum code\");\n            }\n        }\n    }\n\n    public static class AnEnumKeyDeserializer extends KeyDeserializer {\n\n        @Override\n        public Object deserializeKey(String key, DeserializationContext ctxt) throws IOException {\n            try {\n                return AnEnum.valueOf(key);\n            } catch (IllegalArgumentException e) {\n                return ctxt.handleWeirdKey(AnEnum.class, key, \"Undefined AnEnum code\");\n            }\n        }\n    }\n\n\n    @JsonDeserialize(using = AnEnumDeserializer.class, keyUsing = AnEnumKeyDeserializer.class)\n    public enum LanguageCodeMixin {\n    }\n\n    public static class EnumModule extends SimpleModule {\n        @Override\n        public void setupModule(SetupContext context) {\n            context.setMixInAnnotations(AnEnum.class, LanguageCodeMixin.class);\n        }\n\n        public static ObjectMapper setupObjectMapper(ObjectMapper mapper) {\n            final EnumModule module = new EnumModule();\n            mapper.registerModule(module);\n            return mapper;\n        }\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n\n    protected final ObjectMapper MAPPER = new ObjectMapper();\n\n    public void testSimple() throws Exception\n    {\n        // First \"good\" case with Strings\n        String JSON = \"\\\"OK\\\" \\\"RULES\\\"  null\";\n        // multiple main-level mappings, need explicit parser:\n        JsonParser jp = MAPPER.getFactory().createParser(JSON);\n\n    \n    public void testDoNotAllowUnknownEnumValuesAsMapKeysWhenReadAsNullDisabled() throws Exception\n    {\n        assertFalse(MAPPER.isEnabled(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL));\n         try {\n             MAPPER.readValue(\"{\\\"map\\\":{\\\"NO-SUCH-VALUE\\\":\\\"val\\\"}}\", ClassWithEnumMapKey.class);\n             fail(\"Expected an exception for bogus enum value...\");\n         } catch (InvalidFormatException jex) {\n             verifyException(jex, \"Cannot deserialize Map key of type `com.fasterxml.jackson.databind.deser.jdk.EnumDeserializationTest$TestEnum`\");\n         }\n    }\n\n    // [databind#141]: allow mapping of empty String into null\n    public void testEnumsWithEmpty() throws Exception\n    {\n       final ObjectMapper mapper = new ObjectMapper();\n       mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);\n       TestEnum result = mapper.readValue(\"\\\"\\\"\", TestEnum.class);\n       assertNull(result);\n    }\n\n    public void testGenericEnumDeserialization() throws Exception\n    {\n       final ObjectMapper mapper = new ObjectMapper();\n       SimpleModule module = new SimpleModule(\"foobar\");\n       module.addDeserializer(Enum.class, new LcEnumDeserializer());\n       mapper.registerModule(module);\n       // not sure this is totally safe but...\n       assertEquals(TestEnum.JACKSON, mapper.readValue(quote(\"jackson\"), TestEnum.class));\n    }\n\n    // [databind#381]\n    public void testUnwrappedEnum() throws Exception {\n        final ObjectMapper mapper = newObjectMapper();\n        mapper.enable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);\n        \n        assertEquals(TestEnum.JACKSON, mapper.readValue(\"[\" + quote(\"JACKSON\") + \"]\", TestEnum.class));\n    }\n    \n    public void testUnwrappedEnumException() throws Exception {\n        final ObjectMapper mapper = newObjectMapper();\n        mapper.disable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);\n        try {\n            Object v = mapper.readValue(\"[\" + quote(\"JACKSON\") + \"]\",\n                    TestEnum.class);\n            fail(\"Exception was not thrown on deserializing a single array element of type enum; instead got: \"+v);\n        } catch (MismatchedInputException exp) {\n            //exception as thrown correctly\n            verifyException(exp, \"Cannot deserialize\");\n        }\n    }\n\n    // [databind#149]: 'stringified' indexes for enums\n    public void testIndexAsString() throws Exception\n    {\n        // first, regular index ought to work fine\n        TestEnum en = MAPPER.readValue(\"2\", TestEnum.class);\n        assertSame(TestEnum.values()[2], en);\n\n        // but also with quoted Strings\n        en = MAPPER.readValue(quote(\"1\"), TestEnum.class);\n        assertSame(TestEnum.values()[1], en);\n\n        // [databind#1690]: unless prevented\n        final ObjectMapper mapper = newObjectMapper();\n        mapper.disable(MapperFeature.ALLOW_COERCION_OF_SCALARS);\n        try {\n            en = mapper.readValue(quote(\"1\"), TestEnum.class);\n            fail(\"Should not pass\");\n        } catch (MismatchedInputException e) {\n            verifyException(e, \"Cannot deserialize value of type\");\n            verifyException(e, \"EnumDeserializationTest$TestEnum\");\n            verifyException(e, \"value looks like quoted Enum index\");\n        }\n    }\n\n    public void testEnumWithJsonPropertyRename() throws Exception\n    {\n        String json = MAPPER.writeValueAsString(new EnumWithPropertyAnno[] {\n                EnumWithPropertyAnno.B, EnumWithPropertyAnno.A\n",
+  "compaction": {
+    "source_lines": 530,
+    "mode": "windows",
+    "windows_total": 9,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        360,
+        440
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 23.16037544710435
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 11.984942890390487
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 12.019227846076594
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 23.16037544710435
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 9.201700858383873
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 11.984942890390487
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 10.657067097785855
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.235321858451407
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 7.264161746716945
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 12.019227846076594
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 2.9795731808592874
+      },
+      {
+        "start": 480,
+        "end": 530,
+        "score": 3.4502723047504538
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8639,
+  "representation_chars": 8639,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.format.BooleanFormatTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/format/BooleanFormatTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.format.BooleanFormatTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/format/BooleanFormatTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.format;\n\nimport com.fasterxml.jackson.annotation.JsonFormat;\nimport com.fasterxml.jackson.annotation.JsonPropertyOrder;\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.ObjectMapper;\n\n// [databind#1480]\npublic class BooleanFormatTest extends BaseMapTest\n{\n    @JsonPropertyOrder({ \"b1\", \"b2\", \"b3\" })\n    static class BeanWithBoolean\n    {\n        @JsonFormat(shape=JsonFormat.Shape.NUMBER)\n        public boolean b1;\n\n        @JsonFormat(shape=JsonFormat.Shape.NUMBER)\n        public Boolean b2;\n\n        public boolean b3;\n\n        public BeanWithBoolean() { }\n        public BeanWithBoolean(boolean b1, Boolean b2, boolean b3) {\n            this.b1 = b1;\n            this.b2 = b2;\n            this.b3 = b3;\n        }\n    }\n\n    /**\n     * Simple wrapper around boolean types, usually to test value\n     * conversions or wrapping\n     */\n    protected static class BooleanWrapper {\n        public Boolean b;\n\n        public BooleanWrapper() { }\n        public BooleanWrapper(Boolean value) { b = value; }\n    }\n\n    static class AltBoolean extends BooleanWrapper\n    {\n        public AltBoolean() { }\n        public AltBoolean(Boolean b) { super(b); }\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n\n    private final static ObjectMapper MAPPER = newObjectMapper();\n\n    public void testShapeViaDefaults() throws Exception\n    {\n        assertEquals(aposToQuotes(\"{'b':true}\"),\n                MAPPER.writeValueAsString(new BooleanWrapper(true)));\n        ObjectMapper m = newObjectMapper();\n        m.configOverride(Boolean.class)\n            .setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.NUMBER));\n        assertEquals(aposToQuotes(\"{'b':1}\"),\n                m.writeValueAsString(new BooleanWrapper(true)));\n    }\n\n    public void testShapeOnProperty() throws Exception\n    {\n        assertEquals(aposToQuotes(\"{'b1':1,'b2':0,'b3':true}\"),\n                MAPPER.writeValueAsString(new BeanWithBoolean(true, false, true)));\n    }\n}\n",
+  "compaction": {
+    "source_lines": 71,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2318,
+  "representation_chars": 2318,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

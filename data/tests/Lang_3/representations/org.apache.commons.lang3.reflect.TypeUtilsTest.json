@@ -1,0 +1,121 @@
+{
+  "test_class": "org.apache.commons.lang3.reflect.TypeUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/reflect/TypeUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.reflect.TypeUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/reflect/TypeUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3.reflect;\n\nimport java.io.Serializable;\nimport java.lang.reflect.Method;\nimport java.lang.reflect.ParameterizedType;\nimport java.lang.reflect.Type;\nimport java.lang.reflect.TypeVariable;\nimport java.net.URI;\nimport java.util.Arrays;\nimport java.util.Collection;\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\nimport java.util.TreeSet;\n\nimport org.apache.commons.lang3.StringEscapeUtils;\nimport org.apache.commons.lang3.reflect.testbed.Foo;\nimport org.apache.commons.lang3.reflect.testbed.GenericParent;\nimport org.apache.commons.lang3.reflect.testbed.GenericTypeHolder;\nimport org.apache.commons.lang3.reflect.testbed.StringParameterizedChild;\nimport org.junit.Assert;\nimport org.junit.Test;\n\n/**\n * Test TypeUtils\n * @version $Id$\n */\n@SuppressWarnings({ \"unchecked\", \"unused\" , \"rawtypes\", \"null\"})\n//raw types, where used, are used purposely\npublic class TypeUtilsTest<B> {\n\n    public interface This<K, V> {\n    }\n\n    public class That<K, V> implements This<K, V> {\n    }\n\n    public interface And<K, V> extends This<Number, Number> {\n    }\n\n    public class The<K, V> extends That<Number, Number> implements And<String, String> {\n    }\n\n    public class Other<T> implements This<String, T> {\n    }\n\n    public class Thing<Q> extends Other<B> {\n    }\n\n    public class Tester implements This<String, B> {\n    }\n\n    public This<String, String> dis;\n\n    public That<String, String> dat;\n\n    public The<String, String> da;\n\n    public Other<String> uhder;\n\n    public Thing ding;\n\n    public TypeUtilsTest<String>.Tester tester;\n\n        delegateBooleanAssertion(types, 10, 12, false);\n        // list10 = list12;\n        delegateBooleanAssertion(types, 12, 10, false);\n        list13 = list10;\n        delegateBooleanAssertion(types, 10, 13, true);\n        list10 = (List<? super Object>[]) list13;\n        delegateBooleanAssertion(types, 13, 10, false);\n//        list11 = list11;\n        delegateBooleanAssertion(types, 11, 11, true);\n        list12 = list11;\n        delegateBooleanAssertion(types, 11, 12, true);\n        list11 = (List<String>[]) list12;\n        delegateBooleanAssertion(types, 12, 11, false);\n        list13 = list11;\n        delegateBooleanAssertion(types, 11, 13, true);\n        list11 = (List<String>[]) list13;\n        delegateBooleanAssertion(types, 13, 11, false);\n//        list12 = list12;\n        delegateBooleanAssertion(types, 12, 12, true);\n        list13 = (List<? super String>[]) list12;\n        delegateBooleanAssertion(types, 12, 13, false);\n        list12 = (List<? extends String>[]) list13;\n        delegateBooleanAssertion(types, 13, 12, false);\n//        list13 = list13;\n        delegateBooleanAssertion(types, 13, 13, true);\n        final Type disType = getClass().getField(\"dis\").getGenericType();\n        // Reporter.log( ( ( ParameterizedType ) disType\n        // ).getOwnerType().getClass().toString() );\n        final Type datType = getClass().getField(\"dat\").getGenericType();\n        final Type daType = getClass().getField(\"da\").getGenericType();\n        final Type uhderType = getClass().getField(\"uhder\").getGenericType();\n        final Type dingType = getClass().getField(\"ding\").getGenericType();\n        final Type testerType = getClass().getField(\"tester\").getGenericType();\n        final Type tester2Type = getClass().getField(\"tester2\").getGenericType();\n        final Type dat2Type = getClass().getField(\"dat2\").getGenericType();\n        final Type dat3Type = getClass().getField(\"dat3\").getGenericType();\n        dis = dat;\n        Assert.assertTrue(TypeUtils.isAssignable(datType, disType));\n        // dis = da;\n        Assert.assertFalse(TypeUtils.isAssignable(daType, disType));\n        dis = uhder;\n        Assert.assertTrue(TypeUtils.isAssignable(uhderType, disType));\n        dis = ding;\n        Assert.assertFalse(String.format(\"type %s not assignable to %s!\", dingType, disType),\n                TypeUtils.isAssignable(dingType, disType));\n        dis = tester;\n        Assert.assertTrue(TypeUtils.isAssignable(testerType, disType));\n        // dis = tester2;\n        Assert.assertFalse(TypeUtils.isAssignable(tester2Type, disType));\n        // dat = dat2;\n        Assert.assertFalse(TypeUtils.isAssignable(dat2Type, datType));\n        // dat2 = dat;\n        Assert.assertFalse(TypeUtils.isAssignable(datType, dat2Type));\n        // dat = dat3;\n        Assert.assertFalse(TypeUtils.isAssignable(dat3Type, datType));\n        final char ch = 0;\n        final boolean bo = false;\n        final byte by = 0;\n        final short sh = 0;\n        int in = 0;\n        long lo = 0;\n        final float fl = 0;\n        double du = 0;\n        du = ch;\n        Assert.assertTrue(TypeUtils.isAssignable(char.class, double.class));\n        du = by;\n        Assert.assertTrue(TypeUtils.isAssignable(byte.class, double.class));\n        du = sh;\n        Assert.assertTrue(TypeUtils.isAssignable(short.class, double.class));\n        du = in;\n        Assert.assertTrue(TypeUtils.isAssignable(int.class, double.class));\n        du = lo;\n        Assert.assertTrue(TypeUtils.isAssignable(long.class, double.class));\n        du = fl;\n        Assert.assertTrue(TypeUtils.isAssignable(float.class, double.class));\n        lo = in;\n        Assert.assertTrue(TypeUtils.isAssignable(int.class, long.class));\n        lo = Integer.valueOf(0);\n        Assert.assertTrue(TypeUtils.isAssignable(Integer.class, long.class));\n        // Long lngW = 1;\n        Assert.assertFalse(TypeUtils.isAssignable(int.class, Long.class));\n        // lngW = Integer.valueOf( 0 );\n        Assert.assertFalse(TypeUtils.isAssignable(Integer.class, Long.class));\n        in = Integer.valueOf(0);\n        Assert.assertTrue(TypeUtils.isAssignable(Integer.class, int.class));\n        final Integer inte = in;\n        Assert.assertTrue(TypeUtils.isAssignable(int.class, Integer.class));\n        Assert.assertTrue(TypeUtils.isAssignable(int.class, Number.class));\n        Assert.assertTrue(TypeUtils.isAssignable(int.class, Object.class));\n        final Type intComparableType = getClass().getField(\"intComparable\").getGenericType();\n        intComparable = 1;\n        Assert.assertTrue(TypeUtils.isAssignable(int.class, intComparableType));\n        Assert.assertTrue(TypeUtils.isAssignable(int.class, Comparable.class));\n        final Serializable ser = 1;\n        Assert.assertTrue(TypeUtils.isAssignable(int.class, Serializable.class));\n        final Type longComparableType = getClass().getField(\"longComparable\").getGenericType();\n        // longComparable = 1;\n        Assert.assertFalse(TypeUtils.isAssignable(int.class, longComparableType));\n        // longComparable = Integer.valueOf( 0 );\n        Assert.assertFalse(TypeUtils.isAssignable(Integer.class, longComparableType));\n        // int[] ia;\n        // long[] la = ia;\n        Assert.assertFalse(TypeUtils.isAssignable(int[].class, long[].class));\n        final Integer[] ia = null;\n        final Type caType = getClass().getField(\"intWildcardComparable\").getGenericType();\n        intWildcardComparable = ia;\n        Assert.assertTrue(TypeUtils.isAssignable(Integer[].class, caType));\n        // int[] ina = ia;\n        Assert.assertFalse(TypeUtils.isAssignable(Integer[].class, int[].class));\n        final int[] ina = null;\n        Object[] oa;\n        // oa = ina;\n        Assert.assertFalse(TypeUtils.isAssignable(int[].class, Object[].class));\n        oa = new Integer[0];\n        Assert.assertTrue(TypeUtils.isAssignable(Integer[].class, Object[].class));\n        final Type bClassType = AClass.class.getField(\"bClass\").getGenericType();\n        final Type cClassType = AClass.class.getField(\"cClass\").getGenericType();\n        final Type dClassType = AClass.class.getField(\"dClass\").getGenericType();\n        final Type eClassType = AClass.class.getField(\"eClass\").getGenericType();\n        final Type fClassType = AClass.class.getField(\"fClass\").getGenericType();\n        final AClass aClass = new AClass(new AAClass<String>());\n        aClass.bClass = aClass.cClass;\n        Assert.assertTrue(TypeUtils.isAssignable(cClassType, bClassType));\n        aClass.bClass = aClass.dClass;\n        Assert.assertTrue(TypeUtils.isAssignable(dClassType, bClassType));\n        aClass.bClass = aClass.eClass;\n        Assert.assertTrue(TypeUtils.isAssignable(eClassType, bClassType));\n        aClass.bClass = aClass.fClass;\n        Assert.assertTrue(TypeUtils.isAssignable(fClassType, bClassType));\n        aClass.cClass = aClass.dClass;\n        Assert.assertTrue(TypeUtils.isAssignable(dClassType, cClassType));\n        aClass.cClass = aClass.eClass;\n        Assert.assertTrue(TypeUtils.isAssignable(eClassType, cClassType));\n        aClass.cClass = aClass.fClass;\n        Assert.assertTrue(TypeUtils.isAssignable(fClassType, cClassType));\n        aClass.dClass = aClass.eClass;\n        Assert.assertTrue(TypeUtils.isAssignable(eClassType, dClassType));\n        aClass.dClass = aClass.fClass;\n        Assert.assertTrue(TypeUtils.isAssignable(fClassType, dClassType));\n        aClass.eClass = aClass.fClass;\n",
+  "compaction": {
+    "source_lines": 741,
+    "mode": "windows",
+    "windows_total": 13,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        300,
+        380
+      ],
+      [
+        360,
+        440
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 37.28012861427133
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 11.17389933092798
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 9.61256796217658
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 37.28012861427133
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.332559557351642
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 1.8922835631370738
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 1.2108299860685796
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 3.589531873097441
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 11.17389933092798
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 9.61256796217658
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 8.918287032130104
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 5.3894677155772905
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 9.145040294183245
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 9.444157123460073
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 7.051225611638723
+      },
+      {
+        "start": 720,
+        "end": 741,
+        "score": 1.2944071264549104
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 10003,
+  "representation_chars": 10003,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

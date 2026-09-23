@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.creators.InnerClassCreatorTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/creators/InnerClassCreatorTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.creators.InnerClassCreatorTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/creators/InnerClassCreatorTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser.creators;\n\nimport com.fasterxml.jackson.annotation.JsonCreator;\nimport com.fasterxml.jackson.annotation.JsonProperty;\nimport com.fasterxml.jackson.databind.*;\n\n// For [databind#1501], [databind#1502], [databind#1503]; mostly to\n// test that for non-static inner classes constructors are ignored\n// and no Creators should be processed (since they cannot be made\n// to work in standard way anyway).\npublic class InnerClassCreatorTest extends BaseMapTest\n{\n    static class Something1501 {\n        public InnerSomething1501 a;\n\n        // important: must name the parameter (param names module, or explicit)\n        @JsonCreator\n        public Something1501(@JsonProperty(\"a\") InnerSomething1501 a) { this.a = a; }\n\n        public Something1501(boolean bogus) { a = new InnerSomething1501(); }\n\n        class InnerSomething1501 {\n            @JsonCreator\n            public InnerSomething1501() { }\n        }\n    }\n\n    static class Something1502 {\n        @JsonProperty\n        public InnerSomething1502 a;\n\n        @JsonCreator\n        public Something1502(InnerSomething1502 a) {}\n\n        class InnerSomething1502 {\n            @JsonCreator\n            public InnerSomething1502() {}\n        }\n    }    \n\n    static class Outer1503 {\n        public InnerClass1503 innerClass;\n\n        class InnerClass1503 {\n            public Generic<?> generic;\n            public InnerClass1503(@JsonProperty(\"generic\") Generic<?> generic) {}\n        }\n\n        static class Generic<T> {\n            public int ignored;\n        }\n    }\n\n    private final ObjectMapper MAPPER = new ObjectMapper();\n    {\n        MAPPER.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);\n    }\n\n    // Used to trigger `ArrayIndexOutOfBoundsException` for missing creator property index\n    public void testIssue1501() throws Exception\n    {\n        String ser = MAPPER.writeValueAsString(new Something1501(false));\n        try {\n            MAPPER.readValue(ser, Something1501.class);\n            fail(\"Should not pass\");\n        } catch (JsonMappingException e) {\n            verifyException(e, \"Cannot construct instance\");\n            verifyException(e, \"InnerSomething1501\");\n            verifyException(e, \"can only instantiate non-static inner class by using default\");\n        }\n    }    \n\n    public void testIssue1502() throws Exception\n    {\n        String ser = MAPPER.writeValueAsString(new Something1502(null));\n        try {\n            MAPPER.readValue(ser, Something1502.class);\n            fail(\"Should not pass\");\n        } catch (JsonMappingException e) {\n            verifyException(e, \"Cannot construct instance\");\n            verifyException(e, \"InnerSomething1502\");\n            verifyException(e, \"can only instantiate non-static inner class by using default\");\n        }\n    }\n\n    public void testIssue1503() throws Exception\n    {\n        String ser = MAPPER.writeValueAsString(new Outer1503());\n        Outer1503 result = MAPPER.readValue(ser, Outer1503.class);\n        assertNotNull(result);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 92,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3237,
+  "representation_chars": 3237,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

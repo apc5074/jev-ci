@@ -1,0 +1,96 @@
+{
+  "test_class": "org.apache.commons.cli2.DocumentationTest",
+  "source_file": "src/test/org/apache/commons/cli2/DocumentationTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.cli2.DocumentationTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/cli2/DocumentationTest.java\n\nTEST SOURCE:\n/**\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *     http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.cli2;\n\nimport java.io.IOException;\nimport java.io.PrintWriter;\nimport java.io.StringWriter;\nimport java.util.ArrayList;\nimport java.util.Iterator;\nimport java.util.List;\n\nimport junit.framework.TestCase;\n\nimport org.apache.commons.cli2.builder.ArgumentBuilder;\nimport org.apache.commons.cli2.builder.DefaultOptionBuilder;\nimport org.apache.commons.cli2.builder.GroupBuilder;\nimport org.apache.commons.cli2.commandline.Parser;\nimport org.apache.commons.cli2.commandline.WriteableCommandLineImpl;\nimport org.apache.commons.cli2.option.DefaultOption;\nimport org.apache.commons.cli2.option.PropertyOption;\nimport org.apache.commons.cli2.util.HelpFormatter;\n\n/**\n * @author Rob\n */\npublic class DocumentationTest extends TestCase {\n\n    public void testBasicUsage() throws IOException, OptionException {\n        HelpFormatter helpFormatter = new HelpFormatter();\n        //ignore all printed\n        helpFormatter.setPrintWriter(new PrintWriter(new StringWriter()));\n\n        /*\n         * --version -? -h --help -log file -s|-q|-v|-d Bursting File/Num/Date\n         * validation Switches Commands Auto help Auto exception help\n         *  \n         */\n        DefaultOptionBuilder obuilder = new DefaultOptionBuilder();\n        Option version =\n            obuilder\n                .withLongName(\"version\")\n                .withDescription(\"Displays version information and then exits\")\n                .create();\n\n        Option help =\n            obuilder\n                .withShortName(\"h\")\n                .withShortName(\"?\")\n                .withLongName(\"help\")\n                .withDescription(\"Displays help on usage and then exits\")\n                .create();\n\n        ArgumentBuilder abuilder = new ArgumentBuilder();\n        Argument logFile =\n            abuilder\n                .withDescription(\"The log file to write to\")\n                .withName(\"file\")\n                .withMinimum(1)\n                .withMaximum(1)\n                .create();\n        Option log =\n            obuilder\n                .withArgument(logFile)\n                .withShortName(\"log\")\n                .withDescription(\"Log progress information to a file\")\n                .create();\n\n        GroupBuilder gbuilder = new GroupBuilder();\n        Group outputQuality =\n            gbuilder\n                .withName(\"quality\")\n                .withDescription(\"Controls the quality of console output\")\n                .withMaximum(1)\n                .withOption(\n                    obuilder\n                        .withShortName(\"s\")\n                        .withDescription(\"Silent\")\n                        .create())\n                .withOption(\n                    obuilder\n                        .withShortName(\"q\")\n                        .withDescription(\"Quiet\")\n                        .create())\n                .withOption(\n                    obuilder\n                        .withShortName(\"n\")\n                        .withDescription(\"Normal\")\n                        .create())\n                .withOption(\n                    obuilder\n                        .withShortName(\"v\")\n                        .withDescription(\"Verbose\")\n                        .create())\n                .withOption(\n                    obuilder\n                        .withShortName(\"d\")\n                        .withDescription(\"Debug\")\n                        .create())\n                .create();\n\n        Group options =\n            new GroupBuilder()\n                .withName(\"options\")\n                .withOption(version)\n                .withOption(help)\n                .withOption(log)\n                .withOption(outputQuality)\n                .create();\n\n        final String[] args = new String[] { \"--bad-option\" };\n\n        Parser parser = new Parser();\n        parser.setHelpFormatter(helpFormatter);\n        parser.setGroup(options);\n        parser.setHelpOption(help);\n        CommandLine commandLine = parser.parseAndHelp(args);\n        if (commandLine != null) {\n            if (commandLine.hasOption(version)) {\n                System.out.println(\"MyApp ver 1.0\");\n                return;\n            }\n            if (commandLine.hasOption(\"-log\")) {\n                String filename = (String)commandLine.getValue(\"-log\");\n                //...\n            }\n        }\n                .withArgument(pathArgument)\n                .withChildren(outputChildren)\n                .create();\n        \n        ///////////////////////////////////////////////////\n        \n        Group options = outputChildren;\n        HelpFormatter hf = new HelpFormatter();\n\n        Parser p = new Parser();\n        p.setGroup(options);\n        p.setHelpFormatter(hf);\n        p.setHelpTrigger(\"--help\");\n        CommandLine cl = p.parseAndHelp(new String[]{});\n        if(cl==null) {\n            System.exit(-1);\n        }\n        \n        //////////////////////////////////////////////////\n        \n        cl = new WriteableCommandLineImpl(outputChildren,new ArrayList());\n        \n        // if we have --output option\n        if(cl.hasOption(\"--output\")) {\n            // grab the path\n            String path = (String)cl.getValue(\"--output\");\n            // grab the format\n            boolean xml = cl.hasOption(\"--xml\");\n            // configure the application's output\n            configureOutput(path,xml);\n        }\n        \n        \n                \n        \n    }\n\n    private void configureOutput(String path, boolean xml) {\n        // TODO Auto-generated method stub\n        \n    }\n\n    public void testExampleAnt() throws IOException, OptionException {\n        // Apache Ant version 1.6.1 compiled on February 12 2004\n\n        final DefaultOptionBuilder obuilder = new DefaultOptionBuilder();\n        final ArgumentBuilder abuilder = new ArgumentBuilder();\n        final GroupBuilder gbuilder = new GroupBuilder();\n\n        Option help =\n            obuilder\n                .withShortName(\"help\")\n                .withShortName(\"h\")\n                .withDescription(\"print this message\")\n                .create();\n        Option projecthelp =\n            obuilder\n                .withShortName(\"projecthelp\")\n                .withShortName(\"p\")\n                .withDescription(\"print project help information\")\n                .create();\n        Option version =\n            obuilder\n                .withShortName(\"version\")\n                .withDescription(\"print the version information and exit\")\n                .create();\n        Option diagnostics =\n            obuilder\n                .withShortName(\"diagnostics\")\n                .withDescription(\"print information that might be helpful to diagnose or report problems.\")\n                .create();\n        Option quiet =\n            obuilder\n                .withShortName(\"quiet\")\n                .withShortName(\"q\")\n                .withDescription(\"be extra quiet\")\n                .create();\n        Option verbose =\n            obuilder\n                .withShortName(\"verbose\")\n",
+  "compaction": {
+    "source_lines": 445,
+    "mode": "windows",
+    "windows_total": 8,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 30.73908886891019
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 4.44901162386439
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 9.178940678829074
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 30.73908886891019
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 4.44901162386439
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 4.4373035814986865
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 9.178940678829074
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 3.997900622521584
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 2.9056041289470866
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 3.853729709658197
+      },
+      {
+        "start": 420,
+        "end": 445,
+        "score": 1.5823810186200162
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7925,
+  "representation_chars": 7925,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

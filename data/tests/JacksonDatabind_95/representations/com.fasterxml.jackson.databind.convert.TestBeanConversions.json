@@ -1,0 +1,76 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.convert.TestBeanConversions",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/convert/TestBeanConversions.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.convert.TestBeanConversions\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/convert/TestBeanConversions.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.convert;\n\nimport java.util.LinkedHashMap;\nimport java.util.Map;\n\nimport com.fasterxml.jackson.core.JsonProcessingException;\nimport com.fasterxml.jackson.core.TreeNode;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonSerialize;\nimport com.fasterxml.jackson.databind.node.ObjectNode;\nimport com.fasterxml.jackson.databind.util.StdConverter;\n\npublic class TestBeanConversions\n    extends com.fasterxml.jackson.databind.BaseMapTest\n{\n    final ObjectMapper MAPPER = new ObjectMapper();\n\n    static class PointZ {\n        public int x, y;\n\n        public int z = -13;\n\n        public PointZ() { }\n        public PointZ(int a, int b, int c)\n        {\n            x = a;\n            y = b;\n            z = c;\n        }\n    }\n\n    static class PointStrings {\n        public final String x, y;\n\n        public PointStrings(String x, String y) {\n            this.x = x;\n            this.y = y;\n        }\n    }\n\n    public static class BooleanBean {\n        public boolean boolProp;\n    }\n\n    static class WrapperBean {\n        public BooleanBean x;\n    }\n\n    static class ObjectWrapper\n    {\n        private Object data;\n\n        public ObjectWrapper() { }\n        public ObjectWrapper(Object o) { data = o; }\n\n        public Object getData() { return data; }\n        public void setData(Object data) { this.data = data; }\n    }\n\n    static class Leaf {\n        public int value;\n\n        public Leaf() { }\n        public Leaf(int v) { value = v; }\n    }\n    \n    // [Issue#288]\n\n    @JsonSerialize(converter = ConvertingBeanConverter.class)\n    static class ConvertingBean { \n       public int x, y; \n       public ConvertingBean(int v1, int v2) {\n          x = v1;\n          y = v2;\n       }\n    }\n\n    public static class DummyBean {\n       public final int a, b;\n       public DummyBean(int v1, int v2) {\n        }\n\n        // then bad conversion\n        try {\n            MAPPER.readValue(\"{\\\"boolProp\\\":\\\"foobar\\\"}\", BooleanBean.class);\n        } catch (JsonMappingException e) {\n            verifyException(e, \"Can not deserialize value of type boolean from String\");\n        }\n    }\n\n    public void testIssue458() throws Exception\n    {\n        ObjectWrapper a = new ObjectWrapper(\"foo\");\n        ObjectWrapper b = new ObjectWrapper(a);\n        ObjectWrapper b2 = MAPPER.convertValue(b, ObjectWrapper.class);\n        ObjectWrapper a2 = MAPPER.convertValue(b2.getData(), ObjectWrapper.class);\n        assertEquals(\"foo\", a2.getData());\n    }\n\n    // should work regardless of wrapping...\n    public void testWrapping() throws Exception\n    {\n        ObjectMapper wrappingMapper = new ObjectMapper();\n        wrappingMapper.enable(DeserializationFeature.UNWRAP_ROOT_VALUE);\n        wrappingMapper.enable(SerializationFeature.WRAP_ROOT_VALUE);\n\n        // conversion is ok, even if it's bogus one\n        _convertAndVerifyPoint(wrappingMapper);\n\n        // also: ok to have mismatched settings, since as per [JACKSON-710], should\n        // not actually use wrapping internally in these cases\n        wrappingMapper = new ObjectMapper();\n        wrappingMapper.enable(DeserializationFeature.UNWRAP_ROOT_VALUE);\n        wrappingMapper.disable(SerializationFeature.WRAP_ROOT_VALUE);\n        _convertAndVerifyPoint(wrappingMapper);\n\n        wrappingMapper = new ObjectMapper();\n        wrappingMapper.disable(DeserializationFeature.UNWRAP_ROOT_VALUE);\n        wrappingMapper.enable(SerializationFeature.WRAP_ROOT_VALUE);\n        _convertAndVerifyPoint(wrappingMapper);\n    }\n\n    // [Issue-11]: simple cast, for POJOs etc\n    public void testConvertUsingCast() throws Exception\n    {\n        String str = new String(\"foo\");\n        CharSequence seq = str;\n        String result = MAPPER.convertValue(seq, String.class);\n        // should just cast...\n        assertSame(str, result);\n    }\n    \n    // [Issue-11]: simple cast, for Tree\n    public void testNodeConvert() throws Exception\n    {\n        ObjectNode src = (ObjectNode) MAPPER.readTree(\"{}\");\n        TreeNode node = src;\n        ObjectNode result = MAPPER.treeToValue(node, ObjectNode.class);\n        // should just cast...\n        assertSame(src, result);\n    }\n    \n    private void _convertAndVerifyPoint(ObjectMapper m)\n    {\n        final PointZ input = new PointZ(1, 2, 3);\n        PointZ output = m.convertValue(input, PointZ.class);\n        assertEquals(1, output.x);\n        assertEquals(2, output.y);\n        assertEquals(3, output.z);\n    }\n\n    /**\n     * Need to test \"shortcuts\" introduced by [databind#11]\n     */\n    public void testIssue11() throws Exception\n    {\n        // First the expected use case, Node specification\n        ObjectNode root = MAPPER.createObjectNode();\n        JsonNode n = root;\n        ObjectNode ob2 = MAPPER.convertValue(n, ObjectNode.class);\n        assertSame(root, ob2);\n\n        JsonNode n2 = MAPPER.convertValue(n, JsonNode.class);\n        assertSame(root, n2);\n        \n        // then some other no-op conversions\n        String STR = \"test\";\n        CharSequence seq = MAPPER.convertValue(STR, CharSequence.class);\n        assertSame(STR, seq);\n\n        // and then something that should NOT use short-cut\n        Leaf l = new Leaf(13);\n        Map<?,?> m = MAPPER.convertValue(l, Map.class);\n        assertNotNull(m);\n        assertEquals(1, m.size());\n        assertEquals(Integer.valueOf(13), m.get(\"value\"));\n\n        // and reverse too\n        Leaf l2 = MAPPER.convertValue(m, Leaf.class);\n        assertEquals(13, l2.value);\n\n        // also; ok to use \"untyped\" (Object):\n        Object ob = MAPPER.convertValue(l, Object.class);\n        assertNotNull(ob);\n        assertEquals(LinkedHashMap.class, ob.getClass());\n\n        // And one more: this time with a minor twist\n        final Object plaino = new Object();\n        // first, a failed attempt:\n        try {\n            m = MAPPER.convertValue(plaino, Map.class);\n            fail(\"Conversion should have failed\");\n        } catch (IllegalArgumentException e) {\n            verifyException(e, \"no properties discovered\");\n        }\n        \n        ObjectMapper mapper = new ObjectMapper();\n        mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);\n        try {\n            assertEquals(\"{}\", mapper.writeValueAsString(plaino));\n        } catch (Exception e) {\n            throw (Exception) e.getCause();\n        }\n        // should now work, via serialization/deserialization:\n        m = mapper.convertValue(plaino, Map.class);\n        assertNotNull(m);\n        assertEquals(0, m.size());\n    }\n\n    public void testConversionIssue288() throws Exception\n    {\n        String json = MAPPER.writeValueAsString(new ConvertingBean(1, 2));\n        // must be  {\"a\":2,\"b\":4}\n        assertEquals(\"{\\\"a\\\":2,\\\"b\\\":4}\", json);\n     }\n}\n",
+  "compaction": {
+    "source_lines": 256,
+    "mode": "windows",
+    "windows_total": 4,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        180,
+        256
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.635846933596087
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 13.056842688287395
+      },
+      {
+        "start": 180,
+        "end": 256,
+        "score": 13.705527472044885
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.635846933596087
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 13.02079323830644
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 13.056842688287395
+      },
+      {
+        "start": 180,
+        "end": 256,
+        "score": 13.705527472044885
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 6973,
+  "representation_chars": 6973,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

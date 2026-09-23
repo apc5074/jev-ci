@@ -1,0 +1,86 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.node.ArrayNodeTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/node/ArrayNodeTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.node.ArrayNodeTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/node/ArrayNodeTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.node;\n\nimport java.io.*;\nimport java.math.BigDecimal;\nimport java.math.BigInteger;\nimport java.util.ArrayList;\n\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.exc.MismatchedInputException;\nimport com.fasterxml.jackson.databind.node.ArrayNode;\nimport com.fasterxml.jackson.databind.node.JsonNodeFactory;\nimport com.fasterxml.jackson.databind.node.TextNode;\nimport com.fasterxml.jackson.databind.node.TreeTraversingParser;\n\n/**\n * Additional tests for {@link ArrayNode} container class.\n */\npublic class ArrayNodeTest\n    extends BaseMapTest\n{\n    public void testDirectCreation() throws IOException\n    {\n        ArrayNode n = new ArrayNode(JsonNodeFactory.instance);\n        assertStandardEquals(n);\n        assertFalse(n.elements().hasNext());\n        assertFalse(n.fieldNames().hasNext());\n        TextNode text = TextNode.valueOf(\"x\");\n        n.add(text);\n        assertEquals(1, n.size());\n        assertFalse(0 == n.hashCode());\n        assertTrue(n.elements().hasNext());\n        // no field names for arrays\n        assertFalse(n.fieldNames().hasNext());\n        assertNull(n.get(\"x\")); // not used with arrays\n        assertTrue(n.path(\"x\").isMissingNode());\n        assertSame(text, n.get(0));\n\n        // single element, so:\n        assertFalse(n.has(\"field\"));\n        assertFalse(n.hasNonNull(\"field\"));\n        assertTrue(n.has(0));\n        assertTrue(n.hasNonNull(0));\n        assertFalse(n.has(1));\n        assertFalse(n.hasNonNull(1));\n        \n        // add null node too\n        n.add((JsonNode) null);\n        assertEquals(2, n.size());\n        assertTrue(n.get(1).isNull());\n        assertTrue(n.has(1));\n        assertFalse(n.hasNonNull(1));\n        // change to text\n        n.set(1, text);\n        assertSame(text, n.get(1));\n        n.set(0, null);\n        assertTrue(n.get(0).isNull());\n\n        // and finally, clear it all\n        ArrayNode n2 = new ArrayNode(JsonNodeFactory.instance);\n        n2.add(\"foobar\");\n        assertFalse(n.equals(n2));\n        n.addAll(n2);\n        assertEquals(3, n.size());\n\n        assertFalse(n.get(0).isTextual());\n        assertNotNull(n.remove(0));\n        assertEquals(2, n.size());\n        assertTrue(n.get(0).isTextual());\n        assertNull(n.remove(-1));\n        assertNull(n.remove(100));\n        assertEquals(2, n.size());\n\n        ArrayList<JsonNode> nodes = new ArrayList<JsonNode>();\n        nodes.add(text);\n        n.addAll(nodes);\n        assertEquals(3, n.size());\n        assertNull(n.get(10000));\n        assertNull(n.remove(-4));\n\n        assertEquals(1, n.size());\n        assertTrue(n.get(0).isNull());\n    }\n\n    public void testArrayViaMapper() throws Exception\n    {\n        final String JSON = \"[[[-0.027512,51.503221],[-0.008497,51.503221],[-0.008497,51.509744],[-0.027512,51.509744]]]\";\n\n        JsonNode n = objectMapper().readTree(JSON);\n        assertNotNull(n);\n        assertTrue(n.isArray());\n        ArrayNode an = (ArrayNode) n;\n        assertEquals(1, an.size());\n        ArrayNode an2 = (ArrayNode) n.get(0);\n        assertTrue(an2.isArray());\n        assertEquals(4, an2.size());\n    }\n\n    public void testAdds()\n    {\n        ArrayNode n = new ArrayNode(JsonNodeFactory.instance);\n        assertNotNull(n.addArray());\n        assertNotNull(n.addObject());\n        n.addPOJO(\"foobar\");\n        n.add(1);\n        n.add(1L);\n        n.add(0.5);\n        n.add(0.5f);\n        n.add(new BigDecimal(\"0.2\"));\n        n.add(BigInteger.TEN);\n        assertEquals(9, n.size());\n\n        assertNotNull(n.insertArray(0));\n        assertNotNull(n.insertObject(0));\n        n.insertPOJO(2, \"xxx\");\n        assertEquals(12, n.size());\n\n        n.insert(0, BigInteger.ONE);\n        n.insert(0, new BigDecimal(\"0.1\"));\n        assertEquals(14, n.size());\n    }\n\n    public void testNullAdds()\n    {\n        JsonNodeFactory f = objectMapper().getNodeFactory();\n        ArrayNode array = f.arrayNode(14);\n\n        array.add((BigDecimal) null);\n        array.add((BigInteger) null);\n        array.add((Boolean) null);\n        array.add((byte[]) null);\n        array.add((Double) null);\n        array.add((Float) null);\n        array.add((Integer) null);\n        array.add((JsonNode) null);\n        array.add((Long) null);\n        array.add((String) null);\n\n        assertEquals(10, array.size());\n        \n        for (JsonNode node : array) {\n            assertTrue(node.isNull());\n        }\n    }\n\n    public void testNullInserts()\n    {\n        JsonNodeFactory f = objectMapper().getNodeFactory();\n        ArrayNode array = f.arrayNode(3);\n\n        array.insert(0, (BigDecimal) null);\n        array.insert(0, (BigInteger) null);\n        array.insert(0, (Boolean) null);\n        // Offsets out of the range are fine; negative become 0;\n        // super big just add at the end\n        array.insert(-56, (byte[]) null);\n        array.insert(0, (Double) null);\n        array.insert(200, (Float) null);\n        array.insert(0, (Integer) null);\n        array.insert(1, (JsonNode) null);\n        array.insert(array.size(), (Long) null);\n        array.insert(1, (String) null);\n\n        assertEquals(10, array.size());\n        \n        for (JsonNode node : array) {\n            assertTrue(node.isNull());\n        }\n    }\n    \n    public void testNullChecking()\n    {\n        ArrayNode a1 = JsonNodeFactory.instance.arrayNode();\n        ArrayNode a2 = JsonNodeFactory.instance.arrayNode();\n        // used to throw NPE before fix:\n        a1.addAll(a2);\n        assertEquals(0, a1.size());\n        assertEquals(0, a2.size());\n\n        a2.addAll(a1);\n        assertEquals(0, a1.size());\n        assertEquals(0, a2.size());\n    }\n\n    public void testNullChecking2()\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        ArrayNode src = mapper.createArrayNode();\n        ArrayNode dest = mapper.createArrayNode();\n        src.add(\"element\");\n        dest.addAll(src);\n    }\n    \n    public void testParser() throws Exception\n    {\n        ArrayNode n = new ArrayNode(JsonNodeFactory.instance);\n        n.add(123);\n        TreeTraversingParser p = new TreeTraversingParser(n, null);\n        p.setCodec(null);\n        assertNull(p.getCodec());\n        assertNotNull(p.getParsingContext());\n        assertNotNull(p.getTokenLocation());\n        assertNotNull(p.getCurrentLocation());\n        assertNull(p.getEmbeddedObject());\n        assertNull(p.currentNode());\n\n        //assertNull(p.getNumberType());\n\n        assertToken(JsonToken.START_ARRAY, p.nextToken());\n        p.skipChildren();\n        assertToken(JsonToken.END_ARRAY, p.getCurrentToken());\n        p.close();\n\n        p = new TreeTraversingParser(n, null);\n        p.nextToken();\n        assertToken(JsonToken.VALUE_NUMBER_INT, p.nextToken());\n        assertEquals(JsonParser.NumberType.INT, p.getNumberType());\n        p.close();\n    }\n\n",
+  "compaction": {
+    "source_lines": 341,
+    "mode": "windows",
+    "windows_total": 6,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 24.787861418742295
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 4.7088429038594315
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 9.478075820480045
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 24.787861418742295
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.4019130362556664
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 4.7088429038594315
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 9.478075820480045
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.102245721050289
+      },
+      {
+        "start": 300,
+        "end": 341,
+        "score": 2.3076521787590596
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7051,
+  "representation_chars": 7051,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

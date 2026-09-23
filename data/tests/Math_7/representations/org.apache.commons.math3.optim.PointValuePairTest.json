@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.math3.optim.PointValuePairTest",
+  "source_file": "src/test/java/org/apache/commons/math3/optim/PointValuePairTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.optim.PointValuePairTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/optim/PointValuePairTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.optim;\n\nimport org.apache.commons.math3.TestUtils;\nimport org.junit.Assert;\nimport org.junit.Test;\n\npublic class PointValuePairTest {\n    @Test\n    public void testSerial() {\n        PointValuePair pv1 = new PointValuePair(new double[] { 1.0, 2.0, 3.0 }, 4.0);\n        PointValuePair pv2 = (PointValuePair) TestUtils.serializeAndRecover(pv1);\n        Assert.assertEquals(pv1.getKey().length, pv2.getKey().length);\n        for (int i = 0; i < pv1.getKey().length; ++i) {\n            Assert.assertEquals(pv1.getKey()[i], pv2.getKey()[i], 1.0e-15);\n        }\n        Assert.assertEquals(pv1.getValue(), pv2.getValue(), 1.0e-15);\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 35,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1630,
+  "representation_chars": 1630,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,166 @@
+{
+  "test_class": "org.apache.commons.lang3.math.FractionTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/math/FractionTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.math.FractionTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/math/FractionTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one\n * or more contributor license agreements.  See the NOTICE file\n * distributed with this work for additional information\n * regarding copyright ownership.  The ASF licenses this file\n * to you under the Apache License, Version 2.0 (the\n * \"License\"); you may not use this file except in compliance\n * with the License.  You may obtain a copy of the License at\n *\n * http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing,\n * software distributed under the License is distributed on an\n * \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY\n * KIND, either express or implied.  See the License for the\n * specific language governing permissions and limitations\n * under the License.\n */\npackage org.apache.commons.lang3.math;\n\nimport junit.framework.TestCase;\n\n/**\n * Test cases for the {@link Fraction} class\n *\n * @author Apache Software Foundation\n * @author C. Scott Ananian\n * @version $Id$\n */\npublic class FractionTest extends TestCase {\n    \n    private static final int SKIP = 500;  //53\n\n    public FractionTest(String name) {\n        super(name);\n    }\n\n    //--------------------------------------------------------------------------\n    \n    public void testConstants() {\n        assertEquals(0, Fraction.ZERO.getNumerator());\n        assertEquals(1, Fraction.ZERO.getDenominator());\n        \n        assertEquals(1, Fraction.ONE.getNumerator());\n        assertEquals(1, Fraction.ONE.getDenominator());\n        \n        assertEquals(1, Fraction.ONE_HALF.getNumerator());\n        assertEquals(2, Fraction.ONE_HALF.getDenominator());\n        \n        assertEquals(1, Fraction.ONE_THIRD.getNumerator());\n        assertEquals(3, Fraction.ONE_THIRD.getDenominator());\n        \n        assertEquals(2, Fraction.TWO_THIRDS.getNumerator());\n        assertEquals(3, Fraction.TWO_THIRDS.getDenominator());\n        \n        assertEquals(1, Fraction.ONE_QUARTER.getNumerator());\n        assertEquals(4, Fraction.ONE_QUARTER.getDenominator());\n        \n        assertEquals(2, Fraction.TWO_QUARTERS.getNumerator());\n        assertEquals(4, Fraction.TWO_QUARTERS.getDenominator());\n        \n        assertEquals(3, Fraction.THREE_QUARTERS.getNumerator());\n        assertEquals(4, Fraction.THREE_QUARTERS.getDenominator());\n        \n        assertEquals(1, Fraction.ONE_FIFTH.getNumerator());\n        assertEquals(5, Fraction.ONE_FIFTH.getDenominator());\n        \n        assertEquals(2, Fraction.TWO_FIFTHS.getNumerator());\n        assertEquals(5, Fraction.TWO_FIFTHS.getDenominator());\n        \n        assertEquals(3, Fraction.THREE_FIFTHS.getNumerator());\n        assertEquals(5, Fraction.THREE_FIFTHS.getDenominator());\n        \n        assertEquals(4, Fraction.FOUR_FIFTHS.getNumerator());\n        assertEquals(5, Fraction.FOUR_FIFTHS.getDenominator());\n    }\n\n    public void testFactory_int_int() {\n        Fraction f = null;\n        \n        f2 = Fraction.getFraction(1, 5);\n        f = f1.add(f2);\n        assertSame(f2, f);\n        f = f2.add(f1);\n        assertSame(f2, f);\n        \n        f1 = Fraction.getFraction(-1, 13*13*2*2);\n        f2 = Fraction.getFraction(-2, 13*17*2);\n        f = f1.add(f2);\n        assertEquals(13*13*17*2*2, f.getDenominator());\n        assertEquals(-17 - 2*13*2, f.getNumerator());\n        \n        try {\n            f.add(null);\n            fail(\"expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException ex) {}\n        \n        // if this fraction is added naively, it will overflow.\n        // check that it doesn't.\n        f1 = Fraction.getFraction(1,32768*3);\n        f2 = Fraction.getFraction(1,59049);\n        f = f1.add(f2);\n        assertEquals(52451, f.getNumerator());\n        assertEquals(1934917632, f.getDenominator());\n\n        f1 = Fraction.getFraction(Integer.MIN_VALUE, 3);\n        f2 = Fraction.ONE_THIRD;\n        f = f1.add(f2);\n        assertEquals(Integer.MIN_VALUE+1, f.getNumerator());\n        assertEquals(3, f.getDenominator());\n        \n        f1 = Fraction.getFraction(Integer.MAX_VALUE - 1, 1);\n        f2 = Fraction.ONE;\n        f = f1.add(f2);\n        assertEquals(Integer.MAX_VALUE, f.getNumerator());\n        assertEquals(1, f.getDenominator());\n        \n        try {\n            f = f.add(Fraction.ONE); // should overflow\n            fail(\"expecting ArithmeticException but got: \" + f.toString());\n        } catch (ArithmeticException ex) {}\n        \n        // denominator should not be a multiple of 2 or 3 to trigger overflow\n        f1 = Fraction.getFraction(Integer.MIN_VALUE, 5);\n        f2 = Fraction.getFraction(-1,5);\n        try {\n            f = f1.add(f2); // should overflow\n            fail(\"expecting ArithmeticException but got: \" + f.toString());\n        } catch (ArithmeticException ex) {}\n        \n        try {\n            f= Fraction.getFraction(-Integer.MAX_VALUE, 1);\n            f = f.add(f);\n            fail(\"expecting ArithmeticException\");\n        } catch (ArithmeticException ex) {}\n            \n        try {\n            f= Fraction.getFraction(-Integer.MAX_VALUE, 1);\n            f = f.add(f);\n            fail(\"expecting ArithmeticException\");\n        } catch (ArithmeticException ex) {}\n            \n        f1 = Fraction.getFraction(3,327680);\n        f2 = Fraction.getFraction(2,59049);\n        try {\n            f = f1.add(f2); // should overflow\n            fail(\"expecting ArithmeticException but got: \" + f.toString());\n        } catch (ArithmeticException ex) {}\n    }\n            \n    public void testSubtract() {\n        Fraction f = null;\n        Fraction f1 = null;\n        Fraction f2 = null;\n        \n        f1 = Fraction.getFraction(3, 5);\n        f2 = Fraction.getFraction(1, 5);\n        f = f1.subtract(f2);\n        assertEquals(2, f.getNumerator());\n        assertEquals(5, f.getDenominator());\n        try {\n            f1 = Fraction.getFraction(1, -Integer.MAX_VALUE);\n            f = f1.divideBy(f1.invert());  // should overflow\n            fail(\"expecting ArithmeticException\");\n        } catch (ArithmeticException ex) {}\n    }\n            \n    public void testEquals() {\n        Fraction f1 = null;\n        Fraction f2 = null;\n        \n        f1 = Fraction.getFraction(3, 5);\n        assertEquals(false, f1.equals(null));\n        assertEquals(false, f1.equals(new Object()));\n        assertEquals(false, f1.equals(new Integer(6)));\n        \n        f1 = Fraction.getFraction(3, 5);\n        f2 = Fraction.getFraction(2, 5);\n        assertEquals(false, f1.equals(f2));\n        assertEquals(true, f1.equals(f1));\n        assertEquals(true, f2.equals(f2));\n        \n        f2 = Fraction.getFraction(3, 5);\n        assertEquals(true, f1.equals(f2));\n        \n        f2 = Fraction.getFraction(6, 10);\n        assertEquals(false, f1.equals(f2));\n    }\n    \n    public void testHashCode() {\n        Fraction f1 = Fraction.getFraction(3, 5);\n        Fraction f2 = Fraction.getFraction(3, 5);\n        \n        assertTrue(f1.hashCode() == f2.hashCode());\n        \n        f2 = Fraction.getFraction(2, 5);\n        assertTrue(f1.hashCode() != f2.hashCode());\n        \n        f2 = Fraction.getFraction(6, 10);\n        assertTrue(f1.hashCode() != f2.hashCode());\n    }\n    \n    public void testCompareTo() {\n        Fraction f1 = null;\n        Fraction f2 = null;\n        \n        f1 = Fraction.getFraction(3, 5);\n        assertTrue(f1.compareTo(f1) == 0);\n        \n        try {\n            f1.compareTo(null);\n            fail(\"expecting NullPointerException\");\n        } catch (NullPointerException ex) {}\n        \n        f2 = Fraction.getFraction(2, 5);\n        assertTrue(f1.compareTo(f2) > 0);\n        assertTrue(f2.compareTo(f2) == 0);\n        \n        f2 = Fraction.getFraction(4, 5);\n        assertTrue(f1.compareTo(f2) < 0);\n        assertTrue(f2.compareTo(f2) == 0);\n        \n        f2 = Fraction.getFraction(3, 5);\n        assertTrue(f1.compareTo(f2) == 0);\n        assertTrue(f2.compareTo(f2) == 0);\n        \n        f2 = Fraction.getFraction(6, 10);\n        assertTrue(f1.compareTo(f2) == 0);\n        assertTrue(f2.compareTo(f2) == 0);\n\n        f2 = Fraction.getFraction(-1, 1, Integer.MAX_VALUE);\n        assertTrue(f1.compareTo(f2) > 0);\n        assertTrue(f2.compareTo(f2) == 0);\n\n    }\n    \n    public void testToString() {\n        Fraction f = null;\n\n        f = Fraction.getFraction(3, 5);\n",
+  "compaction": {
+    "source_lines": 1338,
+    "mode": "windows",
+    "windows_total": 22,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        900,
+        980
+      ],
+      [
+        1200,
+        1280
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 34.45245184934661
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 13.059805560264234
+      },
+      {
+        "start": 1200,
+        "end": 1280,
+        "score": 10.997841888029303
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 34.45245184934661
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 0.31228687265456756
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 0.3455111169296774
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 0.3455074257679776
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 0.32704487496617013
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 2.248078883757995
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 6.037795887027513
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 3.3433472792399037
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 0.3413018256772452
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 0.33278051683007837
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 0.2983248457991099
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 0.3288791939192871
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 1.4000910334658916
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 10.73223445179382
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 9.498180634462585
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 13.059805560264234
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 7.374838501940466
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 9.367409298534934
+      },
+      {
+        "start": 1080,
+        "end": 1160,
+        "score": 3.113722916132333
+      },
+      {
+        "start": 1140,
+        "end": 1220,
+        "score": 8.262779368034382
+      },
+      {
+        "start": 1200,
+        "end": 1280,
+        "score": 10.997841888029303
+      },
+      {
+        "start": 1260,
+        "end": 1338,
+        "score": 0.08319563911433696
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8526,
+  "representation_chars": 8526,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

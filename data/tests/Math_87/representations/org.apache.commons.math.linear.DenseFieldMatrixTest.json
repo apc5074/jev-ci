@@ -1,0 +1,166 @@
+{
+  "test_class": "org.apache.commons.math.linear.DenseFieldMatrixTest",
+  "source_file": "src/test/org/apache/commons/math/linear/DenseFieldMatrixTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math.linear.DenseFieldMatrixTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/math/linear/DenseFieldMatrixTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math.linear;\n\nimport java.util.Arrays;\nimport java.util.Random;\n\nimport junit.framework.Test;\nimport junit.framework.TestCase;\nimport junit.framework.TestSuite;\n\nimport org.apache.commons.math.TestUtils;\nimport org.apache.commons.math.fraction.Fraction;\nimport org.apache.commons.math.fraction.FractionField;\n\n/**\n * Test cases for the {@link DenseFieldMatrix} class.\n *\n * @version $Revision$ $Date$\n */\n\npublic final class DenseFieldMatrixTest extends TestCase {\n    \n    // 3 x 3 identity matrix\n    protected Fraction[][] id = {\n            {new Fraction(1),new Fraction(0),new Fraction(0)},\n            {new Fraction(0),new Fraction(1),new Fraction(0)},\n            {new Fraction(0),new Fraction(0),new Fraction(1)}\n    };\n    \n    // Test data for group operations\n    protected Fraction[][] testData = {\n            {new Fraction(1),new Fraction(2),new Fraction(3)},\n            {new Fraction(2),new Fraction(5),new Fraction(3)},\n            {new Fraction(1),new Fraction(0),new Fraction(8)}\n    };\n    protected Fraction[][] testDataLU = {\n            {new Fraction(2), new Fraction(5), new Fraction(3)},\n            {new Fraction(1, 2), new Fraction(-5, 2), new Fraction(13, 2)},\n            {new Fraction(1, 2), new Fraction(1, 5), new Fraction(1, 5)}\n    };\n    protected Fraction[][] testDataPlus2 = {\n            {new Fraction(3),new Fraction(4),new Fraction(5)},\n            {new Fraction(4),new Fraction(7),new Fraction(5)},\n            {new Fraction(3),new Fraction(2),new Fraction(10)}\n    };\n    protected Fraction[][] testDataMinus = {\n            {new Fraction(-1),new Fraction(-2),new Fraction(-3)},\n            {new Fraction(-2),new Fraction(-5),new Fraction(-3)}, \n            {new Fraction(-1),new Fraction(0),new Fraction(-8)}\n    };\n    protected Fraction[] testDataRow1 = {new Fraction(1),new Fraction(2),new Fraction(3)};\n    protected Fraction[] testDataCol3 = {new Fraction(3),new Fraction(3),new Fraction(8)};\n    protected Fraction[][] testDataInv = {\n            {new Fraction(-40),new Fraction(16),new Fraction(9)},\n            {new Fraction(13),new Fraction(-5),new Fraction(-3)},\n            {new Fraction(5),new Fraction(-2),new Fraction(-1)}\n    };\n    protected Fraction[] preMultTest = {new Fraction(8), new Fraction(12), new Fraction(33)};\n    protected Fraction[][] testData2 = {\n            {new Fraction(1),new Fraction(2),new Fraction(3)},\n            {new Fraction(2),new Fraction(5),new Fraction(3)}\n    };\n    protected Fraction[][] testData2T = {\n            {new Fraction(1),new Fraction(2)},\n            {new Fraction(2),new Fraction(5)},\n    protected Fraction[][] subTestData = {\n            {new Fraction(1), new Fraction(2), new Fraction(3), new Fraction(4)},\n            {new Fraction(3, 2), new Fraction(5, 2), new Fraction(7, 2), new Fraction(9, 2)},\n            {new Fraction(2), new Fraction(4), new Fraction(6), new Fraction(8)},\n            {new Fraction(4), new Fraction(5), new Fraction(6), new Fraction(7)}\n    }; \n    // array selections\n    protected Fraction[][] subRows02Cols13 = { {new Fraction(2), new Fraction(4)}, {new Fraction(4), new Fraction(8)}};\n    protected Fraction[][] subRows03Cols12 = { {new Fraction(2), new Fraction(3)}, {new Fraction(5), new Fraction(6)}};\n    protected Fraction[][] subRows03Cols123 = {\n            {new Fraction(2), new Fraction(3), new Fraction(4)},\n            {new Fraction(5), new Fraction(6), new Fraction(7)}\n    };\n    // effective permutations\n    protected Fraction[][] subRows20Cols123 = {\n            {new Fraction(4), new Fraction(6), new Fraction(8)},\n            {new Fraction(2), new Fraction(3), new Fraction(4)}\n    };\n    protected Fraction[][] subRows31Cols31 = {{new Fraction(7), new Fraction(5)}, {new Fraction(9, 2), new Fraction(5, 2)}};\n    // contiguous ranges\n    protected Fraction[][] subRows01Cols23 = {{new Fraction(3),new Fraction(4)} , {new Fraction(7, 2), new Fraction(9, 2)}};\n    protected Fraction[][] subRows23Cols00 = {{new Fraction(2)} , {new Fraction(4)}};\n    protected Fraction[][] subRows00Cols33 = {{new Fraction(4)}};\n    // row matrices\n    protected Fraction[][] subRow0 = {{new Fraction(1),new Fraction(2),new Fraction(3),new Fraction(4)}};\n    protected Fraction[][] subRow3 = {{new Fraction(4),new Fraction(5),new Fraction(6),new Fraction(7)}};\n    // column matrices\n    protected Fraction[][] subColumn1 = {{new Fraction(2)}, {new Fraction(5, 2)}, {new Fraction(4)}, {new Fraction(5)}};\n    protected Fraction[][] subColumn3 = {{new Fraction(4)}, {new Fraction(9, 2)}, {new Fraction(8)}, {new Fraction(7)}};\n    \n    // tolerances\n    protected double entryTolerance = 10E-16;\n    protected double normTolerance = 10E-14;\n    \n    public DenseFieldMatrixTest(String name) {\n        super(name);\n    }\n    \n    public static Test suite() {\n        TestSuite suite = new TestSuite(DenseFieldMatrixTest.class);\n        suite.setName(\"DenseFieldMatrix<Fraction> Tests\");\n        return suite;\n    }\n    \n    /** test dimensions */\n    public void testDimensions() {\n        DenseFieldMatrix<Fraction> m = new DenseFieldMatrix<Fraction>(testData);\n        DenseFieldMatrix<Fraction> m2 = new DenseFieldMatrix<Fraction>(testData2);\n        assertEquals(\"testData row dimension\",3,m.getRowDimension());\n        assertEquals(\"testData column dimension\",3,m.getColumnDimension());\n        assertTrue(\"testData is square\",m.isSquare());\n        assertEquals(\"testData2 row dimension\",m2.getRowDimension(),2);\n        assertEquals(\"testData2 column dimension\",m2.getColumnDimension(),3);\n        assertTrue(\"testData2 is not square\",!m2.isSquare());\n    } \n    \n    /** test copy functions */\n    public void testCopyFunctions() {\n        Random r = new Random(66636328996002l);\n        DenseFieldMatrix<Fraction> m1 = createRandomMatrix(r, 47, 83);\n        DenseFieldMatrix<Fraction> m2 = new DenseFieldMatrix<Fraction>(m1.getData());\n        assertEquals(m1, m2);\n        DenseFieldMatrix<Fraction> m3 = new DenseFieldMatrix<Fraction>(testData);\n        DenseFieldMatrix<Fraction> m4 = new DenseFieldMatrix<Fraction>(m3.getData());\n        assertEquals(m3, m4);\n    }           \n    \n    /** test add */\n    public void testAdd() {\n        DenseFieldMatrix<Fraction> m = new DenseFieldMatrix<Fraction>(testData);\n        DenseFieldMatrix<Fraction> mInv = new DenseFieldMatrix<Fraction>(testDataInv);\n        FieldMatrix<Fraction> mPlusMInv = m.add(mInv);\n        Fraction[][] sumEntries = mPlusMInv.getData();\n        for (int row = 0; row < m.getRowDimension(); row++) {\n            for (int col = 0; col < m.getColumnDimension(); col++) {\n                assertEquals(testDataPlusInv[row][col],sumEntries[row][col]);\n            }\n        }    \n    }\n    \n            // expected\n        }\n    }\n\n    public void testGetSetColumnLarge() {\n        int n = 3 * DenseFieldMatrix.BLOCK_SIZE;\n        FieldMatrix<Fraction> m = new DenseFieldMatrix<Fraction>(FractionField.getInstance(), n, n);\n        Fraction[] sub = new Fraction[n];\n        Arrays.fill(sub, new Fraction(1));\n\n        m.setColumn(2, sub);\n        for (int i = 0; i < n; ++i) {\n            for (int j = 0; j < n; ++j) {\n                if (j != 2) {\n                    assertEquals(new Fraction(0), m.getEntry(i, j));\n                } else {\n                    assertEquals(new Fraction(1), m.getEntry(i, j));\n                }\n            }\n        }\n        checkArrays(sub, m.getColumn(2));\n\n    }\n    \n    private Fraction[] columnToArray(Fraction[][] column) {\n        Fraction[] data = new Fraction[column.length];\n        for (int i = 0; i < data.length; ++i) {\n            data[i] = column[i][0];\n        }\n        return data;\n    }\n\n    private void checkArrays(Fraction[] expected, Fraction[] actual) {\n        assertEquals(expected.length, actual.length);\n        for (int i = 0; i < expected.length; ++i) {\n            assertEquals(expected[i], actual[i]);            \n        }\n    }\n    \n    public void testEqualsAndHashCode() {\n        DenseFieldMatrix<Fraction> m = new DenseFieldMatrix<Fraction>(testData);\n        DenseFieldMatrix<Fraction> m1 = (DenseFieldMatrix<Fraction>) m.copy();\n        DenseFieldMatrix<Fraction> mt = (DenseFieldMatrix<Fraction>) m.transpose();\n        assertTrue(m.hashCode() != mt.hashCode());\n        assertEquals(m.hashCode(), m1.hashCode());\n        assertEquals(m, m);\n        assertEquals(m, m1);\n        assertFalse(m.equals(null));\n        assertFalse(m.equals(mt));\n        assertFalse(m.equals(new DenseFieldMatrix<Fraction>(bigSingular))); \n    }\n    \n    public void testToString() {\n        DenseFieldMatrix<Fraction> m = new DenseFieldMatrix<Fraction>(testData);\n        assertEquals(\"DenseFieldMatrix{{1,2,3},{2,5,3},{1,0,8}}\", m.toString());\n    }\n    \n    public void testSetSubMatrix() throws Exception {\n        DenseFieldMatrix<Fraction> m = new DenseFieldMatrix<Fraction>(testData);\n        m.setSubMatrix(detData2,1,1);\n        FieldMatrix<Fraction> expected = new DenseFieldMatrix<Fraction>\n            (new Fraction[][] {{new Fraction(1),new Fraction(2),new Fraction(3)},{new Fraction(2),new Fraction(1),new Fraction(3)},{new Fraction(1),new Fraction(2),new Fraction(4)}});\n        assertEquals(expected, m);  \n        \n        m.setSubMatrix(detData2,0,0);\n        expected = new DenseFieldMatrix<Fraction>\n            (new Fraction[][] {{new Fraction(1),new Fraction(3),new Fraction(3)},{new Fraction(2),new Fraction(4),new Fraction(3)},{new Fraction(1),new Fraction(2),new Fraction(4)}});\n        assertEquals(expected, m);  \n        \n        m.setSubMatrix(testDataPlus2,0,0);      \n        expected = new DenseFieldMatrix<Fraction>\n            (new Fraction[][] {{new Fraction(3),new Fraction(4),new Fraction(5)},{new Fraction(4),new Fraction(7),new Fraction(5)},{new Fraction(3),new Fraction(2),new Fraction(10)}});\n        assertEquals(expected, m);   \n        \n        // javadoc example\n        DenseFieldMatrix<Fraction> matrix =\n            new DenseFieldMatrix<Fraction>(new Fraction[][] {\n                    {new Fraction(1), new Fraction(2), new Fraction(3), new Fraction(4)},\n                    {new Fraction(5), new Fraction(6), new Fraction(7), new Fraction(8)},\n                    {new Fraction(9), new Fraction(0), new Fraction(1) , new Fraction(2)}\n",
+  "compaction": {
+    "source_lines": 1295,
+    "mode": "windows",
+    "windows_total": 22,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        1020,
+        1100
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 31.792858711518306
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 11.352610242620917
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 13.141395388574665
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 31.792858711518306
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.9753549187304094
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 11.352610242620917
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 8.869084583197631
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 5.363380997743745
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 8.646197791239604
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 7.559727544864131
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 4.967700979586549
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 2.3936713811724113
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 8.488504559442287
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 8.721538251638279
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 6.914096814492108
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 4.720084833877956
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 4.854779996253209
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 5.676367810345264
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 7.525796605690848
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 4.884610217360874
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 13.141395388574665
+      },
+      {
+        "start": 1080,
+        "end": 1160,
+        "score": 3.616928530488698
+      },
+      {
+        "start": 1140,
+        "end": 1220,
+        "score": 2.4004180934795913
+      },
+      {
+        "start": 1200,
+        "end": 1280,
+        "score": 7.142001835451053
+      },
+      {
+        "start": 1260,
+        "end": 1295,
+        "score": 8.680724657377885
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 11249,
+  "representation_chars": 11249,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

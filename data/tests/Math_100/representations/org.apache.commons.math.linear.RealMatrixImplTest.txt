@@ -1,0 +1,216 @@
+TEST CLASS:
+org.apache.commons.math.linear.RealMatrixImplTest
+
+SOURCE FILE:
+src/test/org/apache/commons/math/linear/RealMatrixImplTest.java
+
+TEST SOURCE:
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.commons.math.linear;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
+/**
+ * Test cases for the {@link RealMatrixImpl} class.
+ *
+ * @version $Revision$ $Date$
+ */
+
+public final class RealMatrixImplTest extends TestCase {
+    
+    // 3 x 3 identity matrix
+    protected double[][] id = { {1d,0d,0d}, {0d,1d,0d}, {0d,0d,1d} };
+    
+    // Test data for group operations
+    protected double[][] testData = { {1d,2d,3d}, {2d,5d,3d}, {1d,0d,8d} };
+    protected double[][] testDataLU = {{2d, 5d, 3d}, {.5d, -2.5d, 6.5d}, {0.5d, 0.2d, .2d}};
+    protected double[][] testDataPlus2 = { {3d,4d,5d}, {4d,7d,5d}, {3d,2d,10d} };
+    protected double[][] testDataMinus = { {-1d,-2d,-3d}, {-2d,-5d,-3d}, 
+       {-1d,0d,-8d} };
+    protected double[] testDataRow1 = {1d,2d,3d};
+    protected double[] testDataCol3 = {3d,3d,8d};
+    protected double[][] testDataInv = 
+        { {-40d,16d,9d}, {13d,-5d,-3d}, {5d,-2d,-1d} };
+    protected double[] preMultTest = {8,12,33};
+    protected double[][] testData2 ={ {1d,2d,3d}, {2d,5d,3d}};
+    protected double[][] testData2T = { {1d,2d}, {2d,5d}, {3d,3d}};
+    protected double[][] testDataPlusInv = 
+        { {-39d,18d,12d}, {15d,0d,0d}, {6d,-2d,7d} };
+    
+    // lu decomposition tests
+    protected double[][] luData = { {2d,3d,3d}, {0d,5d,7d}, {6d,9d,8d} };
+    protected double[][] luDataLUDecomposition = { {6d,9d,8d}, {0d,5d,7d},
+            {0.33333333333333,0d,0.33333333333333} };
+    
+    // singular matrices
+    protected double[][] singular = { {2d,3d}, {2d,3d} };
+    protected double[][] bigSingular = {{1d,2d,3d,4d}, {2d,5d,3d,4d},
+        {7d,3d,256d,1930d}, {3d,7d,6d,8d}}; // 4th row = 1st + 2nd
+    protected double[][] detData = { {1d,2d,3d}, {4d,5d,6d}, {7d,8d,10d} };
+    protected double[][] detData2 = { {1d, 3d}, {2d, 4d}};
+    
+    // vectors
+    protected double[] testVector = {1,2,3};
+    protected double[] testVector2 = {1,2,3,4};
+    
+    // submatrix accessor tests
+    protected double[][] subTestData = {{1, 2, 3, 4}, {1.5, 2.5, 3.5, 4.5},
+            {2, 4, 6, 8}, {4, 5, 6, 7}}; 
+    // array selections
+    protected double[][] subRows02Cols13 = { {2, 4}, {4, 8}};
+    protected double[][] subRows03Cols12 = { {2, 3}, {5, 6}};
+    protected double[][] subRows03Cols123 = { {2, 3, 4} , {5, 6, 7}};
+    // effective permutations
+    protected double[][] subRows20Cols123 = { {4, 6, 8} , {2, 3, 4}};
+    protected double[][] subRows31Cols31 = {{7, 5}, {4.5, 2.5}};
+    // contiguous ranges
+    protected double[][] subRows01Cols23 = {{3,4} , {3.5, 4.5}};
+    protected double[][] subRows23Cols00 = {{2} , {4}};
+    protected double[][] subRows00Cols33 = {{4}};
+    // row matrices
+            // expected
+        }
+        
+        // null
+        try {
+            m.setSubMatrix(null,1,1);
+            fail("expecting NullPointerException");
+        } catch (NullPointerException e) {
+            // expected
+        }
+        RealMatrixImpl m2 = new RealMatrixImpl();
+        try {
+            m2.setSubMatrix(testData,0,1);
+            fail("expecting MatrixIndexException");
+        } catch (MatrixIndexException e) {
+            // expected
+        }
+        try {
+            m2.setSubMatrix(testData,1,0);
+            fail("expecting MatrixIndexException");
+        } catch (MatrixIndexException e) {
+            // expected
+        }
+        
+        // ragged
+        try {
+            m.setSubMatrix(new double[][] {{1}, {2, 3}}, 0, 0);
+            fail("expecting IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+       
+        // empty
+        try {
+            m.setSubMatrix(new double[][] {{}}, 0, 0);
+            fail("expecting IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+        
+    }
+    
+    //--------------- -----------------Protected methods
+        
+    /** verifies that two matrices are close (1-norm) */              
+    protected void assertClose(String msg, RealMatrix m, RealMatrix n,
+        double tolerance) {
+        assertTrue(msg,m.subtract(n).getNorm() < tolerance);
+    }
+    
+    /** verifies that two vectors are close (sup norm) */
+    protected void assertClose(String msg, double[] m, double[] n,
+        double tolerance) {
+        if (m.length != n.length) {
+            fail("vectors not same length");
+        }
+        for (int i = 0; i < m.length; i++) {
+            assertEquals(msg + " " +  i + " elements differ", 
+                m[i],n[i],tolerance);
+        }
+    }
+    
+    /** extracts the l  and u matrices from compact lu representation */
+    protected void splitLU(RealMatrix lu, double[][] lowerData, double[][] upperData) throws InvalidMatrixException {   
+        if (!lu.isSquare() || lowerData.length != lowerData[0].length || upperData.length != upperData[0].length ||
+                lowerData.length != upperData.length
+                || lowerData.length != lu.getRowDimension()) {
+            throw new InvalidMatrixException("incorrect dimensions");
+        }    
+        int n = lu.getRowDimension();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (j < i) {
+                    lowerData[i][j] = lu.getEntry(i, j);
+                    upperData[i][j] = 0d;
+                } else if (i == j) {
+                    lowerData[i][j] = 1d;
+                    upperData[i][j] = lu.getEntry(i, j);
+                } else {
+                    lowerData[i][j] = 0d;
+                    upperData[i][j] = lu.getEntry(i, j);
+                }   
+            }
+        }
+    }
+    
+    /** Returns the result of applying the given row permutation to the matrix */
+    protected RealMatrix permuteRows(RealMatrix matrix, int[] permutation) {
+        if (!matrix.isSquare() || matrix.getRowDimension() != permutation.length) {
+            throw new IllegalArgumentException("dimension mismatch");
+        }
+        int n = matrix.getRowDimension();
+        int m = matrix.getColumnDimension();
+        double out[][] = new double[m][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                out[i][j] = matrix.getEntry(permutation[i], j);
+            }
+        }
+        return new RealMatrixImpl(out);
+    }
+    
+    /** Extracts l and u matrices from lu and verifies that matrix = l times u modulo permutation */
+    protected void verifyDecomposition(RealMatrix matrix, RealMatrix lu) throws Exception{
+        int n = matrix.getRowDimension();
+        double[][] lowerData = new double[n][n];
+        double[][] upperData = new double[n][n];
+        splitLU(lu, lowerData, upperData);
+        RealMatrix lower =new RealMatrixImpl(lowerData);
+        RealMatrix upper = new RealMatrixImpl(upperData);
+        int[] permutation = ((RealMatrixImpl) matrix).getPermutation();
+        RealMatrix permuted = permuteRows(matrix, permutation);
+        assertClose("lu decomposition does not work", permuted, lower.multiply(upper), normTolerance);
+    }
+      
+    
+//    /** Useful for debugging */
+//    private void dumpMatrix(RealMatrix m) {
+//          for (int i = 0; i < m.getRowDimension(); i++) {
+//              String os = "";
+//              for (int j = 0; j < m.getColumnDimension(); j++) {
+//                  os += m.getEntry(i, j) + " ";
+//              }
+//              System.out.println(os);
+//          }
+//    }
+        
+}
+

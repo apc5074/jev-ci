@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.jsontype.WrapperObjectWithObjectIdTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/jsontype/WrapperObjectWithObjectIdTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.jsontype.WrapperObjectWithObjectIdTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/jsontype/WrapperObjectWithObjectIdTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.jsontype;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.databind.*;\n\n// Test for [databind#1051], issue with combination of Type and Object ids,\n// if (but only if) `JsonTypeInfo.As.WRAPPER_OBJECT` used.\npublic class WrapperObjectWithObjectIdTest extends BaseMapTest\n{\n    @JsonRootName(value = \"company\")\n    static class Company {\n        public List<Computer> computers;\n\n        public Company() {\n            computers = new ArrayList<Computer>();\n        }\n\n        public Company addComputer(Computer computer) {\n            if (computers == null) {\n                computers = new ArrayList<Computer>();\n            }\n            computers.add(computer);\n            return this;\n        }\n    }\n\n    @JsonIdentityInfo(\n            generator = ObjectIdGenerators.PropertyGenerator.class,\n            property = \"id\"\n    )\n    @JsonTypeInfo(\n            use = JsonTypeInfo.Id.NAME,\n            include = JsonTypeInfo.As.WRAPPER_OBJECT,\n            property = \"type\"\n    )\n    @JsonSubTypes({\n            @JsonSubTypes.Type(value = DesktopComputer.class, name = \"desktop\"),\n            @JsonSubTypes.Type(value = LaptopComputer.class, name = \"laptop\")\n    })\n    static class Computer {\n        public String id;\n    }\n\n    @JsonTypeName(\"desktop\")\n    static class DesktopComputer extends Computer {\n        public String location;\n\n        protected DesktopComputer() { }\n        public DesktopComputer(String id, String loc) {\n            this.id = id;\n            location = loc;\n        }\n    }\n\n    @JsonTypeName(\"laptop\")\n    static class LaptopComputer extends Computer {\n        public String vendor;\n\n        protected LaptopComputer() { }\n        public LaptopComputer(String id, String v) {\n            this.id = id;\n            vendor = v;\n        }\n    }\n\n    public void testSimple() throws Exception\n    {\n        Company comp = new Company();\n        comp.addComputer(new DesktopComputer(\"computer-1\", \"Bangkok\"));\n        comp.addComputer(new DesktopComputer(\"computer-2\", \"Pattaya\"));\n        comp.addComputer(new LaptopComputer(\"computer-3\", \"Apple\"));\n\n        final ObjectMapper mapper = new ObjectMapper();\n\n        String json = mapper.writerWithDefaultPrettyPrinter()\n                .writeValueAsString(comp);\n\n        Company result = mapper.readValue(json, Company.class);\n        assertNotNull(result);\n        assertNotNull(result.computers);\n        assertEquals(3, result.computers.size());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 86,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2724,
+  "representation_chars": 2724,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

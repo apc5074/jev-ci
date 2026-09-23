@@ -1,0 +1,81 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.TestHandlerInstantiation",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/TestHandlerInstantiation.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.TestHandlerInstantiation\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/TestHandlerInstantiation.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind;\n\nimport java.io.IOException;\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.annotation.JsonTypeInfo.As;\nimport com.fasterxml.jackson.annotation.JsonTypeInfo.Id;\n\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.databind.DeserializationContext;\nimport com.fasterxml.jackson.databind.JsonDeserializer;\nimport com.fasterxml.jackson.databind.JsonSerializer;\nimport com.fasterxml.jackson.databind.KeyDeserializer;\nimport com.fasterxml.jackson.databind.ObjectMapper;\nimport com.fasterxml.jackson.databind.SerializerProvider;\nimport com.fasterxml.jackson.databind.annotation.*;\nimport com.fasterxml.jackson.databind.cfg.HandlerInstantiator;\nimport com.fasterxml.jackson.databind.cfg.MapperConfig;\nimport com.fasterxml.jackson.databind.introspect.Annotated;\nimport com.fasterxml.jackson.databind.jsontype.TypeIdResolver;\nimport com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder;\nimport com.fasterxml.jackson.databind.type.TypeFactory;\n\npublic class TestHandlerInstantiation extends BaseMapTest\n{\n    /*\n    /**********************************************************************\n    /* Helper classes, beans\n    /**********************************************************************\n     */\n\n    @JsonDeserialize(using=MyBeanDeserializer.class)\n    @JsonSerialize(using=MyBeanSerializer.class)\n    static class MyBean\n    {\n        public String value;\n\n        public MyBean() { this(null); }\n        public MyBean(String s) { value = s; }\n    }\n\n    @SuppressWarnings(\"serial\")\n    @JsonDeserialize(keyUsing=MyKeyDeserializer.class)\n    static class MyMap extends HashMap<String,String> { }\n\n    @JsonTypeInfo(use=Id.CUSTOM, include=As.WRAPPER_ARRAY)\n    @JsonTypeIdResolver(CustomIdResolver.class)\n    static class TypeIdBean {\n        public int x;\n        \n        public TypeIdBean() { }\n        public TypeIdBean(int x) { this.x = x; }\n    }\n\n    static class TypeIdBeanWrapper {\n        public TypeIdBean bean;\n        \n        public TypeIdBeanWrapper() { this(null); }\n        public TypeIdBeanWrapper(TypeIdBean b) { bean = b; }\n    }\n    \n    /*\n    /**********************************************************************\n    /* Helper classes, serializers/deserializers/resolvers\n    /**********************************************************************\n     */\n    \n    static class MyBeanDeserializer extends JsonDeserializer<MyBean>\n    {\n        public String _prefix = \"\";\n\n        public MyBeanDeserializer(String p) {\n            _prefix  = p;\n        }\n        \n        @Override\n        public MyBean deserialize(JsonParser jp, DeserializationContext ctxt)\n                throws IOException, JsonProcessingException\n        {\n            _id = idForBean;\n        }\n        \n        @Override\n        public Id getMechanism() {\n            return Id.CUSTOM;\n        }\n        @Override\n        public String idFromValue(Object value)\n        {\n            if (value.getClass() == TypeIdBean.class) {\n                return _id;\n            }\n            return \"unknown\";\n        }\n        @Override\n        public String idFromValueAndType(Object value, Class<?> type) {\n            return idFromValue(value);\n        }\n        @Override\n        public void init(JavaType baseType) {\n            if (initTypes != null) {\n                initTypes.add(baseType);\n            }\n        }\n        @Override\n        public JavaType typeFromId(String id)\n        {\n            if (id.equals(_id)) {\n                return TypeFactory.defaultInstance().constructType(TypeIdBean.class);\n            }\n            return null;\n        }\n        @Override\n        public String idFromBaseType() {\n            return \"xxx\";\n        }\n    }\n\n    /*\n    /**********************************************************************\n    /* Helper classes, handler instantiator\n    /**********************************************************************\n     */\n    \n    static class MyInstantiator extends HandlerInstantiator\n    {\n        private final String _prefix;\n        \n        public MyInstantiator(String p) {\n            _prefix = p;\n        }\n        \n        @Override\n        public JsonDeserializer<?> deserializerInstance(DeserializationConfig config,\n                Annotated annotated,\n                Class<?> deserClass)\n        {\n            if (deserClass == MyBeanDeserializer.class) {\n                return new MyBeanDeserializer(_prefix);\n            }\n            return null;\n        }\n\n        @Override\n        public KeyDeserializer keyDeserializerInstance(DeserializationConfig config,\n                Annotated annotated, Class<?> keyDeserClass)\n        {\n            if (keyDeserClass == MyKeyDeserializer.class) {\n                return new MyKeyDeserializer();\n            }\n            return null;\n            \n        }\n        \n        @Override\n        public JsonSerializer<?> serializerInstance(SerializationConfig config,\n                Annotated annotated, Class<?> serClass)\n        {\n            if (serClass == MyBeanSerializer.class) {\n                return new MyBeanSerializer(_prefix);\n            }\n            return null;\n        }\n\n        @Override\n        public TypeIdResolver typeIdResolverInstance(MapperConfig<?> config,\n                Annotated annotated, Class<?> resolverClass)\n        {\n            if (resolverClass == CustomIdResolver.class) {\n                return new CustomIdResolver(\"!!!\");\n            }\n            return null;\n        }\n\n        @Override\n        public TypeResolverBuilder<?> typeResolverBuilderInstance(MapperConfig<?> config, Annotated annotated,\n                Class<?> builderClass)\n        {\n            return null;\n        }\n    }\n    \n    /*\n    /**********************************************************************\n    /* Unit tests\n    /**********************************************************************\n     */\n\n    public void testDeserializer() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.setHandlerInstantiator(new MyInstantiator(\"abc:\"));\n        MyBean result = mapper.readValue(quote(\"123\"), MyBean.class);\n        assertEquals(\"abc:123\", result.value);\n    }\n\n    public void testKeyDeserializer() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.setHandlerInstantiator(new MyInstantiator(\"abc:\"));\n        MyMap map = mapper.readValue(\"{\\\"a\\\":\\\"b\\\"}\", MyMap.class);\n        // easiest to test by just serializing...\n        assertEquals(\"{\\\"KEY\\\":\\\"b\\\"}\", mapper.writeValueAsString(map));\n    }\n    \n    public void testSerializer() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.setHandlerInstantiator(new MyInstantiator(\"xyz:\"));\n        assertEquals(quote(\"xyz:456\"), mapper.writeValueAsString(new MyBean(\"456\")));\n    }\n\n    public void testTypeIdResolver() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.setHandlerInstantiator(new MyInstantiator(\"foobar\"));\n        String json = mapper.writeValueAsString(new TypeIdBeanWrapper(new TypeIdBean(123)));\n        // should now use our custom id scheme:\n        assertEquals(\"{\\\"bean\\\":[\\\"!!!\\\",{\\\"x\\\":123}]}\", json);\n",
+  "compaction": {
+    "source_lines": 267,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.026723200801648
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 8.559001099396625
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 10.14905981699585
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.026723200801648
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 3.911250687974207
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 8.559001099396625
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 10.14905981699585
+      },
+      {
+        "start": 240,
+        "end": 267,
+        "score": 5.242013494397783
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7441,
+  "representation_chars": 7441,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

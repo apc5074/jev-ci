@@ -1,0 +1,247 @@
+TEST CLASS:
+org.apache.commons.math.linear.DenseFieldMatrixTest
+
+SOURCE FILE:
+src/test/org/apache/commons/math/linear/DenseFieldMatrixTest.java
+
+TEST SOURCE:
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.commons.math.linear;
+
+import java.util.Arrays;
+import java.util.Random;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
+import org.apache.commons.math.TestUtils;
+import org.apache.commons.math.fraction.Fraction;
+import org.apache.commons.math.fraction.FractionField;
+
+/**
+ * Test cases for the {@link DenseFieldMatrix} class.
+ *
+ * @version $Revision$ $Date$
+ */
+
+public final class DenseFieldMatrixTest extends TestCase {
+    
+    // 3 x 3 identity matrix
+    protected Fraction[][] id = {
+            {new Fraction(1),new Fraction(0),new Fraction(0)},
+            {new Fraction(0),new Fraction(1),new Fraction(0)},
+            {new Fraction(0),new Fraction(0),new Fraction(1)}
+    };
+    
+    // Test data for group operations
+    protected Fraction[][] testData = {
+            {new Fraction(1),new Fraction(2),new Fraction(3)},
+            {new Fraction(2),new Fraction(5),new Fraction(3)},
+            {new Fraction(1),new Fraction(0),new Fraction(8)}
+    };
+    protected Fraction[][] testDataLU = {
+            {new Fraction(2), new Fraction(5), new Fraction(3)},
+            {new Fraction(1, 2), new Fraction(-5, 2), new Fraction(13, 2)},
+            {new Fraction(1, 2), new Fraction(1, 5), new Fraction(1, 5)}
+    };
+    protected Fraction[][] testDataPlus2 = {
+            {new Fraction(3),new Fraction(4),new Fraction(5)},
+            {new Fraction(4),new Fraction(7),new Fraction(5)},
+            {new Fraction(3),new Fraction(2),new Fraction(10)}
+    };
+    protected Fraction[][] testDataMinus = {
+            {new Fraction(-1),new Fraction(-2),new Fraction(-3)},
+            {new Fraction(-2),new Fraction(-5),new Fraction(-3)}, 
+            {new Fraction(-1),new Fraction(0),new Fraction(-8)}
+    };
+    protected Fraction[] testDataRow1 = {new Fraction(1),new Fraction(2),new Fraction(3)};
+    protected Fraction[] testDataCol3 = {new Fraction(3),new Fraction(3),new Fraction(8)};
+    protected Fraction[][] testDataInv = {
+            {new Fraction(-40),new Fraction(16),new Fraction(9)},
+            {new Fraction(13),new Fraction(-5),new Fraction(-3)},
+            {new Fraction(5),new Fraction(-2),new Fraction(-1)}
+    };
+    protected Fraction[] preMultTest = {new Fraction(8), new Fraction(12), new Fraction(33)};
+    protected Fraction[][] testData2 = {
+            {new Fraction(1),new Fraction(2),new Fraction(3)},
+            {new Fraction(2),new Fraction(5),new Fraction(3)}
+    };
+    protected Fraction[][] testData2T = {
+            {new Fraction(1),new Fraction(2)},
+            {new Fraction(2),new Fraction(5)},
+    protected Fraction[][] subTestData = {
+            {new Fraction(1), new Fraction(2), new Fraction(3), new Fraction(4)},
+            {new Fraction(3, 2), new Fraction(5, 2), new Fraction(7, 2), new Fraction(9, 2)},
+            {new Fraction(2), new Fraction(4), new Fraction(6), new Fraction(8)},
+            {new Fraction(4), new Fraction(5), new Fraction(6), new Fraction(7)}
+    }; 
+    // array selections
+    protected Fraction[][] subRows02Cols13 = { {new Fraction(2), new Fraction(4)}, {new Fraction(4), new Fraction(8)}};
+    protected Fraction[][] subRows03Cols12 = { {new Fraction(2), new Fraction(3)}, {new Fraction(5), new Fraction(6)}};
+    protected Fraction[][] subRows03Cols123 = {
+            {new Fraction(2), new Fraction(3), new Fraction(4)},
+            {new Fraction(5), new Fraction(6), new Fraction(7)}
+    };
+    // effective permutations
+    protected Fraction[][] subRows20Cols123 = {
+            {new Fraction(4), new Fraction(6), new Fraction(8)},
+            {new Fraction(2), new Fraction(3), new Fraction(4)}
+    };
+    protected Fraction[][] subRows31Cols31 = {{new Fraction(7), new Fraction(5)}, {new Fraction(9, 2), new Fraction(5, 2)}};
+    // contiguous ranges
+    protected Fraction[][] subRows01Cols23 = {{new Fraction(3),new Fraction(4)} , {new Fraction(7, 2), new Fraction(9, 2)}};
+    protected Fraction[][] subRows23Cols00 = {{new Fraction(2)} , {new Fraction(4)}};
+    protected Fraction[][] subRows00Cols33 = {{new Fraction(4)}};
+    // row matrices
+    protected Fraction[][] subRow0 = {{new Fraction(1),new Fraction(2),new Fraction(3),new Fraction(4)}};
+    protected Fraction[][] subRow3 = {{new Fraction(4),new Fraction(5),new Fraction(6),new Fraction(7)}};
+    // column matrices
+    protected Fraction[][] subColumn1 = {{new Fraction(2)}, {new Fraction(5, 2)}, {new Fraction(4)}, {new Fraction(5)}};
+    protected Fraction[][] subColumn3 = {{new Fraction(4)}, {new Fraction(9, 2)}, {new Fraction(8)}, {new Fraction(7)}};
+    
+    // tolerances
+    protected double entryTolerance = 10E-16;
+    protected double normTolerance = 10E-14;
+    
+    public DenseFieldMatrixTest(String name) {
+        super(name);
+    }
+    
+    public static Test suite() {
+        TestSuite suite = new TestSuite(DenseFieldMatrixTest.class);
+        suite.setName("DenseFieldMatrix<Fraction> Tests");
+        return suite;
+    }
+    
+    /** test dimensions */
+    public void testDimensions() {
+        DenseFieldMatrix<Fraction> m = new DenseFieldMatrix<Fraction>(testData);
+        DenseFieldMatrix<Fraction> m2 = new DenseFieldMatrix<Fraction>(testData2);
+        assertEquals("testData row dimension",3,m.getRowDimension());
+        assertEquals("testData column dimension",3,m.getColumnDimension());
+        assertTrue("testData is square",m.isSquare());
+        assertEquals("testData2 row dimension",m2.getRowDimension(),2);
+        assertEquals("testData2 column dimension",m2.getColumnDimension(),3);
+        assertTrue("testData2 is not square",!m2.isSquare());
+    } 
+    
+    /** test copy functions */
+    public void testCopyFunctions() {
+        Random r = new Random(66636328996002l);
+        DenseFieldMatrix<Fraction> m1 = createRandomMatrix(r, 47, 83);
+        DenseFieldMatrix<Fraction> m2 = new DenseFieldMatrix<Fraction>(m1.getData());
+        assertEquals(m1, m2);
+        DenseFieldMatrix<Fraction> m3 = new DenseFieldMatrix<Fraction>(testData);
+        DenseFieldMatrix<Fraction> m4 = new DenseFieldMatrix<Fraction>(m3.getData());
+        assertEquals(m3, m4);
+    }           
+    
+    /** test add */
+    public void testAdd() {
+        DenseFieldMatrix<Fraction> m = new DenseFieldMatrix<Fraction>(testData);
+        DenseFieldMatrix<Fraction> mInv = new DenseFieldMatrix<Fraction>(testDataInv);
+        FieldMatrix<Fraction> mPlusMInv = m.add(mInv);
+        Fraction[][] sumEntries = mPlusMInv.getData();
+        for (int row = 0; row < m.getRowDimension(); row++) {
+            for (int col = 0; col < m.getColumnDimension(); col++) {
+                assertEquals(testDataPlusInv[row][col],sumEntries[row][col]);
+            }
+        }    
+    }
+    
+            // expected
+        }
+    }
+
+    public void testGetSetColumnLarge() {
+        int n = 3 * DenseFieldMatrix.BLOCK_SIZE;
+        FieldMatrix<Fraction> m = new DenseFieldMatrix<Fraction>(FractionField.getInstance(), n, n);
+        Fraction[] sub = new Fraction[n];
+        Arrays.fill(sub, new Fraction(1));
+
+        m.setColumn(2, sub);
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (j != 2) {
+                    assertEquals(new Fraction(0), m.getEntry(i, j));
+                } else {
+                    assertEquals(new Fraction(1), m.getEntry(i, j));
+                }
+            }
+        }
+        checkArrays(sub, m.getColumn(2));
+
+    }
+    
+    private Fraction[] columnToArray(Fraction[][] column) {
+        Fraction[] data = new Fraction[column.length];
+        for (int i = 0; i < data.length; ++i) {
+            data[i] = column[i][0];
+        }
+        return data;
+    }
+
+    private void checkArrays(Fraction[] expected, Fraction[] actual) {
+        assertEquals(expected.length, actual.length);
+        for (int i = 0; i < expected.length; ++i) {
+            assertEquals(expected[i], actual[i]);            
+        }
+    }
+    
+    public void testEqualsAndHashCode() {
+        DenseFieldMatrix<Fraction> m = new DenseFieldMatrix<Fraction>(testData);
+        DenseFieldMatrix<Fraction> m1 = (DenseFieldMatrix<Fraction>) m.copy();
+        DenseFieldMatrix<Fraction> mt = (DenseFieldMatrix<Fraction>) m.transpose();
+        assertTrue(m.hashCode() != mt.hashCode());
+        assertEquals(m.hashCode(), m1.hashCode());
+        assertEquals(m, m);
+        assertEquals(m, m1);
+        assertFalse(m.equals(null));
+        assertFalse(m.equals(mt));
+        assertFalse(m.equals(new DenseFieldMatrix<Fraction>(bigSingular))); 
+    }
+    
+    public void testToString() {
+        DenseFieldMatrix<Fraction> m = new DenseFieldMatrix<Fraction>(testData);
+        assertEquals("DenseFieldMatrix{{1,2,3},{2,5,3},{1,0,8}}", m.toString());
+    }
+    
+    public void testSetSubMatrix() throws Exception {
+        DenseFieldMatrix<Fraction> m = new DenseFieldMatrix<Fraction>(testData);
+        m.setSubMatrix(detData2,1,1);
+        FieldMatrix<Fraction> expected = new DenseFieldMatrix<Fraction>
+            (new Fraction[][] {{new Fraction(1),new Fraction(2),new Fraction(3)},{new Fraction(2),new Fraction(1),new Fraction(3)},{new Fraction(1),new Fraction(2),new Fraction(4)}});
+        assertEquals(expected, m);  
+        
+        m.setSubMatrix(detData2,0,0);
+        expected = new DenseFieldMatrix<Fraction>
+            (new Fraction[][] {{new Fraction(1),new Fraction(3),new Fraction(3)},{new Fraction(2),new Fraction(4),new Fraction(3)},{new Fraction(1),new Fraction(2),new Fraction(4)}});
+        assertEquals(expected, m);  
+        
+        m.setSubMatrix(testDataPlus2,0,0);      
+        expected = new DenseFieldMatrix<Fraction>
+            (new Fraction[][] {{new Fraction(3),new Fraction(4),new Fraction(5)},{new Fraction(4),new Fraction(7),new Fraction(5)},{new Fraction(3),new Fraction(2),new Fraction(10)}});
+        assertEquals(expected, m);   
+        
+        // javadoc example
+        DenseFieldMatrix<Fraction> matrix =
+            new DenseFieldMatrix<Fraction>(new Fraction[][] {
+                    {new Fraction(1), new Fraction(2), new Fraction(3), new Fraction(4)},
+                    {new Fraction(5), new Fraction(6), new Fraction(7), new Fraction(8)},
+                    {new Fraction(9), new Fraction(0), new Fraction(1) , new Fraction(2)}

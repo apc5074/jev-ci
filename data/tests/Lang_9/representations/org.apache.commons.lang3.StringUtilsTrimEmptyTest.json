@@ -1,0 +1,81 @@
+{
+  "test_class": "org.apache.commons.lang3.StringUtilsTrimEmptyTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/StringUtilsTrimEmptyTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.StringUtilsTrimEmptyTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/StringUtilsTrimEmptyTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3;\n\nimport static org.junit.Assert.assertArrayEquals;\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertFalse;\nimport static org.junit.Assert.assertNull;\nimport static org.junit.Assert.assertTrue;\n\nimport org.junit.Test;\n\n/**\n * Unit tests {@link org.apache.commons.lang3.StringUtils} - Trim/Empty methods\n *\n * @version $Id$\n */\npublic class StringUtilsTrimEmptyTest  {\n    private static final String FOO = \"foo\";\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testIsEmpty() {\n        assertTrue(StringUtils.isEmpty(null));\n        assertTrue(StringUtils.isEmpty(\"\"));\n        assertFalse(StringUtils.isEmpty(\" \"));\n        assertFalse(StringUtils.isEmpty(\"foo\"));\n        assertFalse(StringUtils.isEmpty(\"  foo  \"));\n    }\n\n    @Test\n    public void testIsNotEmpty() {\n        assertFalse(StringUtils.isNotEmpty(null));\n        assertFalse(StringUtils.isNotEmpty(\"\"));\n        assertTrue(StringUtils.isNotEmpty(\" \"));\n        assertTrue(StringUtils.isNotEmpty(\"foo\"));\n        assertTrue(StringUtils.isNotEmpty(\"  foo  \"));\n    }\n\n    @Test\n    public void testIsBlank() {\n        assertTrue(StringUtils.isBlank(null));\n        assertTrue(StringUtils.isBlank(\"\"));\n        assertTrue(StringUtils.isBlank(StringUtilsTest.WHITESPACE));\n        assertFalse(StringUtils.isBlank(\"foo\"));\n        assertFalse(StringUtils.isBlank(\"  foo  \"));\n    }\n\n    @Test\n    public void testIsNotBlank() {\n        assertFalse(StringUtils.isNotBlank(null));\n        assertFalse(StringUtils.isNotBlank(\"\"));\n        assertFalse(StringUtils.isNotBlank(StringUtilsTest.WHITESPACE));\n        assertTrue(StringUtils.isNotBlank(\"foo\"));\n        assertTrue(StringUtils.isNotBlank(\"  foo  \"));\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testTrim() {\n        assertEquals(FOO, StringUtils.trim(FOO + \"  \"));\n        assertEquals(FOO, StringUtils.trim(\" \" + FOO + \"  \"));\n        assertEquals(FOO, StringUtils.trim(\" \" + FOO));\n        assertEquals(FOO, StringUtils.trim(FOO + \"\"));\n        assertEquals(\"\", StringUtils.trim(\" \\t\\r\\n\\b \"));\n        assertEquals(\"\", StringUtils.trim(StringUtilsTest.TRIMMABLE));\n        assertEquals(\"\", StringUtils.stripStart(\"\", null));\n        assertEquals(\"\", StringUtils.stripStart(\"        \", null));\n        assertEquals(\"abc  \", StringUtils.stripStart(\"  abc  \", null));\n        assertEquals(StringUtilsTest.NON_WHITESPACE + StringUtilsTest.WHITESPACE, \n            StringUtils.stripStart(StringUtilsTest.WHITESPACE + StringUtilsTest.NON_WHITESPACE + StringUtilsTest.WHITESPACE, null));\n\n        // \"\" stripStart\n        assertEquals(null, StringUtils.stripStart(null, \"\"));\n        assertEquals(\"\", StringUtils.stripStart(\"\", \"\"));\n        assertEquals(\"        \", StringUtils.stripStart(\"        \", \"\"));\n        assertEquals(\"  abc  \", StringUtils.stripStart(\"  abc  \", \"\"));\n        assertEquals(StringUtilsTest.WHITESPACE, StringUtils.stripStart(StringUtilsTest.WHITESPACE, \"\"));\n        \n        // \" \" stripStart\n        assertEquals(null, StringUtils.stripStart(null, \" \"));\n        assertEquals(\"\", StringUtils.stripStart(\"\", \" \"));\n        assertEquals(\"\", StringUtils.stripStart(\"        \", \" \"));\n        assertEquals(\"abc  \", StringUtils.stripStart(\"  abc  \", \" \"));\n        \n        // \"ab\" stripStart\n        assertEquals(null, StringUtils.stripStart(null, \"ab\"));\n        assertEquals(\"\", StringUtils.stripStart(\"\", \"ab\"));\n        assertEquals(\"        \", StringUtils.stripStart(\"        \", \"ab\"));\n        assertEquals(\"  abc  \", StringUtils.stripStart(\"  abc  \", \"ab\"));\n        assertEquals(\"cabab\", StringUtils.stripStart(\"abcabab\", \"ab\"));\n        assertEquals(StringUtilsTest.WHITESPACE, StringUtils.stripStart(StringUtilsTest.WHITESPACE, \"\"));\n    }\n    \n    @Test\n    public void testStripEnd_StringString() {\n        // null stripEnd\n        assertEquals(null, StringUtils.stripEnd(null, null));\n        assertEquals(\"\", StringUtils.stripEnd(\"\", null));\n        assertEquals(\"\", StringUtils.stripEnd(\"        \", null));\n        assertEquals(\"  abc\", StringUtils.stripEnd(\"  abc  \", null));\n        assertEquals(StringUtilsTest.WHITESPACE + StringUtilsTest.NON_WHITESPACE, \n            StringUtils.stripEnd(StringUtilsTest.WHITESPACE + StringUtilsTest.NON_WHITESPACE + StringUtilsTest.WHITESPACE, null));\n\n        // \"\" stripEnd\n        assertEquals(null, StringUtils.stripEnd(null, \"\"));\n        assertEquals(\"\", StringUtils.stripEnd(\"\", \"\"));\n        assertEquals(\"        \", StringUtils.stripEnd(\"        \", \"\"));\n        assertEquals(\"  abc  \", StringUtils.stripEnd(\"  abc  \", \"\"));\n        assertEquals(StringUtilsTest.WHITESPACE, StringUtils.stripEnd(StringUtilsTest.WHITESPACE, \"\"));\n        \n        // \" \" stripEnd\n        assertEquals(null, StringUtils.stripEnd(null, \" \"));\n        assertEquals(\"\", StringUtils.stripEnd(\"\", \" \"));\n        assertEquals(\"\", StringUtils.stripEnd(\"        \", \" \"));\n        assertEquals(\"  abc\", StringUtils.stripEnd(\"  abc  \", \" \"));\n        \n        // \"ab\" stripEnd\n        assertEquals(null, StringUtils.stripEnd(null, \"ab\"));\n        assertEquals(\"\", StringUtils.stripEnd(\"\", \"ab\"));\n        assertEquals(\"        \", StringUtils.stripEnd(\"        \", \"ab\"));\n        assertEquals(\"  abc  \", StringUtils.stripEnd(\"  abc  \", \"ab\"));\n        assertEquals(\"abc\", StringUtils.stripEnd(\"abcabab\", \"ab\"));\n        assertEquals(StringUtilsTest.WHITESPACE, StringUtils.stripEnd(StringUtilsTest.WHITESPACE, \"\"));\n    }\n\n    @Test\n    public void testStripAll() {\n        // test stripAll method, merely an array version of the above strip\n        String[] empty = new String[0];\n        String[] fooSpace = new String[] { \"  \"+FOO+\"  \", \"  \"+FOO, FOO+\"  \" };\n        String[] fooDots = new String[] { \"..\"+FOO+\"..\", \"..\"+FOO, FOO+\"..\" };\n        String[] foo = new String[] { FOO, FOO, FOO };\n\n        assertNull(StringUtils.stripAll((String[]) null));\n        // Additional varargs tests\n        assertArrayEquals(empty, StringUtils.stripAll()); // empty array\n        assertArrayEquals(new String[]{null}, StringUtils.stripAll((String) null)); // == new String[]{null}\n\n        assertArrayEquals(empty, StringUtils.stripAll(empty));\n        assertArrayEquals(foo, StringUtils.stripAll(fooSpace));\n        \n        assertNull(StringUtils.stripAll(null, null));\n        assertArrayEquals(foo, StringUtils.stripAll(fooSpace, null));\n        assertArrayEquals(foo, StringUtils.stripAll(fooDots, \".\"));\n    }\n\n    @Test\n    public void testStripAccents() {\n        String cue = \"\\u00C7\\u00FA\\u00EA\";\n        assertEquals( \"Failed to strip accents from \" + cue, \"Cue\", StringUtils.stripAccents(cue));\n\n        String lots = \"\\u00C0\\u00C1\\u00C2\\u00C3\\u00C4\\u00C5\\u00C7\\u00C8\\u00C9\" + \n                      \"\\u00CA\\u00CB\\u00CC\\u00CD\\u00CE\\u00CF\\u00D1\\u00D2\\u00D3\" + \n                      \"\\u00D4\\u00D5\\u00D6\\u00D9\\u00DA\\u00DB\\u00DC\\u00DD\";\n        assertEquals( \"Failed to strip accents from \" + lots, \n                      \"AAAAAACEEEEIIIINOOOOOUUUUY\", \n                      StringUtils.stripAccents(lots));\n\n        assertNull( \"Failed null safety\", StringUtils.stripAccents(null) );\n        assertEquals( \"Failed empty String\", \"\", StringUtils.stripAccents(\"\") );\n        assertEquals( \"Failed to handle non-accented text\", \"control\", StringUtils.stripAccents(\"control\") );\n        assertEquals( \"Failed to handle easy example\", \"eclair\", StringUtils.stripAccents(\"\\u00E9clair\") );\n    }\n}\n",
+  "compaction": {
+    "source_lines": 279,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        180,
+        260
+      ],
+      [
+        240,
+        279
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 13.964829785160232
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 6.975985125944696
+      },
+      {
+        "start": 240,
+        "end": 279,
+        "score": 5.358375792994979
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 13.964829785160232
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 0.684808473936024
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 2.662601115725529
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 6.975985125944696
+      },
+      {
+        "start": 240,
+        "end": 279,
+        "score": 5.358375792994979
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8519,
+  "representation_chars": 8519,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

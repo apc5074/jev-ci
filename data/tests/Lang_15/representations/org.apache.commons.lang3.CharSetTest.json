@@ -1,0 +1,96 @@
+{
+  "test_class": "org.apache.commons.lang3.CharSetTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/CharSetTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.CharSetTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/CharSetTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one\n * or more contributor license agreements.  See the NOTICE file\n * distributed with this work for additional information\n * regarding copyright ownership.  The ASF licenses this file\n * to you under the Apache License, Version 2.0 (the\n * \"License\"); you may not use this file except in compliance\n * with the License.  You may obtain a copy of the License at\n *\n * http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing,\n * software distributed under the License is distributed on an\n * \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY\n * KIND, either express or implied.  See the License for the\n * specific language governing permissions and limitations\n * under the License.\n */\npackage org.apache.commons.lang3;\n\nimport java.lang.reflect.Modifier;\n\nimport junit.framework.TestCase;\n\n/**\n * Unit tests {@link org.apache.commons.lang3.CharSet}.\n *\n * @version $Id$\n */\npublic class CharSetTest extends TestCase {\n    \n    public CharSetTest(String name) {\n        super(name);\n    }\n\n    //-----------------------------------------------------------------------\n    public void testClass() {\n        assertEquals(true, Modifier.isPublic(CharSet.class.getModifiers()));\n        assertEquals(false, Modifier.isFinal(CharSet.class.getModifiers()));\n    }\n    \n    //-----------------------------------------------------------------------\n    public void testGetInstance() {\n        assertSame(CharSet.EMPTY, CharSet.getInstance( (String) null));\n        assertSame(CharSet.EMPTY, CharSet.getInstance(\"\"));\n        assertSame(CharSet.ASCII_ALPHA, CharSet.getInstance(\"a-zA-Z\"));\n        assertSame(CharSet.ASCII_ALPHA, CharSet.getInstance(\"A-Za-z\"));\n        assertSame(CharSet.ASCII_ALPHA_LOWER, CharSet.getInstance(\"a-z\"));\n        assertSame(CharSet.ASCII_ALPHA_UPPER, CharSet.getInstance(\"A-Z\"));\n        assertSame(CharSet.ASCII_NUMERIC, CharSet.getInstance(\"0-9\"));\n    }\n\n    //-----------------------------------------------------------------------\n    public void testGetInstance_Stringarray() {\n        assertEquals(null, CharSet.getInstance((String[]) null));\n        assertEquals(\"[]\", CharSet.getInstance(new String[0]).toString());\n        assertEquals(\"[]\", CharSet.getInstance(new String[] {null}).toString());\n        assertEquals(\"[a-e]\", CharSet.getInstance(new String[] {\"a-e\"}).toString());\n    }\n    \n    //-----------------------------------------------------------------------\n    public void testConstructor_String_simple() {\n        CharSet set;\n        CharRange[] array;\n        \n        set = CharSet.getInstance((String) null);\n        array = set.getCharRanges();\n        assertEquals(\"[]\", set.toString());\n        assertEquals(0, array.length);\n        \n        set = CharSet.getInstance(\"\");\n        array = set.getCharRanges();\n        assertEquals(\"[]\", set.toString());\n        assertEquals(0, array.length);\n        \n        set = CharSet.getInstance(\"a\");\n        array = set.getCharRanges();\n        assertEquals(\"[a]\", set.toString());\n        assertEquals(1, array.length);\n        assertEquals(\"a\", array[0].toString());\n        assertEquals(true, ArrayUtils.contains(array, CharRange.is('c'))); // \"c\"\n        assertEquals(true, set.contains('b'));\n        assertEquals(false, set.contains('^'));  \n        assertEquals(false, set.contains('_')); // between ^ and a\n        \n        set = CharSet.getInstance(\"a- ^-- \"); //contains everything\n        array = set.getCharRanges();\n        assertEquals(true, ArrayUtils.contains(array, CharRange.isIn('a', ' '))); // \"a- \"\n        assertEquals(true, ArrayUtils.contains(array, CharRange.isNotIn('-', ' '))); // \"^-- \"\n        assertEquals(true, set.contains('#'));\n        assertEquals(true, set.contains('^'));\n        assertEquals(true, set.contains('a'));\n        assertEquals(true, set.contains('*'));\n        assertEquals(true, set.contains('A'));\n        \n        set = CharSet.getInstance(\"^-b\");\n        array = set.getCharRanges();\n        assertEquals(true, ArrayUtils.contains(array, CharRange.isIn('^','b'))); // \"^-b\"\n        assertEquals(true, set.contains('b'));\n        assertEquals(true, set.contains('_')); // between ^ and a\n        assertEquals(false, set.contains('A'));\n        assertEquals(true, set.contains('^')); \n        \n        set = CharSet.getInstance(\"b-^\");\n        array = set.getCharRanges();\n        assertEquals(true, ArrayUtils.contains(array, CharRange.isIn('^','b'))); // \"b-^\"\n        assertEquals(true, set.contains('b'));\n        assertEquals(true, set.contains('^'));\n        assertEquals(true, set.contains('a')); // between ^ and b\n        assertEquals(false, set.contains('c')); \n    }\n        \n    //-----------------------------------------------------------------------    \n    public void testEquals_Object() {\n        CharSet abc = CharSet.getInstance(\"abc\");\n        CharSet abc2 = CharSet.getInstance(\"abc\");\n        CharSet atoc = CharSet.getInstance(\"a-c\");\n        CharSet atoc2 = CharSet.getInstance(\"a-c\");\n        CharSet notatoc = CharSet.getInstance(\"^a-c\");\n        CharSet notatoc2 = CharSet.getInstance(\"^a-c\");\n        \n        assertEquals(false, abc.equals(null));\n        \n        assertEquals(true, abc.equals(abc));\n        assertEquals(true, abc.equals(abc2));\n        assertEquals(false, abc.equals(atoc));\n        assertEquals(false, abc.equals(notatoc));\n        \n        assertEquals(false, atoc.equals(abc));\n        assertEquals(true, atoc.equals(atoc));\n        assertEquals(true, atoc.equals(atoc2));\n        assertEquals(false, atoc.equals(notatoc));\n        \n        assertEquals(false, notatoc.equals(abc));\n        assertEquals(false, notatoc.equals(atoc));\n        assertEquals(true, notatoc.equals(notatoc));\n        assertEquals(true, notatoc.equals(notatoc2));\n    }\n            \n    public void testHashCode() {\n        CharSet abc = CharSet.getInstance(\"abc\");\n        CharSet abc2 = CharSet.getInstance(\"abc\");\n        CharSet atoc = CharSet.getInstance(\"a-c\");\n        CharSet atoc2 = CharSet.getInstance(\"a-c\");\n        CharSet notatoc = CharSet.getInstance(\"^a-c\");\n        CharSet notatoc2 = CharSet.getInstance(\"^a-c\");\n        \n        assertEquals(abc.hashCode(), abc.hashCode());\n        assertEquals(abc.hashCode(), abc2.hashCode());\n        assertEquals(atoc.hashCode(), atoc.hashCode());\n        assertEquals(atoc.hashCode(), atoc2.hashCode());\n        assertEquals(notatoc.hashCode(), notatoc.hashCode());\n        assertEquals(notatoc.hashCode(), notatoc2.hashCode());\n    }\n    \n    //-----------------------------------------------------------------------    \n    public void testContains_Char() {\n        CharSet btod = CharSet.getInstance(\"b-d\");\n        CharSet dtob = CharSet.getInstance(\"d-b\");\n        CharSet bcd = CharSet.getInstance(\"bcd\");\n        CharSet bd = CharSet.getInstance(\"bd\");\n        CharSet notbtod = CharSet.getInstance(\"^b-d\");\n        \n        assertEquals(false, btod.contains('a'));\n        assertEquals(true, btod.contains('b'));\n        assertEquals(true, btod.contains('c'));\n        assertEquals(true, btod.contains('d'));\n        assertEquals(false, btod.contains('e'));\n        \n        assertEquals(false, bcd.contains('a'));\n        assertEquals(true, bcd.contains('b'));\n        assertEquals(true, bcd.contains('c'));\n        assertEquals(true, bcd.contains('d'));\n        assertEquals(false, bcd.contains('e'));\n        \n        assertEquals(false, bd.contains('a'));\n        assertEquals(true, bd.contains('b'));\n        assertEquals(false, bd.contains('c'));\n        assertEquals(true, bd.contains('d'));\n        assertEquals(false, bd.contains('e'));\n        \n        assertEquals(true, notbtod.contains('a'));\n        assertEquals(false, notbtod.contains('b'));\n        assertEquals(false, notbtod.contains('c'));\n        assertEquals(false, notbtod.contains('d'));\n        assertEquals(true, notbtod.contains('e'));\n        \n        assertEquals(false, dtob.contains('a'));\n        assertEquals(true, dtob.contains('b'));\n        assertEquals(true, dtob.contains('c'));\n        assertEquals(true, dtob.contains('d'));\n        assertEquals(false, dtob.contains('e'));\n      \n        CharRange[] array = dtob.getCharRanges();\n        assertEquals(\"[b-d]\", dtob.toString());\n        assertEquals(1, array.length);\n    }\n    \n    //-----------------------------------------------------------------------    \n    public void testSerialization() {\n        CharSet set = CharSet.getInstance(\"a\");\n        assertEquals(set, SerializationUtils.clone(set)); \n        set = CharSet.getInstance(\"a-e\");\n        assertEquals(set, SerializationUtils.clone(set)); \n        set = CharSet.getInstance(\"be-f^a-z\");\n        assertEquals(set, SerializationUtils.clone(set)); \n    }\n    \n    //-----------------------------------------------------------------------    \n    public void testStatics() {\n        CharRange[] array;\n        \n        array = CharSet.EMPTY.getCharRanges();\n        assertEquals(0, array.length);\n        \n        array = CharSet.ASCII_ALPHA.getCharRanges();\n        assertEquals(2, array.length);\n        assertEquals(true, ArrayUtils.contains(array, CharRange.isIn('a', 'z')));\n        assertEquals(true, ArrayUtils.contains(array, CharRange.isIn('A', 'Z')));\n        \n",
+  "compaction": {
+    "source_lines": 454,
+    "mode": "windows",
+    "windows_total": 8,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        300,
+        380
+      ],
+      [
+        360,
+        440
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 39.96417643876766
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 6.445372821598993
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 9.024094718245069
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 39.96417643876766
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 3.2699062450108176
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 1.2264082926904292
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 1.2396913843069581
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 1.203281426636989
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 6.445372821598993
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 9.024094718245069
+      },
+      {
+        "start": 420,
+        "end": 454,
+        "score": 2.927888532172787
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9472,
+  "representation_chars": 9472,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "example_id": "Math_25",
+  "qualified_id": "Math-25",
+  "project": "Math",
+  "bug_id": "25",
+  "split": "development",
+  "status": "complete",
+  "revisions": {
+    "base": "Bf",
+    "proposed": "Bb",
+    "direction": "fixed_to_buggy",
+    "notes": "Fixed (Bf) is the working base for tests/source. Buggy (Bb) is the proposed production change."
+  },
+  "manifest": {
+    "path": "data/manifest.json",
+    "selection_seed": 20260922,
+    "defects4j_version": "3.0.1",
+    "defects4j_commit": "6d54320e0db5a357f9ab38a8e4d2e5aead7e1c09",
+    "manifest_created_at": "2026-09-22T23:16:15+00:00",
+    "manifest_git_commit": "784d3d84dd09ae7f53cb828eac65532370906c56"
+  },
+  "artifacts": {
+    "bugs": "data/bugs/Math_25/",
+    "patches": "data/patches/Math_25/",
+    "tests": "data/tests/Math_25/"
+  },
+  "visibility": {
+    "model_visible": [
+      "data/patches/<id>/representation.txt",
+      "data/patches/<id>/patch_meta.json (truncation stats only)",
+      "data/tests/<id>/inventory.json (test class ids + source paths)",
+      "data/tests/<id>/representations/*.json (compact test source)"
+    ],
+    "private": [
+      "data/tests/<id>/labels.json",
+      "data/tests/<id>/raw/tests.trigger",
+      "data/bugs/<id>/error.json",
+      "checkout trees under data/bugs/<id>/checkouts/"
+    ]
+  },
+  "complete_requirements": [
+    "example_json",
+    "checkout_provenance",
+    "checkout_fixed",
+    "checkout_buggy",
+    "patch_meta",
+    "patch_diff",
+    "patch_representation",
+    "raw_tests_all",
+    "raw_tests_trigger",
+    "test_inventory",
+    "test_labels",
+    "representations_index"
+  ],
+  "error": null,
+  "checkouts": {
+    "fixed": "data/bugs/Math_25/checkouts/fixed",
+    "buggy": "data/bugs/Math_25/checkouts/buggy",
+    "provenance": "data/bugs/Math_25/checkout_provenance.json"
+  },
+  "patch": {
+    "meta": "data/patches/Math_25/patch_meta.json",
+    "diff": "data/patches/Math_25/regression_patch.diff",
+    "representation": "data/patches/Math_25/representation.txt",
+    "patch_truncated": false,
+    "original_patch_chars": 861,
+    "representation_chars": 861
+  },
+  "tests": {
+    "inventory": "data/tests/Math_25/inventory.json",
+    "labels": "data/tests/Math_25/labels.json",
+    "num_test_classes": 306,
+    "num_positive_classes": 1,
+    "num_trigger_methods": 1,
+    "source_resolved": 306,
+    "source_missing": 0,
+    "source_ambiguous": 0
+  },
+  "representations": {
+    "index": "data/tests/Math_25/representations_index.json",
+    "dir": "data/tests/Math_25/representations",
+    "num_representations": 306,
+    "source_missing": 0,
+    "representation_truncated": 1,
+    "window_compacted": 86
+  },
+  "content_hashes": {
+    "patch_representation": "bfe7b4262227bfb111577a472f19f77e8deb499752973e555bda6b96cce1b82e",
+    "patch_meta": "83dda2746152edbe60bf770f270e6dce9bb8c5fcea0aa42ceaddafff36af906f",
+    "test_inventory": "568713e96a79699b81e3361bde3e0469aa93d01237a9e8ca21675020c517c734",
+    "test_labels": "7274422b8bd578fefb80e50f004c69e48252ac4930a39e0172bf3fa51367e3b8",
+    "representations_index": "a4358a55399d5981fd7d1cd793b1285c62b6dc19a21edbf55b7d9c077397d58c",
+    "checkout_provenance": "eed79288ffe0af75e96ba0d4d2f368d5c83d99775d86fc726bf37eabb37b4a37"
+  }
+}

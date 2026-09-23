@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.PropertyAliasTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/PropertyAliasTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.PropertyAliasTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/PropertyAliasTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser;\n\nimport com.fasterxml.jackson.annotation.JsonAlias;\nimport com.fasterxml.jackson.annotation.JsonCreator;\nimport com.fasterxml.jackson.annotation.JsonProperty;\nimport com.fasterxml.jackson.annotation.JsonSubTypes;\nimport com.fasterxml.jackson.annotation.JsonTypeInfo;\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.ObjectMapper;\n\npublic class PropertyAliasTest extends BaseMapTest\n{\n    static class AliasBean {\n        @JsonAlias({ \"nm\", \"Name\" })\n        public String name;\n\n        int _xyz;\n\n        int _a;\n\n        @JsonCreator\n        public AliasBean(@JsonProperty(\"a\")\n            @JsonAlias(\"A\") int a) {\n            _a = a;\n        }\n        \n        @JsonAlias({ \"Xyz\" })\n        public void setXyz(int x) {\n            _xyz = x;\n        }\n    }\n\n    static class PolyWrapperForAlias {\n        @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,\n                include = JsonTypeInfo.As.WRAPPER_ARRAY)\n        @JsonSubTypes({\n            @JsonSubTypes.Type(value = AliasBean.class,name = \"ab\"),\n        })\n        public Object value;\n\n        protected PolyWrapperForAlias() { }\n        public PolyWrapperForAlias(Object v) { value = v; }\n    }\n\n    private final ObjectMapper MAPPER = newObjectMapper();\n\n    // [databind#1029]\n    public void testSimpleAliases() throws Exception\n    {\n        AliasBean bean;\n\n        // first, one indicated by field annotation, set via field\n        bean = MAPPER.readValue(aposToQuotes(\"{'Name':'Foobar','a':3,'xyz':37}\"),\n                AliasBean.class);\n        assertEquals(\"Foobar\", bean.name);\n        assertEquals(3, bean._a);\n        assertEquals(37, bean._xyz);\n\n        // then method-bound one\n        bean = MAPPER.readValue(aposToQuotes(\"{'name':'Foobar','a':3,'Xyz':37}\"),\n                AliasBean.class);\n        assertEquals(\"Foobar\", bean.name);\n        assertEquals(3, bean._a);\n        assertEquals(37, bean._xyz);\n        \n        // and finally, constructor-backed one\n        bean = MAPPER.readValue(aposToQuotes(\"{'name':'Foobar','A':3,'xyz':37}\"),\n                AliasBean.class);\n        assertEquals(\"Foobar\", bean.name);\n        assertEquals(3, bean._a);\n        assertEquals(37, bean._xyz);\n    }\n\n    public void testAliasWithPolymorphic() throws Exception\n    {\n        PolyWrapperForAlias value = MAPPER.readValue(aposToQuotes(\n                \"{'value': ['ab', {'nm' : 'Bob', 'A' : 17} ] }\"\n                ), PolyWrapperForAlias.class);\n        assertNotNull(value.value);\n        AliasBean bean = (AliasBean) value.value;\n        assertEquals(\"Bob\", bean.name);\n        assertEquals(17, bean._a);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 84,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2841,
+  "representation_chars": 2841,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

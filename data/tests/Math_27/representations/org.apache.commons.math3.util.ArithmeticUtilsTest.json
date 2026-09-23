@@ -1,0 +1,121 @@
+{
+  "test_class": "org.apache.commons.math3.util.ArithmeticUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/math3/util/ArithmeticUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.util.ArithmeticUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/util/ArithmeticUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.util;\n\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\nimport java.math.BigInteger;\n\nimport org.apache.commons.math3.exception.MathArithmeticException;\nimport org.apache.commons.math3.exception.MathIllegalArgumentException;\nimport org.apache.commons.math3.random.RandomDataImpl;\nimport org.junit.Assert;\nimport org.junit.Test;\n\n/**\n * Test cases for the {@link ArithmeticUtils} class.\n *\n * @version $Id$\n */\npublic class ArithmeticUtilsTest {\n\n    /** cached binomial coefficients */\n    private static final List<Map<Integer, Long>> binomialCache = new ArrayList<Map<Integer, Long>>();\n\n    /** Verify that b(0,0) = 1 */\n    @Test\n    public void test0Choose0() {\n        Assert.assertEquals(ArithmeticUtils.binomialCoefficientDouble(0, 0), 1d, 0);\n        Assert.assertEquals(ArithmeticUtils.binomialCoefficientLog(0, 0), 0d, 0);\n        Assert.assertEquals(ArithmeticUtils.binomialCoefficient(0, 0), 1);\n    }\n\n    @Test\n    public void testAddAndCheck() {\n        int big = Integer.MAX_VALUE;\n        int bigNeg = Integer.MIN_VALUE;\n        Assert.assertEquals(big, ArithmeticUtils.addAndCheck(big, 0));\n        try {\n            ArithmeticUtils.addAndCheck(big, 1);\n            Assert.fail(\"Expecting MathArithmeticException\");\n        } catch (MathArithmeticException ex) {\n        }\n        try {\n            ArithmeticUtils.addAndCheck(bigNeg, -1);\n            Assert.fail(\"Expecting MathArithmeticException\");\n        } catch (MathArithmeticException ex) {\n        }\n    }\n\n    @Test\n    public void testAddAndCheckLong() {\n        long max = Long.MAX_VALUE;\n        long min = Long.MIN_VALUE;\n        Assert.assertEquals(max, ArithmeticUtils.addAndCheck(max, 0L));\n        Assert.assertEquals(min, ArithmeticUtils.addAndCheck(min, 0L));\n        Assert.assertEquals(max, ArithmeticUtils.addAndCheck(0L, max));\n        Assert.assertEquals(min, ArithmeticUtils.addAndCheck(0L, min));\n        Assert.assertEquals(1, ArithmeticUtils.addAndCheck(-1L, 2L));\n        Assert.assertEquals(1, ArithmeticUtils.addAndCheck(2L, -1L));\n        Assert.assertEquals(-3, ArithmeticUtils.addAndCheck(-2L, -1L));\n        Assert.assertEquals(min, ArithmeticUtils.addAndCheck(min + 1, -1L));\n        testAddAndCheckLongFailure(max, 1L);\n        testAddAndCheckLongFailure(min, -1L);\n\n    @Test\n    public void testLcm() {\n        int a = 30;\n        int b = 50;\n        int c = 77;\n\n        Assert.assertEquals(0, ArithmeticUtils.lcm(0, b));\n        Assert.assertEquals(0, ArithmeticUtils.lcm(a, 0));\n        Assert.assertEquals(b, ArithmeticUtils.lcm(1, b));\n        Assert.assertEquals(a, ArithmeticUtils.lcm(a, 1));\n        Assert.assertEquals(150, ArithmeticUtils.lcm(a, b));\n        Assert.assertEquals(150, ArithmeticUtils.lcm(-a, b));\n        Assert.assertEquals(150, ArithmeticUtils.lcm(a, -b));\n        Assert.assertEquals(150, ArithmeticUtils.lcm(-a, -b));\n        Assert.assertEquals(2310, ArithmeticUtils.lcm(a, c));\n\n        // Assert that no intermediate value overflows:\n        // The naive implementation of lcm(a,b) would be (a*b)/gcd(a,b)\n        Assert.assertEquals((1<<20)*15, ArithmeticUtils.lcm((1<<20)*3, (1<<20)*5));\n\n        // Special case\n        Assert.assertEquals(0, ArithmeticUtils.lcm(0, 0));\n\n        try {\n            // lcm == abs(MIN_VALUE) cannot be represented as a nonnegative int\n            ArithmeticUtils.lcm(Integer.MIN_VALUE, 1);\n            Assert.fail(\"Expecting MathArithmeticException\");\n        } catch (MathArithmeticException expected) {\n            // expected\n        }\n\n        try {\n            // lcm == abs(MIN_VALUE) cannot be represented as a nonnegative int\n            ArithmeticUtils.lcm(Integer.MIN_VALUE, 1<<20);\n            Assert.fail(\"Expecting MathArithmeticException\");\n        } catch (MathArithmeticException expected) {\n            // expected\n        }\n\n        try {\n            ArithmeticUtils.lcm(Integer.MAX_VALUE, Integer.MAX_VALUE - 1);\n            Assert.fail(\"Expecting MathArithmeticException\");\n        } catch (MathArithmeticException expected) {\n            // expected\n        }\n    }\n\n    @Test\n    public void testLcmLong() {\n        long a = 30;\n        long b = 50;\n        long c = 77;\n\n        Assert.assertEquals(0, ArithmeticUtils.lcm(0, b));\n        Assert.assertEquals(0, ArithmeticUtils.lcm(a, 0));\n        Assert.assertEquals(b, ArithmeticUtils.lcm(1, b));\n        Assert.assertEquals(a, ArithmeticUtils.lcm(a, 1));\n        Assert.assertEquals(150, ArithmeticUtils.lcm(a, b));\n        Assert.assertEquals(150, ArithmeticUtils.lcm(-a, b));\n        Assert.assertEquals(150, ArithmeticUtils.lcm(a, -b));\n        Assert.assertEquals(150, ArithmeticUtils.lcm(-a, -b));\n        Assert.assertEquals(2310, ArithmeticUtils.lcm(a, c));\n\n        Assert.assertEquals(Long.MAX_VALUE, ArithmeticUtils.lcm(60247241209L, 153092023L));\n\n        // Assert that no intermediate value overflows:\n        // The naive implementation of lcm(a,b) would be (a*b)/gcd(a,b)\n        Assert.assertEquals((1L<<50)*15, ArithmeticUtils.lcm((1L<<45)*3, (1L<<50)*5));\n\n        // Special case\n        Assert.assertEquals(0L, ArithmeticUtils.lcm(0L, 0L));\n\n        try {\n            // lcm == abs(MIN_VALUE) cannot be represented as a nonnegative int\n            ArithmeticUtils.lcm(Long.MIN_VALUE, 1);\n            Assert.fail(\"Expecting MathArithmeticException\");\n        } catch (MathArithmeticException expected) {\n            // expected\n        }\n        }\n\n        Assert.assertEquals(BigInteger.valueOf(1801088541l), ArithmeticUtils.pow(twentyOne, BigInteger.valueOf(7l)));\n        Assert.assertEquals(BigInteger.ONE, ArithmeticUtils.pow(twentyOne, BigInteger.ZERO));\n        try {\n            ArithmeticUtils.pow(twentyOne, BigInteger.valueOf(-7l));\n            Assert.fail(\"Expecting MathIllegalArgumentException\");\n        } catch (MathIllegalArgumentException e) {\n            // expected behavior\n        }\n\n        BigInteger bigOne =\n            new BigInteger(\"1543786922199448028351389769265814882661837148\" +\n                           \"4763915343722775611762713982220306372888519211\" +\n                           \"560905579993523402015636025177602059044911261\");\n        Assert.assertEquals(bigOne, ArithmeticUtils.pow(twentyOne, 103));\n        Assert.assertEquals(bigOne, ArithmeticUtils.pow(twentyOne, 103l));\n        Assert.assertEquals(bigOne, ArithmeticUtils.pow(twentyOne, BigInteger.valueOf(103l)));\n\n    }\n\n    @Test\n    public void testIsPowerOfTwo() {\n        final int n = 1025;\n        final boolean[] expected = new boolean[n];\n        Arrays.fill(expected, false);\n        for (int i = 1; i < expected.length; i *= 2) {\n            expected[i] = true;\n        }\n        for (int i = 0; i < expected.length; i++) {\n            final boolean actual = ArithmeticUtils.isPowerOfTwo(i);\n            Assert.assertTrue(Integer.toString(i), actual == expected[i]);\n        }\n    }\n\n    /**\n     * Exact (caching) recursive implementation to test against\n     */\n    private long binomialCoefficient(int n, int k) throws MathArithmeticException {\n        if (binomialCache.size() > n) {\n            Long cachedResult = binomialCache.get(n).get(Integer.valueOf(k));\n            if (cachedResult != null) {\n                return cachedResult.longValue();\n            }\n        }\n        long result = -1;\n        if ((n == k) || (k == 0)) {\n            result = 1;\n        } else if ((k == 1) || (k == n - 1)) {\n            result = n;\n        } else {\n            // Reduce stack depth for larger values of n\n            if (k < n - 100) {\n                binomialCoefficient(n - 100, k);\n            }\n            if (k > 100) {\n                binomialCoefficient(n - 100, k - 100);\n            }\n            result = ArithmeticUtils.addAndCheck(binomialCoefficient(n - 1, k - 1),\n                binomialCoefficient(n - 1, k));\n        }\n        if (result == -1) {\n            throw new MathArithmeticException();\n        }\n        for (int i = binomialCache.size(); i < n + 1; i++) {\n            binomialCache.add(new HashMap<Integer, Long>());\n        }\n        binomialCache.get(n).put(Integer.valueOf(k), Long.valueOf(result));\n        return result;\n    }\n\n    /**\n     * Exact direct multiplication implementation to test against\n     */\n    private long factorial(int n) {\n        long result = 1;\n        for (int i = 2; i <= n; i++) {\n            result *= i;\n        }\n        return result;\n",
+  "compaction": {
+    "source_lines": 769,
+    "mode": "windows",
+    "windows_total": 13,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        420,
+        500
+      ],
+      [
+        660,
+        740
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 25.78344792172468
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 4.357109804569058
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 6.75974043619421
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 25.78344792172468
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 3.784104007890435
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 2.101533500083041
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 2.240081313616701
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 2.335667270650521
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 0.4193966103195383
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 1.5262504374485812
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 4.357109804569058
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 3.353411965331817
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 0.40195081258687293
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 0.33777758915788203
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 6.75974043619421
+      },
+      {
+        "start": 720,
+        "end": 769,
+        "score": 3.23788116234333
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9455,
+  "representation_chars": 9455,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

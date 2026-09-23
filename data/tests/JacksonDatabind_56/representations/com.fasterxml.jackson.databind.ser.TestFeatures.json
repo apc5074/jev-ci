@@ -1,0 +1,81 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.ser.TestFeatures",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/ser/TestFeatures.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.ser.TestFeatures\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/ser/TestFeatures.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.ser;\n\nimport java.io.*;\nimport java.util.*;\n\nimport com.fasterxml.jackson.core.JsonGenerator;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;\n\n/**\n * Unit tests for checking whether JsonSerializerFactory.Feature\n * configuration works\n */\npublic class TestFeatures\n    extends BaseMapTest\n{\n    /*\n    /**********************************************************\n    /* Helper classes\n    /**********************************************************\n     */\n\n    /**\n     * Class with one explicitly defined getter, one name-based\n     * auto-detectable getter.\n     */\n    static class GetterClass\n    {\n        @JsonProperty(\"x\") public int getX() { return -2; }\n        public int getY() { return 1; }\n    }\n\n    /**\n     * Another test-class that explicitly disables auto-detection\n     */\n    @JsonAutoDetect(getterVisibility=Visibility.NONE)\n    static class DisabledGetterClass\n    {\n        @JsonProperty(\"x\") public int getX() { return -2; }\n        public int getY() { return 1; }\n    }\n\n    /**\n     * Another test-class that explicitly enables auto-detection\n     */\n    @JsonAutoDetect(isGetterVisibility=Visibility.NONE)\n    static class EnabledGetterClass\n    {\n        @JsonProperty(\"x\") public int getX() { return -2; }\n        public int getY() { return 1; }\n\n        // not auto-detected, since \"is getter\" auto-detect disabled\n        public boolean isOk() { return true; }\n    }\n\n    /**\n     * One more: only detect \"isXxx\", not \"getXXX\"\n     */\n    @JsonAutoDetect(getterVisibility=Visibility.NONE)\n    static class EnabledIsGetterClass\n    {\n        // Won't be auto-detected any more\n        public int getY() { return 1; }\n\n        // but this will be\n        public boolean isOk() { return true; }\n    }\n\n    static class CloseableBean implements Closeable\n    {\n        public int a = 3;\n\n        protected boolean wasClosed = false;\n\n        @Override\n        public void close() throws IOException {\n            wasClosed = true;\n        }\n        // default: serialize as Strings\n        assertEquals(quote(\"abc\"), m.writeValueAsString(chars));\n        \n        // new feature: serialize as JSON array:\n        m.configure(SerializationFeature.WRITE_CHAR_ARRAYS_AS_JSON_ARRAYS, true);\n        assertEquals(\"[\\\"a\\\",\\\"b\\\",\\\"c\\\"]\", m.writeValueAsString(chars));\n    }\n\n    // Test for [JACKSON-401]\n    public void testFlushingAutomatic() throws IOException\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        assertTrue(mapper.getSerializationConfig().isEnabled(SerializationFeature.FLUSH_AFTER_WRITE_VALUE));\n        // default is to flush after writeValue()\n        StringWriter sw = new StringWriter();\n        JsonGenerator jgen = mapper.getFactory().createGenerator(sw);\n        mapper.writeValue(jgen, Integer.valueOf(13));\n        assertEquals(\"13\", sw.toString());\n        jgen.close();\n\n        // ditto with ObjectWriter\n        sw = new StringWriter();\n        jgen = mapper.getFactory().createGenerator(sw);\n        ObjectWriter ow = mapper.writer();\n        ow.writeValue(jgen, Integer.valueOf(99));\n        assertEquals(\"99\", sw.toString());\n        jgen.close();\n    }\n\n    // Test for [JACKSON-401]\n    public void testFlushingNotAutomatic() throws IOException\n    {\n        // but should not occur if configured otherwise\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.configure(SerializationFeature.FLUSH_AFTER_WRITE_VALUE, false);\n        StringWriter sw = new StringWriter();\n        JsonGenerator jgen = mapper.getFactory().createGenerator(sw);\n\n        mapper.writeValue(jgen, Integer.valueOf(13));\n        // no flushing now:\n        assertEquals(\"\", sw.toString());\n        // except when actually flushing\n        jgen.flush();\n        assertEquals(\"13\", sw.toString());\n        jgen.close();\n        // Also, same should happen with ObjectWriter\n        sw = new StringWriter();\n        jgen = mapper.getFactory().createGenerator(sw);\n        ObjectWriter ow = mapper.writer();\n        ow.writeValue(jgen, Integer.valueOf(99));\n        assertEquals(\"\", sw.toString());\n        // except when actually flushing\n        jgen.flush();\n        assertEquals(\"99\", sw.toString());\n        jgen.close();\n    }\n\n    // Test for [JACKSON-805]\n    public void testSingleElementCollections() throws IOException\n    {\n        final ObjectWriter writer = objectWriter().with(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED);\n\n        // Lists:\n        ArrayList<String> strs = new ArrayList<String>();\n        strs.add(\"xyz\");\n        assertEquals(quote(\"xyz\"), writer.writeValueAsString(strs));\n        ArrayList<Integer> ints = new ArrayList<Integer>();\n        ints.add(13);\n        assertEquals(\"13\", writer.writeValueAsString(ints));\n\n        // other Collections, like Sets:\n        HashSet<Long> longs = new HashSet<Long>();\n        longs.add(42L);\n        assertEquals(\"42\", writer.writeValueAsString(longs));\n        // [Issue#180]\n        final String EXP_STRINGS = \"{\\\"values\\\":\\\"foo\\\"}\";\n        assertEquals(EXP_STRINGS, writer.writeValueAsString(new StringListBean(Collections.singletonList(\"foo\"))));\n\n        final Set<String> SET = new HashSet<String>();\n        SET.add(\"foo\");\n        assertEquals(EXP_STRINGS, writer.writeValueAsString(new StringListBean(SET)));\n        \n        // arrays:\n        assertEquals(\"true\", writer.writeValueAsString(new boolean[] { true }));\n        assertEquals(\"true\", writer.writeValueAsString(new Boolean[] { Boolean.TRUE }));\n        assertEquals(\"3\", writer.writeValueAsString(new int[] { 3 }));\n        assertEquals(quote(\"foo\"), writer.writeValueAsString(new String[] { \"foo\" }));\n        \n    }\n\n    static class TCls {\n        @JsonProperty(\"groupname\")\n        private String groupname;\n\n        public void setName(String str) {\n            this.groupname = str;\n        }\n        public String getName() {\n            return groupname;\n        }\n    }\n\n    public void testVisibilityFeatures() throws Exception\n    {\n        ObjectMapper om = new ObjectMapper();\n        // Only use explicitly specified values to be serialized/deserialized (i.e., JSONProperty).\n        om.configure(MapperFeature.AUTO_DETECT_FIELDS, false);\n        om.configure(MapperFeature.AUTO_DETECT_GETTERS, false);\n        om.configure(MapperFeature.AUTO_DETECT_SETTERS, false);\n        om.configure(MapperFeature.AUTO_DETECT_IS_GETTERS, false);\n        om.configure(MapperFeature.USE_GETTERS_AS_SETTERS, false);\n        om.configure(MapperFeature.CAN_OVERRIDE_ACCESS_MODIFIERS, true);\n        om.configure(MapperFeature.INFER_PROPERTY_MUTATORS, false);\n        om.configure(MapperFeature.USE_ANNOTATIONS, true);\n\n        JavaType javaType = om.getTypeFactory().constructType(TCls.class);        \n        BeanDescription desc = (BeanDescription) om.getSerializationConfig().introspect(javaType);\n        List<BeanPropertyDefinition> props = desc.findProperties();\n        if (props.size() != 1) {\n            fail(\"Should find 1 property, not \"+props.size()+\"; properties = \"+props);\n        }\n    }\n}\n",
+  "compaction": {
+    "source_lines": 303,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        180,
+        260
+      ],
+      [
+        240,
+        303
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 16.136858878057666
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 8.046224131330225
+      },
+      {
+        "start": 240,
+        "end": 303,
+        "score": 8.980855226392999
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 16.136858878057666
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.327879467290333
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 7.303874366910558
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 8.046224131330225
+      },
+      {
+        "start": 240,
+        "end": 303,
+        "score": 8.980855226392999
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7388,
+  "representation_chars": 7388,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

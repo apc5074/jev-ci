@@ -1,0 +1,81 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.introspect.TestNamingStrategyStd",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/introspect/TestNamingStrategyStd.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.introspect.TestNamingStrategyStd\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/introspect/TestNamingStrategyStd.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.introspect;\n\nimport java.util.Arrays;\nimport java.util.List;\n\nimport org.junit.Test;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.ObjectMapper;\nimport com.fasterxml.jackson.databind.PropertyNamingStrategy;\nimport com.fasterxml.jackson.databind.annotation.JsonNaming;\nimport com.fasterxml.jackson.databind.introspect.TestNamingStrategyCustom.PersonBean;\nimport com.fasterxml.jackson.databind.node.ObjectNode;\n\n/**\n * Unit tests to verify functioning of \n * {@link PropertyNamingStrategy#CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES} \n * and\n * {@link PropertyNamingStrategy#PASCAL_CASE_TO_CAMEL_CASE } \n * inside the context of an ObjectMapper.\n * PASCAL_CASE_TO_CAMEL_CASE was added in Jackson 2.1,\n * as per [JACKSON-63].\n */\npublic class TestNamingStrategyStd extends BaseMapTest\n{\n    @JsonPropertyOrder({\"www\", \"some_url\", \"some_uris\"})\n    static class Acronyms\n    {\n        public String WWW;\n        public String someURL;\n        public String someURIs;\n        \n        public Acronyms() {this(null, null, null);}\n        public Acronyms(String WWW, String someURL, String someURIs)\n        {\n            this.WWW = WWW;\n            this.someURL = someURL;\n            this.someURIs = someURIs;\n        }\n    }\n    \n    @JsonPropertyOrder({\"from_user\", \"user\", \"from$user\", \"from7user\", \"_x\"})\n    static class UnchangedNames\n    {\n        public String from_user;\n        public String _user;\n        public String from$user;\n        public String from7user;\n        // Used to test \"_\", but it's explicitly deprecated in JDK8 so...\n        public String _x;\n        \n        public UnchangedNames() {this(null, null, null, null, null);}\n        public UnchangedNames(String from_user, String _user, String from$user, String from7user, String _x)\n        {\n            this.from_user = from_user;\n            this._user = _user;\n            this.from$user = from$user;\n            this.from7user = from7user;\n            this._x = _x;\n        }\n    }\n    \n    @JsonPropertyOrder({\"results\", \"user\", \"__\", \"$_user\"})\n    static class OtherNonStandardNames\n    {\n        public String Results;\n        public String _User;\n        public String ___;\n        public String $User;\n        \n        public OtherNonStandardNames() {this(null, null, null, null);}\n        public OtherNonStandardNames(String Results, String _User, String ___, String $User)\n        {\n            this.Results = Results;\n            this._User = _User;\n            this.___ = ___;\n            this.$User = $User;\n        }\n    }\n                {\"$_A\", \"$_a\"},\n                {\"_\", \"_\"},\n                {\"__\", \"_\"},\n                {\"___\", \"__\"},\n                {\"A\", \"a\"},\n                {\"A1\", \"a1\"},\n                {\"1A\", \"1_a\"},\n                {\"_a\", \"a\"},\n                {\"_A\", \"a\"},\n                {\"a_a\", \"a_a\"},\n                {\"a_A\", \"a_a\"},\n                {\"A_A\", \"a_a\"},\n                {\"A_a\", \"a_a\"},\n                {\"WWW\", \"www\"},\n                {\"someURI\", \"some_uri\"},\n                {\"someURIs\", \"some_uris\"},\n                {\"Results\", \"results\"},\n                {\"_Results\", \"results\"},\n                {\"_results\", \"results\"},\n                {\"__results\", \"_results\"},\n                {\"__Results\", \"_results\"},\n                {\"___results\", \"__results\"},\n                {\"___Results\", \"__results\"},\n                {\"userName\", \"user_name\"},\n                {\"user_name\", \"user_name\"},\n                {\"user__name\", \"user__name\"},\n                {\"UserName\", \"user_name\"},\n                {\"User_Name\", \"user_name\"},\n                {\"User__Name\", \"user__name\"},\n                {\"_user_name\", \"user_name\"},\n                {\"_UserName\", \"user_name\"},\n                {\"_User_Name\", \"user_name\"},\n                {\"UGLY_NAME\", \"ugly_name\"},\n                {\"_Bars\", \"bars\" }\n    });\n    \n    private ObjectMapper _lcWithUndescoreMapper;\n    \n    @Override\n    public void setUp() throws Exception\n    {\n        super.setUp();\n        _lcWithUndescoreMapper = new ObjectMapper();\n        _lcWithUndescoreMapper.setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);\n    }\n    \n    /*\n    /**********************************************************\n    /* Test methods for CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES\n    /**********************************************************\n     */\n\n    /**\n     * Unit test to verify translations of \n     * {@link PropertyNamingStrategy#CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES} \n     * outside the context of an ObjectMapper.\n     * CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES was added in Jackson 1.9, \n     * as per [JACKSON-598].\n     */\n    @Test\n    public void testLowerCaseStrategyStandAlone()\n    {\n        for (Object[] pair : NAME_TRANSLATIONS) {\n            String translatedJavaName = PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES.nameForField(null, null,\n                    (String) pair[0]);\n            assertEquals((String) pair[1], translatedJavaName);\n        }\n    }\n    \n    public void testLowerCaseTranslations() throws Exception\n    {\n        // First serialize\n        String json = _lcWithUndescoreMapper.writeValueAsString(new PersonBean(\"Joe\", \"Sixpack\", 42));\n        assertEquals(\"{\\\"first_name\\\":\\\"Joe\\\",\\\"last_name\\\":\\\"Sixpack\\\",\\\"age\\\":42}\", json);\n        \n        // then deserialize\n        PersonBean result = _lcWithUndescoreMapper.readValue(json, PersonBean.class);\n        assertEquals(\"Joe\", result.firstName);\n        assertEquals(\"Sixpack\", result.lastName);\n        assertEquals(42, result.age);\n        assertEquals(\"from7user\", result.from7user);\n        assertEquals(\"_x\", result._x);\n    }\n    \n    /*\n    /**********************************************************\n    /* Test methods for PASCAL_CASE_TO_CAMEL_CASE (added in 2.1)\n    /**********************************************************\n     */\n\n    /**\n     * Unit test to verify translations of \n     * {@link PropertyNamingStrategy#PASCAL_CASE_TO_CAMEL_CASE } \n     * outside the context of an ObjectMapper.\n     * PASCAL_CASE_TO_CAMEL_CASE was added in Jackson 2.1.0, \n     * as per [JACKSON-63].\n     */\n    public void testPascalCaseStandAlone()\n    {\n        String translatedJavaName = PropertyNamingStrategy.PASCAL_CASE_TO_CAMEL_CASE.nameForField\n    \t        (null, null, \"userName\");\n        assertEquals(\"UserName\", translatedJavaName);\n\n        translatedJavaName = PropertyNamingStrategy.PASCAL_CASE_TO_CAMEL_CASE.nameForField\n                (null, null, \"User\");\n        assertEquals(\"User\", translatedJavaName);\n\n        translatedJavaName = PropertyNamingStrategy.PASCAL_CASE_TO_CAMEL_CASE.nameForField\n                (null, null, \"user\");\n        assertEquals(\"User\", translatedJavaName);\n        translatedJavaName = PropertyNamingStrategy.PASCAL_CASE_TO_CAMEL_CASE.nameForField\n                (null, null, \"x\");\n        assertEquals(\"X\", translatedJavaName);\n    }\n\n    /**\n     * For [databind#428]\n     */\n    public void testIssue428PascalWithOverrides() throws Exception {\n\n        String json = new ObjectMapper()\n                            .setPropertyNamingStrategy(PropertyNamingStrategy.PASCAL_CASE_TO_CAMEL_CASE)\n                            .writeValueAsString(new Bean428());\n        \n        if (!json.contains(quote(\"fooBar\"))) {\n            fail(\"Should use name 'fooBar', does not: \"+json);\n        }\n    }\n\n    /**\n     * For [databind#461]\n     */\n    public void testSimpleLowerCase() throws Exception\n    {\n        final BoringBean input = new BoringBean();\n        ObjectMapper m = objectMapper();\n\n        assertEquals(aposToQuotes(\"{'firstname':'Bob','lastname':'Burger'}\"),\n                m.writeValueAsString(input));\n    }\n\n    /**\n     * Test [databind#815], problems with ObjectNode, naming strategy\n     */\n    public void testNamingWithObjectNode() throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        m.setPropertyNamingStrategy(PropertyNamingStrategy.LOWER_CASE);\n        ClassWithObjectNodeField result =\n            m.readValue(\n                \"{ \\\"id\\\": \\\"1\\\", \\\"json\\\": { \\\"foo\\\": \\\"bar\\\", \\\"baz\\\": \\\"bing\\\" } }\",\n                ClassWithObjectNodeField.class);\n        assertNotNull(result);\n        assertEquals(\"1\", result.id);\n        assertNotNull(result.json);\n        assertEquals(2, result.json.size());\n        assertEquals(\"bing\", result.json.path(\"baz\").asText());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 319,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        240,
+        319
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 14.7086927667364
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 10.072964006034159
+      },
+      {
+        "start": 240,
+        "end": 319,
+        "score": 11.087961497540544
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 14.7086927667364
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.6757508048347045
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 10.072964006034159
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 9.308765938321546
+      },
+      {
+        "start": 240,
+        "end": 319,
+        "score": 11.087961497540544
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8709,
+  "representation_chars": 8709,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

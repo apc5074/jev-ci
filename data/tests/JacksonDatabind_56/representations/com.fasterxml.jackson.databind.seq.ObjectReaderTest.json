@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.seq.ObjectReaderTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/seq/ObjectReaderTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.seq.ObjectReaderTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/seq/ObjectReaderTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.seq;\n\nimport java.util.Map;\n\nimport com.fasterxml.jackson.core.JsonParser;\nimport com.fasterxml.jackson.core.JsonProcessingException;\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.JsonNode;\nimport com.fasterxml.jackson.databind.MappingIterator;\nimport com.fasterxml.jackson.databind.ObjectMapper;\nimport com.fasterxml.jackson.databind.ObjectReader;\n\npublic class ObjectReaderTest extends BaseMapTest\n{\n    final ObjectMapper MAPPER = new ObjectMapper();\n\n    static class POJO {\n        public Map<String, Object> name;\n    }\n\n    public void testParserFeatures() throws Exception\n    {\n        final String JSON = \"[ /* foo */ 7 ]\";\n        // default won't accept comments, let's change that:\n        ObjectReader reader = MAPPER.readerFor(int[].class)\n                .with(JsonParser.Feature.ALLOW_COMMENTS);\n\n        int[] value = reader.readValue(JSON);\n        assertNotNull(value);\n        assertEquals(1, value.length);\n        assertEquals(7, value[0]);\n\n        // but also can go back\n        try {\n            reader.without(JsonParser.Feature.ALLOW_COMMENTS).readValue(JSON);\n            fail(\"Should not have passed\");\n        } catch (JsonProcessingException e) {\n            verifyException(e, \"foo\");\n        }\n    }\n    \n    public void testNoPointerLoading() throws Exception {\n        final String source = \"{\\\"foo\\\":{\\\"bar\\\":{\\\"caller\\\":{\\\"name\\\":{\\\"value\\\":1234}}}}}\";\n\n        JsonNode tree = MAPPER.readTree(source);\n        JsonNode node = tree.at(\"/foo/bar/caller\");\n        POJO pojo = MAPPER.treeToValue(node, POJO.class);\n        assertTrue(pojo.name.containsKey(\"value\"));\n        assertEquals(1234, pojo.name.get(\"value\"));\n    }\n\n    public void testPointerLoading() throws Exception {\n        final String source = \"{\\\"foo\\\":{\\\"bar\\\":{\\\"caller\\\":{\\\"name\\\":{\\\"value\\\":1234}}}}}\";\n\n        ObjectReader reader = MAPPER.readerFor(POJO.class).at(\"/foo/bar/caller\");\n\n        POJO pojo = reader.readValue(source);\n        assertTrue(pojo.name.containsKey(\"value\"));\n        assertEquals(1234, pojo.name.get(\"value\"));\n    }\n\n    public void testPointerLoadingAsJsonNode() throws Exception {\n        final String source = \"{\\\"foo\\\":{\\\"bar\\\":{\\\"caller\\\":{\\\"name\\\":{\\\"value\\\":1234}}}}}\";\n\n        ObjectReader reader = MAPPER.readerFor(POJO.class).at(\"/foo/bar/caller\");\n\n        JsonNode node = reader.readTree(source);\n        assertTrue(node.has(\"name\"));\n        assertEquals(\"{\\\"value\\\":1234}\", node.get(\"name\").toString());\n    }\n\n    public void testPointerLoadingMappingIteratorOne() throws Exception {\n        final String source = \"{\\\"foo\\\":{\\\"bar\\\":{\\\"caller\\\":{\\\"name\\\":{\\\"value\\\":1234}}}}}\";\n\n        ObjectReader reader = MAPPER.readerFor(POJO.class).at(\"/foo/bar/caller\");\n\n        MappingIterator<POJO> itr = reader.readValues(source);\n\n        POJO pojo = itr.next();\n\n        assertTrue(pojo.name.containsKey(\"value\"));\n        assertEquals(1234, pojo.name.get(\"value\"));\n        assertFalse(itr.hasNext());\n        itr.close();\n    }\n    \n    public void testPointerLoadingMappingIteratorMany() throws Exception {\n        final String source = \"{\\\"foo\\\":{\\\"bar\\\":{\\\"caller\\\":[{\\\"name\\\":{\\\"value\\\":1234}}, {\\\"name\\\":{\\\"value\\\":5678}}]}}}\";\n\n        ObjectReader reader = MAPPER.readerFor(POJO.class).at(\"/foo/bar/caller\");\n\n        MappingIterator<POJO> itr = reader.readValues(source);\n\n        POJO pojo = itr.next();\n\n        assertTrue(pojo.name.containsKey(\"value\"));\n        assertEquals(1234, pojo.name.get(\"value\"));\n        assertTrue(itr.hasNext());\n        \n        pojo = itr.next();\n\n        assertNotNull(pojo.name);\n        assertTrue(pojo.name.containsKey(\"value\"));\n        assertEquals(5678, pojo.name.get(\"value\"));\n        assertFalse(itr.hasNext());\n        itr.close();\n    }\n}\n",
+  "compaction": {
+    "source_lines": 108,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3989,
+  "representation_chars": 3989,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

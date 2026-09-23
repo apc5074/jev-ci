@@ -1,0 +1,91 @@
+{
+  "test_class": "org.apache.commons.lang3.concurrent.MultiBackgroundInitializerTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/concurrent/MultiBackgroundInitializerTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.concurrent.MultiBackgroundInitializerTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/concurrent/MultiBackgroundInitializerTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3.concurrent;\n\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertFalse;\nimport static org.junit.Assert.assertNull;\nimport static org.junit.Assert.assertTrue;\nimport static org.junit.Assert.fail;\n\nimport java.util.Iterator;\nimport java.util.NoSuchElementException;\nimport java.util.concurrent.ExecutorService;\nimport java.util.concurrent.Executors;\n\nimport org.junit.Before;\nimport org.junit.Test;\n\n/**\n * Test class for {@link MultiBackgroundInitializer}.\n *\n * @version $Id$\n */\npublic class MultiBackgroundInitializerTest {\n    /** Constant for the names of the child initializers. */\n    private static final String CHILD_INIT = \"childInitializer\";\n\n    /** The initializer to be tested. */\n    private MultiBackgroundInitializer initializer;\n\n    @Before\n    public void setUp() throws Exception {\n        initializer = new MultiBackgroundInitializer();\n    }\n\n    /**\n     * Tests whether a child initializer has been executed. Optionally the\n     * expected executor service can be checked, too.\n     *\n     * @param child the child initializer\n     * @param expExec the expected executor service (null if the executor should\n     * not be checked)\n     * @throws ConcurrentException if an error occurs\n     */\n    private void checkChild(final BackgroundInitializer<?> child,\n            final ExecutorService expExec) throws ConcurrentException {\n        final ChildBackgroundInitializer cinit = (ChildBackgroundInitializer) child;\n        final Integer result = cinit.get();\n        assertEquals(\"Wrong result\", 1, result.intValue());\n        assertEquals(\"Wrong number of executions\", 1, cinit.initializeCalls);\n        if (expExec != null) {\n            assertEquals(\"Wrong executor service\", expExec,\n                    cinit.currentExecutor);\n        }\n    }\n\n    /**\n     * Tests addInitializer() if a null name is passed in. This should cause an\n     * exception.\n     */\n    @Test(expected = IllegalArgumentException.class)\n    public void testAddInitializerNullName() {\n        initializer.addInitializer(null, new ChildBackgroundInitializer());\n    }\n\n    /**\n            final String key = CHILD_INIT + i;\n            assertTrue(\"Name not found: \" + key, res.initializerNames()\n                    .contains(key));\n            assertEquals(\"Wrong result object\", Integer.valueOf(1), res\n                    .getResultObject(key));\n            assertFalse(\"Exception flag\", res.isException(key));\n            assertNull(\"Got an exception\", res.getException(key));\n            checkChild(res.getInitializer(key), initializer.getActiveExecutor());\n        }\n        return res;\n    }\n\n    /**\n     * Tests background processing if a temporary executor is used.\n     */\n    @Test\n    public void testInitializeTempExec() throws ConcurrentException {\n        checkInitialize();\n        assertTrue(\"Executor not shutdown\", initializer.getActiveExecutor()\n                .isShutdown());\n    }\n\n    /**\n     * Tests background processing if an external executor service is provided.\n     */\n    @Test\n    public void testInitializeExternalExec() throws ConcurrentException {\n        final ExecutorService exec = Executors.newCachedThreadPool();\n        try {\n            initializer = new MultiBackgroundInitializer(exec);\n            checkInitialize();\n            assertEquals(\"Wrong executor\", exec, initializer\n                    .getActiveExecutor());\n            assertFalse(\"Executor was shutdown\", exec.isShutdown());\n        } finally {\n            exec.shutdown();\n        }\n    }\n\n    /**\n     * Tests the behavior of initialize() if a child initializer has a specific\n     * executor service. Then this service should not be overridden.\n     */\n    @Test\n    public void testInitializeChildWithExecutor() throws ConcurrentException {\n        final String initExec = \"childInitializerWithExecutor\";\n        final ExecutorService exec = Executors.newSingleThreadExecutor();\n        try {\n            final ChildBackgroundInitializer c1 = new ChildBackgroundInitializer();\n            final ChildBackgroundInitializer c2 = new ChildBackgroundInitializer();\n            c2.setExternalExecutor(exec);\n            initializer.addInitializer(CHILD_INIT, c1);\n            initializer.addInitializer(initExec, c2);\n            initializer.start();\n            initializer.get();\n            checkChild(c1, initializer.getActiveExecutor());\n            checkChild(c2, exec);\n        } finally {\n            exec.shutdown();\n        }\n    }\n\n    /**\n     * Tries to add another child initializer after the start() method has been\n     * called. This should not be allowed.\n     */\n    @Test\n    public void testAddInitializerAfterStart() throws ConcurrentException {\n        initializer.start();\n        try {\n            initializer.addInitializer(CHILD_INIT,\n                    new ChildBackgroundInitializer());\n            fail(\"Could add initializer after start()!\");\n        } catch (final IllegalStateException istex) {\n            initializer.get();\n        }\n    }\n\n    /**\n     * Tries to query an unknown child initializer from the results object. This\n     * should cause an exception.\n     */\n    @Test(expected = NoSuchElementException.class)\n    public void testResultGetInitializerUnknown() throws ConcurrentException {\n        final MultiBackgroundInitializer.MultiBackgroundInitializerResults res = checkInitialize();\n        res.getInitializer(\"unknown\");\n    }\n\n    /**\n     * Tries to query the results of an unknown child initializer from the\n     * results object. This should cause an exception.\n     */\n    @Test(expected = NoSuchElementException.class)\n    public void testResultGetResultObjectUnknown() throws ConcurrentException {\n        final MultiBackgroundInitializer.MultiBackgroundInitializerResults res = checkInitialize();\n        res.getResultObject(\"unknown\");\n    }\n\n    /**\n     * Tries to query the exception of an unknown child initializer from the\n     * results object. This should cause an exception.\n     */\n    @Test(expected = NoSuchElementException.class)\n    public void testResultGetExceptionUnknown() throws ConcurrentException {\n        final MultiBackgroundInitializer.MultiBackgroundInitializerResults res = checkInitialize();\n        res.getException(\"unknown\");\n    }\n\n    /**\n     * Tries to query the exception flag of an unknown child initializer from\n     * the results object. This should cause an exception.\n     */\n    @Test(expected = NoSuchElementException.class)\n    public void testResultIsExceptionUnknown() throws ConcurrentException {\n        final MultiBackgroundInitializer.MultiBackgroundInitializerResults res = checkInitialize();\n        res.isException(\"unknown\");\n    }\n\n    /**\n     * Tests that the set with the names of the initializers cannot be modified.\n     */\n    @Test(expected = UnsupportedOperationException.class)\n    public void testResultInitializerNamesModify() throws ConcurrentException {\n        checkInitialize();\n        final MultiBackgroundInitializer.MultiBackgroundInitializerResults res = initializer\n                .get();\n        final Iterator<String> it = res.initializerNames().iterator();\n        it.next();\n        it.remove();\n    }\n\n    /**\n     * Tests the behavior of the initializer if one of the child initializers\n     * throws a runtime exception.\n     */\n    @Test\n    public void testInitializeRuntimeEx() {\n        final ChildBackgroundInitializer child = new ChildBackgroundInitializer();\n        child.ex = new RuntimeException();\n        initializer.addInitializer(CHILD_INIT, child);\n",
+  "compaction": {
+    "source_lines": 381,
+    "mode": "windows",
+    "windows_total": 7,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 21.339426832314995
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 6.940568639406538
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 6.913881938579379
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 21.339426832314995
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 6.537457234803046
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 6.940568639406538
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 6.913881938579379
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 5.685290566911121
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 6.215037888789043
+      },
+      {
+        "start": 360,
+        "end": 381,
+        "score": 2.124528212940335
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8585,
+  "representation_chars": 8585,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

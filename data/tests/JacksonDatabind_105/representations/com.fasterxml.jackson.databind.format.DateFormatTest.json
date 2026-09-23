@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.format.DateFormatTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/format/DateFormatTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.format.DateFormatTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/format/DateFormatTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.format;\n\nimport java.util.Calendar;\nimport java.util.Date;\n\nimport com.fasterxml.jackson.annotation.JsonFormat;\nimport com.fasterxml.jackson.databind.*;\n\npublic class DateFormatTest extends BaseMapTest\n{\n    protected static class DateWrapper {\n        public Date value;\n\n        public DateWrapper() { }\n        public DateWrapper(long l) { value = new Date(l); }\n        public DateWrapper(Date v) { value = v; }\n    }\n\n    public void testTypeDefaults() throws Exception\n    {\n        ObjectMapper mapper = newObjectMapper();\n        mapper.configOverride(Date.class)\n            .setFormat(JsonFormat.Value.forPattern(\"yyyy.dd.MM\"));\n        // First serialize, should result in this (in UTC):\n        String json = mapper.writeValueAsString(new DateWrapper(0L));\n        assertEquals(aposToQuotes(\"{'value':'1970.01.01'}\"), json);\n\n        // and then read back\n        DateWrapper w = mapper.readValue(aposToQuotes(\"{'value':'1981.13.3'}\"), DateWrapper.class);\n        assertNotNull(w);\n        // arbitrary TimeZone, but good enough to ensure year is right\n        Calendar c = Calendar.getInstance();\n        c.setTime(w.value);\n        assertEquals(1981, c.get(Calendar.YEAR));\n        assertEquals(Calendar.MARCH, c.get(Calendar.MONTH));\n    }\n}\n",
+  "compaction": {
+    "source_lines": 37,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1461,
+  "representation_chars": 1461,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "test_class": "org.apache.commons.lang3.ArrayUtilsAddTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/ArrayUtilsAddTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.ArrayUtilsAddTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/ArrayUtilsAddTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.lang3;\n\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertNotNull;\nimport static org.junit.Assert.assertNotSame;\nimport static org.junit.Assert.assertNull;\nimport static org.junit.Assert.assertTrue;\nimport static org.junit.Assert.fail;\n\nimport java.util.Arrays;\n\nimport org.junit.Test;\n\n/**\n * Tests ArrayUtils add methods.\n *\n * @version $Id$\n */\npublic class ArrayUtilsAddTest {\n\n    @Test\n    public void testJira567(){\n        Number[] n;\n        // Valid array construction\n        n = ArrayUtils.addAll(new Number[]{Integer.valueOf(1)}, new Long[]{Long.valueOf(2)});\n        assertEquals(2,n.length);\n        assertEquals(Number.class,n.getClass().getComponentType());\n        try {\n            // Invalid - can't store Long in Integer array\n               n = ArrayUtils.addAll(new Integer[]{Integer.valueOf(1)}, new Long[]{Long.valueOf(2)});\n               fail(\"Should have generated IllegalArgumentException\");\n        } catch (final IllegalArgumentException expected) {\n        }\n    }\n\n    @Test\n    public void testAddObjectArrayBoolean() {\n        boolean[] newArray;\n        newArray = ArrayUtils.add((boolean[])null, false);\n        assertTrue(Arrays.equals(new boolean[]{false}, newArray));\n        assertEquals(Boolean.TYPE, newArray.getClass().getComponentType());\n        newArray = ArrayUtils.add((boolean[])null, true);\n        assertTrue(Arrays.equals(new boolean[]{true}, newArray));\n        assertEquals(Boolean.TYPE, newArray.getClass().getComponentType());\n        final boolean[] array1 = new boolean[]{true, false, true};\n        newArray = ArrayUtils.add(array1, false);\n        assertTrue(Arrays.equals(new boolean[]{true, false, true, false}, newArray));\n        assertEquals(Boolean.TYPE, newArray.getClass().getComponentType());\n    }\n\n    @Test\n    public void testAddObjectArrayByte() {\n        byte[] newArray;\n        newArray = ArrayUtils.add((byte[])null, (byte)0);\n        assertTrue(Arrays.equals(new byte[]{0}, newArray));\n        assertEquals(Byte.TYPE, newArray.getClass().getComponentType());\n        newArray = ArrayUtils.add((byte[])null, (byte)1);\n        assertTrue(Arrays.equals(new byte[]{1}, newArray));\n        assertEquals(Byte.TYPE, newArray.getClass().getComponentType());\n        final byte[] array1 = new byte[]{1, 2, 3};\n        newArray = ArrayUtils.add(array1, (byte)0);\n        assertTrue(Arrays.equals(new byte[]{1, 2, 3, 0}, newArray));\n        assertEquals(Byte.TYPE, newArray.getClass().getComponentType());\n        assertEquals(Short.TYPE, newArray.getClass().getComponentType());\n        newArray = ArrayUtils.add((short[])null, (short)1);\n        assertTrue(Arrays.equals(new short[]{1}, newArray));\n        assertEquals(Short.TYPE, newArray.getClass().getComponentType());\n        final short[] array1 = new short[]{1, 2, 3};\n        newArray = ArrayUtils.add(array1, (short)0);\n        assertTrue(Arrays.equals(new short[]{1, 2, 3, 0}, newArray));\n        assertEquals(Short.TYPE, newArray.getClass().getComponentType());\n        newArray = ArrayUtils.add(array1, (short)4);\n        assertTrue(Arrays.equals(new short[]{1, 2, 3, 4}, newArray));\n        assertEquals(Short.TYPE, newArray.getClass().getComponentType());\n    }\n\n    @Test\n    public void testAddObjectArrayObject() {\n        Object[] newArray;\n\n        //show that not casting is okay\n        newArray = ArrayUtils.add((Object[])null, \"a\");\n        assertTrue(Arrays.equals(new String[]{\"a\"}, newArray));\n        assertTrue(Arrays.equals(new Object[]{\"a\"}, newArray));\n        assertEquals(String.class, newArray.getClass().getComponentType());\n\n        //show that not casting to Object[] is okay and will assume String based on \"a\"\n        final String[] newStringArray = ArrayUtils.add(null, \"a\");\n        assertTrue(Arrays.equals(new String[]{\"a\"}, newStringArray));\n        assertTrue(Arrays.equals(new Object[]{\"a\"}, newStringArray));\n        assertEquals(String.class, newStringArray.getClass().getComponentType());\n\n        final String[] stringArray1 = new String[]{\"a\", \"b\", \"c\"};\n        newArray = ArrayUtils.add(stringArray1, null);\n        assertTrue(Arrays.equals(new String[]{\"a\", \"b\", \"c\", null}, newArray));\n        assertEquals(String.class, newArray.getClass().getComponentType());\n\n        newArray = ArrayUtils.add(stringArray1, \"d\");\n        assertTrue(Arrays.equals(new String[]{\"a\", \"b\", \"c\", \"d\"}, newArray));\n        assertEquals(String.class, newArray.getClass().getComponentType());\n\n        Number[] numberArray1 = new Number[]{Integer.valueOf(1), Double.valueOf(2)};\n        newArray = ArrayUtils.add(numberArray1, Float.valueOf(3));\n        assertTrue(Arrays.equals(new Number[]{Integer.valueOf(1), Double.valueOf(2), Float.valueOf(3)}, newArray));\n        assertEquals(Number.class, newArray.getClass().getComponentType());\n\n        numberArray1 = null;\n        newArray = ArrayUtils.add(numberArray1, Float.valueOf(3));\n        assertTrue(Arrays.equals(new Float[]{Float.valueOf(3)}, newArray));\n        assertEquals(Float.class, newArray.getClass().getComponentType());\n    }\n    \n    @Test\n    public void testLANG571(){\n        final String[] stringArray=null;\n        final String aString=null;\n        try {\n            @SuppressWarnings(\"unused\")\n            final\n            String[] sa = ArrayUtils.add(stringArray, aString);\n            fail(\"Should have caused IllegalArgumentException\");\n        } catch (final IllegalArgumentException iae){\n            //expected\n        }\n        try {\n            @SuppressWarnings(\"unused\")\n            final\n            String[] sa = ArrayUtils.add(stringArray, 0, aString);\n            fail(\"Should have caused IllegalArgumentException\");\n        } catch (final IllegalArgumentException iae){\n            //expected\n        }\n    }\n\n    @Test\n    public void testAddObjectArrayToObjectArray() {\n        assertNull(ArrayUtils.addAll((Object[]) null, (Object[]) null));\n        Object[] newArray;\n        final String[] stringArray1 = new String[]{\"a\", \"b\", \"c\"};\n        final String[] stringArray2 = new String[]{\"1\", \"2\", \"3\"};\n        newArray = ArrayUtils.addAll(stringArray1, (String[]) null);\n        assertNotSame(stringArray1, newArray);\n        assertTrue(Arrays.equals(stringArray1, newArray));\n\n        assertTrue( Arrays.equals( new double[] { 0, 9.99 },\n            ArrayUtils.addAll( null, new double[] { 0, 9.99 } ) ) );\n\n        assertTrue( Arrays.equals( new double[] { Math.PI, -Math.PI },\n            ArrayUtils.addAll( new double[] { Math.PI, -Math.PI }, null ) ) );\n\n    }\n\n    @Test\n    public void testAddObjectAtIndex() {\n        Object[] newArray;\n        newArray = ArrayUtils.add((Object[])null, 0, \"a\");\n        assertTrue(Arrays.equals(new String[]{\"a\"}, newArray));\n        assertTrue(Arrays.equals(new Object[]{\"a\"}, newArray));\n        assertEquals(String.class, newArray.getClass().getComponentType());\n        final String[] stringArray1 = new String[]{\"a\", \"b\", \"c\"};\n        newArray = ArrayUtils.add(stringArray1, 0, null);\n        assertTrue(Arrays.equals(new String[]{null, \"a\", \"b\", \"c\"}, newArray));\n        assertEquals(String.class, newArray.getClass().getComponentType());\n        newArray = ArrayUtils.add(stringArray1, 1, null);\n        assertTrue(Arrays.equals(new String[]{\"a\", null, \"b\", \"c\"}, newArray));\n        assertEquals(String.class, newArray.getClass().getComponentType());\n        newArray = ArrayUtils.add(stringArray1, 3, null);\n        assertTrue(Arrays.equals(new String[]{\"a\", \"b\", \"c\", null}, newArray));\n        assertEquals(String.class, newArray.getClass().getComponentType());\n        newArray = ArrayUtils.add(stringArray1, 3, \"d\");\n        assertTrue(Arrays.equals(new String[]{\"a\", \"b\", \"c\", \"d\"}, newArray));\n        assertEquals(String.class, newArray.getClass().getComponentType());\n        assertEquals(String.class, newArray.getClass().getComponentType());\n\n        final Object[] o = new Object[] {\"1\", \"2\", \"4\"};\n        final Object[] result = ArrayUtils.add(o, 2, \"3\");\n        final Object[] result2 = ArrayUtils.add(o, 3, \"5\");\n\n        assertNotNull(result);\n        assertEquals(4, result.length);\n        assertEquals(\"1\", result[0]);\n        assertEquals(\"2\", result[1]);\n        assertEquals(\"3\", result[2]);\n        assertEquals(\"4\", result[3]);\n        assertNotNull(result2);\n        assertEquals(4, result2.length);\n        assertEquals(\"1\", result2[0]);\n        assertEquals(\"2\", result2[1]);\n        assertEquals(\"4\", result2[2]);\n        assertEquals(\"5\", result2[3]);\n\n        // boolean tests\n        boolean[] booleanArray = ArrayUtils.add( null, 0, true );\n        assertTrue( Arrays.equals( new boolean[] { true }, booleanArray ) );\n        try {\n            booleanArray = ArrayUtils.add( null, -1, true );\n        } catch(final IndexOutOfBoundsException e) {\n            assertEquals(\"Index: -1, Length: 0\", e.getMessage());\n        }\n        booleanArray = ArrayUtils.add( new boolean[] { true }, 0, false);\n        assertTrue( Arrays.equals( new boolean[] { false, true }, booleanArray ) );\n        booleanArray = ArrayUtils.add( new boolean[] { false }, 1, true);\n        assertTrue( Arrays.equals( new boolean[] { false, true }, booleanArray ) );\n        booleanArray = ArrayUtils.add( new boolean[] { true, false }, 1, true);\n        assertTrue( Arrays.equals( new boolean[] { true, true, false }, booleanArray ) );\n        try {\n            booleanArray = ArrayUtils.add( new boolean[] { true, false }, 4, true);\n        } catch(final IndexOutOfBoundsException e) {\n            assertEquals(\"Index: 4, Length: 2\", e.getMessage());\n        }\n        try {\n            booleanArray = ArrayUtils.add( new boolean[] { true, false }, -1, true);\n        } catch(final IndexOutOfBoundsException e) {\n            assertEquals(\"Index: -1, Length: 2\", e.getMessage());\n        }\n\n        // char tests\n        char[] charArray = ArrayUtils.add( (char[]) null, 0, 'a' );\n        assertTrue( Arrays.equals( new char[] { 'a' }, charArray ) );\n        try {\n            charArray = ArrayUtils.add( (char[]) null, -1, 'a' );\n        } catch(final IndexOutOfBoundsException e) {\n            assertEquals(\"Index: -1, Length: 0\", e.getMessage());\n",
+  "compaction": {
+    "source_lines": 612,
+    "mode": "windows",
+    "windows_total": 10,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        180,
+        260
+      ],
+      [
+        360,
+        440
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 34.37052227073798
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 14.681783644808746
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 8.916588954603546
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 34.37052227073798
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 4.594388471469312
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 2.844263576888597
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 14.681783644808746
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.454745585785526
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 7.816770040700695
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 8.916588954603546
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 4.1696792348036205
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 2.7251069077806225
+      },
+      {
+        "start": 540,
+        "end": 612,
+        "score": 5.983408498369275
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 11165,
+  "representation_chars": 11165,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

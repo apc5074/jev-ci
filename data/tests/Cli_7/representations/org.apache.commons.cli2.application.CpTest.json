@@ -1,0 +1,96 @@
+{
+  "test_class": "org.apache.commons.cli2.application.CpTest",
+  "source_file": "src/test/org/apache/commons/cli2/application/CpTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.cli2.application.CpTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/cli2/application/CpTest.java\n\nTEST SOURCE:\n/**\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *     http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.cli2.application;\n\nimport java.io.BufferedReader;\nimport java.io.IOException;\nimport java.io.PrintWriter;\nimport java.io.StringReader;\nimport java.io.StringWriter;\n\nimport junit.framework.Test;\nimport junit.framework.TestCase;\nimport junit.framework.TestSuite;\n\nimport org.apache.commons.cli2.Argument;\nimport org.apache.commons.cli2.CommandLine;\nimport org.apache.commons.cli2.Group;\nimport org.apache.commons.cli2.Option;\nimport org.apache.commons.cli2.OptionException;\nimport org.apache.commons.cli2.builder.ArgumentBuilder;\nimport org.apache.commons.cli2.builder.DefaultOptionBuilder;\nimport org.apache.commons.cli2.builder.GroupBuilder;\nimport org.apache.commons.cli2.commandline.Parser;\nimport org.apache.commons.cli2.option.ArgumentImpl;\nimport org.apache.commons.cli2.option.SourceDestArgument;\nimport org.apache.commons.cli2.util.HelpFormatter;\n\n/**\n * <p>Test the <code>cp</code> command. Duplicated Option types are not\n * tested e.g. -a and -d are the same Option type.</p>\n * \n * <p>The following is the man output for 'cp'. See\n * <a href=\"http://www.rt.com/man/cp.1.html\">http://www.rt.com/man/cp.1.html</a>.</p>\n * \n * <pre>\n *  CP(1) FSF CP(1)\n * \n *  NAME cp - copy files and directories\n * \n *  SYNOPSIS cp [OPTION]... SOURCE DEST cp [OPTION]... SOURCE... DIRECTORY\n * \n *  DESCRIPTION Copy SOURCE to DEST, or multiple SOURCE(s) to DIRECTORY.\n * \n *  -a, --archive same as -dpR\n * \n *  -b, --backup make backup before removal\n * \n *  -d, --no-dereference preserve links\n * \n *  -f, --force remove existing destinations, never prompt\n * \n *  -i, --interactive prompt before overwrite\n * \n *  -l, --link link files instead of copying\n * \n *  -p, --preserve preserve file attributes if possible\n * \n *  -P, --parents append source path to DIRECTORY\n * -r copy recursively, non-directories as files\n * \n *  --sparse=WHEN control creation of sparse files\n * \n *  -R, --recursive copy directories recursively\n * \n *  -s, --symbolic-link make symbolic links instead of copying\n * \n *  -S, --suffix=SUFFIX override the usual backup suffix\n * \n *  -u, --update copy only when the SOURCE file is newer than the destination file or when the destination file is missing\n * \n *  -v, --verbose explain what is being done\n * \n *  -V, --version-control=WORD override the usual version control\n * \n *  -x, --one-file-system stay on this file system\n * \n *  --help display this help and exit\n * \n *  --version output version information and exit\n * \n *  By default, sparse SOURCE files are detected by a crude heuristic and the corresponding DEST file is made sparse as well. That is the behavior selected by --sparse=auto. Specify --sparse=always to create a sparse DEST file when- ever the SOURCE file contains a long enough sequence of zero bytes. Use --sparse=never to inhibit creation of sparse files.\n * \n *  The backup suffix is ~, unless set with SIMPLE_BACKUP_SUF- FIX. The version control may be set with VERSION_CONTROL, values are:\n * t, numbered make numbered backups\n * \n *  nil, existing numbered if numbered backups exist, simple other- wise\n * \n *  never, simple always make simple backups\n * \n *  As a special case, cp makes a backup of SOURCE when the force and backup options are given and SOURCE and DEST are the same name for an existing, regular file. * </pre>\n * </pre>\n * \n * @author Rob Oxspring\n * @author John Keyes\n */\npublic class CpTest extends TestCase {\n\n    /** Option Builder */\n    private static final DefaultOptionBuilder oBuilder =\n        new DefaultOptionBuilder();\n\n    /** Argument Builder */\n    private static final ArgumentBuilder aBuilder = new ArgumentBuilder();\n\n    /** Group Builder */\n    private static final GroupBuilder gBuilder = new GroupBuilder();\n\n    private Group options;\n\n    public static Test suite() {\n        return new TestSuite(CpTest.class);\n    }\n\n    private ArgumentImpl source;\n    private ArgumentImpl dest;\n    private Argument targets;\n\n    private Option archive;\n    private Option backup;\n    private Option noDereference;\n    private Option force;\n    private Option interactive;\n    private Option link;\n    private Option preserve;\n    private Option parents;\n    private Option recursive1;\n    private Option sparse;\n    private Option recursive2;\n    private Option symbolicLink;\n    private Option suffix;\n    private Option update;\n    private Option verbose;\n    private Option versionControl;\n    private Option oneFileSystem;\n    private Option help;\n    private Option version;\n\n    public void setUp() {\n        source =\n            (ArgumentImpl)aBuilder.withName(\"SOURCE\").withMinimum(1).create();\n        dest =\n            (ArgumentImpl)aBuilder\n                .withName(\"DEST\")\n                .withMinimum(1)\n                .withMaximum(1)\n                .create();\n        targets = new SourceDestArgument(source, dest);\n\n        archive =\n            oBuilder\n                .withShortName(\"a\")\n                .withLongName(\"archive\")\n                .withDescription(\"same as -dpR\")\n                .create();\n\n        backup =\n            oBuilder\n                .withShortName(\"b\")\n                .withLongName(\"backup\")\n                .withDescription(\"make backup before removal\")\n                .create();\n\n        noDereference =\n            oBuilder\n                .withShortName(\"d\")\n                .withLongName(\"no-dereference\")\n                .withDescription(\"preserve links\")\n                .create();\n\n        force =\n            oBuilder\n                .withShortName(\"f\")\n                .withLongName(\"force\")\n                .withDescription(\"remove existing destinations, never prompt\")\n                .create();\n\n        interactive =\n            oBuilder\n                .withShortName(\"i\")\n                .withLongName(\"interactive\")\n                .withDescription(\"prompt before overwrite\")\n                .create();\n\n        link =\n            oBuilder\n                .withShortName(\"l\")\n",
+  "compaction": {
+    "source_lines": 471,
+    "mode": "windows",
+    "windows_total": 8,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 31.80832953711423
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 10.949592281323834
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 7.92589730824519
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 31.80832953711423
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 10.949592281323834
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 7.92589730824519
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 2.402731439760223
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 3.467151053483677
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 7.138919339535016
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 6.191344867630615
+      },
+      {
+        "start": 420,
+        "end": 471,
+        "score": 1.5713300477683885
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 6904,
+  "representation_chars": 6904,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

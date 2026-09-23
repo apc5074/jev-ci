@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.introspect.TransientTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/introspect/TransientTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.introspect.TransientTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/introspect/TransientTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.introspect;\n\nimport java.beans.Transient;\n\nimport com.fasterxml.jackson.annotation.JsonProperty;\nimport com.fasterxml.jackson.annotation.JsonPropertyOrder;\nimport com.fasterxml.jackson.databind.*;\n\n/**\n * Tests for both `transient` keyword and JDK 7\n * {@link java.beans.Transient} annotation.\n */\npublic class TransientTest extends BaseMapTest\n{\n    // for [databind#296]\n    @JsonPropertyOrder({ \"x\" })\n    static class ClassyTransient\n    {\n        public transient int value = 3;\n\n        public int getValue() { return value; }\n\n        public int getX() { return 42; }\n    }\n\n    static class SimplePrunableTransient {\n        public int a = 1;\n        public transient int b = 2;\n    }\n    \n    // for [databind#857]\n    static class BeanTransient {\n        @Transient\n        public int getX() { return 3; }\n\n        public int getY() { return 4; }\n    }\n\n    // for [databind#1184]\n    static class OverridableTransient {\n        @JsonProperty\n//        @JsonProperty(\"value\") // should override transient here, to force inclusion\n        public transient int tValue;\n\n        public OverridableTransient(int v) { tValue = v; }\n    }\n\n    /*\n    /**********************************************************\n    /* Unit tests\n    /**********************************************************\n     */\n\n    private final ObjectMapper MAPPER = objectMapper();\n\n    // for [databind#296]\n    public void testTransientFieldHandling() throws Exception\n    {\n        // default handling: remove transient field but do not propagate\n        assertEquals(aposToQuotes(\"{'x':42,'value':3}\"),\n                MAPPER.writeValueAsString(new ClassyTransient()));\n        assertEquals(aposToQuotes(\"{'a':1}\"),\n                MAPPER.writeValueAsString(new SimplePrunableTransient()));\n\n        // but may change that\n        ObjectMapper m = new ObjectMapper()\n            .enable(MapperFeature.PROPAGATE_TRANSIENT_MARKER);\n        assertEquals(aposToQuotes(\"{'x':42}\"),\n                m.writeValueAsString(new ClassyTransient()));\n    }\n\n    // for [databind#857]\n    public void testBeanTransient() throws Exception\n    {\n        assertEquals(aposToQuotes(\"{'y':4}\"),\n                MAPPER.writeValueAsString(new BeanTransient()));\n    }\n\n    // for [databind#1184]\n    public void testOverridingTransient() throws Exception\n    {\n        assertEquals(aposToQuotes(\"{'tValue':38}\"),\n                MAPPER.writeValueAsString(new OverridableTransient(38)));\n    }\n}\n",
+  "compaction": {
+    "source_lines": 85,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2669,
+  "representation_chars": 2669,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

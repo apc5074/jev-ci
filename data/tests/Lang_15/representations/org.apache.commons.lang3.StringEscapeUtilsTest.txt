@@ -1,0 +1,182 @@
+TEST CLASS:
+org.apache.commons.lang3.StringEscapeUtilsTest
+
+SOURCE FILE:
+src/test/java/org/apache/commons/lang3/StringEscapeUtilsTest.java
+
+TEST SOURCE:
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.commons.lang3;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
+
+import org.apache.commons.io.IOUtils;
+import org.junit.Test;
+
+import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
+import org.apache.commons.lang3.text.translate.NumericEntityEscaper;
+
+/**
+ * Unit tests for {@link StringEscapeUtils}.
+ *
+ * @version $Id$
+ */
+public class StringEscapeUtilsTest {
+    private final static String FOO = "foo";
+
+    @Test
+    public void testConstructor() {
+        assertNotNull(new StringEscapeUtils());
+        Constructor<?>[] cons = StringEscapeUtils.class.getDeclaredConstructors();
+        assertEquals(1, cons.length);
+        assertTrue(Modifier.isPublic(cons[0].getModifiers()));
+        assertTrue(Modifier.isPublic(StringEscapeUtils.class.getModifiers()));
+        assertFalse(Modifier.isFinal(StringEscapeUtils.class.getModifiers()));
+    }
+    
+    @Test
+    public void testEscapeJava() throws IOException {
+        assertEquals(null, StringEscapeUtils.escapeJava(null));
+        try {
+            StringEscapeUtils.ESCAPE_JAVA.translate(null, null);
+            fail();
+        } catch (IOException ex) {
+            fail();
+        } catch (IllegalArgumentException ex) {
+        }
+        try {
+            StringEscapeUtils.ESCAPE_JAVA.translate("", null);
+            fail();
+        } catch (IOException ex) {
+            fail();
+        } catch (IllegalArgumentException ex) {
+        }
+        
+        assertEscapeJava("empty string", "", "");
+        assertEscapeJava(FOO, FOO);
+        assertEscapeJava("tab", "\\t", "\t");
+        assertEscapeJava("backslash", "\\\\", "\\");
+        assertEscapeJava("single quote should not be escaped", "'", "'");
+        assertEscapeJava("\\\\\\b\\t\\r", "\\\b\t\r");
+        assertEscapeJava("\\u1234", "\u1234");
+        assertEscapeJava("\\u0234", "\u0234");
+
+        assertEquals("\"foo.bar\"",          StringEscapeUtils.unescapeCsv("\"foo.bar\""));
+    }
+
+    @Test
+    public void testUnescapeCsvWriter() throws Exception {
+        checkCsvUnescapeWriter("foo.bar",        "foo.bar");
+        checkCsvUnescapeWriter("foo,bar",    "\"foo,bar\"");
+        checkCsvUnescapeWriter("foo\nbar",   "\"foo\nbar\"");
+        checkCsvUnescapeWriter("foo\rbar",   "\"foo\rbar\"");
+        checkCsvUnescapeWriter("foo\"bar", "\"foo\"\"bar\"");
+        checkCsvUnescapeWriter("", null);
+        checkCsvUnescapeWriter("", "");
+
+        checkCsvUnescapeWriter("\"foo.bar\"",        "\"foo.bar\"");
+    }
+
+    private void checkCsvUnescapeWriter(String expected, String value) {
+        try {
+            StringWriter writer = new StringWriter();
+            StringEscapeUtils.UNESCAPE_CSV.translate(value, writer);
+            assertEquals(expected, writer.toString());
+        } catch (IOException e) {
+            fail("Threw: " + e);
+        }
+    }
+
+    /**
+     * Tests // https://issues.apache.org/jira/browse/LANG-480
+     * 
+     * @throws java.io.UnsupportedEncodingException
+     */
+    @Test
+    public void testEscapeHtmlHighUnicode() throws java.io.UnsupportedEncodingException {
+        // this is the utf8 representation of the character:
+        // COUNTING ROD UNIT DIGIT THREE
+        // in Unicode
+        // codepoint: U+1D362
+        byte[] data = new byte[] { (byte)0xF0, (byte)0x9D, (byte)0x8D, (byte)0xA2 };
+
+        String original = new String(data, "UTF8");
+
+        String escaped = StringEscapeUtils.escapeHtml4( original );
+        assertEquals( "High Unicode should not have been escaped", original, escaped);
+
+        String unescaped = StringEscapeUtils.unescapeHtml4( escaped );
+        assertEquals( "High Unicode should have been unchanged", original, unescaped);
+
+// TODO: I think this should hold, needs further investigation
+//        String unescapedFromEntity = StringEscapeUtils.unescapeHtml4( "&#119650;" );
+//        assertEquals( "High Unicode should have been unescaped", original, unescapedFromEntity);
+    }
+
+    /**
+     * Tests https://issues.apache.org/jira/browse/LANG-339
+     */
+    @Test
+    public void testEscapeHiragana() {
+        // Some random Japanese Unicode characters
+        String original = "\u304B\u304C\u3068";
+        String escaped = StringEscapeUtils.escapeHtml4(original);
+        assertEquals( "Hiragana character Unicode behaviour should not be being escaped by escapeHtml4",
+        original, escaped);
+
+        String unescaped = StringEscapeUtils.unescapeHtml4( escaped );
+
+        assertEquals( "Hiragana character Unicode behaviour has changed - expected no unescaping", escaped, unescaped);
+    }
+
+    /**
+     * Tests https://issues.apache.org/jira/browse/LANG-708
+     * 
+     * @throws IOException
+     *             if an I/O error occurs
+     */
+    @Test
+    public void testLang708() throws IOException {
+        String input = IOUtils.toString(new FileInputStream("src/test/resources/lang-708-input.txt"), "UTF-8");
+        String escaped = StringEscapeUtils.escapeEcmaScript(input);
+        // just the end:
+        assertTrue(escaped, escaped.endsWith("}]"));
+        // a little more:
+        assertTrue(escaped, escaped.endsWith("\"valueCode\\\":\\\"\\\"}]"));
+    }
+
+    /**
+     * Tests https://issues.apache.org/jira/browse/LANG-720
+     */
+    @Test
+    public void testLang720() {
+        String input = new StringBuilder("\ud842\udfb7").append("A").toString();
+        String escaped = StringEscapeUtils.escapeXml(input);
+        assertEquals(input, escaped);
+    }
+}

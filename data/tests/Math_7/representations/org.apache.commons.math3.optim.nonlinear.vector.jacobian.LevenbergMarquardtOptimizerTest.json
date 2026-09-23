@@ -1,0 +1,91 @@
+{
+  "test_class": "org.apache.commons.math3.optim.nonlinear.vector.jacobian.LevenbergMarquardtOptimizerTest",
+  "source_file": "src/test/java/org/apache/commons/math3/optim/nonlinear/vector/jacobian/LevenbergMarquardtOptimizerTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.optim.nonlinear.vector.jacobian.LevenbergMarquardtOptimizerTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/optim/nonlinear/vector/jacobian/LevenbergMarquardtOptimizerTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math3.optim.nonlinear.vector.jacobian;\n\nimport java.io.Serializable;\nimport java.util.ArrayList;\nimport java.util.List;\nimport org.apache.commons.math3.optim.PointVectorValuePair;\nimport org.apache.commons.math3.optim.InitialGuess;\nimport org.apache.commons.math3.optim.MaxEval;\nimport org.apache.commons.math3.optim.SimpleBounds;\nimport org.apache.commons.math3.optim.nonlinear.vector.Target;\nimport org.apache.commons.math3.optim.nonlinear.vector.Weight;\nimport org.apache.commons.math3.optim.nonlinear.vector.ModelFunction;\nimport org.apache.commons.math3.optim.nonlinear.vector.ModelFunctionJacobian;\nimport org.apache.commons.math3.analysis.MultivariateVectorFunction;\nimport org.apache.commons.math3.analysis.MultivariateMatrixFunction;\nimport org.apache.commons.math3.exception.ConvergenceException;\nimport org.apache.commons.math3.exception.DimensionMismatchException;\nimport org.apache.commons.math3.exception.TooManyEvaluationsException;\nimport org.apache.commons.math3.exception.MathUnsupportedOperationException;\nimport org.apache.commons.math3.geometry.euclidean.twod.Vector2D;\nimport org.apache.commons.math3.linear.SingularMatrixException;\nimport org.apache.commons.math3.util.FastMath;\nimport org.apache.commons.math3.util.Precision;\nimport org.junit.Assert;\nimport org.junit.Test;\nimport org.junit.Ignore;\n\n/**\n * <p>Some of the unit tests are re-implementations of the MINPACK <a\n * href=\"http://www.netlib.org/minpack/ex/file17\">file17</a> and <a\n * href=\"http://www.netlib.org/minpack/ex/file22\">file22</a> test files.\n * The redistribution policy for MINPACK is available <a\n * href=\"http://www.netlib.org/minpack/disclaimer\">here</a>, for\n * convenience, it is reproduced below.</p>\n\n * <table border=\"0\" width=\"80%\" cellpadding=\"10\" align=\"center\" bgcolor=\"#E0E0E0\">\n * <tr><td>\n *    Minpack Copyright Notice (1999) University of Chicago.\n *    All rights reserved\n * </td></tr>\n * <tr><td>\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions\n * are met:\n * <ol>\n *  <li>Redistributions of source code must retain the above copyright\n *      notice, this list of conditions and the following disclaimer.</li>\n * <li>Redistributions in binary form must reproduce the above\n *     copyright notice, this list of conditions and the following\n *     disclaimer in the documentation and/or other materials provided\n *     with the distribution.</li>\n * <li>The end-user documentation included with the redistribution, if any,\n *     must include the following acknowledgment:\n *     <code>This product includes software developed by the University of\n *           Chicago, as Operator of Argonne National Laboratory.</code>\n *     Alternately, this acknowledgment may appear in the software itself,\n *     if and wherever such third-party acknowledgments normally appear.</li>\n * <li><strong>WARRANTY DISCLAIMER. THE SOFTWARE IS SUPPLIED \"AS IS\"\n *     WITHOUT WARRANTY OF ANY KIND. THE COPYRIGHT HOLDER, THE\n *     UNITED STATES, THE UNITED STATES DEPARTMENT OF ENERGY, AND\n *     THEIR EMPLOYEES: (1) DISCLAIM ANY WARRANTIES, EXPRESS OR\n *     IMPLIED, INCLUDING BUT NOT LIMITED TO ANY IMPLIED WARRANTIES\n *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE\n *     OR NON-INFRINGEMENT, (2) DO NOT ASSUME ANY LEGAL LIABILITY\n *     OR RESPONSIBILITY FOR THE ACCURACY, COMPLETENESS, OR\n *     USEFULNESS OF THE SOFTWARE, (3) DO NOT REPRESENT THAT USE OF\n *     THE SOFTWARE WOULD NOT INFRINGE PRIVATELY OWNED RIGHTS, (4)\n *     DO NOT WARRANT THAT THE SOFTWARE WILL FUNCTION\n *     UNINTERRUPTED, THAT IT IS ERROR-FREE OR THAT ANY ERRORS WILL\n *     BE CORRECTED.</strong></li>\n * <li><strong>LIMITATION OF LIABILITY. IN NO EVENT WILL THE COPYRIGHT\n *     HOLDER, THE UNITED STATES, THE UNITED STATES DEPARTMENT OF\n *     ENERGY, OR THEIR EMPLOYEES: BE LIABLE FOR ANY INDIRECT,\n *     INCIDENTAL, CONSEQUENTIAL, SPECIAL OR PUNITIVE DAMAGES OF\n *     ANY KIND OR NATURE, INCLUDING BUT NOT LIMITED TO LOSS OF\n *     PROFITS OR LOSS OF DATA, FOR ANY REASON WHATSOEVER, WHETHER\n *     SUCH LIABILITY IS ASSERTED ON THE BASIS OF CONTRACT, TORT\n *     (INCLUDING NEGLIGENCE OR STRICT LIABILITY), OR OTHERWISE,\n *     EVEN IF ANY OF SAID PARTIES HAS BEEN WARNED OF THE\n *     POSSIBILITY OF SUCH LOSS OR DAMAGES.</strong></li>\n * <ol></td></tr>\n * </table>\n\n * @author Argonne National Laboratory. MINPACK project. March 1980 (original fortran minpack tests)\n * @author Burton S. Garbow (original fortran minpack tests)\n * @author Kenneth E. Hillstrom (original fortran minpack tests)\n * @author Jorge J. More (original fortran minpack tests)\n * @author Luc Maisonobe (non-minpack tests and minpack tests Java translation)\n */\npublic class LevenbergMarquardtOptimizerTest\n    extends AbstractLeastSquaresOptimizerAbstractTest {\n    @Override\n    public AbstractLeastSquaresOptimizer createOptimizer() {\n        return new LevenbergMarquardtOptimizer();\n    }\n\n    @Test(expected=MathUnsupportedOperationException.class)\n    public void testConstraintsUnsupported() {\n        createOptimizer().optimize(new MaxEval(100),\n                                   new Target(new double[] { 2 }),\n                                   new Weight(new double[] { 1 }),\n                                   new InitialGuess(new double[] { 1, 2 }),\n                                   new SimpleBounds(new double[] { -10, 0 },\n                                                    new double[] { 20, 30 }));\n    }\n\n    @Override\n    @Test(expected=SingularMatrixException.class)\n    public void testNonInvertible() {\n        /*\n         * Overrides the method from parent class, since the default singularity\n         * threshold (1e-14) does not trigger the expected exception.\n         */\n        LinearProblem problem = new LinearProblem(new double[][] {\n                {  1, 2, -3 },\n                {  2, 1,  3 },\n                { -3, 0, -9 }\n        }, new double[] { 1, 1, 1 });\n\n        AbstractLeastSquaresOptimizer optimizer = createOptimizer();\n        PointVectorValuePair optimum\n            = optimizer.optimize(new MaxEval(100),\n                                 problem.getModelFunction(),\n                                 problem.getModelFunctionJacobian(),\n                                 problem.getTarget(),\n                                 new Weight(new double[] { 1, 1, 1 }),\n                                 new InitialGuess(new double[] { 0, 0, 0 }));\n        Assert.assertTrue(FastMath.sqrt(optimizer.getTargetSize()) * optimizer.getRMS() > 0.6);\n\n        optimizer.computeCovariances(optimum.getPoint(), 1.5e-14);\n    }\n\n    @Test\n    public void testControlParameters() {\n        CircleVectorial circle = new CircleVectorial();\n        circle.addPoint( 30.0,  68.0);\n        circle.addPoint( 50.0,  -6.0);\n        circle.addPoint(110.0, -20.0);\n        circle.addPoint( 35.0,  15.0);\n        circle.addPoint( 45.0,  97.0);\n        checkEstimate(circle.getModelFunction(),\n                      circle.getModelFunctionJacobian(),\n                      0.1, 10, 1.0e-14, 1.0e-16, 1.0e-10, false);\n        checkEstimate(circle.getModelFunction(),\n                      circle.getModelFunctionJacobian(),\n                      0.1, 10, 1.0e-15, 1.0e-17, 1.0e-10, true);\n        checkEstimate(circle.getModelFunction(),\n                      circle.getModelFunctionJacobian(),\n                      0.1,  5, 1.0e-15, 1.0e-16, 1.0e-10, true);\n        circle.addPoint(300, -300);\n        checkEstimate(circle.getModelFunction(),\n                      circle.getModelFunctionJacobian(),\n                      0.1, 20, 1.0e-18, 1.0e-16, 1.0e-10, true);\n    }\n\n    private void checkEstimate(ModelFunction problem,\n                               ModelFunctionJacobian problemJacobian,\n                               double initialStepBoundFactor, int maxCostEval,\n                               double costRelativeTolerance, double parRelativeTolerance,\n                               double orthoTolerance, boolean shouldFail) {\n        try {\n            LevenbergMarquardtOptimizer optimizer\n                = new LevenbergMarquardtOptimizer(initialStepBoundFactor,\n                                                  costRelativeTolerance,\n                                                  parRelativeTolerance,\n                                                  orthoTolerance,\n                                                  Precision.SAFE_MIN);\n            optimizer.optimize(new MaxEval(maxCostEval),\n                               problem,\n                               problemJacobian,\n                               new Target(new double[] { 0, 0, 0, 0, 0 }),\n                               new Weight(new double[] { 1, 1, 1, 1, 1 }),\n                               new InitialGuess(new double[] { 98.680, 47.345 }));\n            Assert.assertTrue(!shouldFail);\n        } catch (DimensionMismatchException ee) {\n            Assert.assertTrue(shouldFail);\n        } catch (TooManyEvaluationsException ee) {\n            Assert.assertTrue(shouldFail);\n        }\n    }\n\n    /**\n     * Non-linear test case: fitting of decay curve (from Chapter 8 of\n",
+  "compaction": {
+    "source_lines": 415,
+    "mode": "windows",
+    "windows_total": 7,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 30.008719097702755
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 17.603932202854928
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 12.724148790817276
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 30.008719097702755
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 17.603932202854928
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 12.724148790817276
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 10.25169116254535
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 11.525109527761549
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 8.824927959136051
+      },
+      {
+        "start": 360,
+        "end": 415,
+        "score": 7.854124415390534
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 10235,
+  "representation_chars": 10235,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

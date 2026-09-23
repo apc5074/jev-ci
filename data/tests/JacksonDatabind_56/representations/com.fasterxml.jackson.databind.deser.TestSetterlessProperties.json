@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.TestSetterlessProperties",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/TestSetterlessProperties.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.TestSetterlessProperties\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/TestSetterlessProperties.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.databind.*;\n\n/**\n * Unit tests for verifying that feature requested\n * via [JACKSON-88] (\"setterless collections\") work as\n * expected, similar to how Collections and Maps work\n * with JAXB.\n */\npublic class TestSetterlessProperties\n    extends BaseMapTest\n{\n    static class CollectionBean\n    {\n        List<String> _values = new ArrayList<String>();\n\n        public List<String> getValues() { return _values; }\n    }\n\n    static class MapBean\n    {\n        Map<String,Integer> _values = new HashMap<String,Integer>();\n\n        public Map<String,Integer> getValues() { return _values; }\n    }\n\n    // testing to verify that field has precedence over getter, for lists\n    static class Dual\n    {\n        @JsonProperty(\"list\") protected List<Integer> values = new ArrayList<Integer>();\n\n        public Dual() { }\n        \n        public List<Integer> getList() {\n            throw new IllegalStateException(\"Should not get called\");\n        }\n    }\n\n    /*\n    /**********************************************************\n    /* Unit tests\n    /**********************************************************\n     */\n\n    public void testSimpleSetterlessCollectionOk()\n        throws Exception\n    {\n        CollectionBean result = new ObjectMapper().readValue\n            (\"{\\\"values\\\":[ \\\"abc\\\", \\\"def\\\" ]}\", CollectionBean.class);\n        List<String> l = result._values;\n        assertEquals(2, l.size());\n        assertEquals(\"abc\", l.get(0));\n        assertEquals(\"def\", l.get(1));\n    }\n\n    /**\n     * Let's also verify that disabling the feature makes\n     * deserialization fail for setterless bean\n     */\n    public void testSimpleSetterlessCollectionFailure()\n        throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        // by default, it should be enabled\n        assertTrue(m.isEnabled(MapperFeature.USE_GETTERS_AS_SETTERS));\n        m.configure(MapperFeature.USE_GETTERS_AS_SETTERS, false);\n        assertFalse(m.isEnabled(MapperFeature.USE_GETTERS_AS_SETTERS));\n\n        // and now this should fail\n        try {\n            m.readValue\n                (\"{\\\"values\\\":[ \\\"abc\\\", \\\"def\\\" ]}\", CollectionBean.class);\n            fail(\"Expected an exception\");\n        } catch (JsonMappingException e) {\n            /* Not a good exception, ideally could suggest a need for\n             * a setter...?\n             */\n            verifyException(e, \"Unrecognized field\");\n        }\n    }\n\n    public void testSimpleSetterlessMapOk()\n        throws Exception\n    {\n        MapBean result = new ObjectMapper().readValue\n            (\"{\\\"values\\\":{ \\\"a\\\": 15, \\\"b\\\" : -3 }}\", MapBean.class);\n        Map<String,Integer> m = result._values;\n        assertEquals(2, m.size());\n        assertEquals(Integer.valueOf(15), m.get(\"a\"));\n        assertEquals(Integer.valueOf(-3), m.get(\"b\"));\n    }\n\n    public void testSimpleSetterlessMapFailure()\n        throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        m.configure(MapperFeature.USE_GETTERS_AS_SETTERS, false);\n        // so this should fail now without a setter\n        try {\n            m.readValue\n                (\"{\\\"values\\\":{ \\\"a\\\":3 }}\", MapBean.class);\n            fail(\"Expected an exception\");\n        } catch (JsonMappingException e) {\n            verifyException(e, \"Unrecognized field\");\n        }\n    }\n\n    /* Test for [JACKSON-328], precedence of \"getter-as-setter\" (for Lists) versus\n     * field for same property.\n     */\n    public void testSetterlessPrecedence() throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        m.configure(MapperFeature.USE_GETTERS_AS_SETTERS, true);\n        Dual value = m.readValue(\"{\\\"list\\\":[1,2,3]}, valueType)\", Dual.class);\n        assertNotNull(value);\n        assertEquals(3, value.values.size());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 124,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 4106,
+  "representation_chars": 4106,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

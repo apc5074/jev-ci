@@ -1,0 +1,81 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.jsontype.TestPolymorphicWithDefaultImpl",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/jsontype/TestPolymorphicWithDefaultImpl.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.jsontype.TestPolymorphicWithDefaultImpl\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/jsontype/TestPolymorphicWithDefaultImpl.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.jsontype;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.NoClass;\n\n/**\n * Unit tests related to specialized handling of \"default implementation\"\n * ({@link JsonTypeInfo#defaultImpl}), as well as related\n * cases that allow non-default settings (such as missing type id).\n */\npublic class TestPolymorphicWithDefaultImpl extends BaseMapTest\n{\n    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = \"type\", defaultImpl = LegacyInter.class)\n    @JsonSubTypes(value = {@JsonSubTypes.Type(name = \"mine\", value = MyInter.class)})\n    public static interface Inter { }\n\n    public static class MyInter implements Inter {\n        @JsonProperty(\"blah\") public List<String> blah;\n    }\n\n    public static class LegacyInter extends MyInter\n    {\n        @JsonCreator\n        LegacyInter(Object obj)\n        {\n            if (obj instanceof List) {\n                blah = new ArrayList<String>();\n                for (Object o : (List<?>) obj) {\n                    blah.add(o.toString());\n                }\n            }\n            else if (obj instanceof String) {\n                blah = Arrays.asList(((String) obj).split(\",\"));\n            }\n            else {\n                throw new IllegalArgumentException(\"Unknown type: \" + obj.getClass());\n            }\n        }\n    }\n\n    /**\n     * Note: <code>NoClass</code> here has special meaning, of mapping invalid\n     * types into null instances.\n     */\n    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = \"type\",\n            defaultImpl = NoClass.class)\n    public static class DefaultWithNoClass { }\n\n    /**\n     * Also another variant to verify that from 2.5 on, can use non-deprecated\n     * value for the same.\n     */\n    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = \"type\",\n            defaultImpl = Void.class)\n    public static class DefaultWithVoidAsDefault { }\n\n    // and then one with no defaultImpl nor listed subtypes\n    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = \"type\")\n    abstract static class MysteryPolymorphic { }\n\n    // [databind#511] types\n\n    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,\n            include = JsonTypeInfo.As.WRAPPER_OBJECT)\n    @JsonSubTypes(@JsonSubTypes.Type(name=\"sub1\", value = BadSub1.class))\n    public static class BadItem {}\n\n    public static class BadSub1 extends BadItem {\n        public String a ;\n    }\n\n    public static class Good {\n        public List<GoodItem> many;\n    }\n\n    public static class Bad {\n    {\n        Object ob = MAPPER.readerFor(DefaultWithNoClass.class).readValue(\"{ }\");\n        assertNull(ob);\n        ob = MAPPER.readerFor(DefaultWithNoClass.class).readValue(\"{ \\\"bogus\\\":3 }\");\n        assertNull(ob);\n    }\n\n    // same, with 2.5 and Void.class\n    public void testDefaultAsVoid() throws Exception\n    {\n        Object ob = MAPPER.readerFor(DefaultWithVoidAsDefault.class).readValue(\"{ }\");\n        assertNull(ob);\n        ob = MAPPER.readerFor(DefaultWithVoidAsDefault.class).readValue(\"{ \\\"bogus\\\":3 }\");\n        assertNull(ob);\n    }\n\n    // [databind#148]\n    public void testBadTypeAsNull() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.disable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE);\n        Object ob = mapper.readValue(\"{}\", MysteryPolymorphic.class);\n        assertNull(ob);\n        ob = mapper.readValue(\"{ \\\"whatever\\\":13}\", MysteryPolymorphic.class);\n        assertNull(ob);\n    }\n\n    // [databind#511]\n    public void testInvalidTypeId511() throws Exception {\n        ObjectReader reader = MAPPER.reader().without(\n                DeserializationFeature.FAIL_ON_INVALID_SUBTYPE,\n                DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,\n                DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES\n        );\n        String json = \"{\\\"many\\\":[{\\\"sub1\\\":{\\\"a\\\":\\\"foo\\\"}},{\\\"sub2\\\":{\\\"b\\\":\\\"bar\\\"}}]}\" ;\n        Good goodResult = reader.forType(Good.class).readValue(json) ;\n        assertNotNull(goodResult) ;\n        Bad badResult = reader.forType(Bad.class).readValue(json);\n        assertNotNull(badResult);\n    }\n\n    // [databind#656]\n    public void testDefaultImplWithObjectWrapper() throws Exception\n    {\n        BaseFor656 value = MAPPER.readValue(aposToQuotes(\"{'foobar':{'a':3}}\"), BaseFor656.class);\n        assertNotNull(value);\n        assertEquals(ImplFor656.class, value.getClass());\n        assertEquals(3, ((ImplFor656) value).a);\n    }\n\n    public void testUnknownTypeIDRecovery() throws Exception\n    {\n        ObjectReader reader = MAPPER.readerFor(CallRecord.class).without(\n                DeserializationFeature.FAIL_ON_INVALID_SUBTYPE);\n        String json = aposToQuotes(\"{'version':0.0,'application':'123',\"\n                +\"'item':{'type':'xevent','location':'location1'},\"\n                +\"'item2':{'type':'event','location':'location1'}}\");\n        // can't read item2 - which is valid\n        CallRecord r = reader.readValue(json);\n        assertNull(r.item);\n        assertNotNull(r.item2);\n\n        json = aposToQuotes(\"{'item':{'type':'xevent','location':'location1'}, 'version':0.0,'application':'123'}\");\n        CallRecord r3 = reader.readValue(json);\n        assertNull(r3.item);\n        assertEquals(\"123\", r3.application);\n    }\n\n    public void testUnknownClassAsSubtype() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.configure(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE, false);\n        BaseWrapper w = mapper.readValue(aposToQuotes\n                (\"{'value':{'clazz':'com.foobar.Nothing'}}'\"),\n                BaseWrapper.class);\n        assertNotNull(w);\n        assertNull(w.value);\n    }\n\n    public void testWithoutEmptyStringAsNullObject1533() throws Exception\n    {\n        ObjectReader r = MAPPER.readerFor(AsPropertyWrapper.class)\n                .without(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);\n        try {\n            r.readValue(\"{ \\\"value\\\": \\\"\\\" }\");\n            fail(\"Expected \" + JsonMappingException.class);\n        } catch (JsonMappingException e) {\n            verifyException(e, \"missing property 'type'\");\n            verifyException(e, \"contain type id\");\n        }\n    }\n\n    // [databind#1533]\n    public void testWithEmptyStringAsNullObject1533() throws Exception\n    {\n        ObjectReader r = MAPPER.readerFor(AsPropertyWrapper.class)\n                .with(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);\n        AsPropertyWrapper wrapper = r.readValue(\"{ \\\"value\\\": \\\"\\\" }\");\n        assertNull(wrapper.value);\n    }\n\n    /*\n    /**********************************************************\n    /* Unit tests, serialization\n    /**********************************************************\n     */\n\n    /*\n    public void testDontWriteIfDefaultImpl() throws Exception {\n        String json = MAPPER.writeValueAsString(new MyInter());\n        assertEquals(\"{\\\"blah\\\":null}\", json);\n    }\n    */\n}\n",
+  "compaction": {
+    "source_lines": 294,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        180,
+        260
+      ],
+      [
+        240,
+        294
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 29.56796710473753
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 11.889428227967237
+      },
+      {
+        "start": 240,
+        "end": 294,
+        "score": 9.755264772419102
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 29.56796710473753
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 6.051726371723202
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 6.601170645015649
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 11.889428227967237
+      },
+      {
+        "start": 240,
+        "end": 294,
+        "score": 9.755264772419102
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7230,
+  "representation_chars": 7230,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

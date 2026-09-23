@@ -1,0 +1,91 @@
+{
+  "test_class": "org.apache.commons.math3.util.Decimal64Test",
+  "source_file": "src/test/java/org/apache/commons/math3/util/Decimal64Test.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.util.Decimal64Test\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/util/Decimal64Test.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.util;\n\nimport junit.framework.Assert;\n\nimport org.junit.Test;\n\npublic class Decimal64Test {\n    public static final double X = 1.2345;\n\n    public static final Decimal64 PLUS_X = new Decimal64(X);\n\n    public static final Decimal64 MINUS_X = new Decimal64(-X);\n\n    public static final double Y = 6.789;\n\n    public static final Decimal64 PLUS_Y = new Decimal64(Y);\n\n    public static final Decimal64 MINUS_Y = new Decimal64(-Y);\n\n    public static final Decimal64 PLUS_ZERO = new Decimal64(0.0);\n\n    public static final Decimal64 MINUS_ZERO = new Decimal64(-0.0);\n\n    @Test\n    public void testAdd() {\n        Decimal64 expected, actual;\n\n        expected = new Decimal64(X + Y);\n        actual = PLUS_X.add(PLUS_Y);\n        Assert.assertEquals(expected, actual);\n        actual = PLUS_Y.add(PLUS_X);\n        Assert.assertEquals(expected, actual);\n\n        expected = new Decimal64(X + (-Y));\n        actual = PLUS_X.add(MINUS_Y);\n        Assert.assertEquals(expected, actual);\n        actual = MINUS_Y.add(PLUS_X);\n        Assert.assertEquals(expected, actual);\n\n        expected = new Decimal64((-X) + (-Y));\n        actual = MINUS_X.add(MINUS_Y);\n        Assert.assertEquals(expected, actual);\n        actual = MINUS_Y.add(MINUS_X);\n        Assert.assertEquals(expected, actual);\n\n        expected = Decimal64.POSITIVE_INFINITY;\n        actual = PLUS_X.add(Decimal64.POSITIVE_INFINITY);\n        Assert.assertEquals(expected, actual);\n        actual = Decimal64.POSITIVE_INFINITY.add(PLUS_X);\n        Assert.assertEquals(expected, actual);\n        actual = MINUS_X.add(Decimal64.POSITIVE_INFINITY);\n        Assert.assertEquals(expected, actual);\n        actual = Decimal64.POSITIVE_INFINITY.add(MINUS_X);\n        Assert.assertEquals(expected, actual);\n        actual = Decimal64.POSITIVE_INFINITY.add(Decimal64.POSITIVE_INFINITY);\n        Assert.assertEquals(expected, actual);\n\n        expected = Decimal64.NEGATIVE_INFINITY;\n        actual = PLUS_X.add(Decimal64.NEGATIVE_INFINITY);\n        Assert.assertEquals(expected, actual);\n        actual = Decimal64.NEGATIVE_INFINITY.add(PLUS_X);\n        Assert.assertEquals(expected, actual);\n        actual = Decimal64.NEGATIVE_INFINITY.add(Decimal64.NEGATIVE_INFINITY);\n        Assert.assertEquals(expected, actual);\n        actual = PLUS_X.negate();\n        Assert.assertEquals(expected, actual);\n\n        expected = PLUS_X;\n        actual = MINUS_X.negate();\n        Assert.assertEquals(expected, actual);\n\n        expected = MINUS_ZERO;\n        actual = PLUS_ZERO.negate();\n        Assert.assertEquals(expected, actual);\n\n        expected = PLUS_ZERO;\n        actual = MINUS_ZERO.negate();\n        Assert.assertEquals(expected, actual);\n\n        expected = Decimal64.POSITIVE_INFINITY;\n        actual = Decimal64.NEGATIVE_INFINITY.negate();\n        Assert.assertEquals(expected, actual);\n\n        expected = Decimal64.NEGATIVE_INFINITY;\n        actual = Decimal64.POSITIVE_INFINITY.negate();\n        Assert.assertEquals(expected, actual);\n\n        expected = Decimal64.NAN;\n        actual = Decimal64.NAN.negate();\n        Assert.assertEquals(expected, actual);\n    }\n\n    @Test\n    public void testMultiply() {\n        Decimal64 expected, actual;\n\n        expected = new Decimal64(X * Y);\n        actual = PLUS_X.multiply(PLUS_Y);\n        Assert.assertEquals(expected, actual);\n        actual = PLUS_Y.multiply(PLUS_X);\n        Assert.assertEquals(expected, actual);\n\n        expected = new Decimal64(X * (-Y));\n        actual = PLUS_X.multiply(MINUS_Y);\n        Assert.assertEquals(expected, actual);\n        actual = MINUS_Y.multiply(PLUS_X);\n        Assert.assertEquals(expected, actual);\n\n        expected = new Decimal64((-X) * (-Y));\n        actual = MINUS_X.multiply(MINUS_Y);\n        Assert.assertEquals(expected, actual);\n        actual = MINUS_Y.multiply(MINUS_X);\n        Assert.assertEquals(expected, actual);\n\n        expected = Decimal64.POSITIVE_INFINITY;\n        actual = PLUS_X.multiply(Decimal64.POSITIVE_INFINITY);\n        Assert.assertEquals(expected, actual);\n        actual = Decimal64.POSITIVE_INFINITY.multiply(PLUS_X);\n        Assert.assertEquals(expected, actual);\n        actual = MINUS_X.multiply(Decimal64.NEGATIVE_INFINITY);\n        Assert.assertEquals(expected, actual);\n        actual = Decimal64.NEGATIVE_INFINITY.multiply(MINUS_X);\n        Assert.assertEquals(expected, actual);\n        actual = Decimal64.POSITIVE_INFINITY\n                .multiply(Decimal64.POSITIVE_INFINITY);\n        Assert.assertEquals(expected, actual);\n        actual = Decimal64.NEGATIVE_INFINITY\n                .multiply(Decimal64.NEGATIVE_INFINITY);\n        Assert.assertEquals(expected, actual);\n\n        expected = Decimal64.NEGATIVE_INFINITY;\n        actual = PLUS_X.multiply(Decimal64.NEGATIVE_INFINITY);\n        Assert.assertEquals(expected, actual);\n        actual = Decimal64.NEGATIVE_INFINITY.multiply(PLUS_X);\n        Assert.assertEquals(expected, actual);\n        actual = MINUS_X.multiply(Decimal64.POSITIVE_INFINITY);\n        Assert.assertEquals(expected, actual);\n        actual = Decimal64.POSITIVE_INFINITY.multiply(MINUS_X);\n        Assert.assertEquals(expected, actual);\n        actual = Decimal64.POSITIVE_INFINITY\n                .multiply(Decimal64.NEGATIVE_INFINITY);\n        Assert.assertEquals(expected, actual);\n        actual = Decimal64.NEGATIVE_INFINITY\n                .multiply(Decimal64.POSITIVE_INFINITY);\n        actual = Decimal64.NEGATIVE_INFINITY.divide(Decimal64.NAN);\n        Assert.assertEquals(expected, actual);\n        actual = Decimal64.NAN.divide(Decimal64.NEGATIVE_INFINITY);\n        Assert.assertEquals(expected, actual);\n        actual = Decimal64.NAN.divide(Decimal64.NAN);\n        Assert.assertEquals(expected, actual);\n        actual = PLUS_ZERO.divide(PLUS_ZERO);\n        Assert.assertEquals(expected, actual);\n        actual = PLUS_ZERO.divide(MINUS_ZERO);\n        Assert.assertEquals(expected, actual);\n        actual = MINUS_ZERO.divide(PLUS_ZERO);\n        Assert.assertEquals(expected, actual);\n        actual = MINUS_ZERO.divide(MINUS_ZERO);\n        Assert.assertEquals(expected, actual);\n    }\n\n    @Test\n    public void testReciprocal() {\n        Decimal64 expected, actual;\n\n        expected = new Decimal64(1.0 / X);\n        actual = PLUS_X.reciprocal();\n        Assert.assertEquals(expected, actual);\n\n        expected = new Decimal64(1.0 / (-X));\n        actual = MINUS_X.reciprocal();\n        Assert.assertEquals(expected, actual);\n\n        expected = PLUS_ZERO;\n        actual = Decimal64.POSITIVE_INFINITY.reciprocal();\n        Assert.assertEquals(expected, actual);\n\n        expected = MINUS_ZERO;\n        actual = Decimal64.NEGATIVE_INFINITY.reciprocal();\n        Assert.assertEquals(expected, actual);\n    }\n\n    @Test\n    public void testIsInfinite() {\n        Assert.assertFalse(MINUS_X.isInfinite());\n        Assert.assertFalse(PLUS_X.isInfinite());\n        Assert.assertFalse(MINUS_Y.isInfinite());\n        Assert.assertFalse(PLUS_Y.isInfinite());\n        Assert.assertFalse(Decimal64.NAN.isInfinite());\n\n        Assert.assertTrue(Decimal64.NEGATIVE_INFINITY.isInfinite());\n        Assert.assertTrue(Decimal64.POSITIVE_INFINITY.isInfinite());\n    }\n\n    @Test\n    public void testIsNaN() {\n        Assert.assertFalse(MINUS_X.isNaN());\n        Assert.assertFalse(PLUS_X.isNaN());\n        Assert.assertFalse(MINUS_Y.isNaN());\n        Assert.assertFalse(PLUS_Y.isNaN());\n        Assert.assertFalse(Decimal64.NEGATIVE_INFINITY.isNaN());\n        Assert.assertFalse(Decimal64.POSITIVE_INFINITY.isNaN());\n\n        Assert.assertTrue(Decimal64.NAN.isNaN());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 421,
+    "mode": "windows",
+    "windows_total": 7,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        180,
+        260
+      ],
+      [
+        360,
+        421
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.523849307365813
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 0.7358058992881764
+      },
+      {
+        "start": 360,
+        "end": 421,
+        "score": 0.7845418797720664
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.523849307365813
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 0.37051013568019375
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 0.6820445502286161
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 0.7358058992881764
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 0.6684931435576181
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 0.4648942838968617
+      },
+      {
+        "start": 360,
+        "end": 421,
+        "score": 0.7845418797720664
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8578,
+  "representation_chars": 8578,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

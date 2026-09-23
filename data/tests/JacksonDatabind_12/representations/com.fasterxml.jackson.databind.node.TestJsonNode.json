@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.node.TestJsonNode",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/node/TestJsonNode.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.node.TestJsonNode\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/node/TestJsonNode.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.node;\n\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.databind.*;\n\n/**\n * Basic tests for {@link JsonNode} base class and some features\n * of implementation classes\n */\npublic class TestJsonNode extends NodeTestBase\n{\n    public void testText()\n    {\n        assertNull(TextNode.valueOf(null));\n        TextNode empty = TextNode.valueOf(\"\");\n        assertStandardEquals(empty);\n        assertSame(TextNode.EMPTY_STRING_NODE, empty);\n\n        // 1.6:\n        assertNodeNumbers(TextNode.valueOf(\"-3\"), -3, -3.0);\n        assertNodeNumbers(TextNode.valueOf(\"17.75\"), 17, 17.75);\n    \n        // [JACKSON-587]\n        long value = 127353264013893L;\n        TextNode n = TextNode.valueOf(String.valueOf(value));\n        assertEquals(value, n.asLong());\n        \n        // and then with non-numeric input\n        n = TextNode.valueOf(\"foobar\");\n        assertNodeNumbersForNonNumeric(n);\n\n        assertEquals(\"foobar\", n.asText(\"barf\"));\n        assertEquals(\"\", empty.asText(\"xyz\"));\n\n        assertTrue(TextNode.valueOf(\"true\").asBoolean(true));\n        assertTrue(TextNode.valueOf(\"true\").asBoolean(false));\n        assertFalse(TextNode.valueOf(\"false\").asBoolean(true));\n        assertFalse(TextNode.valueOf(\"false\").asBoolean(false));\n    }\n\n    public void testBoolean()\n    {\n        BooleanNode f = BooleanNode.getFalse();\n        assertNotNull(f);\n        assertTrue(f.isBoolean());\n        assertSame(f, BooleanNode.valueOf(false));\n        assertStandardEquals(f);\n        assertFalse(f.booleanValue());\n        assertFalse(f.asBoolean());\n        assertEquals(\"false\", f.asText());\n        assertEquals(JsonToken.VALUE_FALSE, f.asToken());\n\n        // and ditto for true\n        BooleanNode t = BooleanNode.getTrue();\n        assertNotNull(t);\n        assertTrue(t.isBoolean());\n        assertSame(t, BooleanNode.valueOf(true));\n        assertStandardEquals(t);\n        assertTrue(t.booleanValue());\n        assertTrue(t.asBoolean());\n        assertEquals(\"true\", t.asText());\n        assertEquals(JsonToken.VALUE_TRUE, t.asToken());\n\n        // 1.6:\n        assertNodeNumbers(f, 0, 0.0);\n        assertNodeNumbers(t, 1, 1.0);\n    }\n\n\n    public void testBinary() throws Exception\n    {\n        assertNull(BinaryNode.valueOf(null));\n        assertNull(BinaryNode.valueOf(null, 0, 0));\n\n        BinaryNode empty = BinaryNode.valueOf(new byte[1], 0, 0);\n        assertSame(BinaryNode.EMPTY_BINARY_NODE, empty);\n        assertStandardEquals(empty);\n\n        byte[] data = new byte[3];\n        data[1] = (byte) 3;\n        BinaryNode n = BinaryNode.valueOf(data, 1, 1);\n        data[2] = (byte) 3;\n        BinaryNode n2 = BinaryNode.valueOf(data, 2, 1);\n        assertTrue(n.equals(n2));\n        assertEquals(\"\\\"Aw==\\\"\", n.toString());\n\n        assertEquals(\"AAMD\", new BinaryNode(data).asText());\n\n        // 1.6:\n        assertNodeNumbersForNonNumeric(n);\n    }\n\n    public void testPOJO()\n    {\n        POJONode n = new POJONode(\"x\"); // not really a pojo but that's ok\n        assertStandardEquals(n);\n        assertEquals(n, new POJONode(\"x\"));\n        assertEquals(\"x\", n.asText());\n        // not sure if this is what it'll remain as but:\n        assertEquals(\"x\", n.toString());\n\n        assertEquals(new POJONode(null), new POJONode(null));\n\n        // 1.6:\n        // default; non-numeric\n        assertNodeNumbersForNonNumeric(n);\n        // but if wrapping actual number, use it\n        assertNodeNumbers(new POJONode(Integer.valueOf(123)), 123, 123.0);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 110,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3693,
+  "representation_chars": 3693,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,247 @@
+TEST CLASS:
+com.fasterxml.jackson.databind.struct.TestObjectIdDeserialization
+
+SOURCE FILE:
+src/test/java/com/fasterxml/jackson/databind/struct/TestObjectIdDeserialization.java
+
+TEST SOURCE:
+package com.fasterxml.jackson.databind.struct;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerator.IdKey;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.ObjectIdResolver;
+import com.fasterxml.jackson.databind.BaseMapTest;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.cfg.ContextAttributes;
+import com.fasterxml.jackson.databind.deser.UnresolvedForwardReference;
+import com.fasterxml.jackson.databind.deser.UnresolvedId;
+import com.fasterxml.jackson.databind.struct.TestObjectId.Company;
+import com.fasterxml.jackson.databind.struct.TestObjectId.Employee;
+
+/**
+ * Unit test to verify handling of Object Id deserialization
+ */
+public class TestObjectIdDeserialization extends BaseMapTest
+{
+    private static final String POOL_KEY = "POOL";
+
+    // // Classes for external id use
+    
+    @JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property="id")
+    static class Identifiable
+    {
+        public int value;
+
+        public Identifiable next;
+        
+        public Identifiable() { this(0); }
+        public Identifiable(int v) {
+            value = v;
+        }
+    }
+
+    @JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="#")
+    static class UUIDNode
+    {
+        public int value;
+        public UUIDNode parent;
+        public UUIDNode first;
+        public UUIDNode second;
+
+        public UUIDNode() { this(0); }
+        public UUIDNode(int v) { value = v; }
+    }
+    
+    // // Classes for external id from property annotations:
+    
+    static class IdWrapper
+    {
+        @JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property="@id")
+        public ValueNode node;
+
+        public IdWrapper() { }
+        public IdWrapper(int v) {
+            node = new ValueNode(v);
+        }
+    }
+
+    static class ValueNode {
+        public int value;
+        public IdWrapper next;
+        
+        public ValueNode() { this(0); }
+        public ValueNode(int v) { value = v; }
+    }
+
+    // // Classes for external id use
+
+    }
+    
+    static class MappedCompany {
+        public Map<Integer, Employee> employees;
+    }
+
+    @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class)
+    static class AnySetterObjectId {
+        private Map<String, AnySetterObjectId> values = new HashMap<String, AnySetterObjectId>();
+
+        @JsonAnySetter
+        public void anySet(String field, AnySetterObjectId value) {
+            // Ensure that it is never called with null because of unresolved reference.
+            assertNotNull(value);
+            values.put(field, value);
+        }
+    }
+
+    static class CustomResolutionWrapper {
+        public List<WithCustomResolution> data;
+    }
+
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", resolver = PoolResolver.class)
+    @JsonIdentityReference(alwaysAsId = true) // #524
+    static class WithCustomResolution {
+        public int id;
+        public int data;
+
+        public WithCustomResolution(int id, int data)
+        {
+            this.id = id;
+            this.data = data;
+        }
+    }
+
+    public static class PoolResolver implements ObjectIdResolver {
+        private Map<Object,WithCustomResolution> _pool;
+
+        public PoolResolver() {}
+        public PoolResolver(Map<Object,WithCustomResolution> pool){ _pool = pool; }
+
+        @Override
+        public void bindItem(IdKey id, Object pojo){ }
+
+        @Override
+        public Object resolveId(IdKey id){ return _pool.get(id.key); }
+
+        @Override
+        public boolean canUseFor(ObjectIdResolver resolverType)
+        {
+            return resolverType.getClass() == getClass() && _pool != null && !_pool.isEmpty();
+        }
+        
+        @Override
+        public ObjectIdResolver newForDeserialization(Object c)
+        {
+            DeserializationContext context = (DeserializationContext)c;
+            @SuppressWarnings("unchecked")
+            Map<Object,WithCustomResolution> pool = (Map<Object,WithCustomResolution>)context.getAttribute(POOL_KEY);
+            return new PoolResolver(pool);
+        }
+    }
+
+    private final ObjectMapper mapper = new ObjectMapper();
+    
+    /*
+    /*****************************************************
+    /* Unit tests, external id deserialization
+    /*****************************************************
+     */
+
+    private final static String EXP_SIMPLE_INT_CLASS = "{\"id\":1,\"value\":13,\"next\":1}";
+
+    public void testSimpleDeserializationClass() throws Exception
+    {
+        // then bring back...
+        Identifiable result = mapper.readValue(EXP_SIMPLE_INT_CLASS, Identifiable.class);
+        assertEquals(13, result.value);
+        assertSame(result, result.next);
+    }
+        assertSame(firstEmployee, secondEmployee.manager); // And that back reference is also properly resolved.
+    }
+
+    public void testForwardReferenceAnySetterCombo() throws Exception {
+        String json = "{\"@id\":1, \"foo\":2, \"bar\":{\"@id\":2, \"foo\":1}}";
+        AnySetterObjectId value = mapper.readValue(json, AnySetterObjectId.class);
+        assertSame(value.values.get("bar"), value.values.get("foo"));
+    }
+
+    public void testUnresolvedForwardReference()
+        throws Exception
+    {
+        String json = "{\"employees\":[" 
+                      + "{\"id\":1,\"name\":\"First\",\"manager\":null,\"reports\":[3]},"
+                      + "{\"id\":2,\"name\":\"Second\",\"manager\":3,\"reports\":[]}" 
+                      + "]}";
+        try {
+            mapper.readValue(json, Company.class);
+            fail("Should have thrown.");
+        } catch (UnresolvedForwardReference exception) {
+            // Expected
+            List<UnresolvedId> unresolvedIds = exception.getUnresolvedIds();
+            assertEquals(2, unresolvedIds.size());
+            UnresolvedId firstUnresolvedId = unresolvedIds.get(0);
+            assertEquals(3, firstUnresolvedId.getId());
+            assertEquals(Employee.class, firstUnresolvedId.getType());
+            UnresolvedId secondUnresolvedId = unresolvedIds.get(1);
+            assertEquals(firstUnresolvedId.getId(), secondUnresolvedId.getId());
+            assertEquals(Employee.class, secondUnresolvedId.getType());
+        }
+    }
+
+    public void testKeepCollectionOrdering()
+        throws Exception
+    {
+        String json = "{\"employees\":[2,1,"
+                + "{\"id\":1,\"name\":\"First\",\"manager\":null,\"reports\":[2]},"
+                + "{\"id\":2,\"name\":\"Second\",\"manager\":1,\"reports\":[]}"
+                + "]}";
+        Company company = mapper.readValue(json, Company.class);
+        assertEquals(4, company.employees.size());
+        // Deser must keep object ordering.
+        Employee firstEmployee = company.employees.get(1);
+        Employee secondEmployee = company.employees.get(0);
+        assertSame(firstEmployee, company.employees.get(2));
+        assertSame(secondEmployee, company.employees.get(3));
+        assertEmployees(firstEmployee, secondEmployee);
+    }
+
+    public void testKeepMapOrdering()
+        throws Exception
+    {
+        String json = "{\"employees\":{"
+                      + "\"1\":2, \"2\":1,"
+                      + "\"3\":{\"id\":1,\"name\":\"First\",\"manager\":null,\"reports\":[2]},"
+                      + "\"4\":{\"id\":2,\"name\":\"Second\",\"manager\":1,\"reports\":[]}"
+                      + "}}";
+        MappedCompany company = mapper.readValue(json, MappedCompany.class);
+        assertEquals(4, company.employees.size());
+        Employee firstEmployee = company.employees.get(2);
+        Employee secondEmployee = company.employees.get(1);
+        assertEmployees(firstEmployee, secondEmployee);
+        // Deser must keep object ordering. Not sure if it's really important for maps,
+        // but since default map is LinkedHashMap might as well ensure it does...
+        Iterator<Entry<Integer,Employee>> iterator = company.employees.entrySet().iterator();
+        assertSame(secondEmployee, iterator.next().getValue());
+        assertSame(firstEmployee, iterator.next().getValue());
+        assertSame(firstEmployee, iterator.next().getValue());
+        assertSame(secondEmployee, iterator.next().getValue());
+    }
+
+    /*
+    /*****************************************************
+    /* Unit tests, custom (property-based) id deserialization
+    /*****************************************************
+     */
+
+    private final static String EXP_CUSTOM_VIA_CLASS = "{\"customId\":123,\"value\":-900,\"next\":123}";
+
+    public void testCustomDeserializationClass() throws Exception

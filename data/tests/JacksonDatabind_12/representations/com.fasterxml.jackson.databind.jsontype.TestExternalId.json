@@ -1,0 +1,91 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.jsontype.TestExternalId",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/jsontype/TestExternalId.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.jsontype.TestExternalId\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/jsontype/TestExternalId.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.jsontype;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.annotation.JsonTypeInfo.As;\nimport com.fasterxml.jackson.annotation.JsonTypeInfo.Id;\n\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.ObjectMapper;\n\n// Tests for [JACKSON-453]\npublic class TestExternalId extends BaseMapTest\n{\n    /*\n    /**********************************************************\n    /* Helper types\n    /**********************************************************\n     */\n    \n    static class ExternalBean\n    {\n        @JsonTypeInfo(use=Id.NAME, include=As.EXTERNAL_PROPERTY, property=\"extType\")\n        public Object bean;\n\n        public ExternalBean() { }\n        public ExternalBean(int v) {\n            bean = new ValueBean(v);\n        }\n    }\n\n    // for [Issue#96]\n    static class ExternalBeanWithDefault\n    {\n        @JsonTypeInfo(use=Id.CLASS, include=As.EXTERNAL_PROPERTY, property=\"extType\",\n                defaultImpl=ValueBean.class)\n        public Object bean;\n\n        public ExternalBeanWithDefault() { }\n        public ExternalBeanWithDefault(int v) {\n            bean = new ValueBean(v);\n        }\n    }\n\n    static class ExternalBean3\n    {\n        @JsonTypeInfo(use=Id.NAME, include=As.EXTERNAL_PROPERTY, property=\"extType1\")\n        public Object value1;\n        \n        @JsonTypeInfo(use=Id.NAME, include=As.EXTERNAL_PROPERTY, property=\"extType2\")\n        public Object value2;\n\n        public int foo;\n        \n        @JsonTypeInfo(use=Id.NAME, include=As.EXTERNAL_PROPERTY, property=\"extType3\")\n        public Object value3;\n        \n        public ExternalBean3() { }\n        public ExternalBean3(int v) {\n            value1 = new ValueBean(v);\n            value2 = new ValueBean(v+1);\n            value3 = new ValueBean(v+2);\n            foo = v;\n        }\n    }\n\n    static class ExternalBeanWithCreator\n    {\n        @JsonTypeInfo(use=Id.NAME, include=As.EXTERNAL_PROPERTY, property=\"extType\")\n        public Object value;\n\n        public int foo;\n        \n        @JsonCreator\n        public ExternalBeanWithCreator(@JsonProperty(\"foo\") int f)\n        {\n            foo = f;\n            value = new ValueBean(f);\n        }\n    }\n        FunkyExternalBean result = MAPPER.readValue(\"{\\\"extType\\\":\\\"funk\\\",\\\"i\\\":3}\",\n                FunkyExternalBean.class);\n        assertNotNull(result);\n        assertEquals(3, result.i);\n    }\n\n    public void testIssue798() throws Exception\n    {\n        Base base = new Derived1(\"derived1 prop val\", \"base prop val\");\n        BaseContainer baseContainer = new BaseContainer(\"bc prop val\", base);\n        String generatedJson = MAPPER.writeValueAsString(baseContainer);\n        BaseContainer baseContainer2 = MAPPER.readValue(generatedJson,BaseContainer.class);\n        assertEquals(\"bc prop val\", baseContainer.getBaseContainerProperty());\n\n        Base b = baseContainer2.getBase();\n        assertNotNull(b);\n        if (b.getClass() != Derived1.class) {\n            fail(\"Should have type Derived1, was \"+b.getClass().getName());\n        }\n\n        Derived1 derived1 = (Derived1) b;\n        assertEquals(\"base prop val\", derived1.getBaseProperty());\n        assertEquals(\"derived1 prop val\", derived1.getDerived1Property());\n    }\n\n    // There seems to be some problems if type is also visible...\n    public void testIssue831() throws Exception\n    {\n        final String JSON = \"{ \\\"petType\\\": \\\"dog\\\",\\n\"\n                +\"\\\"pet\\\": { \\\"name\\\": \\\"Pluto\\\" }\\n}\";\n        House831 result = MAPPER.readValue(JSON, House831.class);\n        assertNotNull(result);\n        assertNotNull(result.pet);\n        assertSame(Dog.class, result.pet.getClass());\n        assertEquals(\"dog\", result.petType);\n    }\n\n    // For [Issue#96]: should allow use of default impl, if property missing\n    /* 18-Jan-2013, tatu: Unfortunately this collides with [Issue#118], and I don't\n     *   know what the best resolution is. For now at least \n     */\n    /*\n    public void testWithDefaultAndMissing() throws Exception\n    {\n        ExternalBeanWithDefault input = new ExternalBeanWithDefault(13);\n        // baseline: include type, verify things work:\n        String fullJson = MAPPER.writeValueAsString(input);\n        ExternalBeanWithDefault output = MAPPER.readValue(fullJson, ExternalBeanWithDefault.class);\n        assertNotNull(output);\n        assertNotNull(output.bean);\n        // and then try without type info...\n        ExternalBeanWithDefault defaulted = MAPPER.readValue(\"{\\\"bean\\\":{\\\"value\\\":13}}\",\n                ExternalBeanWithDefault.class);\n        assertNotNull(defaulted);\n        assertNotNull(defaulted.bean);\n        assertSame(ValueBean.class, defaulted.bean.getClass());\n    }\n    */\n\n    // For [Issue#118]\n    // Note: String works fine, since no type id will used; other scalar types have issues\n    public void testWithScalar118() throws Exception\n    {\n        ExternalTypeWithNonPOJO input = new ExternalTypeWithNonPOJO(new java.util.Date(123L));\n        String json = MAPPER.writeValueAsString(input);\n        assertNotNull(json);\n\n        // and back just to be sure:\n        ExternalTypeWithNonPOJO result = MAPPER.readValue(json, ExternalTypeWithNonPOJO.class);\n        assertNotNull(result.value);\n        assertTrue(result.value instanceof java.util.Date);\n    }\n\n    // For [Issue#118] using \"natural\" type(s)\n    public void testWithNaturalScalar118() throws Exception\n    {\n        ExternalTypeWithNonPOJO input = new ExternalTypeWithNonPOJO(Integer.valueOf(13));\n        String json = MAPPER.writeValueAsString(input);\n        assertNotNull(json);\n        // and back just to be sure:\n        ExternalTypeWithNonPOJO result = MAPPER.readValue(json, ExternalTypeWithNonPOJO.class);\n        assertNotNull(result.value);\n        assertTrue(result.value instanceof Integer);\n\n        // ditto with others types\n        input = new ExternalTypeWithNonPOJO(Boolean.TRUE);\n        json = MAPPER.writeValueAsString(input);\n        assertNotNull(json);\n        result = MAPPER.readValue(json, ExternalTypeWithNonPOJO.class);\n        assertNotNull(result.value);\n        assertTrue(result.value instanceof Boolean);\n\n        input = new ExternalTypeWithNonPOJO(\"foobar\");\n        json = MAPPER.writeValueAsString(input);\n        assertNotNull(json);\n        result = MAPPER.readValue(json, ExternalTypeWithNonPOJO.class);\n        assertNotNull(result.value);\n        assertTrue(result.value instanceof String);\n        assertEquals(\"foobar\", result.value);\n    }\n    \n    // For [Issue#119]... and bit of [#167] as well\n    public void testWithAsValue() throws Exception\n    {\n        ExternalTypeWithNonPOJO input = new ExternalTypeWithNonPOJO(new AsValueThingy(12345L));\n        String json = MAPPER.writeValueAsString(input);\n        assertNotNull(json);\n        assertEquals(\"{\\\"value\\\":12345,\\\"type\\\":\\\"date\\\"}\", json);\n\n        // and get it back too:\n        ExternalTypeWithNonPOJO result = MAPPER.readValue(json, ExternalTypeWithNonPOJO.class);\n        assertNotNull(result);\n        assertNotNull(result.value);\n        /* 13-Feb-2013, tatu: Urgh. I don't think this can work quite as intended...\n         *   since POJO type, and type of thing @JsonValue annotated method returns\n         *   are not related. Best we can do is thus this:\n         */\n        /*\n        assertEquals(AsValueThingy.class, result.value.getClass());\n        assertEquals(12345L, ((AsValueThingy) result.value).rawDate);\n        */\n        assertEquals(Date.class, result.value.getClass());\n        assertEquals(12345L, ((Date) result.value).getTime());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 425,
+    "mode": "windows",
+    "windows_total": 7,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        300,
+        380
+      ],
+      [
+        360,
+        425
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.28363496309705
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 9.601081544384202
+      },
+      {
+        "start": 360,
+        "end": 425,
+        "score": 8.514355792290235
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.28363496309705
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 3.1195006303461668
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 6.338529064372983
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 8.286542000700537
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 6.542938522081433
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 9.601081544384202
+      },
+      {
+        "start": 360,
+        "end": 425,
+        "score": 8.514355792290235
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7814,
+  "representation_chars": 7814,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.creators.TestCreatorNullValue",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/creators/TestCreatorNullValue.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.creators.TestCreatorNullValue\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/creators/TestCreatorNullValue.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.creators;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.core.*;\n\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.deser.*;\n\n// Mostly for [JACSON-774]\npublic class TestCreatorNullValue extends BaseMapTest\n{\n    protected static class Container {\n        Contained<String> contained;\n\n        @JsonCreator\n        public Container(@JsonProperty(\"contained\") Contained<String> contained) {\n            this.contained = contained;\n        }\n    }\n\n    private static interface Contained<T> {}\n\n    private static class NullContained implements Contained<Object> {}\n\n    private static final NullContained NULL_CONTAINED = new NullContained();\n\n    private static class ContainedDeserializer extends JsonDeserializer<Contained<?>> {\n        @Override\n        public Contained<?> deserialize(JsonParser jp, DeserializationContext ctxt) throws JsonProcessingException {\n            return null;\n        }\n\n        @Override\n        public Contained<?> getNullValue() {\n            return NULL_CONTAINED;\n        }\n    }\n\n    private static class ContainerDeserializerResolver extends Deserializers.Base {\n        @Override\n        public JsonDeserializer<?> findBeanDeserializer(JavaType type,\n                DeserializationConfig config, BeanDescription beanDesc)\n            throws JsonMappingException\n        {\n            if (!Contained.class.isAssignableFrom(type.getRawClass())) {\n                return null;\n            } else {\n                return new ContainedDeserializer();\n            }\n        }\n    }\n\n    private static class TestModule extends com.fasterxml.jackson.databind.Module\n    {\n        @Override\n        public String getModuleName() {\n            return \"ContainedModule\";\n        }\n\n        @Override\n        public Version version() {\n            return Version.unknownVersion();\n        }\n\n        @Override\n        public void setupModule(SetupContext setupContext) {\n            setupContext.addDeserializers(new ContainerDeserializerResolver());\n        }\n    }\n\n    /*\n    /**********************************************************\n    /* Unit tests\n    /**********************************************************\n     */\n    \n    public void testUsesDeserializersNullValue() throws Exception {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.registerModule(new TestModule());\n        Container container = mapper.readValue(\"{}\", Container.class);\n        assertEquals(NULL_CONTAINED, container.contained);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 84,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2745,
+  "representation_chars": 2745,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

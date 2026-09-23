@@ -1,0 +1,227 @@
+TEST CLASS:
+org.apache.commons.lang3.EnumUtilsTest
+
+SOURCE FILE:
+src/test/java/org/apache/commons/lang3/EnumUtilsTest.java
+
+TEST SOURCE:
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.apache.commons.lang3;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+/**
+ * 
+ * @version $Id$
+ */
+public class EnumUtilsTest {
+
+    @Test
+    public void testConstructable() {
+        // enforce public constructor
+        new EnumUtils();
+    }
+
+    @Test
+    public void test_getEnumMap() {
+        Map<String, Traffic> test = EnumUtils.getEnumMap(Traffic.class);
+        assertEquals( "getEnumMap not created correctly", "{RED=RED, AMBER=AMBER, GREEN=GREEN}", test.toString());
+        assertEquals(3, test.size());
+        assertTrue(test.containsKey("RED"));
+        assertEquals(Traffic.RED, test.get("RED"));
+        assertTrue(test.containsKey("AMBER"));
+        assertEquals(Traffic.AMBER, test.get("AMBER"));
+        assertTrue(test.containsKey("GREEN"));
+        assertEquals(Traffic.GREEN, test.get("GREEN"));
+        assertFalse(test.containsKey("PURPLE"));
+    }
+
+    @Test
+    public void test_getEnumList() {
+        List<Traffic> test = EnumUtils.getEnumList(Traffic.class);
+        assertEquals(3, test.size());
+        assertEquals(Traffic.RED, test.get(0));
+        assertEquals(Traffic.AMBER, test.get(1));
+        assertEquals(Traffic.GREEN, test.get(2));
+    }
+
+    @Test
+    public void test_isEnum() {
+        assertTrue(EnumUtils.isValidEnum(Traffic.class, "RED"));
+        assertTrue(EnumUtils.isValidEnum(Traffic.class, "AMBER"));
+        assertTrue(EnumUtils.isValidEnum(Traffic.class, "GREEN"));
+        assertFalse(EnumUtils.isValidEnum(Traffic.class, "PURPLE"));
+        assertFalse(EnumUtils.isValidEnum(Traffic.class, null));
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void test_isEnum_nullClass() {
+        EnumUtils.isValidEnum((Class<Traffic>) null, "PURPLE");
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void test_generateBitVectors_nullElement() {
+        EnumUtils.generateBitVectors(Traffic.class, Arrays.asList(Traffic.RED, null));
+    }
+    
+    @Test(expected=NullPointerException.class)
+    public void test_generateBitVector_nullClassWithArray() {
+        EnumUtils.generateBitVector(null, Traffic.RED);
+    }
+    
+    @Test(expected=NullPointerException.class)
+    public void test_generateBitVectors_nullClassWithArray() {
+        EnumUtils.generateBitVectors(null, Traffic.RED);
+    }
+    
+    @Test(expected=NullPointerException.class)
+    public void test_generateBitVector_nullArray() {
+        EnumUtils.generateBitVector(Traffic.class, (Traffic[]) null);
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void test_generateBitVectors_nullArray() {
+        EnumUtils.generateBitVectors(Traffic.class, (Traffic[]) null);
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void test_generateBitVector_nullArrayElement() {
+        EnumUtils.generateBitVector(Traffic.class, Traffic.RED, null);
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void test_generateBitVectors_nullArrayElement() {
+        EnumUtils.generateBitVectors(Traffic.class, Traffic.RED, null);
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void test_generateBitVector_longClass() {
+        EnumUtils.generateBitVector(TooMany.class, EnumSet.of(TooMany.A1));
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void test_generateBitVector_longClassWithArray() {
+        EnumUtils.generateBitVector(TooMany.class, TooMany.A1);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test(expected=IllegalArgumentException.class)
+    public void test_generateBitVector_nonEnumClass() {
+        @SuppressWarnings("rawtypes")
+        Class rawType = Object.class;
+        @SuppressWarnings("rawtypes")
+        List rawList = new ArrayList();
+        EnumUtils.generateBitVector(rawType, rawList);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test(expected=IllegalArgumentException.class)
+    public void test_generateBitVectors_nonEnumClass() {
+        @SuppressWarnings("rawtypes")
+        Class rawType = Object.class;
+        @SuppressWarnings("rawtypes")
+        List rawList = new ArrayList();
+        EnumUtils.generateBitVectors(rawType, rawList);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test(expected=IllegalArgumentException.class)
+    public void test_generateBitVector_nonEnumClassWithArray() {
+        @SuppressWarnings("rawtypes")
+        Class rawType = Object.class;
+        EnumUtils.generateBitVector(rawType);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test(expected=IllegalArgumentException.class)
+    public void test_generateBitVectors_nonEnumClassWithArray() {
+        @SuppressWarnings("rawtypes")
+        Class rawType = Object.class;
+        EnumUtils.generateBitVectors(rawType);
+    }
+    
+    @Test
+    public void test_generateBitVector() {
+        assertEquals(0L, EnumUtils.generateBitVector(Traffic.class, EnumSet.noneOf(Traffic.class)));
+        assertEquals(1L, EnumUtils.generateBitVector(Traffic.class, EnumSet.of(Traffic.RED)));
+        assertEquals(2L, EnumUtils.generateBitVector(Traffic.class, EnumSet.of(Traffic.AMBER)));
+        assertEquals(4L, EnumUtils.generateBitVector(Traffic.class, EnumSet.of(Traffic.GREEN)));
+        assertEquals(3L, EnumUtils.generateBitVector(Traffic.class, EnumSet.of(Traffic.RED, Traffic.AMBER)));
+        assertEquals(5L, EnumUtils.generateBitVector(Traffic.class, EnumSet.of(Traffic.RED, Traffic.GREEN)));
+        assertEquals(6L, EnumUtils.generateBitVector(Traffic.class, EnumSet.of(Traffic.AMBER, Traffic.GREEN)));
+        assertEquals(7L, EnumUtils.generateBitVector(Traffic.class, EnumSet.of(Traffic.RED, Traffic.AMBER, Traffic.GREEN)));
+    }
+
+    @Test
+    public void test_generateBitVectors() {
+        assertArrayEquals(EnumUtils.generateBitVectors(Traffic.class, EnumSet.noneOf(Traffic.class)), 0L);
+        assertArrayEquals(EnumUtils.generateBitVectors(Traffic.class, EnumSet.of(Traffic.RED)), 1L);
+        assertArrayEquals(EnumUtils.generateBitVectors(Traffic.class, EnumSet.of(Traffic.AMBER)), 2L);
+        assertArrayEquals(EnumUtils.generateBitVectors(Traffic.class, EnumSet.of(Traffic.GREEN)), 4L);
+        assertArrayEquals(EnumUtils.generateBitVectors(Traffic.class, EnumSet.of(Traffic.RED, Traffic.AMBER)), 3L);
+        assertArrayEquals(EnumUtils.generateBitVectors(Traffic.class, EnumSet.of(Traffic.RED, Traffic.GREEN)), 5L);
+        assertArrayEquals(EnumUtils.generateBitVectors(Traffic.class, EnumSet.of(Traffic.AMBER, Traffic.GREEN)), 6L);
+        assertArrayEquals(EnumUtils.generateBitVectors(Traffic.class, EnumSet.of(Traffic.RED, Traffic.AMBER, Traffic.GREEN)), 7L);
+    }
+
+    @Test
+    public void test_generateBitVectorFromArray() {
+        assertEquals(0L, EnumUtils.generateBitVector(Traffic.class));
+        assertEquals(1L, EnumUtils.generateBitVector(Traffic.class, Traffic.RED));
+        assertEquals(2L, EnumUtils.generateBitVector(Traffic.class, Traffic.AMBER));
+        assertEquals(4L, EnumUtils.generateBitVector(Traffic.class, Traffic.GREEN));
+        assertEquals(3L, EnumUtils.generateBitVector(Traffic.class, Traffic.RED, Traffic.AMBER));
+        assertEquals(5L, EnumUtils.generateBitVector(Traffic.class, Traffic.RED, Traffic.GREEN));
+        assertEquals(6L, EnumUtils.generateBitVector(Traffic.class, Traffic.AMBER, Traffic.GREEN));
+        assertEquals(7L, EnumUtils.generateBitVector(Traffic.class, Traffic.RED, Traffic.AMBER, Traffic.GREEN));
+        //gracefully handles duplicates:
+        assertEquals(7L, EnumUtils.generateBitVector(Traffic.class, Traffic.RED, Traffic.AMBER, Traffic.GREEN, Traffic.GREEN));
+    }
+    
+    @Test
+    public void test_generateBitVectorsFromArray() {
+        assertArrayEquals(EnumUtils.generateBitVectors(Traffic.class), 0L);
+        assertArrayEquals(EnumUtils.generateBitVectors(Traffic.class, Traffic.RED), 1L);
+        assertArrayEquals(EnumUtils.generateBitVectors(Traffic.class, Traffic.AMBER), 2L);
+        assertArrayEquals(EnumUtils.generateBitVectors(Traffic.class, Traffic.GREEN), 4L);
+        assertArrayEquals(EnumUtils.generateBitVectors(Traffic.class, Traffic.RED, Traffic.AMBER), 3L);
+        assertArrayEquals(EnumUtils.generateBitVectors(Traffic.class, Traffic.RED, Traffic.GREEN), 5L);
+        assertArrayEquals(EnumUtils.generateBitVectors(Traffic.class, Traffic.AMBER, Traffic.GREEN), 6L);
+        assertArrayEquals(EnumUtils.generateBitVectors(Traffic.class, Traffic.RED, Traffic.AMBER, Traffic.GREEN), 7L);
+        //gracefully handles duplicates:
+        assertArrayEquals(EnumUtils.generateBitVectors(Traffic.class, Traffic.RED, Traffic.AMBER, Traffic.GREEN, Traffic.GREEN), 7L);
+    }
+
+    private void assertArrayEquals(long[] actual, long... expected) {
+        Assert.assertArrayEquals(expected, actual);
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void test_processBitVector_nullClass() {

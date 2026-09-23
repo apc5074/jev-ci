@@ -1,0 +1,126 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.jdk.DateDeserializationTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/jdk/DateDeserializationTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.jdk.DateDeserializationTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/jdk/DateDeserializationTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser.jdk;\n\nimport java.beans.ConstructorProperties;\nimport java.text.DateFormat;\nimport java.text.SimpleDateFormat;\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.JsonFormat;\nimport com.fasterxml.jackson.annotation.JsonIgnore;\nimport com.fasterxml.jackson.annotation.OptBoolean;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.exc.MismatchedInputException;\nimport com.fasterxml.jackson.databind.exc.InvalidFormatException;\n\npublic class DateDeserializationTest\n    extends BaseMapTest\n{\n    static class DateAsStringBean\n    {\n        @JsonFormat(shape=JsonFormat.Shape.STRING, pattern=\"/yyyy/MM/dd/\")\n        public Date date;\n    }\n\n    static class DateAsStringBeanGermany\n    {\n        @JsonFormat(shape=JsonFormat.Shape.STRING, pattern=\"/yyyy/MM/dd/\", locale=\"fr_FR\")\n        public Date date;\n    }\n    \n    static class CalendarAsStringBean\n    {\n        @JsonFormat(shape=JsonFormat.Shape.STRING, pattern=\";yyyy/MM/dd;\")\n        public Calendar cal;\n    }\n\n    static class DateInCETBean {\n        @JsonFormat(shape=JsonFormat.Shape.STRING, pattern=\"yyyy-MM-dd,HH\", timezone=\"CET\")\n        public Date date;\n    }\n\n    static class CalendarBean {\n        Calendar _v;\n        void setV(Calendar v) { _v = v; }\n    }\n\n    static class LenientCalendarBean {\n        @JsonFormat(lenient=OptBoolean.TRUE)\n        public Calendar value;\n    }\n    \n    static class StrictCalendarBean {\n        @JsonFormat(lenient=OptBoolean.FALSE)\n        public Calendar value;\n    }\n\n    // [databind#1722]\n    public static class Date1722 {\n        @JsonFormat(pattern = \"yyyy-MM-dd HH:mm:ss.SSS\")\n        private Date date;\n\n        @JsonIgnore\n        private String foo;\n\n        @ConstructorProperties({\"date\", \"foo\"})\n        public Date1722(Date date, String foo) {\n            this.date = date;\n            this.foo = foo;\n        }\n\n        public Date getDate() {\n            return this.date;\n        }\n\n        public void setDate(Date date) {\n            this.date = date;\n        }\n\n        public String getFoo() {\n            return this.foo;\n        }\n    }\n\n    public void testDateUtilISO8601JustDate() throws Exception\n    {\n        // Plain date (no time)\n        String inputStr = \"1972-12-28\";\n        Date inputDate = MAPPER.readValue(quote(inputStr), java.util.Date.class);\n        Calendar c = Calendar.getInstance(TimeZone.getTimeZone(\"GMT\"));\n        c.setTime(inputDate);\n        assertEquals(1972, c.get(Calendar.YEAR));\n        assertEquals(Calendar.DECEMBER, c.get(Calendar.MONTH));\n        assertEquals(28, c.get(Calendar.DAY_OF_MONTH));\n    }\n\n    @SuppressWarnings(\"deprecation\")\n    public void testDateSql() throws Exception\n    {\n        java.sql.Date value = new java.sql.Date(0L);\n        value.setYear(99); // 1999\n        value.setDate(19);\n        value.setMonth(Calendar.APRIL);\n        long now = value.getTime();\n\n        // First from long\n        assertEquals(value, MAPPER.readValue(String.valueOf(now), java.sql.Date.class));\n\n        // then from default java.sql.Date String serialization:\n        \n        java.sql.Date result = MAPPER.readValue(quote(value.toString()), java.sql.Date.class);\n        Calendar c = gmtCalendar(result.getTime());\n        assertEquals(1999, c.get(Calendar.YEAR));\n        assertEquals(Calendar.APRIL, c.get(Calendar.MONTH));\n        assertEquals(19, c.get(Calendar.DAY_OF_MONTH));\n\n        /* [JACKSON-200]: looks like we better add support for regular date\n         *   formats as well\n         */\n        String expStr = \"1981-07-13\";\n        result = MAPPER.readValue(quote(expStr), java.sql.Date.class);\n        c.setTimeInMillis(result.getTime());\n        assertEquals(1981, c.get(Calendar.YEAR));\n        assertEquals(Calendar.JULY, c.get(Calendar.MONTH));\n        assertEquals(13, c.get(Calendar.DAY_OF_MONTH));\n\n        /* 20-Nov-2009, tatus: I'll be damned if I understand why string serialization\n         *   is off-by-one, but day-of-month does seem to be one less. My guess is\n         *   that something is funky with timezones (i.e. somewhere local TZ is\n         *   being used), but just can't resolve it. Hence, need to comment this:\n         */\n//        assertEquals(expStr, result.toString());\n    }\n\n    public void testCalendar() throws Exception\n    {\n        // not ideal, to use (ever-changing) current date, but...\n        java.util.Calendar value = Calendar.getInstance();\n        long l = 12345678L;\n        value.setTimeInMillis(l);\n\n        // First from long\n        Calendar result = MAPPER.readValue(\"\"+l, Calendar.class);\n        assertEquals(l, result.getTimeInMillis());\n\n        // Then from serialized String\n        String dateStr = dateToString(new Date(l));\n        result = MAPPER.readValue(quote(dateStr), Calendar.class);\n\n        // note: representation may differ (wrt timezone etc), but underlying value must remain the same:\n        if (l != result.getTimeInMillis()) {\n            fail(String.format(\"Expected timestamp %d, got %d, for '%s'\",\n                    l, result.getTimeInMillis(), dateStr));\n        }\n    }\n\n    public void testCustom() throws Exception\n    {\n        final ObjectMapper mapper = new ObjectMapper();\n        DateFormat df = new SimpleDateFormat(\"yyyy-MM-dd'X'HH:mm:ss\");\n        df.setTimeZone(TimeZone.getTimeZone(\"PST\"));\n        mapper.setDateFormat(df);\n\n    /*\n    /**********************************************************\n    /* Tests for leniency\n    /**********************************************************\n     */\n\n    public void testLenientCalendar() throws Exception\n    {\n        final String JSON = aposToQuotes(\"{'value':'2015-11-32'}\");\n\n        // with lenient, can parse fine\n        LenientCalendarBean lenBean = MAPPER.readValue(JSON, LenientCalendarBean.class);\n        assertEquals(Calendar.DECEMBER, lenBean.value.get(Calendar.MONTH));\n        assertEquals(2, lenBean.value.get(Calendar.DAY_OF_MONTH));\n\n        // with strict, ought to produce exception\n        try {\n            MAPPER.readValue(JSON, StrictCalendarBean.class);\n            fail(\"Should not pass with invalid (with strict) date value\");\n        } catch (MismatchedInputException e) {\n            verifyException(e, \"Cannot deserialize value of type `java.util.Calendar`\");\n            verifyException(e, \"from String \\\"2015-11-32\\\"\");\n            verifyException(e, \"expected format\");\n        }\n\n        // similarly with Date...\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.configOverride(java.util.Date.class)\n            .setFormat(JsonFormat.Value.forLeniency(Boolean.FALSE));\n        try {\n            mapper.readValue(quote(\"2015-11-32\"), java.util.Date.class);\n            fail(\"Should not pass with invalid (with strict) date value\");\n        } catch (MismatchedInputException e) {\n            verifyException(e, \"Cannot deserialize value of type `java.util.Date`\");\n            verifyException(e, \"from String \\\"2015-11-32\\\"\");\n            verifyException(e, \"expected format\");\n        }\n    }\n\n    /*\n    /**********************************************************\n    /* Tests to verify failing cases\n    /**********************************************************\n     */\n\n    public void testInvalidFormat() throws Exception\n    {\n        try {\n            MAPPER.readValue(quote(\"foobar\"), Date.class);\n            fail(\"Should have failed with an exception\");\n        } catch (InvalidFormatException e) {\n            verifyException(e, \"Cannot deserialize value of type `java.util.Date` from String\");\n            assertEquals(\"foobar\", e.getValue());\n            assertEquals(Date.class, e.getTargetType());\n        } catch (Exception e) {\n            fail(\"Wrong type of exception (\"+e.getClass().getName()+\"), should get \"\n                    +InvalidFormatException.class.getName());\n        }\n    }\n    \n    /*\n    /**********************************************************\n    /* Helper methods\n    /**********************************************************\n     */\n\n    private String dateToString(java.util.Date value)\n    {\n        /* Then from String. This is bit tricky, since JDK does not really\n         * suggest a 'standard' format. So let's try using something...\n         */\n        DateFormat df = new SimpleDateFormat(\"yyyy-MM-dd'T'HH:mm:ss.SSSZ\");\n        return df.format(value);\n    }\n\n    private static Calendar gmtCalendar(long time)\n    {\n        Calendar c = Calendar.getInstance(TimeZone.getTimeZone(\"GMT\"));\n        c.setTimeInMillis(time);\n",
+  "compaction": {
+    "source_lines": 804,
+    "mode": "windows",
+    "windows_total": 14,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        420,
+        500
+      ],
+      [
+        720,
+        800
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 24.789622406312724
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 10.028644657453818
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 16.369823614114363
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 24.789622406312724
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 4.657699246601649
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 2.687181755263651
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 5.606117729019414
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 5.835387097502662
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 4.048189071537591
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 5.538452505467891
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 10.028644657453818
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 9.569473543616672
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 6.668872121604169
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 6.240483765788829
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 5.216233117943203
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 16.369823614114363
+      },
+      {
+        "start": 780,
+        "end": 804,
+        "score": 7.224124335341009
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8731,
+  "representation_chars": 8731,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

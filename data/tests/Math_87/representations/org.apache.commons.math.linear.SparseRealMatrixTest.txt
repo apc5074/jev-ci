@@ -1,0 +1,246 @@
+TEST CLASS:
+org.apache.commons.math.linear.SparseRealMatrixTest
+
+SOURCE FILE:
+src/test/org/apache/commons/math/linear/SparseRealMatrixTest.java
+
+TEST SOURCE:
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.commons.math.linear;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
+import org.apache.commons.math.TestUtils;
+
+/**
+ * Test cases for the {@link OpenMapRealMatrix} class.
+ * 
+ * @version $Revision$ $Date: 2008-11-07 06:48:13 -0800 (Fri, 07 Nov
+ *          2008) $
+ */
+public final class SparseRealMatrixTest extends TestCase {
+
+    // 3 x 3 identity matrix
+    protected double[][] id = { { 1d, 0d, 0d }, { 0d, 1d, 0d }, { 0d, 0d, 1d } };
+    // Test data for group operations
+    protected double[][] testData = { { 1d, 2d, 3d }, { 2d, 5d, 3d },
+            { 1d, 0d, 8d } };
+    protected double[][] testDataLU = { { 2d, 5d, 3d }, { .5d, -2.5d, 6.5d },
+            { 0.5d, 0.2d, .2d } };
+    protected double[][] testDataPlus2 = { { 3d, 4d, 5d }, { 4d, 7d, 5d },
+            { 3d, 2d, 10d } };
+    protected double[][] testDataMinus = { { -1d, -2d, -3d },
+            { -2d, -5d, -3d }, { -1d, 0d, -8d } };
+    protected double[] testDataRow1 = { 1d, 2d, 3d };
+    protected double[] testDataCol3 = { 3d, 3d, 8d };
+    protected double[][] testDataInv = { { -40d, 16d, 9d }, { 13d, -5d, -3d },
+            { 5d, -2d, -1d } };
+    protected double[] preMultTest = { 8, 12, 33 };
+    protected double[][] testData2 = { { 1d, 2d, 3d }, { 2d, 5d, 3d } };
+    protected double[][] testData2T = { { 1d, 2d }, { 2d, 5d }, { 3d, 3d } };
+    protected double[][] testDataPlusInv = { { -39d, 18d, 12d },
+            { 15d, 0d, 0d }, { 6d, -2d, 7d } };
+
+    // lu decomposition tests
+    protected double[][] luData = { { 2d, 3d, 3d }, { 0d, 5d, 7d }, { 6d, 9d, 8d } };
+    protected double[][] luDataLUDecomposition = { { 6d, 9d, 8d },
+            { 0d, 5d, 7d }, { 0.33333333333333, 0d, 0.33333333333333 } };
+
+    // singular matrices
+    protected double[][] singular = { { 2d, 3d }, { 2d, 3d } };
+    protected double[][] bigSingular = { { 1d, 2d, 3d, 4d },
+            { 2d, 5d, 3d, 4d }, { 7d, 3d, 256d, 1930d }, { 3d, 7d, 6d, 8d } }; // 4th
+
+    // row
+    // =
+    // 1st
+    // +
+    // 2nd
+    protected double[][] detData = { { 1d, 2d, 3d }, { 4d, 5d, 6d },
+            { 7d, 8d, 10d } };
+    protected double[][] detData2 = { { 1d, 3d }, { 2d, 4d } };
+
+    // vectors
+    protected double[] testVector = { 1, 2, 3 };
+    protected double[] testVector2 = { 1, 2, 3, 4 };
+
+    // submatrix accessor tests
+    protected double[][] subTestData = { { 1, 2, 3, 4 },
+            { 1.5, 2.5, 3.5, 4.5 }, { 2, 4, 6, 8 }, { 4, 5, 6, 7 } };
+
+        try {
+            m.getColumnMatrix(-1);
+            fail("Expecting MatrixIndexException");
+        } catch (MatrixIndexException ex) {
+            // expected
+        }
+        try {
+            m.getColumnMatrix(4);
+            fail("Expecting MatrixIndexException");
+        } catch (MatrixIndexException ex) {
+            // expected
+        }
+    }
+
+    public void testGetRowVector() {
+        RealMatrix m = createSparseMatrix(subTestData);
+        RealVector mRow0 = new RealVectorImpl(subRow0[0]);
+        RealVector mRow3 = new RealVectorImpl(subRow3[0]);
+        assertEquals("Row0", mRow0, m.getRowVector(0));
+        assertEquals("Row3", mRow3, m.getRowVector(3));
+        try {
+            m.getRowVector(-1);
+            fail("Expecting MatrixIndexException");
+        } catch (MatrixIndexException ex) {
+            // expected
+        }
+        try {
+            m.getRowVector(4);
+            fail("Expecting MatrixIndexException");
+        } catch (MatrixIndexException ex) {
+            // expected
+        }
+    }
+
+    public void testGetColumnVector() {
+        RealMatrix m = createSparseMatrix(subTestData);
+        RealVector mColumn1 = columnToVector(subColumn1);
+        RealVector mColumn3 = columnToVector(subColumn3);
+        assertEquals("Column1", mColumn1, m.getColumnVector(1));
+        assertEquals("Column3", mColumn3, m.getColumnVector(3));
+        try {
+            m.getColumnVector(-1);
+            fail("Expecting MatrixIndexException");
+        } catch (MatrixIndexException ex) {
+            // expected
+        }
+        try {
+            m.getColumnVector(4);
+            fail("Expecting MatrixIndexException");
+        } catch (MatrixIndexException ex) {
+            // expected
+        }
+    }
+
+    private RealVector columnToVector(double[][] column) {
+        double[] data = new double[column.length];
+        for (int i = 0; i < data.length; ++i) {
+            data[i] = column[i][0];
+        }
+        return new RealVectorImpl(data, false);
+    }
+
+    public void testEqualsAndHashCode() {
+        OpenMapRealMatrix m = createSparseMatrix(testData);
+        OpenMapRealMatrix m1 = (OpenMapRealMatrix) m.copy();
+        OpenMapRealMatrix mt = (OpenMapRealMatrix) m.transpose();
+        assertTrue(m.hashCode() != mt.hashCode());
+        assertEquals(m.hashCode(), m1.hashCode());
+        assertEquals(m, m);
+        assertEquals(m, m1);
+        assertFalse(m.equals(null));
+        assertFalse(m.equals(mt));
+        assertFalse(m.equals(createSparseMatrix(bigSingular)));
+    }
+
+    public void testToString() {
+        OpenMapRealMatrix m = createSparseMatrix(testData);
+        assertEquals("OpenMapRealMatrix{{1.0,2.0,3.0},{2.0,5.0,3.0},{1.0,0.0,8.0}}", 
+            m.toString());
+        m = new OpenMapRealMatrix(1, 1);
+        } catch (MatrixIndexException e) {
+            // expected
+        }
+        try {
+            m.setSubMatrix(testData, 1, -1);
+            fail("expecting MatrixIndexException");
+        } catch (MatrixIndexException e) {
+            // expected
+        }
+
+        // null
+        try {
+            m.setSubMatrix(null, 1, 1);
+            fail("expecting NullPointerException");
+        } catch (NullPointerException e) {
+            // expected
+        }
+        try {
+            new OpenMapRealMatrix(0, 0);
+            fail("expecting IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+
+        // ragged
+        try {
+            m.setSubMatrix(new double[][] { { 1 }, { 2, 3 } }, 0, 0);
+            fail("expecting IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+
+        // empty
+        try {
+            m.setSubMatrix(new double[][] { {} }, 0, 0);
+            fail("expecting IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+
+    }
+
+    public void testSerial()  {
+        OpenMapRealMatrix m = createSparseMatrix(testData);
+        assertEquals(m,TestUtils.serializeAndRecover(m));
+    }
+
+    // --------------- -----------------Protected methods
+
+    /** verifies that two matrices are close (1-norm) */
+    protected void assertClose(String msg, RealMatrix m, RealMatrix n,
+            double tolerance) {
+        assertTrue(msg, m.subtract(n).getNorm() < tolerance);
+    }
+
+    /** verifies that two vectors are close (sup norm) */
+    protected void assertClose(String msg, double[] m, double[] n,
+            double tolerance) {
+        if (m.length != n.length) {
+            fail("vectors not same length");
+        }
+        for (int i = 0; i < m.length; i++) {
+            assertEquals(msg + " " + i + " elements differ", m[i], n[i],
+                    tolerance);
+        }
+    }
+    
+    private OpenMapRealMatrix createSparseMatrix(double[][] data) {
+        OpenMapRealMatrix matrix = new OpenMapRealMatrix(data.length, data[0].length);
+        for (int row = 0; row < data.length; row++) {
+            for (int col = 0; col < data[row].length; col++) {
+                matrix.setEntry(row, col, data[row][col]);
+            }
+        }
+        return matrix;
+    }
+
+
+}

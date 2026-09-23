@@ -1,0 +1,81 @@
+{
+  "test_class": "org.apache.commons.math3.ode.nonstiff.ClassicalRungeKuttaIntegratorTest",
+  "source_file": "src/test/java/org/apache/commons/math3/ode/nonstiff/ClassicalRungeKuttaIntegratorTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.ode.nonstiff.ClassicalRungeKuttaIntegratorTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/ode/nonstiff/ClassicalRungeKuttaIntegratorTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math3.ode.nonstiff;\n\n\nimport org.apache.commons.math3.exception.DimensionMismatchException;\nimport org.apache.commons.math3.exception.NumberIsTooSmallException;\nimport org.apache.commons.math3.ode.FirstOrderDifferentialEquations;\nimport org.apache.commons.math3.ode.FirstOrderIntegrator;\nimport org.apache.commons.math3.ode.TestProblem1;\nimport org.apache.commons.math3.ode.TestProblem3;\nimport org.apache.commons.math3.ode.TestProblem5;\nimport org.apache.commons.math3.ode.TestProblemAbstract;\nimport org.apache.commons.math3.ode.TestProblemFactory;\nimport org.apache.commons.math3.ode.TestProblemHandler;\nimport org.apache.commons.math3.ode.events.EventHandler;\nimport org.apache.commons.math3.ode.sampling.StepHandler;\nimport org.apache.commons.math3.ode.sampling.StepInterpolator;\nimport org.apache.commons.math3.util.FastMath;\nimport org.junit.Assert;\nimport org.junit.Test;\n\npublic class ClassicalRungeKuttaIntegratorTest {\n\n  @Test\n  public void testMissedEndEvent() {\n      final double   t0     = 1878250320.0000029;\n      final double   tEvent = 1878250379.9999986;\n      final double[] k      = { 1.0e-4, 1.0e-5, 1.0e-6 };\n      FirstOrderDifferentialEquations ode = new FirstOrderDifferentialEquations() {\n\n          public int getDimension() {\n              return k.length;\n          }\n\n          public void computeDerivatives(double t, double[] y, double[] yDot) {\n              for (int i = 0; i < y.length; ++i) {\n                  yDot[i] = k[i] * y[i];\n              }\n          }\n      };\n\n      ClassicalRungeKuttaIntegrator integrator = new ClassicalRungeKuttaIntegrator(60.0);\n\n      double[] y0   = new double[k.length];\n      for (int i = 0; i < y0.length; ++i) {\n          y0[i] = i + 1;\n      }\n      double[] y    = new double[k.length];\n\n      double finalT = integrator.integrate(ode, t0, y0, tEvent, y);\n      Assert.assertEquals(tEvent, finalT, 5.0e-6);\n      for (int i = 0; i < y.length; ++i) {\n          Assert.assertEquals(y0[i] * FastMath.exp(k[i] * (finalT - t0)), y[i], 1.0e-9);\n      }\n\n      integrator.addEventHandler(new EventHandler() {\n\n          public void init(double t0, double[] y0, double t) {\n          }\n\n          public void resetState(double t, double[] y) {\n          }\n\n          public double g(double t, double[] y) {\n              return t - tEvent;\n          }\n\n          public Action eventOccurred(double t, double[] y, boolean increasing) {\n              Assert.assertEquals(tEvent, t, 5.0e-6);\n              return Action.CONTINUE;\n          }\n      }, Double.POSITIVE_INFINITY, 1.0e-20, 100);\n      finalT = integrator.integrate(ode, t0, y0, tEvent + 120, y);\n      Assert.assertEquals(tEvent + 120, finalT, 5.0e-6);\n      for (int i = 0; i < y.length; ++i) {\n          Assert.assertEquals(y0[i] * FastMath.exp(k[i] * (finalT - t0)), y[i], 1.0e-9);\n      }\n\n  }\n\n  @Test\n  public void testSanityChecks() {\n    try  {\n      TestProblem1 pb = new TestProblem1();\n      new ClassicalRungeKuttaIntegrator(0.01).integrate(pb,\n                                                        0.0, new double[pb.getDimension()+10],\n                                                        1.0, new double[pb.getDimension()]);\n        Assert.fail(\"an exception should have been thrown\");\n    } catch(DimensionMismatchException ie) {\n    }\n    try  {\n        TestProblem1 pb = new TestProblem1();\n        new ClassicalRungeKuttaIntegrator(0.01).integrate(pb,\n                                                          0.0, new double[pb.getDimension()],\n                                                          1.0, new double[pb.getDimension()+10]);\n          Assert.fail(\"an exception should have been thrown\");\n      } catch(DimensionMismatchException ie) {\n      }\n    try  {\n      TestProblem1 pb = new TestProblem1();\n      new ClassicalRungeKuttaIntegrator(0.01).integrate(pb,\n                                                        0.0, new double[pb.getDimension()],\n                                                        0.0, new double[pb.getDimension()]);\n        Assert.fail(\"an exception should have been thrown\");\n    } catch(NumberIsTooSmallException ie) {\n    }\n  }\n\n  @Test\n  public void testDecreasingSteps()\n     {\n\n    TestProblemAbstract[] problems = TestProblemFactory.getProblems();\n    for (int k = 0; k < problems.length; ++k) {\n\n      double previousValueError = Double.NaN;\n      double previousTimeError = Double.NaN;\n      for (int i = 4; i < 10; ++i) {\n\n        TestProblemAbstract pb = problems[k].copy();\n        double step = (pb.getFinalTime() - pb.getInitialTime()) * FastMath.pow(2.0, -i);\n\n        FirstOrderIntegrator integ = new ClassicalRungeKuttaIntegrator(step);\n        TestProblemHandler handler = new TestProblemHandler(pb, integ);\n        integ.addStepHandler(handler);\n        EventHandler[] functions = pb.getEventsHandlers();\n        for (int l = 0; l < functions.length; ++l) {\n          integ.addEventHandler(functions[l],\n                                     Double.POSITIVE_INFINITY, 1.0e-6 * step, 1000);\n        }\n        Assert.assertEquals(functions.length, integ.getEventHandlers().size());\n        double stopTime = integ.integrate(pb, pb.getInitialTime(), pb.getInitialState(),\n                                          pb.getFinalTime(), new double[pb.getDimension()]);\n        if (functions.length == 0) {\n            Assert.assertEquals(pb.getFinalTime(), stopTime, 1.0e-10);\n        }\n\n        double error = handler.getMaximalValueError();\n        if (i > 4) {\n          Assert.assertTrue(error < 1.01 * FastMath.abs(previousValueError));\n        }\n        previousValueError = error;\n\n        double timeError = handler.getMaximalTimeError();\n        if (i > 4) {\n          Assert.assertTrue(timeError <= FastMath.abs(previousTimeError));\n        }\n        previousTimeError = timeError;\n\n        integ.clearEventHandlers();\n        Assert.assertEquals(0, integ.getEventHandlers().size());\n      }\n\n    }\n\n  }\n\n  @Test\n  public void testSmallStep()\n    {\n\n    TestProblem1 pb = new TestProblem1();\n    double step = (pb.getFinalTime() - pb.getInitialTime()) * 0.001;\n\n    FirstOrderIntegrator integ = new ClassicalRungeKuttaIntegrator(step);\n    TestProblemHandler handler = new TestProblemHandler(pb, integ);\n    integ.addStepHandler(handler);\n    integ.integrate(pb, pb.getInitialTime(), pb.getInitialState(),\n                    pb.getFinalTime(), new double[pb.getDimension()]);\n\n    Assert.assertTrue(handler.getLastError() < 2.0e-13);\n    Assert.assertTrue(handler.getMaximalValueError() < 4.0e-12);\n    Assert.assertEquals(0, handler.getMaximalTimeError(), 1.0e-12);\n    Assert.assertEquals(\"classical Runge-Kutta\", integ.getName());\n  }\n\n  @Test\n  public void testBigStep()\n    {\n\n    TestProblem1 pb = new TestProblem1();\n    double step = (pb.getFinalTime() - pb.getInitialTime()) * 0.2;\n\n    FirstOrderIntegrator integ = new ClassicalRungeKuttaIntegrator(step);\n",
+  "compaction": {
+    "source_lines": 300,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 17.765174239525308
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 3.1717143165656525
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 1.3668067742167695
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 17.765174239525308
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 3.1717143165656525
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 1.3668067742167695
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 1.2097595024747827
+      },
+      {
+        "start": 240,
+        "end": 300,
+        "score": 1.0380316731186119
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7924,
+  "representation_chars": 7924,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

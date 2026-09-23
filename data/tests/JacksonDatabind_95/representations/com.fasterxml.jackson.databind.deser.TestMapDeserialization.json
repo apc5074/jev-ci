@@ -1,0 +1,106 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.TestMapDeserialization",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/TestMapDeserialization.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.TestMapDeserialization\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/TestMapDeserialization.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser;\n\nimport java.io.IOException;\nimport java.text.DateFormat;\nimport java.text.SimpleDateFormat;\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.JsonCreator;\nimport com.fasterxml.jackson.annotation.JsonTypeInfo;\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.core.type.TypeReference;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\nimport com.fasterxml.jackson.databind.deser.std.StdDeserializer;\n\n@SuppressWarnings(\"serial\")\npublic class TestMapDeserialization\n    extends BaseMapTest\n{\n    static enum Key {\n        KEY1, KEY2, WHATEVER;\n    }\n\n    static class BrokenMap\n        extends HashMap<Object,Object>\n    {\n        // No default ctor, nor @JsonCreators\n        public BrokenMap(boolean dummy) { super(); }\n    }\n\n    @JsonDeserialize(using=MapDeserializer.class)\n    static class CustomMap extends LinkedHashMap<String,String> { }\n\n    static class MapDeserializer extends StdDeserializer<CustomMap>\n    {\n        public MapDeserializer() { super(CustomMap.class); }\n        @Override\n        public CustomMap deserialize(JsonParser jp, DeserializationContext ctxt)\n            throws IOException\n        {\n            CustomMap result = new CustomMap();\n            result.put(\"x\", jp.getText());\n            return result;\n        }\n    }\n\n    static class KeyType {\n        protected String value;\n        \n        private KeyType(String v, boolean bogus) {\n            value = v;\n        }\n\n        @JsonCreator\n        public static KeyType create(String v) {\n            return new KeyType(v, true);\n        }\n    }\n\n    // [databind#142]\n    public static class EnumMapContainer {\n        @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property=\"@class\")\n        public EnumMap<KeyEnum,ITestType> testTypes;\n    }\n\n    public static class ListContainer {\n        public List<ITestType> testTypes;\n    }\n\n    @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property=\"@class\")\n    public static interface ITestType { }\n\n    public static enum KeyEnum {\n        A, B\n    }\n    public static enum ConcreteType implements ITestType {\n        ONE, TWO;\n    }\n\n    static class ClassStringMap extends HashMap<Class<?>,String> { }\n    {\n       final ObjectWrapperMap map = MAPPER.readValue(UNTYPED_MAP_JSON, ObjectWrapperMap.class);\n       assertNotNull(map);\n       _doTestUntyped(map);\n    }\n\n    public void testGenericMap() throws IOException\n    {\n        final Map<String, ObjectWrapper> map = MAPPER.readValue\n            (UNTYPED_MAP_JSON,\n             new TypeReference<Map<String, ObjectWrapper>>() { });\n       _doTestUntyped(map);\n    }\n    \n    private void _doTestUntyped(final Map<String, ObjectWrapper> map)\n    {\n        ObjectWrapper w = map.get(\"double\");\n        assertNotNull(w);\n        assertEquals(Double.valueOf(42), w.getObject());\n        assertEquals(\"string\", map.get(\"string\").getObject());\n        assertEquals(Boolean.TRUE, map.get(\"boolean\").getObject());\n        assertEquals(Collections.singletonList(\"list0\"), map.get(\"list\").getObject());\n        assertTrue(map.containsKey(\"null\"));\n        assertNull(map.get(\"null\"));\n        assertEquals(5, map.size());\n    }\n    \n    // [JACKSON-620]: allow \"\" to mean 'null' for Maps\n    public void testFromEmptyString() throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        m.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);\n        Map<?,?> result = m.readValue(quote(\"\"), Map.class);\n        assertNull(result);\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods, typed maps\n    /**********************************************************\n     */\n\n    public void testExactStringIntMap() throws Exception\n    {\n        // to get typing, must use type reference\n        String JSON = \"{ \\\"foo\\\" : 13, \\\"bar\\\" : -39, \\n \\\"\\\" : 0 }\";\n        Map<String,Integer> result = MAPPER.readValue\n            (JSON, new TypeReference<HashMap<String,Integer>>() { });\n\n        assertNotNull(result);\n        assertEquals(HashMap.class, result.getClass());\n        assertEquals(3, result.size());\n\n        assertEquals(Integer.valueOf(13), result.get(\"foo\"));\n        assertEquals(Integer.valueOf(-39), result.get(\"bar\"));\n        assertEquals(Integer.valueOf(0), result.get(\"\"));\n        assertNull(result.get(\"foobar\"));\n        assertNull(result.get(\" \"));\n    }\n\n    /**\n     * Let's also check that it is possible to do type conversions\n     * to allow use of non-String Map keys.\n     */\n    public void testIntBooleanMap() throws Exception\n    {\n        // to get typing, must use type reference\n        String JSON = \"{ \\\"1\\\" : true, \\\"-1\\\" : false }\";\n        Map<String,Integer> result = MAPPER.readValue\n            (JSON, new TypeReference<HashMap<Integer,Boolean>>() { });\n\n        assertNotNull(result);\n        assertEquals(HashMap.class, result.getClass());\n        assertEquals(2, result.size());\n\n        assertEquals(Boolean.TRUE, result.get(Integer.valueOf(1)));\n        assertEquals(Boolean.FALSE, result.get(Integer.valueOf(-1)));\n        assertNull(result.get(\"foobar\"));\n        assertNull(result.get(0));\n    }\n\n    public void testExactStringStringMap() throws Exception\n    {\n        // to get typing, must use type reference\n        String JSON = \"{ \\\"a\\\" : \\\"b\\\" }\";\n        Map<String,Integer> result = MAPPER.readValue\n            (JSON, new TypeReference<TreeMap<String,String>>() { });\n\n        assertNotNull(result);\n        assertEquals(TreeMap.class, result.getClass());\n        assertEquals(1, result.size());\n\n        assertEquals(\"b\", result.get(\"a\"));\n        assertNull(result.get(\"b\"));\n    }\n\n    /**\n     * Unit test that verifies that it's ok to have incomplete\n     * information about Map class itself, as long as it's something\n     * we good guess about: for example, <code>Map.Class</code> will\n     * be replaced by something like <code>HashMap.class</code>,\n     * if given.\n     */\n    public void testGenericStringIntMap() throws Exception\n    {\n        // to get typing, must use type reference; but with abstract type\n        String JSON = \"{ \\\"a\\\" : 1, \\\"b\\\" : 2, \\\"c\\\" : -99 }\";\n        Map<String,Integer> result = MAPPER.readValue\n            (JSON, new TypeReference<Map<String,Integer>>() { });\n        assertNotNull(result);\n        assertTrue(result instanceof Map<?,?>);\n        assertEquals(3, result.size());\n\n        assertEquals(Integer.valueOf(-99), result.get(\"c\"));\n        assertEquals(Integer.valueOf(2), result.get(\"b\"));\n        assertEquals(Integer.valueOf(1), result.get(\"a\"));\n\n        assertNull(result.get(\"\"));\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods, maps with enums\n    /**********************************************************\n     */\n\n    public void testEnumMap() throws Exception\n    {\n        String JSON = \"{ \\\"KEY1\\\" : \\\"\\\", \\\"WHATEVER\\\" : null }\";\n\n        // to get typing, must use type reference\n        EnumMap<Key,String> result = MAPPER.readValue\n            (JSON, new TypeReference<EnumMap<Key,String>>() { });\n\n        assertNotNull(result);\n        assertEquals(EnumMap.class, result.getClass());\n        assertEquals(2, result.size());\n\n        assertEquals(\"\", result.get(Key.KEY1));\n        // null should be ok too...\n",
+  "compaction": {
+    "source_lines": 605,
+    "mode": "windows",
+    "windows_total": 10,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        180,
+        260
+      ],
+      [
+        240,
+        320
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 30.908189591877793
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 17.556291495080515
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 16.456685478575626
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 30.908189591877793
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 10.690618111053224
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 11.008785014872792
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 17.556291495080515
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 16.456685478575626
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 6.437807059763394
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 7.29840119064056
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 9.998321392955322
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 6.722060079602128
+      },
+      {
+        "start": 540,
+        "end": 605,
+        "score": 9.825306314693103
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7625,
+  "representation_chars": 7625,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

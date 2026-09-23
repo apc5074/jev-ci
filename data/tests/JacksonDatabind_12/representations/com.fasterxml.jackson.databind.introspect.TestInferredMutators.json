@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.introspect.TestInferredMutators",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/introspect/TestInferredMutators.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.introspect.TestInferredMutators\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/introspect/TestInferredMutators.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.introspect;\n\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.JsonMappingException;\nimport com.fasterxml.jackson.databind.MapperFeature;\nimport com.fasterxml.jackson.databind.ObjectMapper;\n\npublic class TestInferredMutators extends BaseMapTest\n{\n    public static class Point {\n        private int x;\n        \n        public int getX() { return x; }\n    }\n\n    public static class FixedPoint {\n        private final int x;\n\n        public FixedPoint() { x = 0; }\n\n        public int getX() { return x; }\n    }\n\n    /*\n    /**********************************************************\n    /* Unit tests\n    /**********************************************************\n     */\n\n    // for #190\n    public void testFinalFieldIgnoral() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        // default value is 'enabled', for backwards compatibility\n        assertTrue(mapper.isEnabled(MapperFeature.ALLOW_FINAL_FIELDS_AS_MUTATORS));\n        mapper.disable(MapperFeature.ALLOW_FINAL_FIELDS_AS_MUTATORS);\n        try {\n            /*p =*/ mapper.readValue(\"{\\\"x\\\":2}\", FixedPoint.class);\n            fail(\"Should not try to use final field\");\n        } catch (JsonMappingException e) {\n            verifyException(e, \"unrecognized field \\\"x\\\"\");\n        }\n    }\n    \n    // for #195\n    public void testDeserializationInference() throws Exception\n    {\n        final String JSON = \"{\\\"x\\\":2}\";\n        ObjectMapper mapper = new ObjectMapper();\n        // First: default case, inference enabled:\n        assertTrue(mapper.isEnabled(MapperFeature.INFER_PROPERTY_MUTATORS));\n        Point p = mapper.readValue(JSON,  Point.class);\n        assertEquals(2, p.x);\n\n        // but without it, should fail:\n        mapper = new ObjectMapper();\n        mapper.disable(MapperFeature.INFER_PROPERTY_MUTATORS);\n        try {\n            p = mapper.readValue(JSON,  Point.class);\n            fail(\"Should not succeeed\");\n        } catch (JsonMappingException e) {\n            verifyException(e, \"unrecognized field \\\"x\\\"\");\n        }\n    }\n}\n",
+  "compaction": {
+    "source_lines": 65,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2311,
+  "representation_chars": 2311,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

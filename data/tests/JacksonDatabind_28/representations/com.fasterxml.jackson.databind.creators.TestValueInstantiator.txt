@@ -1,0 +1,177 @@
+TEST CLASS:
+com.fasterxml.jackson.databind.creators.TestValueInstantiator
+
+SOURCE FILE:
+src/test/java/com/fasterxml/jackson/databind/creators/TestValueInstantiator.java
+
+TEST SOURCE:
+package com.fasterxml.jackson.databind.creators;
+
+import java.io.IOException;
+import java.util.*;
+
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.annotation.JsonValueInstantiator;
+import com.fasterxml.jackson.databind.deser.*;
+import com.fasterxml.jackson.databind.introspect.AnnotatedWithParams;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+
+/**
+ * Test related to [JACKSON-580] (allow specifying custom instantiators)
+ */
+public class TestValueInstantiator extends BaseMapTest
+{
+    static class MyBean
+    {
+        String _secret;
+        
+        public MyBean(String s, boolean bogus) {
+            _secret = s;
+        }
+    }
+
+    static class MysteryBean
+    {
+        Object value;
+        
+        public MysteryBean(Object v) { value = v; }
+    }
+    
+    static class CreatorBean
+    {
+        String _secret;
+
+        public String value;
+        
+        protected CreatorBean(String s) {
+            _secret = s;
+        }
+    }
+
+    static abstract class InstantiatorBase extends ValueInstantiator
+    {
+        @Override
+        public String getValueTypeDesc() {
+            return "UNKNOWN";
+        }
+
+        @Override
+        public boolean canCreateUsingDelegate() { return false; }
+    }
+    
+    static abstract class PolymorphicBeanBase { }
+    
+    static class PolymorphicBean extends PolymorphicBeanBase
+    {
+        public String name;
+    }
+    
+    @SuppressWarnings("serial")
+    static class MyList extends ArrayList<Object>
+    {
+        public MyList(boolean b) { super(); }
+    }
+
+    @SuppressWarnings("serial")
+    static class MyMap extends HashMap<String,Object>
+    {
+        public MyMap(boolean b) { super(); }
+        public MyMap(String name) {
+            super();
+            put(name, name);
+        }
+    }
+    
+    static class MyBeanInstantiator extends InstantiatorBase
+                    }
+        }));
+        MysteryBean result = mapper.readValue("37", MysteryBean.class);
+        assertNotNull(result);
+        assertEquals(Integer.valueOf(38), result.value);
+    }
+
+    public void testBeanFromLong() throws Exception
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new MyModule(MysteryBean.class,
+                new InstantiatorBase() {
+                    @Override
+                    public boolean canCreateFromLong() { return true; }
+                    
+                    @Override
+                    public Object createFromLong(DeserializationContext ctxt, long value) {
+                        return new MysteryBean(value+1L);
+                    }
+        }));
+        MysteryBean result = mapper.readValue("9876543210", MysteryBean.class);
+        assertNotNull(result);
+        assertEquals(Long.valueOf(9876543211L), result.value);
+    }
+
+    public void testBeanFromDouble() throws Exception
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new MyModule(MysteryBean.class,
+                new InstantiatorBase() {
+                    @Override
+                    public boolean canCreateFromDouble() { return true; }
+
+                    @Override
+                    public Object createFromDouble(DeserializationContext ctxt, double value) {
+                        return new MysteryBean(2.0 * value);
+                    }
+        }));
+        MysteryBean result = mapper.readValue("0.25", MysteryBean.class);
+        assertNotNull(result);
+        assertEquals(Double.valueOf(0.5), result.value);
+    }
+
+    public void testBeanFromBoolean() throws Exception
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new MyModule(MysteryBean.class,
+                new InstantiatorBase() {
+                    @Override
+                    public boolean canCreateFromBoolean() { return true; }
+                    
+                    @Override
+                    public Object createFromBoolean(DeserializationContext ctxt, boolean value) {
+                        return new MysteryBean(Boolean.valueOf(value));
+                    }
+        }));
+        MysteryBean result = mapper.readValue("true", MysteryBean.class);
+        assertNotNull(result);
+        assertEquals(Boolean.TRUE, result.value);
+    }
+    
+    /*
+    /**********************************************************
+    /* Other tests
+    /**********************************************************
+     */
+
+    /**
+     * Beyond basic features, it should be possible to even implement
+     * polymorphic handling...
+     */
+    public void testPolymorphicCreatorBean() throws Exception
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new MyModule(PolymorphicBeanBase.class, new PolymorphicBeanInstantiator()));
+        String JSON = "{\"type\":"+quote(PolymorphicBean.class.getName())+",\"name\":\"Axel\"}";
+        PolymorphicBeanBase result = mapper.readValue(JSON, PolymorphicBeanBase.class);
+        assertNotNull(result);
+        assertSame(PolymorphicBean.class, result.getClass());
+        assertEquals("Axel", ((PolymorphicBean) result).name);
+    }
+
+    public void testEmptyBean() throws Exception
+    {
+        AnnotatedBean bean = MAPPER.readValue("{}", AnnotatedBean.class);
+        assertNotNull(bean);
+        assertEquals("foo", bean.a);
+        assertEquals(3, bean.b);
+    }
+}

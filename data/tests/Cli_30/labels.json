@@ -1,0 +1,31 @@
+{
+  "example_id": "Cli_30",
+  "qualified_id": "Cli-30",
+  "visibility": "private",
+  "trigger_methods": [
+    "org.apache.commons.cli.BasicParserTest::testPropertyOptionGroup",
+    "org.apache.commons.cli.BasicParserTest::testPropertyOptionUnexpected",
+    "org.apache.commons.cli.DefaultParserTest::testPropertyOptionGroup",
+    "org.apache.commons.cli.DefaultParserTest::testPropertyOptionUnexpected",
+    "org.apache.commons.cli.GnuParserTest::testPropertyOptionGroup",
+    "org.apache.commons.cli.GnuParserTest::testPropertyOptionUnexpected",
+    "org.apache.commons.cli.OptionGroupTest::testTwoOptionsFromGroupWithProperties",
+    "org.apache.commons.cli.PosixParserTest::testPropertyOptionGroup",
+    "org.apache.commons.cli.PosixParserTest::testPropertyOptionUnexpected"
+  ],
+  "positive_classes": [
+    "org.apache.commons.cli.BasicParserTest",
+    "org.apache.commons.cli.DefaultParserTest",
+    "org.apache.commons.cli.GnuParserTest",
+    "org.apache.commons.cli.OptionGroupTest",
+    "org.apache.commons.cli.PosixParserTest"
+  ],
+  "num_trigger_methods": 9,
+  "num_positive_classes": 5,
+  "consistency": {
+    "all_positives_in_inventory": true,
+    "anomalies": []
+  },
+  "notes": "Non-triggering test classes are unlabeled; do not treat them as negatives for accuracy/precision metrics.",
+  "extracted_at": "2026-09-22T23:43:49+00:00"
+}

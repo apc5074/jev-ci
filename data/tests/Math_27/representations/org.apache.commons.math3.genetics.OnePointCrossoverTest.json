@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.math3.genetics.OnePointCrossoverTest",
+  "source_file": "src/test/java/org/apache/commons/math3/genetics/OnePointCrossoverTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.genetics.OnePointCrossoverTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/genetics/OnePointCrossoverTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.genetics;\n\nimport org.junit.Assert;\nimport org.junit.Test;\n\npublic class OnePointCrossoverTest {\n\n    @Test\n    public void testCrossover() {\n        Integer[] p1 = new Integer[] {1,0,1,0,0,1,0,1,1};\n        Integer[] p2 = new Integer[] {0,1,1,0,1,0,1,1,1};\n\n        BinaryChromosome p1c = new DummyBinaryChromosome(p1);\n        BinaryChromosome p2c = new DummyBinaryChromosome(p2);\n\n        OnePointCrossover<Integer> opc = new OnePointCrossover<Integer>();\n\n        // how to test a stochastic method?\n        for (int i=0; i<20; i++) {\n            ChromosomePair pair = opc.crossover(p1c,p2c);\n\n            Integer[] c1 = new Integer[p1.length];\n            Integer[] c2 = new Integer[p2.length];\n\n            c1 = ((BinaryChromosome) pair.getFirst()).getRepresentation().toArray(c1);\n            c2 = ((BinaryChromosome) pair.getSecond()).getRepresentation().toArray(c2);\n\n            // first and last values will be the same\n            Assert.assertEquals((int) p1[0], (int) c1[0]);\n            Assert.assertEquals((int) p2[0], (int) c2[0]);\n            Assert.assertEquals((int) p1[p1.length-1], (int) c1[c1.length-1]);\n            Assert.assertEquals((int) p2[p2.length-1], (int) c2[c2.length-1]);\n            // moreover, in the above setting, the 2nd, 3rd and 7th values will be the same\n            Assert.assertEquals((int) p1[2], (int) c1[2]);\n            Assert.assertEquals((int) p2[2], (int) c2[2]);\n            Assert.assertEquals((int) p1[3], (int) c1[3]);\n            Assert.assertEquals((int) p2[3], (int) c2[3]);\n            Assert.assertEquals((int) p1[7], (int) c1[7]);\n            Assert.assertEquals((int) p2[7], (int) c2[7]);\n        }\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 59,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2679,
+  "representation_chars": 2679,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

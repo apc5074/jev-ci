@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.lang3.CharSequenceUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/CharSequenceUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.CharSequenceUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/CharSequenceUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3;\n\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertFalse;\nimport static org.junit.Assert.assertNotNull;\nimport static org.junit.Assert.assertTrue;\n\nimport java.lang.reflect.Constructor;\nimport java.lang.reflect.Modifier;\n\nimport org.junit.Assert;\n\nimport org.junit.Test;\n\n/**\n * Tests CharSequenceUtils\n *\n * @version $Id: CharSequenceUtilsTest.java 1066341 2011-02-02 06:21:53Z bayard $\n */\npublic class CharSequenceUtilsTest {\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testConstructor() {\n        assertNotNull(new CharSequenceUtils());\n        final Constructor<?>[] cons = CharSequenceUtils.class.getDeclaredConstructors();\n        assertEquals(1, cons.length);\n        assertTrue(Modifier.isPublic(cons[0].getModifiers()));\n        assertTrue(Modifier.isPublic(CharSequenceUtils.class.getModifiers()));\n        assertFalse(Modifier.isFinal(CharSequenceUtils.class.getModifiers()));\n    }\n    \n    //-----------------------------------------------------------------------\n    @Test\n    public void testSubSequence() {\n        //\n        // null input\n        //\n        Assert.assertEquals(null, CharSequenceUtils.subSequence(null, -1));\n        Assert.assertEquals(null, CharSequenceUtils.subSequence(null, 0));\n        Assert.assertEquals(null, CharSequenceUtils.subSequence(null, 1));\n        //\n        // non-null input\n        //\n        Assert.assertEquals(StringUtils.EMPTY, CharSequenceUtils.subSequence(StringUtils.EMPTY, 0));\n        Assert.assertEquals(\"012\", CharSequenceUtils.subSequence(\"012\", 0));\n        Assert.assertEquals(\"12\", CharSequenceUtils.subSequence(\"012\", 1));\n        Assert.assertEquals(\"2\", CharSequenceUtils.subSequence(\"012\", 2));\n        Assert.assertEquals(StringUtils.EMPTY, CharSequenceUtils.subSequence(\"012\", 3));\n        //\n        // Exception expected\n        //\n        try {\n            Assert.assertEquals(null, CharSequenceUtils.subSequence(StringUtils.EMPTY, -1));\n            Assert.fail(\"Expected \" + IndexOutOfBoundsException.class.getName());\n        } catch (final IndexOutOfBoundsException e) {\n            // Expected\n        }\n        try {\n            Assert.assertEquals(null, CharSequenceUtils.subSequence(StringUtils.EMPTY, 1));\n            Assert.fail(\"Expected \" + IndexOutOfBoundsException.class.getName());\n        } catch (final IndexOutOfBoundsException e) {\n            // Expected\n        }\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 83,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3457,
+  "representation_chars": 3457,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

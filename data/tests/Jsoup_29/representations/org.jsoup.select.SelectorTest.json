@@ -1,0 +1,106 @@
+{
+  "test_class": "org.jsoup.select.SelectorTest",
+  "source_file": "src/test/java/org/jsoup/select/SelectorTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.jsoup.select.SelectorTest\n\nSOURCE FILE:\nsrc/test/java/org/jsoup/select/SelectorTest.java\n\nTEST SOURCE:\npackage org.jsoup.select;\n\nimport org.jsoup.Jsoup;\nimport org.jsoup.nodes.Document;\nimport org.jsoup.nodes.Element;\nimport org.junit.Test;\nimport static org.junit.Assert.*;\n\n/**\n Tests that the selector selects correctly.\n\n @author Jonathan Hedley, jonathan@hedley.net */\npublic class SelectorTest {\n    @Test public void testByTag() {\n        Elements els = Jsoup.parse(\"<div id=1><div id=2><p>Hello</p></div></div><div id=3>\").select(\"div\");\n        assertEquals(3, els.size());\n        assertEquals(\"1\", els.get(0).id());\n        assertEquals(\"2\", els.get(1).id());\n        assertEquals(\"3\", els.get(2).id());\n\n        Elements none = Jsoup.parse(\"<div id=1><div id=2><p>Hello</p></div></div><div id=3>\").select(\"span\");\n        assertEquals(0, none.size());\n    }\n\n    @Test public void testById() {\n        Elements els = Jsoup.parse(\"<div><p id=foo>Hello</p><p id=foo>Foo two!</p></div>\").select(\"#foo\");\n        assertEquals(2, els.size());\n        assertEquals(\"Hello\", els.get(0).text());\n        assertEquals(\"Foo two!\", els.get(1).text());\n\n        Elements none = Jsoup.parse(\"<div id=1></div>\").select(\"#foo\");\n        assertEquals(0, none.size());\n    }\n\n    @Test public void testByClass() {\n        Elements els = Jsoup.parse(\"<p id=0 class='one two'><p id=1 class='one'><p id=2 class='two'>\").select(\"p.one\");\n        assertEquals(2, els.size());\n        assertEquals(\"0\", els.get(0).id());\n        assertEquals(\"1\", els.get(1).id());\n\n        Elements none = Jsoup.parse(\"<div class='one'></div>\").select(\".foo\");\n        assertEquals(0, none.size());\n\n        Elements els2 = Jsoup.parse(\"<div class='One-Two'></div>\").select(\".one-two\");\n        assertEquals(1, els2.size());\n    }\n\n    @Test public void testByAttribute() {\n        String h = \"<div Title=Foo /><div Title=Bar /><div Style=Qux /><div title=Bam /><div title=SLAM /><div />\";\n        Document doc = Jsoup.parse(h);\n\n        Elements withTitle = doc.select(\"[title]\");\n        assertEquals(4, withTitle.size());\n\n        Elements foo = doc.select(\"[title=foo]\");\n        assertEquals(1, foo.size());\n\n        Elements not = doc.select(\"div[title!=bar]\");\n        assertEquals(5, not.size());\n        assertEquals(\"Foo\", not.first().attr(\"title\"));\n\n        Elements starts = doc.select(\"[title^=ba]\");\n        assertEquals(2, starts.size());\n        assertEquals(\"Bar\", starts.first().attr(\"title\"));\n        assertEquals(\"Bam\", starts.last().attr(\"title\"));\n\n        Elements ends = doc.select(\"[title$=am]\");\n        assertEquals(2, ends.size());\n        assertEquals(\"Bam\", ends.first().attr(\"title\"));\n        assertEquals(\"SLAM\", ends.last().attr(\"title\"));\n\n        Elements contains = doc.select(\"[title*=a]\");\n        assertEquals(3, contains.size());\n        assertEquals(\"Bar\", contains.first().attr(\"title\"));\n        assertEquals(\"SLAM\", contains.last().attr(\"title\"));\n    }\n\n    @Test public void testNamespacedTag() {\n        Document doc = Jsoup.parse(\"<div><abc:def id=1>Hello</abc:def></div> <abc:def class=bold id=2>There</abc:def>\");\n        Elements byTag = doc.select(\"abc|def\");\n        assertEquals(2, byTag.size());\n        assertEquals(\"1\", byTag.first().id());\n        assertEquals(\"2\", byTag.last().id());\n\n        Elements byAttr = doc.select(\".bold\");\n        assertEquals(1, byAttr.size());\n        assertEquals(\"2\", byAttr.last().id());\n\n        Elements byTagAttr = doc.select(\"abc|def.bold\");\n        assertEquals(1, byTagAttr.size());\n        assertEquals(\"2\", byTagAttr.last().id());\n\n        Elements byContains = doc.select(\"abc|def:contains(e)\");\n        assertEquals(2, byContains.size());\n        assertEquals(\"1\", byContains.first().id());\n        assertEquals(\"2\", byContains.last().id());\n    }\n\n    @Test public void testByAttributeStarting() {\n        Document doc = Jsoup.parse(\"<div id=1 data-name=jsoup>Hello</div><p data-val=5 id=2>There</p><p id=3>No</p>\");\n        Elements withData = doc.select(\"[^data-]\");\n        assertEquals(2, withData.size());\n        assertEquals(\"1\", withData.first().id());\n        assertEquals(\"2\", withData.last().id());\n\n        withData = doc.select(\"p[^data-]\");\n        assertEquals(1, withData.size());\n        assertEquals(\"2\", withData.first().id());\n    }\n\n    @Test public void testByAttributeRegex() {\n        Document doc = Jsoup.parse(\"<p><img src=foo.png id=1><img src=bar.jpg id=2><img src=qux.JPEG id=3><img src=old.gif><img></p>\");\n        Elements imgs = doc.select(\"img[src~=(?i)\\\\.(png|jpe?g)]\");\n        assertEquals(3, imgs.size());\n        assertEquals(\"1\", imgs.get(0).id());\n        assertEquals(\"2\", imgs.get(1).id());\n        assertEquals(\"3\", imgs.get(2).id());\n    }\n\n    @Test public void testByAttributeRegexCharacterClass() {\n        Document doc = Jsoup.parse(\"<p><img src=foo.png id=1><img src=bar.jpg id=2><img src=qux.JPEG id=3><img src=old.gif id=4></p>\");\n        Elements imgs = doc.select(\"img[src~=[o]]\");\n        assertEquals(2, imgs.size());\n        assertEquals(\"1\", imgs.get(0).id());\n        assertEquals(\"4\", imgs.get(1).id());\n    }\n\n    @Test public void testByAttributeRegexCombined() {\n        Document doc = Jsoup.parse(\"<div><table class=x><td>Hello</td></table></div>\");\n        Elements els = doc.select(\"div table[class~=x|y]\");\n        assertEquals(1, els.size());\n        assertEquals(\"Hello\", els.text());\n    }\n\n    @Test public void testCombinedWithContains() {\n        Document doc = Jsoup.parse(\"<p id=1>One</p><p>Two +</p><p>Three +</p>\");\n        Elements els = doc.select(\"p#1 + :contains(+)\");\n        assertEquals(1, els.size());\n        assertEquals(\"Two +\", els.text());\n        assertEquals(\"p\", els.first().tagName());\n        Document doc = Jsoup.parse(h);\n        Elements sibs = doc.select(\"li#1 + li#2\");\n        assertEquals(1, sibs.size());\n        assertEquals(\"Two\", sibs.get(0).text());\n    }\n\n    @Test public void notAdjacent() {\n        String h = \"<ol><li id=1>One<li id=2>Two<li id=3>Three</ol>\";\n        Document doc = Jsoup.parse(h);\n        Elements sibs = doc.select(\"li#1 + li#3\");\n        assertEquals(0, sibs.size());\n    }\n\n    @Test public void mixCombinator() {\n        String h = \"<div class=foo><ol><li>One<li>Two<li>Three</ol></div>\";\n        Document doc = Jsoup.parse(h);\n        Elements sibs = doc.select(\"body > div.foo li + li\");\n\n        assertEquals(2, sibs.size());\n        assertEquals(\"Two\", sibs.get(0).text());\n        assertEquals(\"Three\", sibs.get(1).text());\n    }\n\n    @Test public void mixCombinatorGroup() {\n        String h = \"<div class=foo><ol><li>One<li>Two<li>Three</ol></div>\";\n        Document doc = Jsoup.parse(h);\n        Elements els = doc.select(\".foo > ol, ol > li + li\");\n\n        assertEquals(3, els.size());\n        assertEquals(\"ol\", els.get(0).tagName());\n        assertEquals(\"Two\", els.get(1).text());\n        assertEquals(\"Three\", els.get(2).text());\n    }\n\n    @Test public void generalSiblings() {\n        String h = \"<ol><li id=1>One<li id=2>Two<li id=3>Three</ol>\";\n        Document doc = Jsoup.parse(h);\n        Elements els = doc.select(\"#1 ~ #3\");\n        assertEquals(1, els.size());\n        assertEquals(\"Three\", els.first().text());\n    }\n\n    // for http://github.com/jhy/jsoup/issues#issue/10\n    @Test public void testCharactersInIdAndClass() {\n        // using CSS spec for identifiers (id and class): a-z0-9, -, _. NOT . (which is OK in html spec, but not css)\n        String h = \"<div><p id='a1-foo_bar'>One</p><p class='b2-qux_bif'>Two</p></div>\";\n        Document doc = Jsoup.parse(h);\n\n        Element el1 = doc.getElementById(\"a1-foo_bar\");\n        assertEquals(\"One\", el1.text());\n        Element el2 = doc.getElementsByClass(\"b2-qux_bif\").first();\n        assertEquals(\"Two\", el2.text());\n\n        Element el3 = doc.select(\"#a1-foo_bar\").first();\n        assertEquals(\"One\", el3.text());\n        Element el4 = doc.select(\".b2-qux_bif\").first();\n        assertEquals(\"Two\", el4.text());\n    }\n\n    // for http://github.com/jhy/jsoup/issues#issue/13\n    @Test public void testSupportsLeadingCombinator() {\n        String h = \"<div><p><span>One</span><span>Two</span></p></div>\";\n        Document doc = Jsoup.parse(h);\n\n        Element p = doc.select(\"div > p\").first();\n        Elements spans = p.select(\"> span\");\n        assertEquals(2, spans.size());\n        assertEquals(\"One\", spans.first().text());\n\n        // make sure doesn't get nested\n        h = \"<div id=1><div id=2><div id=3></div></div></div>\";\n        doc = Jsoup.parse(h);\n        Element div = doc.select(\"div\").select(\" > div\").first();\n        assertEquals(\"2\", div.id());\n    }\n\n    @Test public void testPseudoLessThan() {\n        Document doc = Jsoup.parse(\"<div><p>One</p><p>Two</p><p>Three</>p></div><div><p>Four</p>\");\n        Elements ps = doc.select(\"div p:lt(2)\");\n        assertEquals(3, ps.size());\n",
+  "compaction": {
+    "source_lines": 601,
+    "mode": "windows",
+    "windows_total": 10,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        300,
+        380
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.60613566850173
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 8.052859674482155
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 11.545097130039018
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.60613566850173
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 8.052859674482155
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 7.762381606234415
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 5.896201168421653
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 3.6798350675549365
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 11.545097130039018
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 3.1573457431864043
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 2.992431997391423
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 2.252279944577126
+      },
+      {
+        "start": 540,
+        "end": 601,
+        "score": 1.440996246844442
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8921,
+  "representation_chars": 8921,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

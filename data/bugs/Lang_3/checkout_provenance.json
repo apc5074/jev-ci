@@ -1,0 +1,59 @@
+{
+  "qualified_id": "Lang-3",
+  "example_id": "Lang_3",
+  "project": "Lang",
+  "bug_id": "3",
+  "split": "development",
+  "status": "ok",
+  "reused": false,
+  "checked_at": "2026-09-22T23:46:56+00:00",
+  "defects4j_version": "3.0.1",
+  "defects4j_commit": "6d54320e0db5a357f9ab38a8e4d2e5aead7e1c09",
+  "d4j_home": "D4J_HOME",
+  "fixed": {
+    "version_id": "3f",
+    "role": "base",
+    "work_dir": "data/bugs/Lang_3/checkouts/fixed",
+    "defects4j_config": {
+      "pid": "Lang",
+      "vid": "3f"
+    },
+    "command": [
+      "defects4j",
+      "checkout",
+      "-p",
+      "Lang",
+      "-v",
+      "3f",
+      "-w",
+      "data/bugs/Lang_3/checkouts/fixed"
+    ],
+    "exit_status": 0
+  },
+  "buggy": {
+    "version_id": "3b",
+    "role": "proposed_change",
+    "work_dir": "data/bugs/Lang_3/checkouts/buggy",
+    "defects4j_config": {
+      "pid": "Lang",
+      "vid": "3b"
+    },
+    "command": [
+      "defects4j",
+      "checkout",
+      "-p",
+      "Lang",
+      "-v",
+      "3b",
+      "-w",
+      "data/bugs/Lang_3/checkouts/buggy"
+    ],
+    "exit_status": 0
+  },
+  "logs": {
+    "fixed_stdout_tail": "",
+    "fixed_stderr_tail": "Checking out 8a104295 to /workspace/data/bugs/Lang_3/checkouts/fixed....... OK\nInit local repository...................................................... OK\nTag post-fix revision...................................................... OK\nApply patch................................................................ OK\nApply patch................................................................ OK\nApply patch................................................................ OK\nApply patch................................................................ OK\nRun post-checkout hook..................................................... OK\nExcluding broken/flaky tests............................................... OK\nExcluding broken/flaky tests............................................... OK\nExcluding broken/flaky tests............................................... OK\nBacking up build file: /workspace/data/bugs/Lang_3/checkouts/fixed/default. OK\nInitialize fixed program version........................................... OK\nApply patch................................................................ OK\nInitialize buggy program version........................................... OK\nDiff 8a104295:64cfee77..................................................... OK\nApply patch................................................................ OK\nTag pre-fix revision....................................................... OK\nCheck out program version: Lang-3f......................................... OK\n",
+    "buggy_stdout_tail": "",
+    "buggy_stderr_tail": "Checking out 8a104295 to /workspace/data/bugs/Lang_3/checkouts/buggy....... OK\nInit local repository...................................................... OK\nTag post-fix revision...................................................... OK\nApply patch................................................................ OK\nApply patch................................................................ OK\nApply patch................................................................ OK\nApply patch................................................................ OK\nRun post-checkout hook..................................................... OK\nExcluding broken/flaky tests............................................... OK\nExcluding broken/flaky tests............................................... OK\nExcluding broken/flaky tests............................................... OK\nBacking up build file: /workspace/data/bugs/Lang_3/checkouts/buggy/default. OK\nInitialize fixed program version........................................... OK\nApply patch................................................................ OK\nInitialize buggy program version........................................... OK\nDiff 8a104295:64cfee77..................................................... OK\nApply patch................................................................ OK\nTag pre-fix revision....................................................... OK\nCheck out program version: Lang-3b......................................... OK\n"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.node.POJONodeTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/node/POJONodeTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.node.POJONodeTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/node/POJONodeTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.node;\n\nimport java.io.IOException;\nimport java.util.*;\n\nimport com.fasterxml.jackson.core.JsonGenerator;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonSerialize;\nimport com.fasterxml.jackson.databind.node.ObjectNode;\nimport com.fasterxml.jackson.databind.ser.std.StdSerializer;\n\npublic class POJONodeTest extends NodeTestBase\n{\n    @JsonSerialize(using = CustomSer.class)\n    public static class Data {\n      public String aStr;\n    }\n\n    @SuppressWarnings(\"serial\")\n    public static class CustomSer extends StdSerializer<Data> {\n      public CustomSer() {\n          super(Data.class);\n      }\n\n      @Override\n      public void serialize(Data value, JsonGenerator gen, SerializerProvider provider) throws IOException {\n        String attrStr = (String) provider.getAttribute(\"myAttr\");\n        gen.writeStartObject();\n        gen.writeStringField(\"aStr\", \"The value is: \" + (attrStr == null ? \"NULL\" : attrStr));\n        gen.writeEndObject();\n      }\n    }\n\n    final ObjectMapper MAPPER = newObjectMapper();\n\n    public void testPOJONodeCustomSer() throws Exception\n    {\n      Data data = new Data();\n      data.aStr = \"Hello\";\n\n      Map<String, Object> mapTest = new HashMap<>();\n      mapTest.put(\"data\", data);\n\n      ObjectNode treeTest = MAPPER.createObjectNode();\n      treeTest.putPOJO(\"data\", data);\n\n      final String EXP = \"{\\\"data\\\":{\\\"aStr\\\":\\\"The value is: Hello!\\\"}}\";\n      \n      String mapOut = MAPPER.writer().withAttribute(\"myAttr\", \"Hello!\").writeValueAsString(mapTest);\n      assertEquals(EXP, mapOut);\n\n      String treeOut = MAPPER.writer().withAttribute(\"myAttr\", \"Hello!\").writeValueAsString(treeTest);\n      assertEquals(EXP, treeOut);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 55,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1921,
+  "representation_chars": 1921,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

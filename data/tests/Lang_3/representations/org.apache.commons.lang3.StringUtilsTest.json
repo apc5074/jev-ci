@@ -1,0 +1,251 @@
+{
+  "test_class": "org.apache.commons.lang3.StringUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/StringUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.StringUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/StringUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3;\n\nimport static org.junit.Assert.assertArrayEquals;\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertFalse;\nimport static org.junit.Assert.assertNotNull;\nimport static org.junit.Assert.assertNull;\nimport static org.junit.Assert.assertSame;\nimport static org.junit.Assert.assertTrue;\nimport static org.junit.Assert.fail;\n\nimport java.io.UnsupportedEncodingException;\nimport java.lang.reflect.Constructor;\nimport java.lang.reflect.Method;\nimport java.lang.reflect.Modifier;\nimport java.nio.CharBuffer;\nimport java.util.Arrays;\nimport java.util.Collections;\nimport java.util.Iterator;\nimport java.util.Locale;\n\nimport org.apache.commons.lang3.text.WordUtils;\nimport org.junit.Test;\n\n/**\n * Unit tests {@link org.apache.commons.lang3.StringUtils}.\n *\n * @version $Id$\n */\npublic class StringUtilsTest {\n    \n    static final String WHITESPACE;\n    static final String NON_WHITESPACE;\n    static final String TRIMMABLE;\n    static final String NON_TRIMMABLE;\n    static {\n        String ws = \"\";\n        String nws = \"\";\n        String tr = \"\";\n        String ntr = \"\";\n        for (int i = 0; i < Character.MAX_VALUE; i++) {\n            if (Character.isWhitespace((char) i)) {\n                ws += String.valueOf((char) i);\n                if (i > 32) {\n                    ntr += String.valueOf((char) i);\n                }\n            } else if (i < 40) {\n                nws += String.valueOf((char) i);\n            }\n        }\n        for (int i = 0; i <= 32; i++) {\n            tr += String.valueOf((char) i);\n        }\n        WHITESPACE = ws;\n        NON_WHITESPACE = nws;\n        TRIMMABLE = tr;\n        NON_TRIMMABLE = ntr;\n    }\n\n    private static final String[] ARRAY_LIST = { \"foo\", \"bar\", \"baz\" };\n    private static final String[] EMPTY_ARRAY_LIST = {};\n    private static final String[] NULL_ARRAY_LIST = {null};\n    private static final Object[] NULL_TO_STRING_LIST = {\n        new Object(){\n        assertEquals(\"\", StringUtils.getCommonPrefix(null, null));\n        assertEquals(\"\", StringUtils.getCommonPrefix(\"\", \"\"));\n        assertEquals(\"\", StringUtils.getCommonPrefix(\"\", null));\n        assertEquals(\"\", StringUtils.getCommonPrefix(\"abc\", null, null));\n        assertEquals(\"\", StringUtils.getCommonPrefix(null, null, \"abc\"));\n        assertEquals(\"\", StringUtils.getCommonPrefix(\"\", \"abc\"));\n        assertEquals(\"\", StringUtils.getCommonPrefix(\"abc\", \"\"));\n        assertEquals(\"abc\", StringUtils.getCommonPrefix(\"abc\", \"abc\"));\n        assertEquals(\"a\", StringUtils.getCommonPrefix(\"abc\", \"a\"));\n        assertEquals(\"ab\", StringUtils.getCommonPrefix(\"ab\", \"abxyz\"));\n        assertEquals(\"ab\", StringUtils.getCommonPrefix(\"abcde\", \"abxyz\"));\n        assertEquals(\"\", StringUtils.getCommonPrefix(\"abcde\", \"xyz\"));\n        assertEquals(\"\", StringUtils.getCommonPrefix(\"xyz\", \"abcde\"));\n        assertEquals(\"i am a \", StringUtils.getCommonPrefix(\"i am a machine\", \"i am a robot\"));\n    }\n        \n    @Test\n    public void testNormalizeSpace() {\n        assertEquals(null, StringUtils.normalizeSpace(null));\n        assertEquals(\"\", StringUtils.normalizeSpace(\"\"));\n        assertEquals(\"\", StringUtils.normalizeSpace(\" \"));\n        assertEquals(\"\", StringUtils.normalizeSpace(\"\\t\"));\n        assertEquals(\"\", StringUtils.normalizeSpace(\"\\n\"));        \n        assertEquals(\"\", StringUtils.normalizeSpace(\"\\u0009\"));\n        assertEquals(\"\", StringUtils.normalizeSpace(\"\\u000B\"));\n        assertEquals(\"\", StringUtils.normalizeSpace(\"\\u000C\"));\n        assertEquals(\"\", StringUtils.normalizeSpace(\"\\u001C\"));\n        assertEquals(\"\", StringUtils.normalizeSpace(\"\\u001D\"));\n        assertEquals(\"\", StringUtils.normalizeSpace(\"\\u001E\"));\n        assertEquals(\"\", StringUtils.normalizeSpace(\"\\u001F\"));\n        assertEquals(\"\", StringUtils.normalizeSpace(\"\\f\"));\n        assertEquals(\"\", StringUtils.normalizeSpace(\"\\r\"));\n        assertEquals(\"a\", StringUtils.normalizeSpace(\"  a  \"));\n        assertEquals(\"a b c\", StringUtils.normalizeSpace(\"  a  b   c  \"));\n        assertEquals(\"a b c\", StringUtils.normalizeSpace(\"a\\t\\f\\r  b\\u000B   c\\n\"));\n    }\n\n    @Test\n    public void testLANG666() {\n        assertEquals(\"12\",StringUtils.stripEnd(\"120.00\", \".0\"));\n        assertEquals(\"121\",StringUtils.stripEnd(\"121.00\", \".0\"));\n    }\n\n    // Methods on StringUtils that are immutable in spirit (i.e. calculate the length) \n    // should take a CharSequence parameter. Methods that are mutable in spirit (i.e. capitalize) \n    // should take a String or String[] parameter and return String or String[].\n    // This test enforces that this is done.\n    @Test\n    public void testStringUtilsCharSequenceContract() {\n        final Class<StringUtils> c = StringUtils.class;\n        final Method[] methods = c.getMethods();\n        for (final Method m : methods) {\n            if (m.getReturnType() == String.class || m.getReturnType() == String[].class) {\n                // Assume this is mutable and ensure the first parameter is not CharSequence.\n                // It may be String or it may be something else (String[], Object, Object[]) so \n                // don't actively test for that.\n                final Class<?>[] params = m.getParameterTypes();\n                if ( params.length > 0 && (params[0] == CharSequence.class || params[0] == CharSequence[].class)) {\n                    fail(\"The method \" + m + \" appears to be mutable in spirit and therefore must not accept a CharSequence\");\n                }\n            } else {\n                // Assume this is immutable in spirit and ensure the first parameter is not String.\n                // As above, it may be something other than CharSequence.\n                final Class<?>[] params = m.getParameterTypes();\n                if ( params.length > 0 && (params[0] == String.class || params[0] == String[].class)) {\n                    fail(\"The method \" + m + \" appears to be immutable in spirit and therefore must not accept a String\");\n                }\n            }\n        }\n    }\n\n    /**\n     * Tests {@link StringUtils#toString(byte[], String)}\n     * \n     * @throws UnsupportedEncodingException\n     * @see StringUtils#toString(byte[], String)\n     */\n    @Test\n    public void testToString() throws UnsupportedEncodingException {\n        final String expectedString = \"The quick brown fox jumped over the lazy dog.\";\n        String encoding = SystemUtils.FILE_ENCODING;\n        byte[] expectedBytes = expectedString.getBytes(encoding);\n        // sanity check start\n        assertArrayEquals(expectedBytes, expectedString.getBytes());\n        // sanity check end\n        assertEquals(expectedString, StringUtils.toString(expectedBytes, null));\n        assertEquals(expectedString, StringUtils.toString(expectedBytes, encoding));\n        encoding = \"UTF-16\";\n        expectedBytes = expectedString.getBytes(encoding);\n        assertEquals(expectedString, StringUtils.toString(expectedBytes, encoding));\n    }\n    \n    @Test\n    public void testEscapeSurrogatePairs() throws Exception {\n        assertEquals(\"\\uD83D\\uDE30\", StringEscapeUtils.escapeCsv(\"\\uD83D\\uDE30\"));\n        // Examples from https://en.wikipedia.org/wiki/UTF-16\n        assertEquals(\"\\uD800\\uDC00\", StringEscapeUtils.escapeCsv(\"\\uD800\\uDC00\"));\n        assertEquals(\"\\uD834\\uDD1E\", StringEscapeUtils.escapeCsv(\"\\uD834\\uDD1E\"));\n        assertEquals(\"\\uDBFF\\uDFFD\", StringEscapeUtils.escapeCsv(\"\\uDBFF\\uDFFD\"));\n        assertEquals(\"\\uDBFF\\uDFFD\", StringEscapeUtils.escapeHtml3(\"\\uDBFF\\uDFFD\"));\n        assertEquals(\"\\uDBFF\\uDFFD\", StringEscapeUtils.escapeHtml4(\"\\uDBFF\\uDFFD\"));\n        assertEquals(\"\\uDBFF\\uDFFD\", StringEscapeUtils.escapeXml(\"\\uDBFF\\uDFFD\"));\n    }\n    \n    /**\n     * Tests LANG-858.\n     * \n     * @throws Exception\n     */\n    @Test\n    public void testEscapeSurrogatePairsLang858() throws Exception {\n        assertEquals(\"\\\\uDBFF\\\\uDFFD\", StringEscapeUtils.escapeJava(\"\\uDBFF\\uDFFD\"));       //fail LANG-858\n        assertEquals(\"\\\\uDBFF\\\\uDFFD\", StringEscapeUtils.escapeEcmaScript(\"\\uDBFF\\uDFFD\")); //fail LANG-858\n    }\n    \n    @Test\n    public void testUnescapeSurrogatePairs() throws Exception {\n        assertEquals(\"\\uD83D\\uDE30\", StringEscapeUtils.unescapeCsv(\"\\uD83D\\uDE30\"));\n        // Examples from https://en.wikipedia.org/wiki/UTF-16\n        assertEquals(\"\\uD800\\uDC00\", StringEscapeUtils.unescapeCsv(\"\\uD800\\uDC00\"));\n        assertEquals(\"\\uD834\\uDD1E\", StringEscapeUtils.unescapeCsv(\"\\uD834\\uDD1E\"));\n        assertEquals(\"\\uDBFF\\uDFFD\", StringEscapeUtils.unescapeCsv(\"\\uDBFF\\uDFFD\"));\n        assertEquals(\"\\uDBFF\\uDFFD\", StringEscapeUtils.unescapeHtml3(\"\\uDBFF\\uDFFD\"));\n        assertEquals(\"\\uDBFF\\uDFFD\", StringEscapeUtils.unescapeHtml4(\"\\uDBFF\\uDFFD\"));\n    }\n\n    /**\n     * Tests {@code appendIfMissing}.\n     */\n    @Test\n    public void testAppendIfMissing() {\n        assertEquals(\"appendIfMissing(null,null)\", null, StringUtils.appendIfMissing(null,null));\n        assertEquals(\"appendIfMissing(abc,null)\", \"abc\", StringUtils.appendIfMissing(\"abc\",null));\n        assertEquals(\"appendIfMissing(\\\"\\\",xyz)\", \"xyz\", StringUtils.appendIfMissing(\"\",\"xyz\"));\n        assertEquals(\"appendIfMissing(abc,xyz)\", \"abcxyz\", StringUtils.appendIfMissing(\"abc\",\"xyz\"));\n        assertEquals(\"appendIfMissing(abcxyz,xyz)\", \"abcxyz\", StringUtils.appendIfMissing(\"abcxyz\",\"xyz\"));\n        assertEquals(\"appendIfMissing(aXYZ,xyz)\", \"aXYZxyz\", StringUtils.appendIfMissing(\"aXYZ\",\"xyz\"));\n\n        assertEquals(\"appendIfMissing(null,null,null)\", null, StringUtils.appendIfMissing(null,null,(CharSequence[]) null));\n        assertEquals(\"appendIfMissing(abc,null,null)\", \"abc\", StringUtils.appendIfMissing(\"abc\",null,(CharSequence[]) null));\n",
+  "compaction": {
+    "source_lines": 2322,
+    "mode": "windows",
+    "windows_total": 39,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        2100,
+        2180
+      ],
+      [
+        2160,
+        2240
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 48.20741123741477
+      },
+      {
+        "start": 2100,
+        "end": 2180,
+        "score": 32.220115695473744
+      },
+      {
+        "start": 2160,
+        "end": 2240,
+        "score": 31.53212261324414
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 48.20741123741477
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 18.274764119546088
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 0.5660837558148711
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 0.5540243003386098
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 9.007156545738741
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 2.1732247026354052
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 5.129501926151403
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 9.584747812657097
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 8.578299995687548
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 4.981132520350344
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 5.0888241533051275
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 5.12436502685323
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 7.485707079134539
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 5.221787957594746
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 5.679444671906222
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 10.989217259824406
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 15.683690393846627
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 2.2313468645255794
+      },
+      {
+        "start": 1080,
+        "end": 1160,
+        "score": 8.903852593207564
+      },
+      {
+        "start": 1140,
+        "end": 1220,
+        "score": 13.092073434445787
+      },
+      {
+        "start": 1200,
+        "end": 1280,
+        "score": 7.2178970153273525
+      },
+      {
+        "start": 1260,
+        "end": 1340,
+        "score": 0.8569170007375504
+      },
+      {
+        "start": 1320,
+        "end": 1400,
+        "score": 2.4004295312354547
+      },
+      {
+        "start": 1380,
+        "end": 1460,
+        "score": 2.200765604469467
+      },
+      {
+        "start": 1440,
+        "end": 1520,
+        "score": 0.030660583646244393
+      },
+      {
+        "start": 1500,
+        "end": 1580,
+        "score": 9.68790105745837
+      },
+      {
+        "start": 1560,
+        "end": 1640,
+        "score": 13.340947472714442
+      },
+      {
+        "start": 1620,
+        "end": 1700,
+        "score": 22.317154431030534
+      },
+      {
+        "start": 1680,
+        "end": 1760,
+        "score": 24.373625338050008
+      },
+      {
+        "start": 1740,
+        "end": 1820,
+        "score": 15.267335976221396
+      },
+      {
+        "start": 1800,
+        "end": 1880,
+        "score": 11.655024599458482
+      },
+      {
+        "start": 1860,
+        "end": 1940,
+        "score": 14.967857160444305
+      },
+      {
+        "start": 1920,
+        "end": 2000,
+        "score": 9.837514387945035
+      },
+      {
+        "start": 1980,
+        "end": 2060,
+        "score": 6.188181233960208
+      },
+      {
+        "start": 2040,
+        "end": 2120,
+        "score": 0.030579398483266098
+      },
+      {
+        "start": 2100,
+        "end": 2180,
+        "score": 32.220115695473744
+      },
+      {
+        "start": 2160,
+        "end": 2240,
+        "score": 31.53212261324414
+      },
+      {
+        "start": 2220,
+        "end": 2300,
+        "score": 11.072077471629122
+      },
+      {
+        "start": 2280,
+        "end": 2322,
+        "score": 9.843572768566688
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 10654,
+  "representation_chars": 10654,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

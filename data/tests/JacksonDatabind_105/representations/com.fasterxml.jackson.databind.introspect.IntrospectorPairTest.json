@@ -1,0 +1,101 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.introspect.IntrospectorPairTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/introspect/IntrospectorPairTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.introspect.IntrospectorPairTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/introspect/IntrospectorPairTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.introspect;\n\nimport java.lang.annotation.Annotation;\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.JsonIgnoreProperties;\nimport com.fasterxml.jackson.annotation.JsonInclude;\n\nimport com.fasterxml.jackson.core.Version;\n\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.cfg.MapperConfig;\nimport com.fasterxml.jackson.databind.deser.std.StringDeserializer;\nimport com.fasterxml.jackson.databind.deser.std.UntypedObjectDeserializer;\nimport com.fasterxml.jackson.databind.jsontype.NamedType;\nimport com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder;\nimport com.fasterxml.jackson.databind.ser.std.StringSerializer;\nimport com.fasterxml.jackson.databind.ser.std.ToStringSerializer;\n\n// started with [databind#1025] in mind\n@SuppressWarnings(\"serial\")\npublic class IntrospectorPairTest extends BaseMapTest\n{\n    static class Introspector1 extends AnnotationIntrospector {\n        @Override\n        public Version version() {\n            return Version.unknownVersion();\n        }\n\n        @Override\n        public JsonInclude.Value findPropertyInclusion(Annotated a) {\n            return JsonInclude.Value.empty()\n                    .withContentInclusion(JsonInclude.Include.ALWAYS)\n                    .withValueInclusion(JsonInclude.Include.NON_ABSENT);\n        }\n    }\n\n    static class Introspector2 extends AnnotationIntrospector {\n        @Override\n        public Version version() {\n            return Version.unknownVersion();\n        }\n\n        @Override\n        public JsonInclude.Value findPropertyInclusion(Annotated a) {\n            return JsonInclude.Value.empty()\n                    .withContentInclusion(JsonInclude.Include.NON_EMPTY)\n                    .withValueInclusion(JsonInclude.Include.USE_DEFAULTS);\n        }\n    }\n\n    static class IntrospectorWithHandlers extends AnnotationIntrospector {\n        final Object _deserializer;\n        final Object _serializer;\n\n        public IntrospectorWithHandlers(Object deser, Object ser) {\n            _deserializer = deser;\n            _serializer = ser;\n        }\n\n        @Override\n        public Version version() {\n            return Version.unknownVersion();\n        }\n\n        @Override\n        public Object findDeserializer(Annotated am) {\n            return _deserializer;\n        }\n\n        @Override\n        public Object findSerializer(Annotated am) {\n            return _serializer;\n        }\n    }\n\n    static class IntrospectorWithMap extends AnnotationIntrospector\n    {\n        private final Map<String, Object> values = new HashMap<>();\n\n        @Override\n        public TypeResolverBuilder<?> findPropertyContentTypeResolver(MapperConfig<?> config,\n                AnnotatedMember am, JavaType baseType)\n        {\n            return (TypeResolverBuilder<?>) values.get(\"findPropertyContentTypeResolver\");\n        }\n        \n        @SuppressWarnings(\"unchecked\")\n        @Override\n        public List<NamedType> findSubtypes(Annotated a)\n        {\n            return (List<NamedType>) values.get(\"findSubtypes\");\n        }\n\n        @Override\n        public String findTypeName(AnnotatedClass ac) {\n            return (String) values.get(\"findTypeName\");\n        }\n\n        /*\n        /******************************************************\n        /* Deserialization introspection\n        /******************************************************\n         */\n\n        @Override\n        public Boolean hasAnySetter(Annotated a) {\n            return (Boolean) values.get(\"hasAnySetter\");\n        }\n\n        /*\n        /******************************************************\n        /* Helper methods\n        /******************************************************\n         */        \n\n        private boolean _boolean(String key) {\n            Object ob = values.get(key);\n            return Boolean.TRUE.equals(ob);\n        }\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods, misc\n    /**********************************************************\n     */\n\n    private final AnnotationIntrospector NO_ANNOTATIONS = AnnotationIntrospector.nopInstance();\n\n    public void testVersion() throws Exception\n    {\n        Version v = new Version(1, 2, 3, null,\n                \"com.fasterxml\", \"IntrospectorPairTest\");\n        IntrospectorWithMap withVersion = new IntrospectorWithMap()\n                .version(v);\n        assertEquals(v,\n                new AnnotationIntrospectorPair(withVersion, NO_ANNOTATIONS).version());\n        IntrospectorWithMap noVersion = new IntrospectorWithMap();\n        assertEquals(Version.unknownVersion(),\n                new AnnotationIntrospectorPair(noVersion, withVersion).version());\n    }\n\n    public void testAccess() throws Exception\n    {\n        IntrospectorWithMap intr1 = new IntrospectorWithMap();\n        AnnotationIntrospectorPair pair = new AnnotationIntrospectorPair(intr1,\n                NO_ANNOTATIONS);\n        Collection<AnnotationIntrospector> intrs = pair.allIntrospectors();\n        assertEquals(2, intrs.size());\n        Iterator<AnnotationIntrospector> it = intrs.iterator();\n        assertSame(intr1, it.next());\n        assertSame(NO_ANNOTATIONS, it.next());\n    }\n\n    public void testAnnotationBundle() throws Exception\n    {\n        IntrospectorWithMap isBundle = new IntrospectorWithMap()\n                .add(\"isAnnotationBundle\", true);\n        assertTrue(new AnnotationIntrospectorPair(NO_ANNOTATIONS, isBundle)\n        AnnotationIntrospector intr2 = new IntrospectorWithHandlers(null, serToString);\n        AnnotationIntrospector nop = AnnotationIntrospector.nopInstance();\n        AnnotationIntrospector nop2 = new IntrospectorWithHandlers(null, JsonSerializer.None.class);\n\n        assertSame(serString,\n                new AnnotationIntrospectorPair(intr1, intr2).findSerializer(null));\n        assertSame(serToString,\n                new AnnotationIntrospectorPair(intr2, intr1).findSerializer(null));\n\n        // also: no-op instance should not block real one, regardless\n        assertSame(serString,\n                new AnnotationIntrospectorPair(nop, intr1).findSerializer(null));\n        assertSame(serString,\n                new AnnotationIntrospectorPair(nop2, intr1).findSerializer(null));\n\n        // nor should no-op result in non-null result\n        assertNull(new AnnotationIntrospectorPair(nop, nop2).findSerializer(null));\n        assertNull(new AnnotationIntrospectorPair(nop2, nop).findSerializer(null));\n    }\n\n    public void testFindDeserializer() throws Exception\n    {\n        final JsonDeserializer<?> deserString = StringDeserializer.instance;\n        final JsonDeserializer<?> deserObject = UntypedObjectDeserializer.Vanilla.std;\n\n        AnnotationIntrospector intr1 = new IntrospectorWithHandlers(deserString, null);\n        AnnotationIntrospector intr2 = new IntrospectorWithHandlers(deserObject, null);\n        AnnotationIntrospector nop = AnnotationIntrospector.nopInstance();\n        AnnotationIntrospector nop2 = new IntrospectorWithHandlers(JsonDeserializer.None.class, null);\n\n        assertSame(deserString,\n                new AnnotationIntrospectorPair(intr1, intr2).findDeserializer(null));\n        assertSame(deserObject,\n                new AnnotationIntrospectorPair(intr2, intr1).findDeserializer(null));\n        // also: no-op instance should not block real one, regardless\n        assertSame(deserString,\n                new AnnotationIntrospectorPair(nop, intr1).findDeserializer(null));\n        assertSame(deserString,\n                new AnnotationIntrospectorPair(nop2, intr1).findDeserializer(null));\n\n        // nor should no-op result in non-null result\n        assertNull(new AnnotationIntrospectorPair(nop, nop2).findDeserializer(null));\n        assertNull(new AnnotationIntrospectorPair(nop2, nop).findDeserializer(null));\n    }\n\n    /*\n    /******************************************************\n    /* Property auto-detection\n    /******************************************************\n     */\n\n    public void testFindAutoDetectVisibility() throws Exception\n    {\n        VisibilityChecker<?> vc = VisibilityChecker.Std.defaultInstance();\n        IntrospectorWithMap intr1 = new IntrospectorWithMap()\n                .add(\"findAutoDetectVisibility\", vc);\n        assertNull(new AnnotationIntrospectorPair(NO_ANNOTATIONS, NO_ANNOTATIONS)\n                .findAutoDetectVisibility(null, null));\n        assertSame(vc, new AnnotationIntrospectorPair(intr1, NO_ANNOTATIONS)\n                .findAutoDetectVisibility(null, null));\n        assertSame(vc, new AnnotationIntrospectorPair(NO_ANNOTATIONS, intr1)\n                .findAutoDetectVisibility(null, null));\n    }\n\n    /*\n    /******************************************************\n    /* Type handling\n    /******************************************************\n     */\n\n    public void testFindTypeResolver() throws Exception\n    {\n        /*\n        TypeResolverBuilder<?> findTypeResolver(MapperConfig<?> config,\n            AnnotatedClass ac, JavaType baseType)\n        return (TypeResolverBuilder<?>) values.get(\"findTypeResolver\");\n        */\n    }\n    public void testFindPropertyTypeResolver() {\n    }\n",
+  "compaction": {
+    "source_lines": 508,
+    "mode": "windows",
+    "windows_total": 9,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        180,
+        260
+      ],
+      [
+        360,
+        440
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 22.719013943448907
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 11.409539315297348
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 13.143927363982598
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 22.719013943448907
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.497997393291389
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 6.424464794772593
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 11.409539315297348
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 6.080220735170317
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 9.485939287691975
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 13.143927363982598
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 9.250605882358341
+      },
+      {
+        "start": 480,
+        "end": 508,
+        "score": 4.995252909408272
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9391,
+  "representation_chars": 9391,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

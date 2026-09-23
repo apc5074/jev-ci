@@ -1,0 +1,95 @@
+{
+  "example_id": "JacksonDatabind_28",
+  "qualified_id": "JacksonDatabind-28",
+  "project": "JacksonDatabind",
+  "bug_id": "28",
+  "split": "development",
+  "status": "complete",
+  "revisions": {
+    "base": "Bf",
+    "proposed": "Bb",
+    "direction": "fixed_to_buggy",
+    "notes": "Fixed (Bf) is the working base for tests/source. Buggy (Bb) is the proposed production change."
+  },
+  "manifest": {
+    "path": "data/manifest.json",
+    "selection_seed": 20260922,
+    "defects4j_version": "3.0.1",
+    "defects4j_commit": "6d54320e0db5a357f9ab38a8e4d2e5aead7e1c09",
+    "manifest_created_at": "2026-09-22T23:16:15+00:00",
+    "manifest_git_commit": "784d3d84dd09ae7f53cb828eac65532370906c56"
+  },
+  "artifacts": {
+    "bugs": "data/bugs/JacksonDatabind_28/",
+    "patches": "data/patches/JacksonDatabind_28/",
+    "tests": "data/tests/JacksonDatabind_28/"
+  },
+  "visibility": {
+    "model_visible": [
+      "data/patches/<id>/representation.txt",
+      "data/patches/<id>/patch_meta.json (truncation stats only)",
+      "data/tests/<id>/inventory.json (test class ids + source paths)",
+      "data/tests/<id>/representations/*.json (compact test source)"
+    ],
+    "private": [
+      "data/tests/<id>/labels.json",
+      "data/tests/<id>/raw/tests.trigger",
+      "data/bugs/<id>/error.json",
+      "checkout trees under data/bugs/<id>/checkouts/"
+    ]
+  },
+  "complete_requirements": [
+    "example_json",
+    "checkout_provenance",
+    "checkout_fixed",
+    "checkout_buggy",
+    "patch_meta",
+    "patch_diff",
+    "patch_representation",
+    "raw_tests_all",
+    "raw_tests_trigger",
+    "test_inventory",
+    "test_labels",
+    "representations_index"
+  ],
+  "error": null,
+  "checkouts": {
+    "fixed": "data/bugs/JacksonDatabind_28/checkouts/fixed",
+    "buggy": "data/bugs/JacksonDatabind_28/checkouts/buggy",
+    "provenance": "data/bugs/JacksonDatabind_28/checkout_provenance.json"
+  },
+  "patch": {
+    "meta": "data/patches/JacksonDatabind_28/patch_meta.json",
+    "diff": "data/patches/JacksonDatabind_28/regression_patch.diff",
+    "representation": "data/patches/JacksonDatabind_28/representation.txt",
+    "patch_truncated": false,
+    "original_patch_chars": 1327,
+    "representation_chars": 1327
+  },
+  "tests": {
+    "inventory": "data/tests/JacksonDatabind_28/inventory.json",
+    "labels": "data/tests/JacksonDatabind_28/labels.json",
+    "num_test_classes": 279,
+    "num_positive_classes": 1,
+    "num_trigger_methods": 1,
+    "source_resolved": 279,
+    "source_missing": 0,
+    "source_ambiguous": 0
+  },
+  "representations": {
+    "index": "data/tests/JacksonDatabind_28/representations_index.json",
+    "dir": "data/tests/JacksonDatabind_28/representations",
+    "num_representations": 279,
+    "source_missing": 0,
+    "representation_truncated": 0,
+    "window_compacted": 59
+  },
+  "content_hashes": {
+    "patch_representation": "5b2a0f4133ec0daf128f73c3b00d649a7afd9e96de4b2f6a4c0df1f215c09b80",
+    "patch_meta": "c50bcdb45764c6dd2917d0d4d65e8e21da55d409869aec0d7339804a11607072",
+    "test_inventory": "bdfb536ba61246ca515427c7db5e69641585f17d62c9f18897088c1345622525",
+    "test_labels": "3a3926b501f75e732199bb7438a43b48fee3ba95661d898c57deb9b348780964",
+    "representations_index": "f60587fb7792a1e7e9c2a7dadab064dadf20c749a135d735429a24cb12c2ab78",
+    "checkout_provenance": "1c0870a74b58d06e7e558139b65cfb74db762da2482d8248eeea7ecd7a5001e9"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.builder.BuilderFailTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/builder/BuilderFailTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.builder.BuilderFailTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/builder/BuilderFailTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser.builder;\n\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\nimport com.fasterxml.jackson.databind.exc.InvalidDefinitionException;\nimport com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;\n\npublic class BuilderFailTest extends BaseMapTest\n{\n    @JsonDeserialize(builder=SimpleBuilderXY.class)\n    static class ValueClassXY\n    {\n        final int _x, _y;\n\n        protected ValueClassXY(int x, int y) {\n            _x = x+1;\n            _y = y+1;\n        }\n    }\n\n    static class SimpleBuilderXY\n    {\n        public int x, y;\n     \n        public SimpleBuilderXY withX(int x0) {\n              this.x = x0;\n              return this;\n        }\n\n        public SimpleBuilderXY withY(int y0) {\n              this.y = y0;\n              return this;\n        }\n\n        public ValueClassXY build() {\n              return new ValueClassXY(x, y);\n        }\n    }\n\n    // for [databind#761]\n    @JsonDeserialize(builder = ValueBuilderWrongBuildType.class)\n    static class ValueClassWrongBuildType {\n    }\n\n    static class ValueBuilderWrongBuildType\n    {\n        public int x;\n\n        public ValueBuilderWrongBuildType withX(int x0) {\n            this.x = x0;\n            return this;\n        }\n\n        public ValueClassXY build() {\n            return null;\n        }\n    }\n    /*\n    /**********************************************************\n    /* Unit tests\n    /**********************************************************\n     */\n\n    private final ObjectMapper MAPPER = new ObjectMapper();\n\n    public void testBuilderMethodReturnInvalidType() throws Exception\n    {\n        final String json = \"{\\\"x\\\":1}\";\n        try {\n            MAPPER.readValue(json, ValueClassWrongBuildType.class);\n            fail(\"Missing expected JsonProcessingException exception\");\n        } catch (InvalidDefinitionException e) {\n            verifyException(e, \"Build method\");\n            verifyException(e, \"has wrong return type\");\n        }\n    }\n\n    public void testExtraFields() throws Exception\n    {\n        final String json = aposToQuotes(\"{'x':1,'y':2,'z':3}\");\n        try {\n            MAPPER.readValue(json, ValueClassXY.class);\n            fail(\"should not pass\");\n        } catch (UnrecognizedPropertyException e) {\n            verifyException(e, \"Unrecognized field \\\"z\\\"\");\n        }\n    }\n}\n",
+  "compaction": {
+    "source_lines": 88,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2592,
+  "representation_chars": 2592,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

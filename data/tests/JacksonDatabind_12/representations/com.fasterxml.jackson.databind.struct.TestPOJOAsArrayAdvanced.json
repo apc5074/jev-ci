@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.struct.TestPOJOAsArrayAdvanced",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/struct/TestPOJOAsArrayAdvanced.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.struct.TestPOJOAsArrayAdvanced\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/struct/TestPOJOAsArrayAdvanced.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.struct;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.ObjectMapper;\n\npublic class TestPOJOAsArrayAdvanced extends BaseMapTest\n{\n    @JsonFormat(shape=JsonFormat.Shape.ARRAY)\n    @JsonPropertyOrder(alphabetic=true)\n    static class CreatorAsArray\n    {\n        protected int x, y;\n        public int a, b;\n\n        @JsonCreator\n        public CreatorAsArray(@JsonProperty(\"x\") int x, @JsonProperty(\"y\") int y)\n        {\n            this.x = x;\n            this.y = y;\n        }\n\n        public int getX() { return x; }\n        public int getY() { return y; }\n    }\n\n    @JsonFormat(shape=JsonFormat.Shape.ARRAY)\n    @JsonPropertyOrder({\"a\",\"b\",\"x\",\"y\"})\n    static class CreatorAsArrayShuffled\n    {\n        protected int x, y;\n        public int a, b;\n\n        @JsonCreator\n        public CreatorAsArrayShuffled(@JsonProperty(\"x\") int x, @JsonProperty(\"y\") int y)\n        {\n            this.x = x;\n            this.y = y;\n        }\n\n        public int getX() { return x; }\n        public int getY() { return y; }\n    }\n\n    static class ViewA { }\n    static class ViewB { }\n    \n    @JsonFormat(shape=JsonFormat.Shape.ARRAY)\n    @JsonPropertyOrder(alphabetic=true)\n    static class AsArrayWithView\n    {\n        @JsonView(ViewA.class)\n        public int a;\n        @JsonView(ViewB.class)\n        public int b;\n        public int c;\n    }\n    \n    /*\n    /*****************************************************\n    /* Basic tests\n    /*****************************************************\n     */\n\n    private final static ObjectMapper MAPPER = new ObjectMapper();\n\n    public void testWithView() throws Exception\n    {\n        // Ok, first, ensure that serializer will \"black out\" filtered properties\n        AsArrayWithView input = new AsArrayWithView();\n        input.a = 1;\n        input.b = 2;\n        input.c = 3;\n        String json = MAPPER.writerWithView(ViewA.class).writeValueAsString(input);\n        assertEquals(\"[1,null,3]\", json);\n\n        // and then that conversely deserializer does something similar\n        AsArrayWithView output = MAPPER.reader(AsArrayWithView.class).withView(ViewB.class)\n                .readValue(\"[1,2,3]\");\n        // should include 'c' (not view-able) and 'b' (include in ViewB) but not 'a'\n        assertEquals(3, output.c);\n        assertEquals(2, output.b);\n        assertEquals(0, output.a);\n    }\n\n    public void testWithCreatorsOrdered() throws Exception\n    {\n        CreatorAsArray input = new CreatorAsArray(3, 4);\n        input.a = 1;\n        input.b = 2;\n\n        // note: Creator properties get sorted ahead of others, hence not [1,2,3,4] but:\n        String json = MAPPER.writeValueAsString(input);\n        assertEquals(\"[3,4,1,2]\", json);\n\n        // and should get back in proper order, too\n        CreatorAsArray output = MAPPER.readValue(json, CreatorAsArray.class);\n        assertEquals(1, output.a);\n        assertEquals(2, output.b);\n        assertEquals(3, output.x);\n        assertEquals(4, output.y);\n    }\n\n    // Same as above, but ordering of properties different...\n    public void testWithCreatorsShuffled() throws Exception\n    {\n        CreatorAsArrayShuffled input = new CreatorAsArrayShuffled(3, 4);\n        input.a = 1;\n        input.b = 2;\n\n        // note: explicit ordering overrides implicit creators-first ordering:\n        String json = MAPPER.writeValueAsString(input);\n        assertEquals(\"[1,2,3,4]\", json);\n\n        // and should get back in proper order, too\n        CreatorAsArrayShuffled output = MAPPER.readValue(json, CreatorAsArrayShuffled.class);\n        assertEquals(1, output.a);\n        assertEquals(2, output.b);\n        assertEquals(3, output.x);\n        assertEquals(4, output.y);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 123,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3999,
+  "representation_chars": 3999,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

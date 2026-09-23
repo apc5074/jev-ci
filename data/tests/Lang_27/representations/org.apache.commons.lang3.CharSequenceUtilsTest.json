@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.lang3.CharSequenceUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/CharSequenceUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.CharSequenceUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/CharSequenceUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3;\n\nimport java.nio.CharBuffer;\n\nimport junit.framework.Assert;\nimport junit.framework.TestCase;\n\n/**\n * Tests CharSequenceUtils\n *\n * @author Gary Gregory\n * @version $Id$\n */\npublic class CharSequenceUtilsTest extends TestCase {\n\n    public void testLength_CharBuffer() {\n        Assert.assertEquals(0, CharSequenceUtils.length(CharBuffer.wrap(\"\")));\n        Assert.assertEquals(1, CharSequenceUtils.length(CharBuffer.wrap(\"A\")));\n        Assert.assertEquals(1, CharSequenceUtils.length(CharBuffer.wrap(\" \")));\n        Assert.assertEquals(8, CharSequenceUtils.length(CharBuffer.wrap(\"ABCDEFGH\")));\n    }\n\n    public void testLength_String() {\n        Assert.assertEquals(0, CharSequenceUtils.length(null));\n        Assert.assertEquals(0, CharSequenceUtils.length(\"\"));\n        Assert.assertEquals(1, CharSequenceUtils.length(\"A\"));\n        Assert.assertEquals(1, CharSequenceUtils.length(\" \"));\n        Assert.assertEquals(8, CharSequenceUtils.length(\"ABCDEFGH\"));\n    }\n\n    public void testLength_StringBuffer() {\n        Assert.assertEquals(0, CharSequenceUtils.length(new StringBuffer(\"\")));\n        Assert.assertEquals(1, CharSequenceUtils.length(new StringBuffer(\"A\")));\n        Assert.assertEquals(1, CharSequenceUtils.length(new StringBuffer(\" \")));\n        Assert.assertEquals(8, CharSequenceUtils.length(new StringBuffer(\"ABCDEFGH\")));\n    }\n\n    public void testLength_StringBuilder() {\n        Assert.assertEquals(0, CharSequenceUtils.length(new StringBuilder(\"\")));\n        Assert.assertEquals(1, CharSequenceUtils.length(new StringBuilder(\"A\")));\n        Assert.assertEquals(1, CharSequenceUtils.length(new StringBuilder(\" \")));\n        Assert.assertEquals(8, CharSequenceUtils.length(new StringBuilder(\"ABCDEFGH\")));\n    }\n\n    public void testSubSequence() {\n        //\n        // null input\n        //\n        Assert.assertEquals(null, CharSequenceUtils.subSequence(null, -1));\n        Assert.assertEquals(null, CharSequenceUtils.subSequence(null, 0));\n        Assert.assertEquals(null, CharSequenceUtils.subSequence(null, 1));\n        //\n        // non-null input\n        //\n        Assert.assertEquals(StringUtils.EMPTY, CharSequenceUtils.subSequence(StringUtils.EMPTY, 0));\n        Assert.assertEquals(\"012\", CharSequenceUtils.subSequence(\"012\", 0));\n        Assert.assertEquals(\"12\", CharSequenceUtils.subSequence(\"012\", 1));\n        Assert.assertEquals(\"2\", CharSequenceUtils.subSequence(\"012\", 2));\n        Assert.assertEquals(StringUtils.EMPTY, CharSequenceUtils.subSequence(\"012\", 3));\n        //\n        // Exception expected\n        //\n        try {\n            Assert.assertEquals(null, CharSequenceUtils.subSequence(StringUtils.EMPTY, -1));\n            Assert.fail(\"Expected \" + IndexOutOfBoundsException.class.getName());\n        } catch (IndexOutOfBoundsException e) {\n            // Expected\n        }\n        try {\n            Assert.assertEquals(null, CharSequenceUtils.subSequence(StringUtils.EMPTY, 1));\n            Assert.fail(\"Expected \" + IndexOutOfBoundsException.class.getName());\n        } catch (IndexOutOfBoundsException e) {\n            // Expected\n        }\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 93,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 4102,
+  "representation_chars": 4102,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

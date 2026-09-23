@@ -1,0 +1,247 @@
+TEST CLASS:
+org.apache.commons.lang3.math.NumberUtilsTest
+
+SOURCE FILE:
+src/test/java/org/apache/commons/lang3/math/NumberUtilsTest.java
+
+TEST SOURCE:
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.commons.lang3.math;
+
+import static org.apache.commons.lang3.JavaVersion.JAVA_1_3;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
+import org.apache.commons.lang3.SystemUtils;
+import org.junit.Test;
+
+/**
+ * Unit tests {@link org.apache.commons.lang3.math.NumberUtils}.
+ *
+ * @version $Id$
+ */
+public class NumberUtilsTest {
+
+    //-----------------------------------------------------------------------
+    @Test
+    public void testConstructor() {
+        assertNotNull(new NumberUtils());
+        Constructor<?>[] cons = NumberUtils.class.getDeclaredConstructors();
+        assertEquals(1, cons.length);
+        assertTrue(Modifier.isPublic(cons[0].getModifiers()));
+        assertTrue(Modifier.isPublic(NumberUtils.class.getModifiers()));
+        assertFalse(Modifier.isFinal(NumberUtils.class.getModifiers()));
+    }
+
+    //---------------------------------------------------------------------
+
+    /**
+     * Test for {@link NumberUtils#toInt(String)}.
+     */
+    @Test
+    public void testToIntString() {
+        assertTrue("toInt(String) 1 failed", NumberUtils.toInt("12345") == 12345);
+        assertTrue("toInt(String) 2 failed", NumberUtils.toInt("abc") == 0);
+        assertTrue("toInt(empty) failed", NumberUtils.toInt("") == 0);
+        assertTrue("toInt(null) failed", NumberUtils.toInt(null) == 0);
+    }
+
+    /**
+     * Test for {@link NumberUtils#toInt(String, int)}.
+     */
+    @Test
+    public void testToIntStringI() {
+        assertTrue("toInt(String,int) 1 failed", NumberUtils.toInt("12345", 5) == 12345);
+        assertTrue("toInt(String,int) 2 failed", NumberUtils.toInt("1234.5", 5) == 5);
+    }
+
+    /**
+     * Test for {@link NumberUtils#toLong(String)}.
+     */
+    @Test
+    public void testToLongString() {
+        assertTrue("toLong(String) 1 failed", NumberUtils.toLong("12345") == 12345l);
+        assertTrue("toLong(String) 2 failed", NumberUtils.toLong("abc") == 0l);
+        assertTrue("toShort(String,short) 2 failed", NumberUtils.toShort("1234.5", (short) 5) == 5);
+    }
+
+    @Test
+    public void testCreateNumber() {
+        // a lot of things can go wrong
+        assertEquals("createNumber(String) 1 failed", Float.valueOf("1234.5"), NumberUtils.createNumber("1234.5"));
+        assertEquals("createNumber(String) 2 failed", Integer.valueOf("12345"), NumberUtils.createNumber("12345"));
+        assertEquals("createNumber(String) 3 failed", Double.valueOf("1234.5"), NumberUtils.createNumber("1234.5D"));
+        assertEquals("createNumber(String) 3 failed", Double.valueOf("1234.5"), NumberUtils.createNumber("1234.5d"));
+        assertEquals("createNumber(String) 4 failed", Float.valueOf("1234.5"), NumberUtils.createNumber("1234.5F"));
+        assertEquals("createNumber(String) 4 failed", Float.valueOf("1234.5"), NumberUtils.createNumber("1234.5f"));
+        assertEquals("createNumber(String) 5 failed", Long.valueOf(Integer.MAX_VALUE + 1L), NumberUtils.createNumber(""
+            + (Integer.MAX_VALUE + 1L)));
+        assertEquals("createNumber(String) 6 failed", Long.valueOf(12345), NumberUtils.createNumber("12345L"));
+        assertEquals("createNumber(String) 6 failed", Long.valueOf(12345), NumberUtils.createNumber("12345l"));
+        assertEquals("createNumber(String) 7 failed", Float.valueOf("-1234.5"), NumberUtils.createNumber("-1234.5"));
+        assertEquals("createNumber(String) 8 failed", Integer.valueOf("-12345"), NumberUtils.createNumber("-12345"));
+        assertTrue("createNumber(String) 9a failed", 0xFADE == NumberUtils.createNumber("0xFADE").intValue());
+        assertTrue("createNumber(String) 9b failed", 0xFADE == NumberUtils.createNumber("0Xfade").intValue());
+        assertTrue("createNumber(String) 10a failed", -0xFADE == NumberUtils.createNumber("-0xFADE").intValue());
+        assertTrue("createNumber(String) 10b failed", -0xFADE == NumberUtils.createNumber("-0Xfade").intValue());
+        assertEquals("createNumber(String) 11 failed", Double.valueOf("1.1E200"), NumberUtils.createNumber("1.1E200"));
+        assertEquals("createNumber(String) 12 failed", Float.valueOf("1.1E20"), NumberUtils.createNumber("1.1E20"));
+        assertEquals("createNumber(String) 13 failed", Double.valueOf("-1.1E200"), NumberUtils.createNumber("-1.1E200"));
+        assertEquals("createNumber(String) 14 failed", Double.valueOf("1.1E-200"), NumberUtils.createNumber("1.1E-200"));
+        assertEquals("createNumber(null) failed", null, NumberUtils.createNumber(null));
+        assertEquals("createNumber(String) failed", new BigInteger("12345678901234567890"), NumberUtils
+                .createNumber("12345678901234567890L"));
+
+        // jdk 1.2 doesn't support this. unsure about jdk 1.2.2
+        if (SystemUtils.isJavaVersionAtLeast(JAVA_1_3)) {
+            assertEquals("createNumber(String) 15 failed", new BigDecimal("1.1E-700"), NumberUtils
+                    .createNumber("1.1E-700F"));
+        }
+        assertEquals("createNumber(String) 16 failed", Long.valueOf("10" + Integer.MAX_VALUE), NumberUtils
+                .createNumber("10" + Integer.MAX_VALUE + "L"));
+        assertEquals("createNumber(String) 17 failed", Long.valueOf("10" + Integer.MAX_VALUE), NumberUtils
+                .createNumber("10" + Integer.MAX_VALUE));
+        assertEquals("createNumber(String) 18 failed", new BigInteger("10" + Long.MAX_VALUE), NumberUtils
+                .createNumber("10" + Long.MAX_VALUE));
+
+        // LANG-521
+        assertEquals("createNumber(String) LANG-521 failed", Float.valueOf("2."), NumberUtils.createNumber("2."));
+
+        // LANG-638
+        assertFalse("createNumber(String) succeeded", checkCreateNumber("1eE"));
+
+        // LANG-693
+        assertEquals("createNumber(String) LANG-693 failed", Double.valueOf(Double.MAX_VALUE), NumberUtils
+                    .createNumber("" + Double.MAX_VALUE));
+    }
+
+    @Test
+    public void testCreateFloat() {
+        assertEquals("createFloat(String) failed", Float.valueOf("1234.5"), NumberUtils.createFloat("1234.5"));
+        assertEquals("createFloat(null) failed", null, NumberUtils.createFloat(null));
+        this.testCreateFloatFailure("");
+        this.testCreateFloatFailure(" ");
+        this.testCreateFloatFailure("\b\t\n\f\r");
+        // Funky whitespaces
+        this.testCreateFloatFailure("\u00A0\uFEFF\u000B\u000C\u001C\u001D\u001E\u001F");
+    }
+
+    protected void testCreateFloatFailure(String str) {
+        try {
+            Float value = NumberUtils.createFloat(str);
+            fail("createFloat(blank) failed: " + value);
+        } catch (NumberFormatException ex) {
+            // empty
+        }
+    }
+
+    @Test
+    public void testCreateDouble() {
+        assertEquals("createDouble(String) failed", Double.valueOf("1234.5"), NumberUtils.createDouble("1234.5"));
+        assertEquals("createDouble(null) failed", null, NumberUtils.createDouble(null));
+        this.testCreateDoubleFailure("");
+        this.testCreateDoubleFailure(" ");
+        this.testCreateDoubleFailure("\b\t\n\f\r");
+        // Funky whitespaces
+        this.testCreateLongFailure("\u00A0\uFEFF\u000B\u000C\u001C\u001D\u001E\u001F");
+    }
+
+    protected void testCreateLongFailure(String str) {
+        try {
+            Long value = NumberUtils.createLong(str);
+            fail("createLong(blank) failed: " + value);
+        } catch (NumberFormatException ex) {
+            // empty
+        }
+    }
+
+    @Test
+    public void testCreateBigInteger() {
+        assertEquals("createBigInteger(String) failed", new BigInteger("12345"), NumberUtils.createBigInteger("12345"));
+        assertEquals("createBigInteger(null) failed", null, NumberUtils.createBigInteger(null));
+        this.testCreateBigIntegerFailure("");
+        this.testCreateBigIntegerFailure(" ");
+        this.testCreateBigIntegerFailure("\b\t\n\f\r");
+        // Funky whitespaces
+        this.testCreateBigIntegerFailure("\u00A0\uFEFF\u000B\u000C\u001C\u001D\u001E\u001F");
+    }
+
+    protected void testCreateBigIntegerFailure(String str) {
+        try {
+            BigInteger value = NumberUtils.createBigInteger(str);
+            fail("createBigInteger(blank) failed: " + value);
+        } catch (NumberFormatException ex) {
+            // empty
+        }
+    }
+
+    @Test
+    public void testCreateBigDecimal() {
+        assertEquals("createBigDecimal(String) failed", new BigDecimal("1234.5"), NumberUtils.createBigDecimal("1234.5"));
+        assertEquals("createBigDecimal(null) failed", null, NumberUtils.createBigDecimal(null));
+        this.testCreateBigDecimalFailure("");
+        this.testCreateBigDecimalFailure(" ");
+        this.testCreateBigDecimalFailure("\b\t\n\f\r");
+        // Funky whitespaces
+        this.testCreateBigDecimalFailure("\u00A0\uFEFF\u000B\u000C\u001C\u001D\u001E\u001F");
+        this.testCreateBigDecimalFailure("-"); // sign alone not valid
+        this.testCreateBigDecimalFailure("--"); // comment in NumberUtils suggests some implementations may incorrectly allow this
+        this.testCreateBigDecimalFailure("--0");
+        this.testCreateBigDecimalFailure("+"); // sign alone not valid
+        this.testCreateBigDecimalFailure("++"); // in case this was also allowed by some JVMs
+        this.testCreateBigDecimalFailure("++0");
+    }
+
+    protected void testCreateBigDecimalFailure(String str) {
+        try {
+            BigDecimal value = NumberUtils.createBigDecimal(str);
+            fail("createBigDecimal(blank) failed: " + value);
+        } catch (NumberFormatException ex) {
+            // empty
+        }
+    }
+
+    // min/max tests
+    // ----------------------------------------------------------------------
+    @Test(expected = IllegalArgumentException.class)
+    public void testMinLong_nullArray() {
+        NumberUtils.min((long[]) null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testMinLong_emptyArray() {
+        NumberUtils.min(new long[0]);
+    }
+
+    @Test
+    public void testMinLong() {
+        assertEquals(
+            "min(long[]) failed for array length 1",
+            5,
+            NumberUtils.min(new long[] { 5 }));
+
+        assertEquals(
+            "min(long[]) failed for array length 2",

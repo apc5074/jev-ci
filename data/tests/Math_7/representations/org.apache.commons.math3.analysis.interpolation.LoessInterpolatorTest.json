@@ -1,0 +1,76 @@
+{
+  "test_class": "org.apache.commons.math3.analysis.interpolation.LoessInterpolatorTest",
+  "source_file": "src/test/java/org/apache/commons/math3/analysis/interpolation/LoessInterpolatorTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.analysis.interpolation.LoessInterpolatorTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/analysis/interpolation/LoessInterpolatorTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.analysis.interpolation;\n\nimport org.apache.commons.math3.util.FastMath;\nimport org.apache.commons.math3.exception.OutOfRangeException;\nimport org.apache.commons.math3.exception.DimensionMismatchException;\nimport org.apache.commons.math3.exception.NoDataException;\nimport org.apache.commons.math3.exception.NonMonotonicSequenceException;\nimport org.apache.commons.math3.exception.NotFiniteNumberException;\nimport org.apache.commons.math3.exception.NumberIsTooSmallException;\n\nimport org.junit.Assert;\nimport org.junit.Test;\n\n/**\n * Test of the LoessInterpolator class.\n */\npublic class LoessInterpolatorTest {\n\n    @Test\n    public void testOnOnePoint() {\n        double[] xval = {0.5};\n        double[] yval = {0.7};\n        double[] res = new LoessInterpolator().smooth(xval, yval);\n        Assert.assertEquals(1, res.length);\n        Assert.assertEquals(0.7, res[0], 0.0);\n    }\n\n    @Test\n    public void testOnTwoPoints() {\n        double[] xval = {0.5, 0.6};\n        double[] yval = {0.7, 0.8};\n        double[] res = new LoessInterpolator().smooth(xval, yval);\n        Assert.assertEquals(2, res.length);\n        Assert.assertEquals(0.7, res[0], 0.0);\n        Assert.assertEquals(0.8, res[1], 0.0);\n    }\n\n    @Test\n    public void testOnStraightLine() {\n        double[] xval = {1,2,3,4,5};\n        double[] yval = {2,4,6,8,10};\n        LoessInterpolator li = new LoessInterpolator(0.6, 2, 1e-12);\n        double[] res = li.smooth(xval, yval);\n        Assert.assertEquals(5, res.length);\n        for(int i = 0; i < 5; ++i) {\n            Assert.assertEquals(yval[i], res[i], 1e-8);\n        }\n    }\n\n    @Test\n    public void testOnDistortedSine() {\n        int numPoints = 100;\n        double[] xval = new double[numPoints];\n        double[] yval = new double[numPoints];\n        double xnoise = 0.1;\n        double ynoise = 0.2;\n\n        generateSineData(xval, yval, xnoise, ynoise);\n\n        LoessInterpolator li = new LoessInterpolator(0.3, 4, 1e-12);\n\n        double[] res = li.smooth(xval, yval);\n\n        // Check that the resulting curve differs from\n            }\n        }\n\n        for(int i = 1; i < variances.length; ++i) {\n            Assert.assertTrue(variances[i] < variances[i-1]);\n        }\n    }\n\n    @Test\n    public void testIncreasingRobustnessItersIncreasesSmoothnessWithOutliers() {\n        int numPoints = 100;\n        double[] xval = new double[numPoints];\n        double[] yval = new double[numPoints];\n        double xnoise = 0.1;\n        double ynoise = 0.1;\n\n        generateSineData(xval, yval, xnoise, ynoise);\n\n        // Introduce a couple of outliers\n        yval[numPoints/3] *= 100;\n        yval[2 * numPoints/3] *= -100;\n\n        // Check that variance decreases as the number of robustness\n        // iterations increases\n\n        double[] variances = new double[4];\n        for (int i = 0; i < 4; i++) {\n            LoessInterpolator li = new LoessInterpolator(0.3, i, 1e-12);\n\n            double[] res = li.smooth(xval, yval);\n\n            for (int j = 1; j < res.length; ++j) {\n                variances[i] += FastMath.abs(res[j] - res[j-1]);\n            }\n        }\n\n        for(int i = 1; i < variances.length; ++i) {\n            Assert.assertTrue(variances[i] < variances[i-1]);\n        }\n    }\n\n    @Test(expected=DimensionMismatchException.class)\n    public void testUnequalSizeArguments() {\n        new LoessInterpolator().smooth(new double[] {1,2,3}, new double[] {1,2,3,4});\n    }\n\n    @Test(expected=NoDataException.class)\n    public void testEmptyData() {\n        new LoessInterpolator().smooth(new double[] {}, new double[] {});\n    }\n\n    @Test(expected=NonMonotonicSequenceException.class)\n    public void testNonStrictlyIncreasing1() {\n        new LoessInterpolator().smooth(new double[] {4,3,1,2}, new double[] {3,4,5,6});\n    }\n\n    @Test(expected=NonMonotonicSequenceException.class)\n    public void testNonStrictlyIncreasing2() {\n        new LoessInterpolator().smooth(new double[] {1,2,2,3}, new double[] {3,4,5,6});\n    }\n\n    @Test(expected=NotFiniteNumberException.class)\n    public void testNotAllFiniteReal1() {\n        new LoessInterpolator().smooth(new double[] {1,2,Double.NaN}, new double[] {3,4,5});\n    }\n\n    @Test(expected=NotFiniteNumberException.class)\n    public void testNotAllFiniteReal2() {\n        new LoessInterpolator().smooth(new double[] {1,2,Double.POSITIVE_INFINITY}, new double[] {3,4,5});\n    }\n\n    @Test(expected=NotFiniteNumberException.class)\n    public void testNotAllFiniteReal3() {\n        new LoessInterpolator().smooth(new double[] {1,2,Double.NEGATIVE_INFINITY}, new double[] {3,4,5});\n    }\n\n    @Test(expected=NotFiniteNumberException.class)\n    public void testNotAllFiniteReal4() {\n        new LoessInterpolator().smooth(new double[] {3,4,5}, new double[] {1,2,Double.NaN});\n    }\n\n    @Test(expected=NotFiniteNumberException.class)\n    public void testNotAllFiniteReal5() {\n        new LoessInterpolator().smooth(new double[] {3,4,5}, new double[] {1,2,Double.POSITIVE_INFINITY});\n    }\n\n    @Test(expected=NotFiniteNumberException.class)\n    public void testNotAllFiniteReal6() {\n        new LoessInterpolator().smooth(new double[] {3,4,5}, new double[] {1,2,Double.NEGATIVE_INFINITY});\n    }\n\n    @Test(expected=NumberIsTooSmallException.class)\n    public void testInsufficientBandwidth() {\n        LoessInterpolator li = new LoessInterpolator(0.1, 3, 1e-12);\n        li.smooth(new double[] {1,2,3,4,5,6,7,8,9,10,11,12}, new double[] {1,2,3,4,5,6,7,8,9,10,11,12});\n    }\n\n    @Test(expected=OutOfRangeException.class)\n    public void testCompletelyIncorrectBandwidth1() {\n        new LoessInterpolator(-0.2, 3, 1e-12);\n    }\n\n    @Test(expected=OutOfRangeException.class)\n    public void testCompletelyIncorrectBandwidth2() {\n        new LoessInterpolator(1.1, 3, 1e-12);\n    }\n\n    @Test\n    public void testMath296withoutWeights() {\n        double[] xval = {\n                0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0,\n                 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0};\n        double[] yval = {\n                0.47, 0.48, 0.55, 0.56, -0.08, -0.04, -0.07, -0.07,\n                -0.56, -0.46, -0.56, -0.52, -3.03, -3.08, -3.09,\n                -3.04, 3.54, 3.46, 3.36, 3.35};\n        // Output from R, rounded to .001\n        double[] yref = {\n                0.461, 0.499, 0.541, 0.308, 0.175, -0.042, -0.072,\n                -0.196, -0.311, -0.446, -0.557, -1.497, -2.133,\n                -3.08, -3.09, -0.621, 0.982, 3.449, 3.389, 3.336\n        };\n        LoessInterpolator li = new LoessInterpolator(0.3, 4, 1e-12);\n        double[] res = li.smooth(xval, yval);\n        Assert.assertEquals(xval.length, res.length);\n        for(int i = 0; i < res.length; ++i) {\n            Assert.assertEquals(yref[i], res[i], 0.02);\n        }\n    }\n\n    private void generateSineData(double[] xval, double[] yval, double xnoise, double ynoise) {\n        double dx = 2 * FastMath.PI / xval.length;\n        double x = 0;\n        for(int i = 0; i < xval.length; ++i) {\n            xval[i] = x;\n            yval[i] = FastMath.sin(x) + (2 * FastMath.random() - 1) * ynoise;\n            x += dx * (1 + (2 * FastMath.random() - 1) * xnoise);\n        }\n    }\n}\n",
+  "compaction": {
+    "source_lines": 260,
+    "mode": "windows",
+    "windows_total": 4,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.172773508736721
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 4.04706718989333
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.624865628399561
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.172773508736721
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 3.186433021701829
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 4.04706718989333
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.624865628399561
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8213,
+  "representation_chars": 8213,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.TestConcurrency",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/TestConcurrency.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.TestConcurrency\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/TestConcurrency.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser;\n\nimport java.io.IOException;\n\nimport com.fasterxml.jackson.core.JsonParser;\nimport com.fasterxml.jackson.core.JsonProcessingException;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\n\n/**\n * Testing for [JACKSON-237] (NPE due to race condition)\n */\npublic class TestConcurrency extends BaseMapTest\n{\n    /*\n    /**********************************************\n    /* Helper beans\n    /**********************************************\n     */\n\n    @JsonDeserialize(using=BeanDeserializer.class)\n    static class Bean\n    {\n        public int value = 42;\n    }\n\n    /*\n    /**********************************************\n    /* Helper classes\n    /**********************************************\n     */\n    \n    /**\n     * Dummy deserializer used for verifying that partially handled (i.e. not yet\n     * resolved) deserializers are not allowed to be used.\n     */\n    static class BeanDeserializer\n        extends JsonDeserializer<Bean>\n        implements ResolvableDeserializer\n    {\n        protected volatile boolean resolved = false;\n        \n        @Override\n        public Bean deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException\n        {\n            if (!resolved) {\n                throw new IOException(\"Deserializer not yet completely resolved\");\n            }\n            Bean b = new Bean();\n            b.value = 13;\n            return b;\n        }\n\n        @Override\n        public void resolve(DeserializationContext ctxt) throws JsonMappingException\n        {\n            try {\n                Thread.sleep(100L);\n            } catch (Exception e) { }\n            resolved = true;\n        }\n    }\n\n    /*\n    /**********************************************\n    /* Unit tests\n    /**********************************************\n     */\n\n    public void testDeserializerResolution() throws Exception\n    {\n        /* Let's repeat couple of times, just to be sure; thread timing is not\n         * exact science; plus caching plays a role too\n         */\n        final String JSON = \"{\\\"value\\\":42}\";\n        \n        for (int i = 0; i < 5; ++i) {\n            final ObjectMapper mapper = new ObjectMapper();\n            Runnable r = new Runnable() {\n                @Override\n                public void run() {\n                    try {\n                        /*Bean b =*/ mapper.readValue(JSON, Bean.class);\n                    } catch (Exception e) { }\n                }\n            };\n            Thread t = new Thread(r);\n            t.start();\n            // then let it proceed\n            Thread.sleep(10L);\n            // and try the same...\n            Bean b = mapper.readValue(JSON, Bean.class);\n            // note: funny deserializer, mangles data.. :)\n            assertEquals(13, b.value);\n            t.join();\n        }   \n    }\n}\n",
+  "compaction": {
+    "source_lines": 98,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3078,
+  "representation_chars": 3078,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "org.jsoup.select.QueryParserTest",
+  "source_file": "src/test/java/org/jsoup/select/QueryParserTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.jsoup.select.QueryParserTest\n\nSOURCE FILE:\nsrc/test/java/org/jsoup/select/QueryParserTest.java\n\nTEST SOURCE:\npackage org.jsoup.select;\n\nimport org.junit.Test;\nimport static org.junit.Assert.*;\n\n/**\n * Tests for the Selector Query Parser.\n *\n * @author Jonathan Hedley\n */\npublic class QueryParserTest {\n    @Test public void testOrGetsCorrectPrecedence() {\n        // tests that a selector \"a b, c d, e f\" evals to (a AND b) OR (c AND d) OR (e AND f)\"\n        // top level or, three child ands\n        Evaluator eval = QueryParser.parse(\"a b, c d, e f\");\n        assertTrue(eval instanceof CombiningEvaluator.Or);\n        CombiningEvaluator.Or or = (CombiningEvaluator.Or) eval;\n        assertEquals(3, or.evaluators.size());\n        for (Evaluator innerEval: or.evaluators) {\n            assertTrue(innerEval instanceof CombiningEvaluator.And);\n            CombiningEvaluator.And and = (CombiningEvaluator.And) innerEval;\n            assertEquals(2, and.evaluators.size());\n            assertTrue(and.evaluators.get(0) instanceof Evaluator.Tag);\n            assertTrue(and.evaluators.get(1) instanceof StructuralEvaluator.Parent);\n        }\n    }\n\n    @Test public void testParsesMultiCorrectly() {\n        Evaluator eval = QueryParser.parse(\".foo > ol, ol > li + li\");\n        assertTrue(eval instanceof CombiningEvaluator.Or);\n        CombiningEvaluator.Or or = (CombiningEvaluator.Or) eval;\n        assertEquals(2, or.evaluators.size());\n\n        CombiningEvaluator.And andLeft = (CombiningEvaluator.And) or.evaluators.get(0);\n        CombiningEvaluator.And andRight = (CombiningEvaluator.And) or.evaluators.get(1);\n\n        assertEquals(\"ol :ImmediateParent.foo\", andLeft.toString());\n        assertEquals(2, andLeft.evaluators.size());\n        assertEquals(\"li :prevli :ImmediateParentol\", andRight.toString());\n        assertEquals(2, andLeft.evaluators.size());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 42,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1894,
+  "representation_chars": 1894,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

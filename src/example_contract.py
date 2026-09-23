@@ -6,6 +6,7 @@ Manifest-qualified IDs look like ``Cli-30``. On-disk example IDs use an undersco
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from dataclasses import dataclass
@@ -558,6 +559,189 @@ def assert_no_private_fields(payload: Mapping[str, Any], *, context: str) -> Non
         raise ExampleMismatchError(
             f"{context}: contains private label fields {sorted(bad)}"
         )
+
+
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def compute_example_content_hashes(
+    example: ExampleId | str,
+    *,
+    data_root: Path | None = None,
+) -> dict[str, str]:
+    """Hash key persisted artifacts used for resume / staleness checks."""
+    paths = example_paths(example, data_root=data_root)
+    required = {
+        "patch_representation": paths["patch_representation"],
+        "patch_meta": paths["patch_meta"],
+        "test_inventory": paths["test_inventory"],
+        "test_labels": paths["test_labels"],
+        "representations_index": paths["representations_index"],
+        "checkout_provenance": paths["checkout_provenance"],
+    }
+    missing = [name for name, path in required.items() if not path.is_file()]
+    if missing:
+        raise ExampleIncompleteError(f"cannot hash; missing {missing}")
+    return {name: sha256_file(path) for name, path in required.items()}
+
+
+def validate_example_artifacts(
+    example: ExampleId | str,
+    *,
+    data_root: Path | None = None,
+    manifest: Mapping[str, Any] | None = None,
+    allow_evaluation: bool = False,
+) -> dict[str, Any]:
+    """Check artifacts are present, consistent, and match the locked manifest pin."""
+    ex = example if isinstance(example, ExampleId) else ExampleId.parse(example)
+    data = manifest if manifest is not None else load_manifest()
+    split = require_manifest_membership(
+        ex, manifest=data, allow_evaluation=allow_evaluation
+    )
+    paths = example_paths(ex, data_root=data_root)
+    report = completeness_report(ex, data_root=data_root)
+    if not report["artifacts_complete"]:
+        raise ExampleIncompleteError(
+            f"{ex.qualified} missing artifacts: {report['missing']}"
+        )
+
+    if not paths["example_json"].is_file():
+        raise ExampleIncompleteError(f"missing example.json for {ex.qualified}")
+    record = read_json(paths["example_json"])
+    if record.get("qualified_id") != ex.qualified:
+        raise ExampleMismatchError(
+            f"example.json qualified_id mismatch for {ex.qualified}"
+        )
+    if record.get("split") != split:
+        raise ExampleMismatchError(
+            f"{ex.qualified}: split {record.get('split')!r} != {split}"
+        )
+    stored_commit = (record.get("manifest") or {}).get("defects4j_commit")
+    if stored_commit != data.get("defects4j_commit"):
+        raise ExampleMismatchError(
+            f"{ex.qualified}: defects4j_commit mismatch "
+            f"(example={stored_commit!r}, manifest={data.get('defects4j_commit')!r})"
+        )
+
+    inventory = read_json(paths["test_inventory"])
+    labels = read_json(paths["test_labels"])
+    index = read_json(paths["representations_index"])
+    bad = PRIVATE_LABEL_FIELDS.intersection(inventory.keys())
+    if bad:
+        raise ExampleMismatchError(
+            f"{ex.qualified}: private fields in inventory.json: {sorted(bad)}"
+        )
+
+    test_classes = inventory.get("test_classes")
+    if not isinstance(test_classes, list) or not test_classes:
+        raise ExampleIncompleteError(f"{ex.qualified}: empty test_classes")
+    if index.get("num_representations") != len(test_classes):
+        raise ExampleIncompleteError(
+            f"{ex.qualified}: representations {index.get('num_representations')} "
+            f"!= test_classes {len(test_classes)}"
+        )
+    index_ids = [e.get("test_class") for e in index.get("representations") or []]
+    if index_ids != test_classes:
+        raise ExampleIncompleteError(
+            f"{ex.qualified}: representation index order/ids diverge from inventory"
+        )
+    positives = labels.get("positive_classes") or []
+    if not positives:
+        raise ExampleIncompleteError(f"{ex.qualified}: no positive_classes in labels")
+    missing_pos = [c for c in positives if c not in set(test_classes)]
+    if missing_pos:
+        raise ExampleMismatchError(
+            f"{ex.qualified}: positive classes not in inventory: {missing_pos}"
+        )
+
+    hashes = compute_example_content_hashes(ex, data_root=data_root)
+    return {
+        "example_id": ex,
+        "split": split,
+        "record": record,
+        "paths": paths,
+        "inventory": inventory,
+        "labels": labels,
+        "representations_index": index,
+        "content_hashes": hashes,
+        "completeness": report,
+    }
+
+
+def example_is_current_complete(
+    example: ExampleId | str,
+    *,
+    data_root: Path | None = None,
+    manifest: Mapping[str, Any] | None = None,
+    allow_evaluation: bool = False,
+) -> bool:
+    """True when status=complete, artifacts valid, and stored hashes still match."""
+    ex = example if isinstance(example, ExampleId) else ExampleId.parse(example)
+    paths = example_paths(ex, data_root=data_root)
+    if not paths["example_json"].is_file():
+        return False
+    try:
+        record = read_json(paths["example_json"])
+        if record.get("status") != ExampleStatus.COMPLETE.value:
+            return False
+        validated = validate_example_artifacts(
+            ex,
+            data_root=data_root,
+            manifest=manifest,
+            allow_evaluation=allow_evaluation,
+        )
+        stored = record.get("content_hashes") or {}
+        if not stored:
+            return False
+        return stored == validated["content_hashes"]
+    except (ExampleContractError, OSError, json.JSONDecodeError, KeyError):
+        return False
+
+
+def mark_example_complete(
+    example: ExampleId | str,
+    *,
+    data_root: Path | None = None,
+    manifest: Mapping[str, Any] | None = None,
+    allow_evaluation: bool = False,
+) -> dict[str, Any]:
+    """Validate artifacts and set status=complete with content hashes."""
+    validated = validate_example_artifacts(
+        example,
+        data_root=data_root,
+        manifest=manifest,
+        allow_evaluation=allow_evaluation,
+    )
+    ex = validated["example_id"]
+    record = validated["record"]
+    record["status"] = ExampleStatus.COMPLETE.value
+    record["content_hashes"] = validated["content_hashes"]
+    record["error"] = None
+    write_example_record(record, data_root=data_root)
+    paths = validated["paths"]
+    if paths["error_json"].exists():
+        paths["error_json"].unlink()
+    return {
+        "qualified_id": ex.qualified,
+        "status": ExampleStatus.COMPLETE.value,
+        "content_hashes": validated["content_hashes"],
+        "num_test_classes": len(validated["inventory"]["test_classes"]),
+        "num_positive_classes": len(validated["labels"].get("positive_classes") or []),
+        "source_missing": (validated["inventory"].get("counts") or {}).get(
+            "source_missing", 0
+        ),
+        "patch_truncated": bool(
+            (read_json(paths["patch_meta"])).get("patch_truncated")
+        ),
+        "representation_truncated": (
+            validated["representations_index"].get("counts") or {}
+        ).get("representation_truncated", 0),
+    }
 
 
 def init_example_skeleton(

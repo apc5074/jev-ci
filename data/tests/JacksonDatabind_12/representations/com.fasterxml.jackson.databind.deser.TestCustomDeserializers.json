@@ -1,0 +1,86 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.TestCustomDeserializers",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/TestCustomDeserializers.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.TestCustomDeserializers\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/TestCustomDeserializers.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser;\n\nimport java.io.*;\nimport java.lang.annotation.ElementType;\nimport java.lang.annotation.Retention;\nimport java.lang.annotation.RetentionPolicy;\nimport java.lang.annotation.Target;\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.JsonCreator;\nimport com.fasterxml.jackson.annotation.JsonProperty;\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.core.type.TypeReference;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\nimport com.fasterxml.jackson.databind.annotation.JsonSerialize;\nimport com.fasterxml.jackson.databind.deser.std.StdDelegatingDeserializer;\nimport com.fasterxml.jackson.databind.deser.std.StdDeserializer;\nimport com.fasterxml.jackson.databind.module.SimpleModule;\nimport com.fasterxml.jackson.databind.util.StdConverter;\n\n/**\n * Test to check that customizations work as expected.\n */\n@SuppressWarnings(\"serial\")\npublic class TestCustomDeserializers\n    extends BaseMapTest\n{\n    /*\n    /**********************************************************\n    /* Helper classes\n    /**********************************************************\n     */\n\n    static class DummyDeserializer<T>\n        extends StdDeserializer<T>\n    {\n        final T value;\n\n        public DummyDeserializer(T v, Class<T> cls) {\n            super(cls);\n            value = v;\n        }\n\n        @Override\n        public T deserialize(JsonParser jp, DeserializationContext ctxt)\n            throws IOException, JsonProcessingException\n        {\n            // need to skip, if structured...\n            jp.skipChildren();\n            return value;\n        }\n    }\n\n    static class TestBeans {\n        public List<TestBean> beans;\n    }\n    static class TestBean {\n        public CustomBean c;\n        public String d;\n    }\n    @JsonDeserialize(using=CustomBeanDeserializer.class)\n    static class CustomBean {\n        protected final int a, b;\n        public CustomBean(int a, int b) {\n            this.a = a;\n            this.b = b;\n        }\n    }\n\n    static class CustomBeanDeserializer extends JsonDeserializer<CustomBean>\n    {\n        @Override\n        public CustomBean deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException\n        {\n            int a = 0, b = 0;\n            JsonToken t = jp.getCurrentToken();\n            if (t == JsonToken.START_OBJECT) {\n                t = jp.nextToken();\n            } else if (t != JsonToken.FIELD_NAME) {\n                throw new Error();\n            }\n            while(t == JsonToken.FIELD_NAME) {\n                final String fieldName = jp.getCurrentName();\n                t = jp.nextToken();\n                if (t != JsonToken.VALUE_NUMBER_INT) {\n                    throw new JsonParseException(\"expecting number got \"+ t, jp.getCurrentLocation());\n                }\n                if (fieldName.equals(\"a\")) {\n                    a = jp.getIntValue();\n                } else if (fieldName.equals(\"b\")) {\n                    b = jp.getIntValue();\n                } else {\n                    throw new Error();\n                }\n                t = jp.nextToken();\n            }\n            return new CustomBean(a, b);\n        }\n    }\n\n    public static class Immutable {\n        protected int x, y;\n        \n        public Immutable(int x0, int y0) {\n            x = x0;\n            y = y0;\n        }\n    }\n\n    // [JACKSON-882]\n    public static class CustomKey {\n        private final int id;\n\n        public CustomKey(int id) {this.id = id;}\n\n        public int getId() { return id; }\n    }\n    \n    public static class Model\n    {\n        protected final Map<CustomKey, String> map;\n\n        @JsonCreator\n        public Model(@JsonProperty(\"map\") @JsonDeserialize(keyUsing = CustomKeyDeserializer.class) Map<CustomKey, String> map)\n        {\n            this.map = new HashMap<CustomKey, String>(map);\n        }\n\n        @JsonProperty\n        @JsonSerialize(keyUsing = CustomKeySerializer.class)\n        public Map<CustomKey, String> getMap() {\n            return map;\n        }\n    }\n     \n    static class CustomKeySerializer extends JsonSerializer<CustomKey> {\n        @Override\n        public void serialize(CustomKey value, JsonGenerator jgen, SerializerProvider provider) throws IOException {\n            jgen.writeFieldName(String.valueOf(value.getId()));\n\n        bean = results.get(1);\n        assertEquals(\"abc\", bean.d);\n        c = bean.c;\n        assertNotNull(c);\n        assertEquals(0, c.a);\n        assertEquals(15, c.b);\n    }\n\n    // [Issue#87]: delegating deserializer\n    public void testDelegating() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        SimpleModule module = new SimpleModule(\"test\", Version.unknownVersion());\n        module.addDeserializer(Immutable.class,\n            new StdDelegatingDeserializer<Immutable>(\n                new StdConverter<JsonNode, Immutable>() {\n                    @Override\n                    public Immutable convert(JsonNode value)\n                    {\n                        int x = value.path(\"x\").asInt();\n                        int y = value.path(\"y\").asInt();\n                        return new Immutable(x, y);\n                    }\n                }\n                ));\n\n        mapper.registerModule(module);\n        Immutable imm = mapper.readValue(\"{\\\"x\\\":3,\\\"y\\\":7}\", Immutable.class);\n        assertEquals(3, imm.x);\n        assertEquals(7, imm.y);\n    }\n\n    public void testIssue882() throws Exception\n    {\n        Model original = new Model(Collections.singletonMap(new CustomKey(123), \"test\"));\n        String json = MAPPER.writeValueAsString(original);\n        Model deserialized = MAPPER.readValue(json, Model.class);\n        assertNotNull(deserialized);\n        assertNotNull(deserialized.map);\n        assertEquals(1, deserialized.map.size());\n    }\n\n    // [#337]: convenience methods for custom deserializers to use\n    public void testContextReadValue() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        SimpleModule module = new SimpleModule(\"test\", Version.unknownVersion());\n        module.addDeserializer(Bean375Outer.class, new Bean375OuterDeserializer());\n        module.addDeserializer(Bean375Inner.class, new Bean375InnerDeserializer());\n        mapper.registerModule(module);\n\n        // First, without property; doubles up value:\n        Bean375Outer outer = mapper.readValue(\"13\", Bean375Outer.class);\n        assertEquals(26, outer.inner.x);\n\n        // then with property; should find annotation, turn negative\n        Bean375Wrapper w = mapper.readValue(\"{\\\"value\\\":13}\", Bean375Wrapper.class);\n        assertNotNull(w.value);\n        assertNotNull(w.value.inner);\n        assertEquals(-13, w.value.inner.x);\n    }\n\n    // [databind#735]: erroneous application of custom deserializer\n    public void testCustomMapValueDeser735() throws Exception {\n        String json = \"{\\\"map1\\\":{\\\"a\\\":1},\\\"map2\\\":{\\\"a\\\":1}}\";\n        TestMapBean735 bean = MAPPER.readValue(json, TestMapBean735.class);\n\n        assertEquals(100, bean.map1.get(\"a\").intValue());\n        assertEquals(1, bean.map2.get(\"a\").intValue());\n    }\n\n    public void testCustomListValueDeser735() throws Exception {\n        String json = \"{\\\"list1\\\":[1],\\\"list2\\\":[1]}\";\n        TestListBean735 bean = MAPPER.readValue(json, TestListBean735.class);\n\n        assertEquals(100, bean.list1.get(0).intValue());\n        assertEquals(1, bean.list2.get(0).intValue());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 380,
+    "mode": "windows",
+    "windows_total": 6,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        300,
+        380
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 23.68737665527174
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.5589192252564485
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 9.118874077657257
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 23.68737665527174
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.5589192252564485
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 5.383757770648588
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 5.346398810807186
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 2.1729700406215793
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 9.118874077657257
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7687,
+  "representation_chars": 7687,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

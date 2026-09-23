@@ -1,0 +1,25 @@
+{
+  "test_class": "org.jsoup.parser.TagTest",
+  "source_file": "src/test/java/org/jsoup/parser/TagTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.jsoup.parser.TagTest\n\nSOURCE FILE:\nsrc/test/java/org/jsoup/parser/TagTest.java\n\nTEST SOURCE:\npackage org.jsoup.parser;\n\nimport org.junit.Test;\nimport static org.junit.Assert.*;\n\n/**\n Tag tests.\n @author Jonathan Hedley, jonathan@hedley.net */\npublic class TagTest {\n\n    @Test public void isCaseInsensitive() {\n        Tag p1 = Tag.valueOf(\"P\");\n        Tag p2 = Tag.valueOf(\"p\");\n        assertEquals(p1, p2);\n    }\n\n    @Test public void trims() {\n        Tag p1 = Tag.valueOf(\"p\");\n        Tag p2 = Tag.valueOf(\" p \");\n        assertEquals(p1, p2);\n    }\n\n    @Test public void equality() {\n        Tag p1 = Tag.valueOf(\"p\");\n        Tag p2 = Tag.valueOf(\"p\");\n        assertTrue(p1.equals(p2));\n        assertTrue(p1 == p2);\n    }\n\n    @Test public void divSemantics() {\n        Tag div = Tag.valueOf(\"div\");\n        Tag p = Tag.valueOf(\"p\");\n\n        assertTrue(div.canContain(div));\n        assertTrue(div.canContain(p));\n    }\n\n    @Test public void pSemantics() {\n        Tag div = Tag.valueOf(\"div\");\n        Tag p = Tag.valueOf(\"p\");\n        Tag img = Tag.valueOf(\"img\");\n        Tag span = Tag.valueOf(\"span\");\n\n        assertTrue(p.canContain(img));\n        assertTrue(p.canContain(span));\n        assertFalse(p.canContain(div));\n        assertFalse(p.canContain(p));\n    }\n\n    @Test public void spanSemantics() {\n        Tag span = Tag.valueOf(\"span\");\n        Tag p = Tag.valueOf(\"p\");\n        Tag div = Tag.valueOf(\"div\");\n\n        assertTrue(span.canContain(span));\n        assertFalse(span.canContain(p));\n        assertFalse(span.canContain(div));\n    }\n\n    @Test public void imgSemantics() {\n        Tag img = Tag.valueOf(\"img\");\n        Tag p = Tag.valueOf(\"p\");\n\n        assertFalse(img.canContain(img));\n        assertFalse(img.canContain(p));\n    }\n\n    @Test public void defaultSemantics() {\n        Tag foo = Tag.valueOf(\"foo\"); // not defined\n        Tag foo2 = Tag.valueOf(\"FOO\");\n        Tag div = Tag.valueOf(\"div\");\n\n        assertEquals(foo, foo2);\n        assertTrue(foo.canContain(foo));\n        assertTrue(foo.canContain(div));\n        assertTrue(div.canContain(foo));\n    }\n\n    @Test(expected = IllegalArgumentException.class) public void valueOfChecksNotNull() {\n        Tag.valueOf(null);\n    }\n\n    @Test(expected = IllegalArgumentException.class) public void valueOfChecksNotEmpty() {\n        Tag.valueOf(\" \");\n    }\n}\n",
+  "compaction": {
+    "source_lines": 86,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2377,
+  "representation_chars": 2377,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

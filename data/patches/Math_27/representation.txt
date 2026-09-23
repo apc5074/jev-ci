@@ -1,0 +1,19 @@
+MODIFIED FILES:
+src/main/java/org/apache/commons/math3/fraction/Fraction.java
+
+MODIFIED CLASSES:
+org.apache.commons.math3.fraction.Fraction
+
+PROPOSED CODE CHANGE:
+
+--- src/main/java/org/apache/commons/math3/fraction/Fraction.java
++++ src/main/java/org/apache/commons/math3/fraction/Fraction.java
+@@ -594,7 +594,7 @@
+      * @return the fraction percentage as a <tt>double</tt>.
+      */
+     public double percentageValue() {
+-        return 100 * doubleValue();
++        return multiply(100).doubleValue();
+     }
+ 
+     /**

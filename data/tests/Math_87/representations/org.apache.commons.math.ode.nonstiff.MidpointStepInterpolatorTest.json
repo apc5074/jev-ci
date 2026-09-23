@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.math.ode.nonstiff.MidpointStepInterpolatorTest",
+  "source_file": "src/test/org/apache/commons/math/ode/nonstiff/MidpointStepInterpolatorTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math.ode.nonstiff.MidpointStepInterpolatorTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/math/ode/nonstiff/MidpointStepInterpolatorTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math.ode.nonstiff;\n\nimport static org.junit.Assert.assertTrue;\n\nimport java.io.ByteArrayInputStream;\nimport java.io.ByteArrayOutputStream;\nimport java.io.IOException;\nimport java.io.ObjectInputStream;\nimport java.io.ObjectOutputStream;\nimport java.util.Random;\n\nimport org.apache.commons.math.ode.ContinuousOutputModel;\nimport org.apache.commons.math.ode.DerivativeException;\nimport org.apache.commons.math.ode.IntegratorException;\nimport org.apache.commons.math.ode.sampling.StepHandler;\nimport org.apache.commons.math.ode.sampling.StepInterpolatorTestUtils;\nimport org.junit.Test;\n\npublic class MidpointStepInterpolatorTest {\n\n  @Test\n  public void testDerivativesConsistency()\n  throws DerivativeException, IntegratorException {\n    TestProblem3 pb = new TestProblem3();\n    double step = (pb.getFinalTime() - pb.getInitialTime()) * 0.001;\n    MidpointIntegrator integ = new MidpointIntegrator(step);\n    StepInterpolatorTestUtils.checkDerivativesConsistency(integ, pb, 1.0e-10);\n  }\n\n  @Test\n  public void serialization()\n    throws DerivativeException, IntegratorException,\n           IOException, ClassNotFoundException {\n\n    TestProblem1 pb = new TestProblem1();\n    double step = (pb.getFinalTime() - pb.getInitialTime()) * 0.001;\n    MidpointIntegrator integ = new MidpointIntegrator(step);\n    integ.addStepHandler(new ContinuousOutputModel());\n    integ.integrate(pb,\n                    pb.getInitialTime(), pb.getInitialState(),\n                    pb.getFinalTime(), new double[pb.getDimension()]);\n\n    ByteArrayOutputStream bos = new ByteArrayOutputStream();\n    ObjectOutputStream    oos = new ObjectOutputStream(bos);\n    for (StepHandler handler : integ.getStepHandlers()) {\n        oos.writeObject(handler);\n    }\n\n    assertTrue(bos.size () > 98000);\n    assertTrue(bos.size () < 99000);\n\n    ByteArrayInputStream  bis = new ByteArrayInputStream(bos.toByteArray());\n    ObjectInputStream     ois = new ObjectInputStream(bis);\n    ContinuousOutputModel cm  = (ContinuousOutputModel) ois.readObject();\n\n    Random random = new Random(347588535632l);\n    double maxError = 0.0;\n    for (int i = 0; i < 1000; ++i) {\n      double r = random.nextDouble();\n      double time = r * pb.getInitialTime() + (1.0 - r) * pb.getFinalTime();\n      cm.setInterpolatedTime(time);\n      double[] interpolatedY = cm.getInterpolatedState ();\n      double[] theoreticalY  = pb.computeTheoreticalState(time);\n      double dx = interpolatedY[0] - theoreticalY[0];\n      double dy = interpolatedY[1] - theoreticalY[1];\n      double error = dx * dx + dy * dy;\n      if (error > maxError) {\n        maxError = error;\n      }\n    }\n\n    assertTrue(maxError < 1.0e-6);\n\n  }\n\n}\n",
+  "compaction": {
+    "source_lines": 93,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3688,
+  "representation_chars": 3688,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

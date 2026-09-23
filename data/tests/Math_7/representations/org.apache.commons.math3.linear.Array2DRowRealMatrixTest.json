@@ -1,0 +1,151 @@
+{
+  "test_class": "org.apache.commons.math3.linear.Array2DRowRealMatrixTest",
+  "source_file": "src/test/java/org/apache/commons/math3/linear/Array2DRowRealMatrixTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.linear.Array2DRowRealMatrixTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/linear/Array2DRowRealMatrixTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.linear;\n\nimport org.junit.Test;\nimport org.junit.Assert;\n\nimport org.apache.commons.math3.TestUtils;\nimport org.apache.commons.math3.util.FastMath;\nimport org.apache.commons.math3.exception.DimensionMismatchException;\nimport org.apache.commons.math3.exception.NullArgumentException;\nimport org.apache.commons.math3.exception.OutOfRangeException;\nimport org.apache.commons.math3.exception.NoDataException;\nimport org.apache.commons.math3.exception.NumberIsTooSmallException;\nimport org.apache.commons.math3.exception.MathIllegalArgumentException;\nimport org.apache.commons.math3.exception.MathIllegalStateException;\n\n/**\n * Test cases for the {@link Array2DRowRealMatrix} class.\n *\n * @version $Id$\n */\n\npublic final class Array2DRowRealMatrixTest {\n\n    // 3 x 3 identity matrix\n    protected double[][] id = { {1d,0d,0d}, {0d,1d,0d}, {0d,0d,1d} };\n\n    // Test data for group operations\n    protected double[][] testData = { {1d,2d,3d}, {2d,5d,3d}, {1d,0d,8d} };\n    protected double[][] testDataLU = {{2d, 5d, 3d}, {.5d, -2.5d, 6.5d}, {0.5d, 0.2d, .2d}};\n    protected double[][] testDataPlus2 = { {3d,4d,5d}, {4d,7d,5d}, {3d,2d,10d} };\n    protected double[][] testDataMinus = { {-1d,-2d,-3d}, {-2d,-5d,-3d},\n       {-1d,0d,-8d} };\n    protected double[] testDataRow1 = {1d,2d,3d};\n    protected double[] testDataCol3 = {3d,3d,8d};\n    protected double[][] testDataInv =\n        { {-40d,16d,9d}, {13d,-5d,-3d}, {5d,-2d,-1d} };\n    protected double[] preMultTest = {8,12,33};\n    protected double[][] testData2 ={ {1d,2d,3d}, {2d,5d,3d}};\n    protected double[][] testData2T = { {1d,2d}, {2d,5d}, {3d,3d}};\n    protected double[][] testDataPlusInv =\n        { {-39d,18d,12d}, {15d,0d,0d}, {6d,-2d,7d} };\n\n    // lu decomposition tests\n    protected double[][] luData = { {2d,3d,3d}, {0d,5d,7d}, {6d,9d,8d} };\n    protected double[][] luDataLUDecomposition = { {6d,9d,8d}, {0d,5d,7d},\n            {0.33333333333333,0d,0.33333333333333} };\n\n    // singular matrices\n    protected double[][] singular = { {2d,3d}, {2d,3d} };\n    protected double[][] bigSingular = {{1d,2d,3d,4d}, {2d,5d,3d,4d},\n        {7d,3d,256d,1930d}, {3d,7d,6d,8d}}; // 4th row = 1st + 2nd\n    protected double[][] detData = { {1d,2d,3d}, {4d,5d,6d}, {7d,8d,10d} };\n    protected double[][] detData2 = { {1d, 3d}, {2d, 4d}};\n\n    // vectors\n    protected double[] testVector = {1,2,3};\n    protected double[] testVector2 = {1,2,3,4};\n\n    // submatrix accessor tests\n    protected double[][] subTestData = {{1, 2, 3, 4}, {1.5, 2.5, 3.5, 4.5},\n            {2, 4, 6, 8}, {4, 5, 6, 7}};\n    // array selections\n    protected double[][] subRows02Cols13 = { {2, 4}, {4, 8}};\n    protected double[][] subRows03Cols12 = { {2, 3}, {5, 6}};\n        m.setColumn(1, mColumn3);\n        checkArrays(mColumn3, m.getColumn(1));\n        try {\n            m.setColumn(-1, mColumn3);\n            Assert.fail(\"Expecting OutOfRangeException\");\n        } catch (OutOfRangeException ex) {\n            // expected\n        }\n        try {\n            m.setColumn(0, new double[5]);\n            Assert.fail(\"Expecting MatrixDimensionMismatchException\");\n        } catch (MatrixDimensionMismatchException ex) {\n            // expected\n        }\n    }\n\n    private double[] columnToArray(double[][] column) {\n        double[] data = new double[column.length];\n        for (int i = 0; i < data.length; ++i) {\n            data[i] = column[i][0];\n        }\n        return data;\n    }\n\n    private void checkArrays(double[] expected, double[] actual) {\n        Assert.assertEquals(expected.length, actual.length);\n        for (int i = 0; i < expected.length; ++i) {\n            Assert.assertEquals(expected[i], actual[i], 0);\n        }\n    }\n\n    @Test\n    public void testEqualsAndHashCode() {\n        Array2DRowRealMatrix m = new Array2DRowRealMatrix(testData);\n        Array2DRowRealMatrix m1 = (Array2DRowRealMatrix) m.copy();\n        Array2DRowRealMatrix mt = (Array2DRowRealMatrix) m.transpose();\n        Assert.assertTrue(m.hashCode() != mt.hashCode());\n        Assert.assertEquals(m.hashCode(), m1.hashCode());\n        Assert.assertEquals(m, m);\n        Assert.assertEquals(m, m1);\n        Assert.assertFalse(m.equals(null));\n        Assert.assertFalse(m.equals(mt));\n        Assert.assertFalse(m.equals(new Array2DRowRealMatrix(bigSingular)));\n    }\n\n    @Test\n    public void testToString() {\n        Array2DRowRealMatrix m = new Array2DRowRealMatrix(testData);\n        Assert.assertEquals(\"Array2DRowRealMatrix{{1.0,2.0,3.0},{2.0,5.0,3.0},{1.0,0.0,8.0}}\",\n                m.toString());\n        m = new Array2DRowRealMatrix();\n        Assert.assertEquals(\"Array2DRowRealMatrix{}\",\n                m.toString());\n    }\n\n    @Test\n    public void testSetSubMatrix() {\n        Array2DRowRealMatrix m = new Array2DRowRealMatrix(testData);\n        m.setSubMatrix(detData2,1,1);\n        RealMatrix expected = MatrixUtils.createRealMatrix\n            (new double[][] {{1.0,2.0,3.0},{2.0,1.0,3.0},{1.0,2.0,4.0}});\n        Assert.assertEquals(expected, m);\n\n        m.setSubMatrix(detData2,0,0);\n        expected = MatrixUtils.createRealMatrix\n            (new double[][] {{1.0,3.0,3.0},{2.0,4.0,3.0},{1.0,2.0,4.0}});\n        Assert.assertEquals(expected, m);\n\n        m.setSubMatrix(testDataPlus2,0,0);\n        expected = MatrixUtils.createRealMatrix\n            (new double[][] {{3.0,4.0,5.0},{4.0,7.0,5.0},{3.0,2.0,10.0}});\n        Assert.assertEquals(expected, m);\n\n        // dimension overflow\n        try {\n            m.setSubMatrix(testData,1,1);\n            Assert.fail(\"expecting OutOfRangeException\");\n        } catch (OutOfRangeException e) {\n            // expected\n        }\n            return count;\n        }\n    }\n\n    //--------------- -----------------Protected methods\n\n    /** extracts the l  and u matrices from compact lu representation */\n    protected void splitLU(RealMatrix lu, double[][] lowerData, double[][] upperData) {\n        if (!lu.isSquare()) {\n            throw new NonSquareMatrixException(lu.getRowDimension(), lu.getColumnDimension());\n        }\n        if (lowerData.length != lowerData[0].length) {\n            throw new DimensionMismatchException(lowerData.length, lowerData[0].length);\n        }\n        if (upperData.length != upperData[0].length) {\n            throw new DimensionMismatchException(upperData.length, upperData[0].length);\n        }\n        if (lowerData.length != upperData.length) {\n            throw new DimensionMismatchException(lowerData.length, upperData.length);\n        }\n        if (lowerData.length != lu.getRowDimension()) {\n            throw new DimensionMismatchException(lowerData.length, lu.getRowDimension());\n        }\n\n        int n = lu.getRowDimension();\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < n; j++) {\n                if (j < i) {\n                    lowerData[i][j] = lu.getEntry(i, j);\n                    upperData[i][j] = 0d;\n                } else if (i == j) {\n                    lowerData[i][j] = 1d;\n                    upperData[i][j] = lu.getEntry(i, j);\n                } else {\n                    lowerData[i][j] = 0d;\n                    upperData[i][j] = lu.getEntry(i, j);\n                }\n            }\n        }\n    }\n\n    /** Returns the result of applying the given row permutation to the matrix */\n    protected RealMatrix permuteRows(RealMatrix matrix, int[] permutation) {\n        if (!matrix.isSquare()) {\n            throw new NonSquareMatrixException(matrix.getRowDimension(),\n                                               matrix.getColumnDimension());\n        }\n        if (matrix.getRowDimension() != permutation.length) {\n            throw new DimensionMismatchException(matrix.getRowDimension(), permutation.length);\n        }\n\n        int n = matrix.getRowDimension();\n        int m = matrix.getColumnDimension();\n        double out[][] = new double[m][n];\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < m; j++) {\n                out[i][j] = matrix.getEntry(permutation[i], j);\n            }\n        }\n        return new Array2DRowRealMatrix(out);\n    }\n\n//    /** Useful for debugging */\n//    private void dumpMatrix(RealMatrix m) {\n//          for (int i = 0; i < m.getRowDimension(); i++) {\n//              String os = \"\";\n//              for (int j = 0; j < m.getColumnDimension(); j++) {\n//                  os += m.getEntry(i, j) + \" \";\n//              }\n//              System.out.println(os);\n//          }\n//    }\n}\n\n",
+  "compaction": {
+    "source_lines": 1154,
+    "mode": "windows",
+    "windows_total": 19,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        840,
+        920
+      ],
+      [
+        1080,
+        1154
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 34.24733523107108
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 16.08005638273938
+      },
+      {
+        "start": 1080,
+        "end": 1154,
+        "score": 18.195783700976715
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 34.24733523107108
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.320530415324363
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 1.9736362885919143
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 2.216153964072726
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 2.944532507134486
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 3.310909114381455
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 3.8759157511628817
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 14.960902973576335
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 14.016599943151471
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 10.46851746028636
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 1.3579333827160105
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 2.58262064397852
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 8.880366365077201
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 7.085064713410389
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 16.08005638273938
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 6.954255774797596
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 1.6198310371645945
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 10.77173772830537
+      },
+      {
+        "start": 1080,
+        "end": 1154,
+        "score": 18.195783700976715
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9451,
+  "representation_chars": 9451,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

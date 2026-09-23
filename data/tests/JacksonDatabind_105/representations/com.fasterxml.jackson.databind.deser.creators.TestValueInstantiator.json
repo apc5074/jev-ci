@@ -1,0 +1,106 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.creators.TestValueInstantiator",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/creators/TestValueInstantiator.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.creators.TestValueInstantiator\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/creators/TestValueInstantiator.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser.creators;\n\nimport java.io.IOException;\nimport java.util.ArrayList;\nimport java.util.HashMap;\nimport java.util.Map;\n\nimport com.fasterxml.jackson.core.Version;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonValueInstantiator;\nimport com.fasterxml.jackson.databind.deser.*;\nimport com.fasterxml.jackson.databind.exc.InvalidDefinitionException;\nimport com.fasterxml.jackson.databind.introspect.AnnotatedWithParams;\nimport com.fasterxml.jackson.databind.module.SimpleModule;\nimport com.fasterxml.jackson.databind.type.TypeFactory;\n\n/**\n * Test custom instantiators.\n */\npublic class TestValueInstantiator extends BaseMapTest\n{\n    static class MyBean\n    {\n        String _secret;\n\n        public MyBean(String s, boolean bogus) {\n            _secret = s;\n        }\n    }\n\n    static class MysteryBean\n    {\n        Object value;\n\n        public MysteryBean(Object v) { value = v; }\n    }\n\n    static class CreatorBean\n    {\n        String _secret;\n\n        public String value;\n\n        protected CreatorBean(String s) {\n            _secret = s;\n        }\n    }\n\n    static abstract class InstantiatorBase extends ValueInstantiator.Base\n    {\n        public InstantiatorBase() {\n            super(Object.class);\n        }\n\n        @Override\n        public String getValueTypeDesc() {\n            return \"UNKNOWN\";\n        }\n\n        @Override\n        public boolean canCreateUsingDelegate() { return false; }\n    }\n    \n    static abstract class PolymorphicBeanBase { }\n    \n    static class PolymorphicBean extends PolymorphicBeanBase\n    {\n        public String name;\n    }\n    \n    @SuppressWarnings(\"serial\")\n    static class MyList extends ArrayList<Object>\n    {\n        public MyList(boolean b) { super(); }\n    }\n\n    @SuppressWarnings(\"serial\")\n    static class MyMap extends HashMap<String,Object>\n    {\n        public MyMap(boolean b) { super(); }\n                    new CreatorProperty(new PropertyName(\"type\"), config.constructType(Class.class), null,\n                            null, null, null, 0, null,\n                            PropertyMetadata.STD_REQUIRED)\n            };\n        }\n\n        @Override\n        public Object createFromObjectWith(DeserializationContext ctxt, Object[] args) {\n            try {\n                Class<?> cls = (Class<?>) args[0];\n                return cls.newInstance();\n            } catch (Exception e) {\n                throw new RuntimeException(e);\n            }\n        }\n    }\n    \n    static class CreatorMapInstantiator extends InstantiatorBase\n    {\n        @Override\n        public String getValueTypeDesc() {\n            return MyMap.class.getName();\n        }\n        \n        @Override\n        public boolean canCreateFromObjectWith() { return true; }\n\n        @Override\n        public CreatorProperty[] getFromObjectArguments(DeserializationConfig config) {\n            return  new CreatorProperty[] {\n                    new CreatorProperty(new PropertyName(\"name\"), config.constructType(String.class), null,\n                            null, null, null, 0, null,\n                            PropertyMetadata.STD_REQUIRED)\n            };\n        }\n\n        @Override\n        public Object createFromObjectWith(DeserializationContext ctxt, Object[] args) {\n            return new MyMap((String) args[0]);\n        }\n    }\n    \n    static class MyDelegateBeanInstantiator extends ValueInstantiator.Base\n    {\n        public MyDelegateBeanInstantiator() { super(Object.class); }\n\n        @Override\n        public String getValueTypeDesc() { return \"xxx\"; }\n        \n        @Override\n        public boolean canCreateUsingDelegate() { return true; }\n\n        @Override\n        public JavaType getDelegateType(DeserializationConfig config) {\n            return config.constructType(Object.class);\n        }\n        \n        @Override\n        public Object createUsingDelegate(DeserializationContext ctxt, Object delegate) {\n            return new MyBean(\"\"+delegate, true);\n        }\n    }\n    \n    static class MyListInstantiator extends InstantiatorBase\n    {\n        @Override\n        public String getValueTypeDesc() {\n            return MyList.class.getName();\n        }\n        \n        @Override\n        public boolean canCreateUsingDefault() { return true; }\n\n        @Override\n        public MyList createUsingDefault(DeserializationContext ctxt) {\n            return new MyList(true);\n        }\n    }\n\n    static class MyDelegateListInstantiator extends ValueInstantiator.Base\n                new InstantiatorBase() {\n                    @Override\n                    public boolean canCreateFromBoolean() { return true; }\n                    \n                    @Override\n                    public Object createFromBoolean(DeserializationContext ctxt, boolean value) {\n                        return new MysteryBean(Boolean.valueOf(value));\n                    }\n        }));\n        MysteryBean result = mapper.readValue(\"true\", MysteryBean.class);\n        assertNotNull(result);\n        assertEquals(Boolean.TRUE, result.value);\n    }\n    \n    /*\n    /**********************************************************\n    /* Other tests\n    /**********************************************************\n     */\n\n    /**\n     * Beyond basic features, it should be possible to even implement\n     * polymorphic handling...\n     */\n    public void testPolymorphicCreatorBean() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.registerModule(new MyModule(PolymorphicBeanBase.class, new PolymorphicBeanInstantiator()));\n        String JSON = \"{\\\"type\\\":\"+quote(PolymorphicBean.class.getName())+\",\\\"name\\\":\\\"Axel\\\"}\";\n        PolymorphicBeanBase result = mapper.readValue(JSON, PolymorphicBeanBase.class);\n        assertNotNull(result);\n        assertSame(PolymorphicBean.class, result.getClass());\n        assertEquals(\"Axel\", ((PolymorphicBean) result).name);\n    }\n\n    public void testEmptyBean() throws Exception\n    {\n        AnnotatedBean bean = MAPPER.readValue(\"{}\", AnnotatedBean.class);\n        assertNotNull(bean);\n        assertEquals(\"foo\", bean.a);\n        assertEquals(3, bean.b);\n    }\n\n    // @since 2.8\n    public void testErrorMessageForMissingCtor() throws Exception\n    {\n        // first fail, check message from JSON Object (no default ctor)\n        try {\n            MAPPER.readValue(\"{ }\", MyBean.class);\n            fail(\"Should not succeed\");\n        } catch (JsonMappingException e) {\n            verifyException(e, \"Cannot construct instance of\");\n            verifyException(e, \"no Creators\");\n            // as per [databind#1414], is definition problem\n            assertEquals(InvalidDefinitionException.class, e.getClass());\n        }\n    }\n\n    // @since 2.8\n    public void testErrorMessageForMissingStringCtor() throws Exception\n    {\n        // then from JSON String\n        try {\n            MAPPER.readValue(\"\\\"foo\\\"\", MyBean.class);\n            fail(\"Should not succeed\");\n        } catch (JsonMappingException e) {\n            verifyException(e, \"Cannot construct instance of\");\n            verifyException(e, \"no String-argument constructor/factory\");\n            // as per [databind#1414], is definition problem\n            assertEquals(InvalidDefinitionException.class, e.getClass());\n        }\n    }\n}\n",
+  "compaction": {
+    "source_lines": 613,
+    "mode": "windows",
+    "windows_total": 10,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        540,
+        613
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 21.77977165298011
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 7.988457220398717
+      },
+      {
+        "start": 540,
+        "end": 613,
+        "score": 8.614566763983582
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 21.77977165298011
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 6.930916549800886
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 7.988457220398717
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.998041432343501
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 6.671987290727601
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 5.302157118088811
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 6.174209436903223
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 6.2438059905238195
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 3.7137543860365305
+      },
+      {
+        "start": 540,
+        "end": 613,
+        "score": 8.614566763983582
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7535,
+  "representation_chars": 7535,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

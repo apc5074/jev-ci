@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.type.TestTypeResolution",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/type/TestTypeResolution.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.type.TestTypeResolution\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/type/TestTypeResolution.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.type;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.core.type.TypeReference;\n\nimport com.fasterxml.jackson.databind.JavaType;\nimport com.fasterxml.jackson.databind.type.CollectionType;\nimport com.fasterxml.jackson.databind.type.MapType;\nimport com.fasterxml.jackson.databind.type.TypeFactory;\n\n@SuppressWarnings(\"serial\")\npublic class TestTypeResolution extends com.fasterxml.jackson.test.BaseTest\n{\n    public static class LongValuedMap<K> extends HashMap<K, Long> { }\n\n    static class GenericList<X> extends ArrayList<X> { }\n    static class GenericList2<Y> extends GenericList<Y> { }\n\n    static class LongList extends GenericList2<Long> { }\n    static class MyLongList<T> extends LongList { }\n\n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n    \n    public void testMaps()\n    {\n        TypeFactory tf = TypeFactory.defaultInstance();\n        JavaType t = tf.constructType(new TypeReference<LongValuedMap<String>>() { });\n        MapType type = (MapType) t;\n        assertSame(LongValuedMap.class, type.getRawClass());\n        assertEquals(tf.constructType(String.class), type.getKeyType());\n        assertEquals(tf.constructType(Long.class), type.getContentType());        \n    }\n\n    public void testList()\n    {\n        JavaType t;\n\n        TypeFactory tf = TypeFactory.defaultInstance();\n        t = tf.constructType(new TypeReference<MyLongList<Integer>>() {});\n        CollectionType type = (CollectionType) t;\n        assertSame(MyLongList.class, type.getRawClass());\n        assertEquals(tf.constructType(Long.class), type.getContentType());        \n\n        t = tf.constructType(LongList.class);\n        type = (CollectionType) t;\n        assertSame(LongList.class, type.getRawClass());\n        assertEquals(tf.constructType(Long.class), type.getContentType());        \n    }\n}\n",
+  "compaction": {
+    "source_lines": 54,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2121,
+  "representation_chars": 2121,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

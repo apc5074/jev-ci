@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.interop.TestGroovyBeans",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/interop/TestGroovyBeans.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.interop.TestGroovyBeans\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/interop/TestGroovyBeans.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.interop;\n\nimport java.util.*;\n\nimport groovy.lang.GroovyClassLoader;\n\nimport com.fasterxml.jackson.databind.*;\n\n/**\n * Basic tests to see that simple Groovy beans can be serialized\n * and deserialized\n */\npublic class TestGroovyBeans\n    extends com.fasterxml.jackson.databind.BaseMapTest\n{\n    final static String SIMPLE_POGO = \n        \"public class GBean {\\n\"\n        +\"long id = 3;\\n\"\n        +\"String name = \\\"whome\\\";\\n\"\n        +\"}\";\n\n    private final ObjectMapper MAPPER = new ObjectMapper();\n\n    public void testSimpleSerialization() throws Exception\n    {\n        Object ob = newGroovyObject(SIMPLE_POGO);\n        Map<String,Object> result = writeAndMap(MAPPER, ob);\n        assertEquals(2, result.size());\n        assertEquals(\"whome\", result.get(\"name\"));\n        /* 26-Nov-2009, tatu: Strange... Groovy seems to decide\n         *    'long' means 'int'... Oh well.\n         */\n        Object num = result.get(\"id\");\n        assertNotNull(num);\n        assertTrue(num instanceof Number);\n        assertEquals(3, ((Number) num).intValue());\n    }\n\n    public void testSimpleDeserialization() throws Exception\n    {\n        Class<?> cls = defineGroovyClass(SIMPLE_POGO);\n        // First: deserialize from data\n        Object pogo = MAPPER.readValue(\"{\\\"id\\\":9,\\\"name\\\":\\\"Bob\\\"}\", cls);\n        assertNotNull(pogo);\n        /* Hmmh. Could try to access using Reflection, or by defining\n         * a Java interface it implements. Or, maybe simplest, just\n         * re-serialize and see what we got.\n         */\n        Map<String,Object> result = writeAndMap(MAPPER, pogo);\n        assertEquals(2, result.size());\n        assertEquals(\"Bob\", result.get(\"name\"));\n        // as per earlier, we just get a number...\n        Object num = result.get(\"id\");\n        assertNotNull(num);\n        assertTrue(num instanceof Number);\n        assertEquals(9, ((Number) num).intValue());\n    }\n\n    /*\n    *************************************************\n    * Helper methods\n    *************************************************\n    */\n\n    protected Class<?> defineGroovyClass(String src) throws Exception\n    {\n        return new GroovyClassLoader(getClass().getClassLoader()).parseClass(src);\n\n    }\n\n    protected Object newGroovyObject(String src) throws Exception\n    {\n        Class<?> cls = defineGroovyClass(src);\n        return cls.newInstance();\n    }\n}\n",
+  "compaction": {
+    "source_lines": 76,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2574,
+  "representation_chars": 2574,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

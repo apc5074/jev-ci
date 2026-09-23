@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.creators.TestCreatorsWithIdentity",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/creators/TestCreatorsWithIdentity.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.creators.TestCreatorsWithIdentity\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/creators/TestCreatorsWithIdentity.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser.creators;\n\nimport java.io.IOException;\n\nimport com.fasterxml.jackson.annotation.JsonCreator;\nimport com.fasterxml.jackson.annotation.JsonIdentityInfo;\nimport com.fasterxml.jackson.annotation.JsonProperty;\nimport com.fasterxml.jackson.annotation.ObjectIdGenerators;\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.ObjectMapper;\n\npublic class TestCreatorsWithIdentity extends BaseMapTest\n{\n\t@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property=\"id\", scope=Parent.class)\n\tpublic static class Parent {\n\t    @JsonProperty(\"id\")\n\t    String id;\n\t\n\t    @JsonProperty\n\t    String parentProp;\n\t\n\t    @JsonCreator\n\t    public Parent(@JsonProperty(\"parentProp\") String parentProp) {\n\t        this.parentProp = parentProp;\n\t    }\n\t}\n\n\tpublic static class Child {\n\t    @JsonProperty\n\t    Parent parent;\n\n\t    @JsonProperty\n\t    String childProp;\n\n\t    @JsonCreator\n\t    public Child(@JsonProperty(\"parent\") Parent parent, @JsonProperty(\"childProp\") String childProp) {\n\t        this.parent = parent;\n\t        this.childProp = childProp;\n\t    }\n\t}\n\n\tprivate static final ObjectMapper JSON_MAPPER = new ObjectMapper();\n\n\tpublic void testSimple() throws IOException\n\t{\n\t    String parentStr = \"{\\\"id\\\" : \\\"1\\\", \\\"parentProp\\\" : \\\"parent\\\"}\";\n\t    String childStr = \"{\\\"childProp\\\" : \\\"child\\\", \\\"parent\\\" : \" + parentStr + \"}\";\n\t    Parent parent = JSON_MAPPER.readValue(parentStr, Parent.class);\n\t    assertNotNull(parent);\n\t    Child child = JSON_MAPPER.readValue(childStr, Child.class);\n\t    assertNotNull(child);\n\t    assertNotNull(child.parent);\n\t}\n}\n",
+  "compaction": {
+    "source_lines": 54,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1855,
+  "representation_chars": 1855,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

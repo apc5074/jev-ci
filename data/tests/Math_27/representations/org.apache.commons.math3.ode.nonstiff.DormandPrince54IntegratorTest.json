@@ -1,0 +1,86 @@
+{
+  "test_class": "org.apache.commons.math3.ode.nonstiff.DormandPrince54IntegratorTest",
+  "source_file": "src/test/java/org/apache/commons/math3/ode/nonstiff/DormandPrince54IntegratorTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.ode.nonstiff.DormandPrince54IntegratorTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/ode/nonstiff/DormandPrince54IntegratorTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math3.ode.nonstiff;\n\nimport org.apache.commons.math3.exception.DimensionMismatchException;\nimport org.apache.commons.math3.exception.NumberIsTooSmallException;\nimport org.apache.commons.math3.ode.FirstOrderIntegrator;\nimport org.apache.commons.math3.ode.TestProblem1;\nimport org.apache.commons.math3.ode.TestProblem3;\nimport org.apache.commons.math3.ode.TestProblem4;\nimport org.apache.commons.math3.ode.TestProblem5;\nimport org.apache.commons.math3.ode.TestProblemAbstract;\nimport org.apache.commons.math3.ode.TestProblemHandler;\nimport org.apache.commons.math3.ode.events.EventHandler;\nimport org.apache.commons.math3.ode.sampling.StepHandler;\nimport org.apache.commons.math3.ode.sampling.StepInterpolator;\nimport org.apache.commons.math3.util.FastMath;\nimport org.junit.Assert;\nimport org.junit.Test;\n\n\npublic class DormandPrince54IntegratorTest {\n\n  @Test(expected=DimensionMismatchException.class)\n  public void testDimensionCheck() {\n      TestProblem1 pb = new TestProblem1();\n      DormandPrince54Integrator integrator = new DormandPrince54Integrator(0.0, 1.0,\n                                                                           1.0e-10, 1.0e-10);\n      integrator.integrate(pb,\n                           0.0, new double[pb.getDimension()+10],\n                           1.0, new double[pb.getDimension()+10]);\n  }\n\n  @Test(expected=NumberIsTooSmallException.class)\n  public void testMinStep() {\n\n      TestProblem1 pb = new TestProblem1();\n      double minStep = 0.1 * (pb.getFinalTime() - pb.getInitialTime());\n      double maxStep = pb.getFinalTime() - pb.getInitialTime();\n      double[] vecAbsoluteTolerance = { 1.0e-15, 1.0e-16 };\n      double[] vecRelativeTolerance = { 1.0e-15, 1.0e-16 };\n\n      FirstOrderIntegrator integ = new DormandPrince54Integrator(minStep, maxStep,\n                                                                 vecAbsoluteTolerance,\n                                                                 vecRelativeTolerance);\n      TestProblemHandler handler = new TestProblemHandler(pb, integ);\n      integ.addStepHandler(handler);\n      integ.integrate(pb,\n                      pb.getInitialTime(), pb.getInitialState(),\n                      pb.getFinalTime(), new double[pb.getDimension()]);\n      Assert.fail(\"an exception should have been thrown\");\n\n  }\n\n  @Test\n  public void testSmallLastStep()\n    {\n\n    TestProblemAbstract pb = new TestProblem5();\n    double minStep = 1.25;\n    double maxStep = FastMath.abs(pb.getFinalTime() - pb.getInitialTime());\n    double scalAbsoluteTolerance = 6.0e-4;\n    double scalRelativeTolerance = 6.0e-4;\n\n    AdaptiveStepsizeIntegrator integ =\n      new DormandPrince54Integrator(minStep, maxStep,\n                                    scalAbsoluteTolerance,\n                                    scalRelativeTolerance);\n\n    DP54SmallLastHandler handler = new DP54SmallLastHandler(minStep);\n    integ.addStepHandler(handler);\n    integ.setInitialStepSize(1.7);\n    integ.integrate(pb,\n                    pb.getInitialTime(), pb.getInitialState(),\n                    pb.getFinalTime(), new double[pb.getDimension()]);\n    Assert.assertTrue(handler.wasLastSeen());\n    Assert.assertEquals(\"Dormand-Prince 5(4)\", integ.getName());\n\n  }\n\n  @Test\n  public void testBackward()\n      {\n\n      TestProblem5 pb = new TestProblem5();\n      double minStep = 0;\n      double maxStep = pb.getFinalTime() - pb.getInitialTime();\n      double scalAbsoluteTolerance = 1.0e-8;\n      double scalRelativeTolerance = 0.01 * scalAbsoluteTolerance;\n\n      FirstOrderIntegrator integ = new DormandPrince54Integrator(minStep, maxStep,\n                                                                 scalAbsoluteTolerance,\n                                                                 scalRelativeTolerance);\n      TestProblemHandler handler = new TestProblemHandler(pb, integ);\n      integ.addStepHandler(handler);\n      integ.integrate(pb, pb.getInitialTime(), pb.getInitialState(),\n                      pb.getFinalTime(), new double[pb.getDimension()]);\n\n      Assert.assertTrue(handler.getLastError() < 2.0e-7);\n      Assert.assertTrue(handler.getMaximalValueError() < 2.0e-7);\n      Assert.assertEquals(0, handler.getMaximalTimeError(), 1.0e-12);\n      Assert.assertEquals(\"Dormand-Prince 5(4)\", integ.getName());\n  }\n\n  private static class DP54SmallLastHandler implements StepHandler {\n\n    public DP54SmallLastHandler(double minStep) {\n      lastSeen = false;\n      this.minStep = minStep;\n    }\n\n    public void init(double t0, double[] y0, double t) {\n    }\n\n    public void handleStep(StepInterpolator interpolator, boolean isLast) {\n      if (isLast) {\n        lastSeen = true;\n        double h = interpolator.getCurrentTime() - interpolator.getPreviousTime();\n        Assert.assertTrue(FastMath.abs(h) < minStep);\n      }\n    }\n\n    public boolean wasLastSeen() {\n      return lastSeen;\n    }\n\n    private boolean lastSeen;\n    private double  minStep;\n\n  }\n\n  @Test\n  public void testIncreasingTolerance()\n    {\n\n    int previousCalls = Integer.MAX_VALUE;\n    for (int i = -12; i < -2; ++i) {\n      TestProblem1 pb = new TestProblem1();\n      double minStep = 0;\n      double maxStep = pb.getFinalTime() - pb.getInitialTime();\n      double scalAbsoluteTolerance = FastMath.pow(10.0, i);\n      double scalRelativeTolerance = 0.01 * scalAbsoluteTolerance;\n\n      EmbeddedRungeKuttaIntegrator integ =\n          new DormandPrince54Integrator(minStep, maxStep,\n                                        scalAbsoluteTolerance, scalRelativeTolerance);\n      TestProblemHandler handler = new TestProblemHandler(pb, integ);\n      integ.setSafety(0.8);\n      integ.setMaxGrowth(5.0);\n      integ.setMinReduction(0.3);\n      integ.addStepHandler(handler);\n      integ.integrate(pb,\n                      pb.getInitialTime(), pb.getInitialState(),\n                      pb.getFinalTime(), new double[pb.getDimension()]);\n      Assert.assertEquals(0.8, integ.getSafety(), 1.0e-12);\n      Assert.assertEquals(5.0, integ.getMaxGrowth(), 1.0e-12);\n      Assert.assertEquals(0.3, integ.getMinReduction(), 1.0e-12);\n\n      // the 0.7 factor is only valid for this test\n      // and has been obtained from trial and error\n      // there is no general relation between local and global errors\n      Assert.assertTrue(handler.getMaximalValueError() < (0.7 * scalAbsoluteTolerance));\n      Assert.assertEquals(0, handler.getMaximalTimeError(), 1.0e-12);\n\n      int calls = pb.getCalls();\n      Assert.assertEquals(integ.getEvaluations(), calls);\n      Assert.assertTrue(calls <= previousCalls);\n      previousCalls = calls;\n\n    }\n\n  }\n\n  @Test\n  public void testEvents()\n    {\n\n    TestProblem4 pb = new TestProblem4();\n    double minStep = 0;\n    double maxStep = pb.getFinalTime() - pb.getInitialTime();\n    double scalAbsoluteTolerance = 1.0e-8;\n    double scalRelativeTolerance = 0.01 * scalAbsoluteTolerance;\n\n    FirstOrderIntegrator integ = new DormandPrince54Integrator(minStep, maxStep,\n                                                               scalAbsoluteTolerance,\n",
+  "compaction": {
+    "source_lines": 341,
+    "mode": "windows",
+    "windows_total": 6,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 17.42104766024927
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 1.9520171385679315
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 3.3187794813348055
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 17.42104766024927
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 1.9520171385679315
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 3.3187794813348055
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 0.9492363993134799
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 0.32679904209662486
+      },
+      {
+        "start": 300,
+        "end": 341,
+        "score": 0.31178201086491053
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8068,
+  "representation_chars": 8068,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

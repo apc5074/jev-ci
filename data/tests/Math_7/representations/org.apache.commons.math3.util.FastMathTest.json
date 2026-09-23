@@ -1,0 +1,156 @@
+{
+  "test_class": "org.apache.commons.math3.util.FastMathTest",
+  "source_file": "src/test/java/org/apache/commons/math3/util/FastMathTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.util.FastMathTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/util/FastMathTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.util;\n\nimport java.lang.reflect.Method;\nimport java.lang.reflect.Modifier;\nimport java.lang.reflect.Type;\n\nimport org.apache.commons.math3.TestUtils;\nimport org.apache.commons.math3.dfp.Dfp;\nimport org.apache.commons.math3.dfp.DfpField;\nimport org.apache.commons.math3.dfp.DfpMath;\nimport org.apache.commons.math3.random.MersenneTwister;\nimport org.apache.commons.math3.random.RandomGenerator;\nimport org.junit.Assert;\nimport org.junit.Before;\nimport org.junit.Ignore;\nimport org.junit.Test;\n\npublic class FastMathTest {\n\n    private static final double MAX_ERROR_ULP = 0.51;\n    private static final int NUMBER_OF_TRIALS = 1000;\n\n\n    private DfpField field;\n    private RandomGenerator generator;\n\n    @Before\n    public void setUp() {\n        field = new DfpField(40);\n        generator = new MersenneTwister(6176597458463500194l);\n    }\n\n    @Test\n    public void testMinMaxDouble() {\n        double[][] pairs = {\n            { -50.0, 50.0 },\n            {  Double.POSITIVE_INFINITY, 1.0 },\n            {  Double.NEGATIVE_INFINITY, 1.0 },\n            {  Double.NaN, 1.0 },\n            {  Double.POSITIVE_INFINITY, 0.0 },\n            {  Double.NEGATIVE_INFINITY, 0.0 },\n            {  Double.NaN, 0.0 },\n            {  Double.NaN, Double.NEGATIVE_INFINITY },\n            {  Double.NaN, Double.POSITIVE_INFINITY },\n            { Precision.SAFE_MIN, Precision.EPSILON }\n        };\n        for (double[] pair : pairs) {\n            Assert.assertEquals(\"min(\" + pair[0] + \", \" + pair[1] + \")\",\n                                Math.min(pair[0], pair[1]),\n                                FastMath.min(pair[0], pair[1]),\n                                Precision.EPSILON);\n            Assert.assertEquals(\"min(\" + pair[1] + \", \" + pair[0] + \")\",\n                                Math.min(pair[1], pair[0]),\n                                FastMath.min(pair[1], pair[0]),\n                                Precision.EPSILON);\n            Assert.assertEquals(\"max(\" + pair[0] + \", \" + pair[1] + \")\",\n                                Math.max(pair[0], pair[1]),\n                                FastMath.max(pair[0], pair[1]),\n                                Precision.EPSILON);\n            Assert.assertEquals(\"max(\" + pair[1] + \", \" + pair[0] + \")\",\n                                Math.max(pair[1], pair[0]),\n                                FastMath.max(pair[1], pair[0]),\n                                Precision.EPSILON);\n        }\n            if (err != 0) {\n                double ulp = Math.abs(ref - Double.longBitsToDouble((Double.doubleToLongBits(ref) ^ 1)));\n                double errulp = field.newDfp(tst).subtract(cosh(field.newDfp(x))).divide(field.newDfp(ulp)).toDouble();\n                //System.out.println(x+\"\\t\"+tst+\"\\t\"+ref+\"\\t\"+err+\"\\t\"+errulp);\n                maxerrulp = Math.max(maxerrulp, Math.abs(errulp));\n            }\n        }\n\n        Assert.assertTrue(\"cosh() had errors in excess of \" + MAX_ERROR_ULP + \" ULP\", maxerrulp < MAX_ERROR_ULP);\n    }\n\n    @Test\n    public void testTanhAccuracy() {\n        double maxerrulp = 0.0;\n\n        for (int i=0; i<10000; i++) {\n            double x = ((generator.nextDouble() * 16.0) - 8.0) * generator.nextDouble();\n\n            double tst = FastMath.tanh(x);\n            double ref = tanh(field.newDfp(x)).toDouble();\n            double err = (tst - ref) / ref;\n\n            if (err != 0) {\n                double ulp = Math.abs(ref - Double.longBitsToDouble((Double.doubleToLongBits(ref) ^ 1)));\n                double errulp = field.newDfp(tst).subtract(tanh(field.newDfp(x))).divide(field.newDfp(ulp)).toDouble();\n                //System.out.println(x+\"\\t\"+tst+\"\\t\"+ref+\"\\t\"+err+\"\\t\"+errulp);\n                maxerrulp = Math.max(maxerrulp, Math.abs(errulp));\n            }\n        }\n\n        Assert.assertTrue(\"tanh() had errors in excess of \" + MAX_ERROR_ULP + \" ULP\", maxerrulp < MAX_ERROR_ULP);\n    }\n\n    @Test\n    public void testCbrtAccuracy() {\n        double maxerrulp = 0.0;\n\n        for (int i=0; i<10000; i++) {\n            double x = ((generator.nextDouble() * 200.0) - 100.0) * generator.nextDouble();\n\n            double tst = FastMath.cbrt(x);\n            double ref = cbrt(field.newDfp(x)).toDouble();\n            double err = (tst - ref) / ref;\n\n            if (err != 0) {\n                double ulp = Math.abs(ref - Double.longBitsToDouble((Double.doubleToLongBits(ref) ^ 1)));\n                double errulp = field.newDfp(tst).subtract(cbrt(field.newDfp(x))).divide(field.newDfp(ulp)).toDouble();\n                //System.out.println(x+\"\\t\"+tst+\"\\t\"+ref+\"\\t\"+err+\"\\t\"+errulp);\n                maxerrulp = Math.max(maxerrulp, Math.abs(errulp));\n            }\n        }\n\n        Assert.assertTrue(\"cbrt() had errors in excess of \" + MAX_ERROR_ULP + \" ULP\", maxerrulp < MAX_ERROR_ULP);\n    }\n\n    private Dfp cbrt(Dfp x) {\n      boolean negative=false;\n\n      if (x.lessThan(field.getZero())) {\n          negative = true;\n          x = x.negate();\n      }\n\n      Dfp y = DfpMath.pow(x, field.getOne().divide(3));\n\n      if (negative) {\n          y = y.negate();\n      }\n\n      return y;\n    }\n\n    @Test\n    public void testToDegrees() {\n        double maxerrulp = 0.0;\n        for (int i = 0; i < NUMBER_OF_TRIALS; i++) {\n            double x = generator.nextDouble();\n            double tst = field.newDfp(x).multiply(180).divide(field.getPi()).toDouble();\n            double ref = FastMath.toDegrees(x);\n            double err = (tst - ref) / ref;\n        Assert.assertEquals(Float.MIN_VALUE,          FastMath.scalb(Float.MAX_VALUE, -277), 0F);\n        Assert.assertEquals(0,                        FastMath.scalb(Float.MAX_VALUE, -278), 0F);\n        Assert.assertEquals(Float.POSITIVE_INFINITY,  FastMath.scalb(Float.POSITIVE_INFINITY, -1000000), 0F);\n        Assert.assertEquals(-3.13994498e38f,          FastMath.scalb(-1.1e-7f,         151), 0F);\n        Assert.assertEquals(Float.NEGATIVE_INFINITY,  FastMath.scalb(-1.1e-7f,         152), 0F);\n        Assert.assertEquals(Float.POSITIVE_INFINITY,  FastMath.scalb(3.4028235E38f,  2147483647), 0F);\n        Assert.assertEquals(Float.NEGATIVE_INFINITY,  FastMath.scalb(-3.4028235E38f, 2147483647), 0F);\n    }\n\n    private boolean compareClassMethods(Class<?> class1, Class<?> class2){\n        boolean allfound = true;\n        for(Method method1 : class1.getDeclaredMethods()){\n            if (Modifier.isPublic(method1.getModifiers())){\n                Type []params = method1.getGenericParameterTypes();\n                try {\n                    class2.getDeclaredMethod(method1.getName(), (Class[]) params);\n                } catch (NoSuchMethodException e) {\n                    allfound = false;\n                    System.out.println(class2.getSimpleName()+\" does not implement: \"+method1);\n                }\n            }\n        }\n        return allfound;\n    }\n\n    @Test\n    public void checkMissingFastMathClasses() {}\n// Defects4J: flaky method\n//     @Test\n//     public void checkMissingFastMathClasses() {\n//         boolean ok = compareClassMethods(StrictMath.class, FastMath.class);\n//         Assert.assertTrue(\"FastMath should implement all StrictMath methods\", ok);\n//     }\n\n    @Ignore\n    @Test\n    public void checkExtraFastMathClasses() {\n        compareClassMethods( FastMath.class, StrictMath.class);\n    }\n\n    @Test\n    public void testSignumDouble() {\n        final double delta = 0.0;\n        Assert.assertEquals(1.0, FastMath.signum(2.0), delta);\n        Assert.assertEquals(0.0, FastMath.signum(0.0), delta);\n        Assert.assertEquals(-1.0, FastMath.signum(-2.0), delta);\n        TestUtils.assertSame(-0. / 0., FastMath.signum(Double.NaN));\n    }\n\n    @Test\n    public void testSignumFloat() {\n        final float delta = 0.0F;\n        Assert.assertEquals(1.0F, FastMath.signum(2.0F), delta);\n        Assert.assertEquals(0.0F, FastMath.signum(0.0F), delta);\n        Assert.assertEquals(-1.0F, FastMath.signum(-2.0F), delta);\n        TestUtils.assertSame(Float.NaN, FastMath.signum(Float.NaN));\n    }\n\n    @Test\n    public void testLogWithBase() {\n        Assert.assertEquals(2.0, FastMath.log(2, 4), 0);\n        Assert.assertEquals(3.0, FastMath.log(2, 8), 0);\n        Assert.assertTrue(Double.isNaN(FastMath.log(-1, 1)));\n        Assert.assertTrue(Double.isNaN(FastMath.log(1, -1)));\n        Assert.assertTrue(Double.isNaN(FastMath.log(0, 0)));\n        Assert.assertEquals(0, FastMath.log(0, 10), 0);\n        Assert.assertEquals(Double.NEGATIVE_INFINITY, FastMath.log(10, 0), 0);\n    }\n\n    @Test\n    public void testIndicatorDouble() {\n        double delta = 0.0;\n        Assert.assertEquals(1.0, FastMath.copySign(1d, 2.0), delta);\n        Assert.assertEquals(1.0, FastMath.copySign(1d, 0.0), delta);\n        Assert.assertEquals(-1.0, FastMath.copySign(1d, -2.0), delta);\n    }\n\n    @Test\n    public void testIndicatorFloat() {\n        float delta = 0.0F;\n",
+  "compaction": {
+    "source_lines": 1180,
+    "mode": "windows",
+    "windows_total": 20,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        840,
+        920
+      ],
+      [
+        1080,
+        1160
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 40.21909437494068
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 10.854826103037245
+      },
+      {
+        "start": 1080,
+        "end": 1160,
+        "score": 21.154148550006955
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 40.21909437494068
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 1.1641533465945475
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 4.188376058666586
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 5.709068927653386
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 7.645648517099014
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 7.941252712305614
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 2.4902172914693654
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 2.581531083900705
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 5.038555598548398
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 5.030602665982313
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 6.425518992094606
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 6.544038923670308
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 6.566178275943461
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 7.13593612194385
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 10.854826103037245
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 6.904346547376701
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 0.05500654390134089
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 8.533060124911795
+      },
+      {
+        "start": 1080,
+        "end": 1160,
+        "score": 21.154148550006955
+      },
+      {
+        "start": 1140,
+        "end": 1180,
+        "score": 7.689979927712304
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9817,
+  "representation_chars": 9817,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "example_id": "Lang_35",
+  "qualified_id": "Lang-35",
+  "project": "Lang",
+  "bug_id": "35",
+  "split": "development",
+  "status": "complete",
+  "revisions": {
+    "base": "Bf",
+    "proposed": "Bb",
+    "direction": "fixed_to_buggy",
+    "notes": "Fixed (Bf) is the working base for tests/source. Buggy (Bb) is the proposed production change."
+  },
+  "manifest": {
+    "path": "data/manifest.json",
+    "selection_seed": 20260922,
+    "defects4j_version": "3.0.1",
+    "defects4j_commit": "6d54320e0db5a357f9ab38a8e4d2e5aead7e1c09",
+    "manifest_created_at": "2026-09-22T23:16:15+00:00",
+    "manifest_git_commit": "784d3d84dd09ae7f53cb828eac65532370906c56"
+  },
+  "artifacts": {
+    "bugs": "data/bugs/Lang_35/",
+    "patches": "data/patches/Lang_35/",
+    "tests": "data/tests/Lang_35/"
+  },
+  "visibility": {
+    "model_visible": [
+      "data/patches/<id>/representation.txt",
+      "data/patches/<id>/patch_meta.json (truncation stats only)",
+      "data/tests/<id>/inventory.json (test class ids + source paths)",
+      "data/tests/<id>/representations/*.json (compact test source)"
+    ],
+    "private": [
+      "data/tests/<id>/labels.json",
+      "data/tests/<id>/raw/tests.trigger",
+      "data/bugs/<id>/error.json",
+      "checkout trees under data/bugs/<id>/checkouts/"
+    ]
+  },
+  "complete_requirements": [
+    "example_json",
+    "checkout_provenance",
+    "checkout_fixed",
+    "checkout_buggy",
+    "patch_meta",
+    "patch_diff",
+    "patch_representation",
+    "raw_tests_all",
+    "raw_tests_trigger",
+    "test_inventory",
+    "test_labels",
+    "representations_index"
+  ],
+  "error": null,
+  "checkouts": {
+    "fixed": "data/bugs/Lang_35/checkouts/fixed",
+    "buggy": "data/bugs/Lang_35/checkouts/buggy",
+    "provenance": "data/bugs/Lang_35/checkout_provenance.json"
+  },
+  "patch": {
+    "meta": "data/patches/Lang_35/patch_meta.json",
+    "diff": "data/patches/Lang_35/regression_patch.diff",
+    "representation": "data/patches/Lang_35/representation.txt",
+    "patch_truncated": false,
+    "original_patch_chars": 1099,
+    "representation_chars": 1099
+  },
+  "tests": {
+    "inventory": "data/tests/Lang_35/inventory.json",
+    "labels": "data/tests/Lang_35/labels.json",
+    "num_test_classes": 85,
+    "num_positive_classes": 1,
+    "num_trigger_methods": 1,
+    "source_resolved": 85,
+    "source_missing": 0,
+    "source_ambiguous": 0
+  },
+  "representations": {
+    "index": "data/tests/Lang_35/representations_index.json",
+    "dir": "data/tests/Lang_35/representations",
+    "num_representations": 85,
+    "source_missing": 0,
+    "representation_truncated": 0,
+    "window_compacted": 44
+  },
+  "content_hashes": {
+    "patch_representation": "3babe550fd461cf7718a9e6528b61f8c7a81795c717bad1fbecbe7d13075b89e",
+    "patch_meta": "93baae9a14d761fbdabe6b8cddcfe81ffeb4a774b665088934ac6dc5fc6e1218",
+    "test_inventory": "7d8993eb66c1bf8966bcada51be4328675d2e41ba1152cf9a855d00745df2480",
+    "test_labels": "a681a73a767397276b81420dfc6149f37836868c252a6109ea47cc1523a610e7",
+    "representations_index": "131d70e26853680623d80d928bb0c158e802b5e27d16c8f09b963cceda4f11ba",
+    "checkout_provenance": "27810f6423378181f1b35e969a8c641b4bec6d4e1e94f2e0fa5a75653bf1fe3c"
+  }
+}

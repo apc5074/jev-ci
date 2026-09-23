@@ -1,0 +1,25 @@
+{
+  "test_class": "org.jsoup.parser.ParserSettingsTest",
+  "source_file": "src/test/java/org/jsoup/parser/ParserSettingsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.jsoup.parser.ParserSettingsTest\n\nSOURCE FILE:\nsrc/test/java/org/jsoup/parser/ParserSettingsTest.java\n\nTEST SOURCE:\npackage org.jsoup.parser;\n\nimport org.jsoup.MultiLocaleRule;\nimport org.jsoup.MultiLocaleRule.MultiLocaleTest;\nimport org.jsoup.nodes.Attributes;\nimport org.junit.Rule;\nimport org.junit.Test;\n\nimport static org.junit.Assert.assertEquals;\n\npublic class ParserSettingsTest {\n    @Rule public MultiLocaleRule rule = new MultiLocaleRule();\n\n    @Test @MultiLocaleTest public void caseSupport() {\n        ParseSettings bothOn = new ParseSettings(true, true);\n        ParseSettings bothOff = new ParseSettings(false, false);\n        ParseSettings tagOn = new ParseSettings(true, false);\n        ParseSettings attrOn = new ParseSettings(false, true);\n\n        assertEquals(\"IMG\", bothOn.normalizeTag(\"IMG\"));\n        assertEquals(\"ID\", bothOn.normalizeAttribute(\"ID\"));\n\n        assertEquals(\"img\", bothOff.normalizeTag(\"IMG\"));\n        assertEquals(\"id\", bothOff.normalizeAttribute(\"ID\"));\n\n        assertEquals(\"IMG\", tagOn.normalizeTag(\"IMG\"));\n        assertEquals(\"id\", tagOn.normalizeAttribute(\"ID\"));\n\n        assertEquals(\"img\", attrOn.normalizeTag(\"IMG\"));\n        assertEquals(\"ID\", attrOn.normalizeAttribute(\"ID\"));\n    }\n\n    @Test @MultiLocaleTest public void attributeCaseNormalization() throws Exception {\n        ParseSettings parseSettings = new ParseSettings(false, false);\n\n        String normalizedAttribute = parseSettings.normalizeAttribute(\"HIDDEN\");\n\n        assertEquals(\"hidden\", normalizedAttribute);\n    }\n\n    @Test @MultiLocaleTest public void attributesCaseNormalization() throws Exception {\n        ParseSettings parseSettings = new ParseSettings(false, false);\n        Attributes attributes = new Attributes();\n        attributes.put(\"ITEM\", \"1\");\n\n        Attributes normalizedAttributes = parseSettings.normalizeAttributes(attributes);\n\n        assertEquals(\"item\", normalizedAttributes.asList().get(0).getKey());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 50,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1981,
+  "representation_chars": 1981,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

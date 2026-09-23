@@ -1,0 +1,96 @@
+{
+  "test_class": "org.apache.commons.lang3.time.DateUtilsFragmentTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/time/DateUtilsFragmentTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.time.DateUtilsFragmentTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/time/DateUtilsFragmentTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3.time;\n\nimport java.util.Calendar;\nimport java.util.Date;\n\nimport junit.framework.TestCase;\n\npublic class DateUtilsFragmentTest extends TestCase {\n\n    private static final int months = 7;   // second final prime before 12\n    private static final int days = 23;    // second final prime before 31 (and valid)\n    private static final int hours = 19;   // second final prime before 24\n    private static final int minutes = 53; // second final prime before 60\n    private static final int seconds = 47; // third final prime before 60\n    private static final int millis = 991; // second final prime before 1000\n\n    private Date aDate;\n    private Calendar aCalendar;\n\n    @Override\n    protected void setUp() {\n        aCalendar = Calendar.getInstance();\n        aCalendar.set(2005, months, days, hours, minutes, seconds);\n        aCalendar.set(Calendar.MILLISECOND, millis);\n        aDate = aCalendar.getTime();\n    }\n    \n    public void testNullDate() {\n        try {\n            DateUtils.getFragmentInMilliseconds((Date) null, Calendar.MILLISECOND);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n\n        try {\n            DateUtils.getFragmentInSeconds((Date) null, Calendar.MILLISECOND);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n\n        try {\n            DateUtils.getFragmentInMinutes((Date) null, Calendar.MILLISECOND);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n\n        try {\n            DateUtils.getFragmentInHours((Date) null, Calendar.MILLISECOND);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n\n        try {\n            DateUtils.getFragmentInDays((Date) null, Calendar.MILLISECOND);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n    }\n\n    public void testNullCalendar() {\n        try {\n            DateUtils.getFragmentInMilliseconds((Calendar) null, Calendar.MILLISECOND);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n\n        try {\n            DateUtils.getFragmentInSeconds((Calendar) null, Calendar.MILLISECOND);\n            fail();\n        } catch(IllegalArgumentException iae) {}\n        long testResult = DateUtils.getFragmentInMilliseconds(aCalendar, Calendar.MINUTE);\n        assertEquals(millis + (seconds * DateUtils.MILLIS_PER_SECOND), testResult);\n    }\n\n    public void testSecondsofMinuteWithDate() {\n        long testResult = DateUtils.getFragmentInSeconds(aDate, Calendar.MINUTE);\n        assertEquals(seconds, testResult);\n    }\n\n    public void testSecondsofMinuteWithCalendar() {\n        long testResult = DateUtils.getFragmentInSeconds(aCalendar, Calendar.MINUTE);\n        assertEquals(seconds, testResult);\n        assertEquals(aCalendar.get(Calendar.SECOND), testResult);\n    }\n\n    //Calendar.HOUR_OF_DAY as useful fragment\n    \n    public void testMillisecondsOfHourWithDate() {\n        long testResult = DateUtils.getFragmentInMilliseconds(aDate, Calendar.HOUR_OF_DAY);\n        assertEquals(millis + (seconds * DateUtils.MILLIS_PER_SECOND) + (minutes * DateUtils.MILLIS_PER_MINUTE), testResult);\n    }\n    \n    public void testMillisecondsOfHourWithCalendar() {\n        long testResult = DateUtils.getFragmentInMilliseconds(aCalendar, Calendar.HOUR_OF_DAY);\n        assertEquals(millis + (seconds * DateUtils.MILLIS_PER_SECOND) + (minutes * DateUtils.MILLIS_PER_MINUTE), testResult);\n    }\n\n    public void testSecondsofHourWithDate() {\n        long testResult = DateUtils.getFragmentInSeconds(aDate, Calendar.HOUR_OF_DAY);\n        assertEquals(\n                seconds\n                        + (minutes\n                                * DateUtils.MILLIS_PER_MINUTE / DateUtils.MILLIS_PER_SECOND),\n                testResult);\n    }\n\n    public void testSecondsofHourWithCalendar() {\n        long testResult = DateUtils.getFragmentInSeconds(aCalendar, Calendar.HOUR_OF_DAY);\n        assertEquals(\n                seconds\n                        + (minutes\n                                * DateUtils.MILLIS_PER_MINUTE / DateUtils.MILLIS_PER_SECOND),\n                testResult);\n    }\n\n    public void testMinutesOfHourWithDate() {\n        long testResult = DateUtils.getFragmentInMinutes(aDate, Calendar.HOUR_OF_DAY);\n        assertEquals(minutes, testResult);\n    }\n\n    public void testMinutesOfHourWithCalendar() {\n        long testResult = DateUtils.getFragmentInMinutes(aCalendar, Calendar.HOUR_OF_DAY);\n        assertEquals(minutes, testResult);\n    }\n\n    //Calendar.DATE and Calendar.DAY_OF_YEAR as useful fragment\n    public void testMillisecondsOfDayWithDate() {\n        long testresult = DateUtils.getFragmentInMilliseconds(aDate, Calendar.DATE);\n        long expectedValue = millis + (seconds * DateUtils.MILLIS_PER_SECOND) + (minutes * DateUtils.MILLIS_PER_MINUTE) + (hours * DateUtils.MILLIS_PER_HOUR); \n        assertEquals(expectedValue, testresult);\n        testresult = DateUtils.getFragmentInMilliseconds(aDate, Calendar.DAY_OF_YEAR);\n        assertEquals(expectedValue, testresult);\n    }\n    \n    public void testMillisecondsOfDayWithCalendar() {\n        long testresult = DateUtils.getFragmentInMilliseconds(aCalendar, Calendar.DATE);\n        long expectedValue = millis + (seconds * DateUtils.MILLIS_PER_SECOND) + (minutes * DateUtils.MILLIS_PER_MINUTE) + (hours * DateUtils.MILLIS_PER_HOUR); \n        assertEquals(expectedValue, testresult);\n        testresult = DateUtils.getFragmentInMilliseconds(aCalendar, Calendar.DAY_OF_YEAR);\n        assertEquals(expectedValue, testresult);\n    }\n\n    public void testSecondsOfDayWithDate() {\n        long testresult = DateUtils.getFragmentInSeconds(aDate, Calendar.DATE);\n        long expectedValue = seconds + ((minutes * DateUtils.MILLIS_PER_MINUTE) + (hours * DateUtils.MILLIS_PER_HOUR))/ DateUtils.MILLIS_PER_SECOND;\n        assertEquals(expectedValue, testresult);\n        testresult = DateUtils.getFragmentInSeconds(aDate, Calendar.DAY_OF_YEAR);\n        assertEquals(expectedValue, testresult);\n    }\n\n    public void testSecondsOfDayWithCalendar() {\n        long testresult = DateUtils.getFragmentInSeconds(aCalendar, Calendar.DATE);\n        long expectedValue = seconds + ((minutes * DateUtils.MILLIS_PER_MINUTE) + (hours * DateUtils.MILLIS_PER_HOUR))/ DateUtils.MILLIS_PER_SECOND;\n        assertEquals(expectedValue, testresult);\n        testresult = DateUtils.getFragmentInSeconds(aCalendar, Calendar.DAY_OF_YEAR);\n        assertEquals(expectedValue, testresult);\n    }\n\n    public void testMinutesOfDayWithDate() {\n        long testResult = DateUtils.getFragmentInMinutes(aDate, Calendar.DATE);\n        long expectedValue = minutes + ((hours * DateUtils.MILLIS_PER_HOUR))/ DateUtils.MILLIS_PER_MINUTE; \n        assertEquals(expectedValue,testResult);\n        testResult = DateUtils.getFragmentInMinutes(aDate, Calendar.DAY_OF_YEAR);\n        assertEquals(expectedValue,testResult);\n    }\n\n    public void testMinutesOfDayWithCalendar() {\n        long testResult = DateUtils.getFragmentInMinutes(aCalendar, Calendar.DATE);\n        long expectedValue = minutes + ((hours * DateUtils.MILLIS_PER_HOUR))/ DateUtils.MILLIS_PER_MINUTE; \n        assertEquals(expectedValue, testResult);\n        testResult = DateUtils.getFragmentInMinutes(aCalendar, Calendar.DAY_OF_YEAR);\n        assertEquals(expectedValue, testResult);\n    }\n    \n    public void testHoursOfDayWithDate() {\n        long testResult = DateUtils.getFragmentInHours(aDate, Calendar.DATE);\n        long expectedValue = hours; \n        assertEquals(expectedValue,testResult);\n        testResult = DateUtils.getFragmentInHours(aDate, Calendar.DAY_OF_YEAR);\n        assertEquals(expectedValue,testResult);\n    }\n\n    public void testHoursOfDayWithCalendar() {\n        long testResult = DateUtils.getFragmentInHours(aCalendar, Calendar.DATE);\n        long expectedValue = hours; \n        assertEquals(expectedValue, testResult);\n        testResult = DateUtils.getFragmentInHours(aCalendar, Calendar.DAY_OF_YEAR);\n        assertEquals(expectedValue, testResult);\n    }\n    \n    \n    //Calendar.MONTH as useful fragment\n    public void testMillisecondsOfMonthWithDate() {\n        long testResult = DateUtils.getFragmentInMilliseconds(aDate, Calendar.MONTH);\n        assertEquals(millis + (seconds * DateUtils.MILLIS_PER_SECOND) + (minutes * DateUtils.MILLIS_PER_MINUTE)\n                                + (hours * DateUtils.MILLIS_PER_HOUR) + (days * DateUtils.MILLIS_PER_DAY),\n                testResult);\n    }\n\n    public void testMillisecondsOfMonthWithCalendar() {\n        long testResult = DateUtils.getFragmentInMilliseconds(aCalendar, Calendar.MONTH);\n        assertEquals(millis + (seconds * DateUtils.MILLIS_PER_SECOND) + (minutes * DateUtils.MILLIS_PER_MINUTE)\n                + (hours * DateUtils.MILLIS_PER_HOUR) + (days * DateUtils.MILLIS_PER_DAY),\ntestResult);\n    }\n    \n    public void testSecondsOfMonthWithDate() {\n        long testResult = DateUtils.getFragmentInSeconds(aDate, Calendar.MONTH);\n        assertEquals(\n                seconds\n",
+  "compaction": {
+    "source_lines": 497,
+    "mode": "windows",
+    "windows_total": 8,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        240,
+        320
+      ],
+      [
+        300,
+        380
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 35.755381264580734
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.136251750754866
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 4.386578320938869
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 35.755381264580734
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.4802085016687694
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 3.2594161289947357
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 1.4444194930061487
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.136251750754866
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 4.386578320938869
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 2.2820284332659644
+      },
+      {
+        "start": 420,
+        "end": 497,
+        "score": 3.0964061236307776
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9982,
+  "representation_chars": 9982,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

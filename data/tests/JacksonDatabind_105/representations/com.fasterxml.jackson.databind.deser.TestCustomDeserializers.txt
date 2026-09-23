@@ -1,0 +1,247 @@
+TEST CLASS:
+com.fasterxml.jackson.databind.deser.TestCustomDeserializers
+
+SOURCE FILE:
+src/test/java/com/fasterxml/jackson/databind/deser/TestCustomDeserializers.java
+
+TEST SOURCE:
+package com.fasterxml.jackson.databind.deser;
+
+import java.io.*;
+import java.lang.annotation.*;
+import java.util.*;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import com.fasterxml.jackson.core.*;
+
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.annotation.*;
+import com.fasterxml.jackson.databind.deser.std.*;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.util.StdConverter;
+
+/**
+ * Test to check that customizations work as expected.
+ */
+@SuppressWarnings("serial")
+public class TestCustomDeserializers
+    extends BaseMapTest
+{
+    /*
+    /**********************************************************
+    /* Helper classes
+    /**********************************************************
+     */
+
+    static class DummyDeserializer<T>
+        extends StdDeserializer<T>
+    {
+        final T value;
+
+        public DummyDeserializer(T v, Class<T> cls) {
+            super(cls);
+            value = v;
+        }
+
+        @Override
+        public T deserialize(JsonParser p, DeserializationContext ctxt)
+            throws IOException
+        {
+            // need to skip, if structured...
+            p.skipChildren();
+            return value;
+        }
+    }
+
+    static class TestBeans {
+        public List<TestBean> beans;
+    }
+    static class TestBean {
+        public CustomBean c;
+        public String d;
+    }
+    @JsonDeserialize(using=CustomBeanDeserializer.class)
+    static class CustomBean {
+        protected final int a, b;
+        public CustomBean(int a, int b) {
+            this.a = a;
+            this.b = b;
+        }
+    }
+
+    static class CustomBeanDeserializer extends JsonDeserializer<CustomBean>
+    {
+        @Override
+        public CustomBean deserialize(JsonParser p, DeserializationContext ctxt) throws IOException
+        {
+            int a = 0, b = 0;
+            JsonToken t = p.getCurrentToken();
+            if (t == JsonToken.START_OBJECT) {
+                t = p.nextToken();
+            } else if (t != JsonToken.FIELD_NAME) {
+                throw new Error();
+            }
+            while(t == JsonToken.FIELD_NAME) {
+                final String fieldName = p.getCurrentName();
+        {
+            this.map = new HashMap<CustomKey, String>(map);
+        }
+
+        @JsonProperty
+        @JsonSerialize(keyUsing = CustomKeySerializer.class)
+        public Map<CustomKey, String> getMap() {
+            return map;
+        }
+    }
+     
+    static class CustomKeySerializer extends JsonSerializer<CustomKey> {
+        @Override
+        public void serialize(CustomKey value, JsonGenerator g, SerializerProvider provider) throws IOException {
+            g.writeFieldName(String.valueOf(value.getId()));
+        }
+    }
+
+    static class CustomKeyDeserializer extends KeyDeserializer {
+        @Override
+        public CustomKey deserializeKey(String key, DeserializationContext ctxt) throws IOException {
+            return new CustomKey(Integer.valueOf(key));
+        }
+    }
+
+    // [databind#375]
+
+    @Target({ElementType.FIELD})
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface Negative { }
+
+    static class Bean375Wrapper {
+        @Negative
+        public Bean375Outer value;
+    }
+    
+    static class Bean375Outer {
+        protected Bean375Inner inner;
+
+        public Bean375Outer(Bean375Inner v) { inner = v; }
+    }
+
+    static class Bean375Inner {
+        protected int x;
+
+        public Bean375Inner(int x) { this.x = x; }
+    }
+
+    static class Bean375OuterDeserializer extends StdDeserializer<Bean375Outer>
+        implements ContextualDeserializer
+    {
+        protected BeanProperty prop;
+        
+        protected Bean375OuterDeserializer() { this(null); }
+        protected Bean375OuterDeserializer(BeanProperty p) {
+            super(Bean375Outer.class);
+            prop = p;
+        }
+
+        @Override
+        public Bean375Outer deserialize(JsonParser p, DeserializationContext ctxt) throws IOException,
+                JsonProcessingException {
+            Object ob = ctxt.readPropertyValue(p, prop, Bean375Inner.class);
+            return new Bean375Outer((Bean375Inner) ob);
+        }
+        @Override
+        public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property)
+                throws JsonMappingException {
+            return new Bean375OuterDeserializer(property);
+        }
+    }
+
+    static class Bean375InnerDeserializer extends StdDeserializer<Bean375Inner>
+        implements ContextualDeserializer
+    {
+        protected boolean negative;
+        
+        protected Bean375InnerDeserializer() { this(false); }
+        protected Bean375InnerDeserializer(boolean n) {
+            super(Bean375Inner.class);
+        }
+
+        @Override
+        public Object deserialize(JsonParser p, DeserializationContext ctxt)
+                throws IOException {
+            Object parent = p.getCurrentValue();
+            String desc = (parent == null) ? "NULL" : parent.getClass().getSimpleName();
+            return "prop/"+ desc;
+        }
+    }
+
+    static class UCStringDeserializer extends StdDeserializer<String> {
+        public UCStringDeserializer() { super(String.class); }
+
+        @Override
+        public String deserialize(JsonParser p, DeserializationContext ctxt)
+                throws IOException {
+            return p.getText().toUpperCase();
+        }
+    }
+
+    static class DelegatingModuleImpl extends SimpleModule
+    {
+        public DelegatingModuleImpl() {
+            super("test", Version.unknownVersion());
+        }
+
+        @Override
+        public void setupModule(SetupContext context)
+        {
+            super.setupModule(context);
+            context.addBeanDeserializerModifier(new BeanDeserializerModifier() {
+                @Override
+                public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config,
+                        BeanDescription beanDesc, JsonDeserializer<?> deserializer) {
+                    if (deserializer.handledType() == String.class) {
+                        JsonDeserializer<?> d = new MyStringDeserializer(deserializer);
+                        // just for test coverage purposes...
+                        if (d.getDelegatee() != deserializer) {
+                            throw new Error("Cannot access delegatee!");
+                        }
+                        return d;
+                    }
+                    return deserializer;
+                }
+            });
+        }
+    }
+
+    static class MyStringDeserializer extends DelegatingDeserializer
+    {
+        public MyStringDeserializer(JsonDeserializer<?> newDel) {
+            super(newDel);
+        }
+
+        @Override
+        protected JsonDeserializer<?> newDelegatingInstance(JsonDeserializer<?> newDel) {
+            return new MyStringDeserializer(newDel);
+        }
+
+        @Override
+        public Object deserialize(JsonParser p, DeserializationContext ctxt)
+            throws IOException
+        {
+            Object ob = _delegatee.deserialize(p, ctxt);
+            return "MY:"+ob;
+        }
+    }
+
+    /*
+    /**********************************************************
+    /* Unit tests
+    /**********************************************************
+     */
+
+    final ObjectMapper MAPPER = objectMapper();
+    
+    public void testCustomBeanDeserializer() throws Exception
+    {
+        String json = "{\"beans\":[{\"c\":{\"a\":10,\"b\":20},\"d\":\"hello, tatu\"}]}";

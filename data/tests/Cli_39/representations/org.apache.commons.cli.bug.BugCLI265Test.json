@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.cli.bug.BugCLI265Test",
+  "source_file": "src/test/java/org/apache/commons/cli/bug/BugCLI265Test.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.cli.bug.BugCLI265Test\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/cli/bug/BugCLI265Test.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.cli.bug;\n\nimport org.apache.commons.cli.CommandLine;\nimport org.apache.commons.cli.DefaultParser;\nimport org.apache.commons.cli.Option;\nimport org.apache.commons.cli.Options;\nimport org.junit.Before;\nimport org.junit.Test;\n\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertFalse;\nimport static org.junit.Assert.assertNotEquals;\nimport static org.junit.Assert.assertNull;\nimport static org.junit.Assert.assertTrue;\n\n/**\n * Test for CLI-265.\n * <p>\n * The issue is that a short option with an optional value will use whatever comes next as value.\n */\npublic class BugCLI265Test {\n\n    private DefaultParser parser;\n    private Options options;\n\n    @Before\n    public void setUp() throws Exception {\n        parser = new DefaultParser();\n\n        final Option optionT1 = Option.builder(\"t1\").hasArg().numberOfArgs(1).optionalArg(true).argName(\"t1_path\").build();\n        final Option optionA = Option.builder(\"a\").hasArg(false).build();\n        final Option optionB = Option.builder(\"b\").hasArg(false).build();\n        final Option optionLast = Option.builder(\"last\").hasArg(false).build();\n\n        options = new Options().addOption(optionT1).addOption(optionA).addOption(optionB).addOption(optionLast);\n    }\n\n    @Test\n    public void shouldParseShortOptionWithValue() throws Exception {\n        final String[] shortOptionWithValue = new String[]{\"-t1\", \"path/to/my/db\"};\n\n        final CommandLine commandLine = parser.parse(options, shortOptionWithValue);\n\n        assertEquals(\"path/to/my/db\", commandLine.getOptionValue(\"t1\"));\n        assertFalse(commandLine.hasOption(\"last\"));\n    }\n\n    @Test\n    public void shouldParseShortOptionWithoutValue() throws Exception {\n        final String[] twoShortOptions = new String[]{\"-t1\", \"-last\"};\n\n        final CommandLine commandLine = parser.parse(options, twoShortOptions);\n\n        assertTrue(commandLine.hasOption(\"t1\"));\n        assertNotEquals(\"Second option has been used as value for first option\", \"-last\", commandLine.getOptionValue(\"t1\"));\n        assertTrue(\"Second option has not been detected\", commandLine.hasOption(\"last\"));\n    }\n\n    @Test\n    public void shouldParseConcatenatedShortOptions() throws Exception {\n        final String[] concatenatedShortOptions = new String[] { \"-t1\", \"-ab\" };\n\n        final CommandLine commandLine = parser.parse(options, concatenatedShortOptions);\n\n        assertTrue(commandLine.hasOption(\"t1\"));\n        assertNull(commandLine.getOptionValue(\"t1\"));\n        assertTrue(commandLine.hasOption(\"a\"));\n        assertTrue(commandLine.hasOption(\"b\"));\n        assertFalse(commandLine.hasOption(\"last\"));\n    }\n}\n",
+  "compaction": {
+    "source_lines": 88,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3617,
+  "representation_chars": 3617,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.merge.CollectionMergeTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/merge/CollectionMergeTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.merge.CollectionMergeTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/merge/CollectionMergeTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser.merge;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.JsonMerge;\n\nimport com.fasterxml.jackson.core.type.TypeReference;\n\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.MapperFeature;\nimport com.fasterxml.jackson.databind.ObjectMapper;\n\npublic class CollectionMergeTest extends BaseMapTest\n{\n    static class CollectionWrapper {\n        @JsonMerge\n        public Collection<String> bag = new TreeSet<String>();\n        {\n            bag.add(\"a\");\n        }\n    }\n\n    static class MergedList\n    {\n        @JsonMerge\n        public List<String> values = new ArrayList<>();\n        {\n            values.add(\"a\");\n        }\n    }\n\n    static class MergedEnumSet\n    {\n        @JsonMerge\n        public EnumSet<ABC> abc = EnumSet.of(ABC.B);\n    }\n\n    static class MergedX<T>\n    {\n        @JsonMerge\n        T value;\n\n        public MergedX(T v) { value = v; }\n        protected MergedX() { }\n\n        public void setValue(T v) { value = v; }\n    }\n\n    /*\n    /********************************************************\n    /* Test methods\n    /********************************************************\n     */\n\n    private final ObjectMapper MAPPER = newObjectMapper()\n            // 26-Oct-2016, tatu: Make sure we'll report merge problems by default\n            .disable(MapperFeature.IGNORE_MERGE_FOR_UNMERGEABLE)\n    ;\n\n    public void testCollectionMerging() throws Exception\n    {\n        CollectionWrapper w = MAPPER.readValue(aposToQuotes(\"{'bag':['b']}\"), CollectionWrapper.class);\n        assertEquals(2, w.bag.size());\n        assertTrue(w.bag.contains(\"a\"));\n        assertTrue(w.bag.contains(\"b\"));\n    }\n\n    public void testListMerging() throws Exception\n    {\n        MergedList w = MAPPER.readValue(aposToQuotes(\"{'values':['x']}\"), MergedList.class);\n        assertEquals(2, w.values.size());\n        assertTrue(w.values.contains(\"a\"));\n        assertTrue(w.values.contains(\"x\"));\n    }\n\n    // Test that uses generic type\n    public void testGenericListMerging() throws Exception\n    {\n        Collection<String> l = new ArrayList<>();\n        l.add(\"foo\");\n        MergedX<Collection<String>> input = new MergedX<Collection<String>>(l);\n\n        MergedX<Collection<String>> result = MAPPER\n                .readerFor(new TypeReference<MergedX<Collection<String>>>() {})\n                .withValueToUpdate(input)\n                .readValue(aposToQuotes(\"{'value':['bar']}\"));\n        assertSame(input, result);\n        assertEquals(2, result.value.size());\n        Iterator<String> it = result.value.iterator();\n        assertEquals(\"foo\", it.next());\n        assertEquals(\"bar\", it.next());\n    }\n\n    public void testEnumSetMerging() throws Exception\n    {\n        MergedEnumSet result = MAPPER.readValue(aposToQuotes(\"{'abc':['A']}\"), MergedEnumSet.class);\n        assertEquals(2, result.abc.size());\n        assertTrue(result.abc.contains(ABC.B)); // original\n        assertTrue(result.abc.contains(ABC.A)); // added\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 102,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3232,
+  "representation_chars": 3232,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,227 @@
+TEST CLASS:
+com.fasterxml.jackson.databind.jsontype.TestSubtypesExistingProperty
+
+SOURCE FILE:
+src/test/java/com/fasterxml/jackson/databind/jsontype/TestSubtypesExistingProperty.java
+
+TEST SOURCE:
+package com.fasterxml.jackson.databind.jsontype;
+
+import java.util.*;
+
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import com.fasterxml.jackson.databind.BaseMapTest;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+public class TestSubtypesExistingProperty extends BaseMapTest {
+
+    /**
+     * Polymorphic base class - existing property as simple property on subclasses
+     */
+	@JsonTypeInfo(use = Id.NAME, include = As.EXISTING_PROPERTY, property = "type",
+	        visible=true)
+	@JsonSubTypes({
+		@Type(value = Apple.class, name = "apple") ,
+		@Type(value = Orange.class, name = "orange") 
+		})
+	static abstract class Fruit {
+        public String name;
+        protected Fruit(String n)  { name = n; }
+    }
+
+    @JsonTypeName("apple")
+    static class Apple extends Fruit
+    {
+        public int seedCount;
+        public String type;
+
+        private Apple() { super(null);; }
+        public Apple(String name, int b) {
+            super(name);
+            seedCount = b;
+            type = "apple";
+        }
+    }
+    
+    @JsonTypeName("orange")
+    static class Orange extends Fruit
+    {
+        public String color;
+        public String type;
+        
+        private Orange() { super(null); }
+        public Orange(String name, String c) {
+            super(name);
+            color = c;
+            type = "orange";
+        }
+    }
+
+    static class FruitWrapper {
+        public Fruit fruit;
+        public FruitWrapper() {}
+        public FruitWrapper(Fruit f) { fruit = f; }
+    }
+    
+    /**
+     * Polymorphic base class - existing property forced by abstract method
+     */
+	@JsonTypeInfo(use = Id.NAME, include = As.EXISTING_PROPERTY, property = "type")
+	@JsonSubTypes({
+		@Type(value = Dog.class, name = "doggie") ,
+		@Type(value = Cat.class, name = "kitty") 
+		})
+	static abstract class Animal {
+        public String name;
+        
+        protected Animal(String n)  { name = n; }
+        
+        public abstract String getType();
+    }
+
+    @JsonTypeName("doggie")
+    static class Dog extends Animal
+    {
+        public int boneCount;
+        
+        private Dog() { super(null); }
+        public Dog(String name, int b) {
+            super(name);
+            boneCount = b;
+        }
+        
+ 		@Override
+		public String getType() {
+        	return "doggie";
+        }        
+    }
+    
+    @JsonTypeName("kitty")
+    static class Cat extends Animal
+    {
+        public String furColor;
+        
+        private Cat() { super(null); }
+        public Cat(String name, String c) {
+            super(name);
+            furColor = c;
+        }
+        
+		@Override
+		public String getType() {
+        	return "kitty";
+        }        
+    }
+
+    static class AnimalWrapper {
+        public Animal animal;
+        public AnimalWrapper() {}
+        public AnimalWrapper(Animal a) { animal = a; }
+    }
+
+
+    /**
+     * Polymorphic base class - existing property NOT forced by abstract method on base class
+     */
+	@JsonTypeInfo(use = Id.NAME, include = As.EXISTING_PROPERTY, property = "type")
+	@JsonSubTypes({
+		@Type(value = Accord.class, name = "accord") ,
+		@Type(value = Camry.class, name = "camry") 
+		})
+	static abstract class Car {
+        public String name;        
+        protected Car(String n)  { name = n; }
+    }
+
+    @JsonTypeName("accord")
+    static class Accord extends Car
+    {
+        public int speakerCount;
+        
+        private Accord() { super(null); }
+        assertEquals(fruitListSerialized, fruitListJson);
+    }
+
+    /**
+     * Fruits - deserialization tests for simple property on sub-classes
+     */
+    public void testSimpleClassAsExistingPropertyDeserializationFruits() throws Exception
+    {
+        Fruit pinguoDeserialized = MAPPER.readValue(pinguoJson, Fruit.class);
+        assertTrue(pinguoDeserialized instanceof Apple);
+        assertSame(pinguoDeserialized.getClass(), Apple.class);
+        assertEquals(pinguo.name, pinguoDeserialized.name);
+        assertEquals(pinguo.seedCount, ((Apple) pinguoDeserialized).seedCount);
+        assertEquals(pinguo.type, ((Apple) pinguoDeserialized).type);
+
+        FruitWrapper pinguoWrapperDeserialized = MAPPER.readValue(pinguoWrapperJson, FruitWrapper.class);
+        Fruit pinguoExtracted = pinguoWrapperDeserialized.fruit;
+        assertTrue(pinguoExtracted instanceof Apple);
+        assertSame(pinguoExtracted.getClass(), Apple.class);
+        assertEquals(pinguo.name, pinguoExtracted.name);
+        assertEquals(pinguo.seedCount, ((Apple) pinguoExtracted).seedCount);
+        assertEquals(pinguo.type, ((Apple) pinguoExtracted).type);
+
+        Fruit[] fruits = MAPPER.readValue(fruitListJson, Fruit[].class);
+        assertEquals(2, fruits.length);
+        assertEquals(Apple.class, fruits[0].getClass());
+        assertEquals("apple", ((Apple) fruits[0]).type);
+        assertEquals(Orange.class, fruits[1].getClass());
+        assertEquals("orange", ((Orange) fruits[1]).type);
+        
+        List<Fruit> f2 = MAPPER.readValue(fruitListJson,
+                new TypeReference<List<Fruit>>() { });
+        assertNotNull(f2);
+        assertTrue(f2.size() == 2);
+        assertEquals(Apple.class, f2.get(0).getClass());
+        assertEquals(Orange.class, f2.get(1).getClass());
+    }
+
+    /**
+     * Animals - serialization tests for abstract method in base class
+     */
+    public void testExistingPropertySerializationAnimals() throws Exception
+    {
+        Map<String,Object> result = writeAndMap(MAPPER, beelzebub);
+        assertEquals(3, result.size());
+        assertEquals(beelzebub.name, result.get("name"));
+        assertEquals(beelzebub.furColor, result.get("furColor"));
+        assertEquals(beelzebub.getType(), result.get("type"));
+
+        result = writeAndMap(MAPPER, rover);
+        assertEquals(3, result.size());
+        assertEquals(rover.name, result.get("name"));
+        assertEquals(rover.boneCount, result.get("boneCount"));
+        assertEquals(rover.getType(), result.get("type"));
+        
+        String beelzebubSerialized = MAPPER.writeValueAsString(beelzebub);
+        assertEquals(beelzebubSerialized, beelzebubJson);
+        
+        String roverSerialized = MAPPER.writeValueAsString(rover);
+        assertEquals(roverSerialized, roverJson);
+        
+        String animalWrapperSerialized = MAPPER.writeValueAsString(beelzebubWrapper);
+        assertEquals(animalWrapperSerialized, beelzebubWrapperJson);
+
+        String animalListSerialized = MAPPER.writeValueAsString(animalList);
+        assertEquals(animalListSerialized, animalListJson);
+    }
+
+    /**
+     * Animals - deserialization tests for abstract method in base class
+     */
+    public void testSimpleClassAsExistingPropertyDeserializationAnimals() throws Exception
+    {
+        Animal beelzebubDeserialized = MAPPER.readValue(beelzebubJson, Animal.class);
+        assertTrue(beelzebubDeserialized instanceof Cat);
+        assertSame(beelzebubDeserialized.getClass(), Cat.class);
+        assertEquals(beelzebub.name, beelzebubDeserialized.name);
+        assertEquals(beelzebub.furColor, ((Cat) beelzebubDeserialized).furColor);
+        assertEquals(beelzebub.getType(), beelzebubDeserialized.getType());
+

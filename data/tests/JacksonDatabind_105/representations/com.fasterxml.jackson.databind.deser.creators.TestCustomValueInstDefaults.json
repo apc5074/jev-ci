@@ -1,0 +1,101 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.creators.TestCustomValueInstDefaults",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/creators/TestCustomValueInstDefaults.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.creators.TestCustomValueInstDefaults\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/creators/TestCustomValueInstDefaults.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser.creators;\n\nimport java.io.IOException;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.core.Version;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.deser.SettableBeanProperty;\nimport com.fasterxml.jackson.databind.deser.ValueInstantiator;\nimport com.fasterxml.jackson.databind.deser.ValueInstantiators;\nimport com.fasterxml.jackson.databind.deser.impl.PropertyValueBuffer;\nimport com.fasterxml.jackson.databind.deser.std.StdValueInstantiator;\nimport com.fasterxml.jackson.databind.module.SimpleModule;\n\n/**\n * Exercises a custom value instantiator with an overridden\n * {@link ValueInstantiator#createFromObjectWith(DeserializationContext, SettableBeanProperty[], PropertyValueBuffer)}\n * as well as the {@link PropertyValueBuffer#hasParameter(SettableBeanProperty)}\n * and {@link PropertyValueBuffer#getParameter(SettableBeanProperty)} methods.\n */\n@SuppressWarnings(\"serial\")\npublic class TestCustomValueInstDefaults extends BaseTest\n{\n    static class Bucket\n    {\n        static final int DEFAULT_A = 111;\n        static final int DEFAULT_B = 222;\n        static final String DEFAULT_C = \"defaultC\";\n        static final String DEFAULT_D = \"defaultD\";\n\n        final int a;\n        final int b;\n        final String c;\n        final String d;\n\n        @JsonCreator\n        public Bucket(\n                @JsonProperty(\"a\") int a,\n                @JsonProperty(\"b\") int b,\n                @JsonProperty(\"c\") String c,\n                @JsonProperty(\"d\") String d)\n        {\n            this.a = a;\n            this.b = b;\n            this.c = c;\n            this.d = d;\n        }\n    }\n\n    static class BigBucket\n    {\n        static final int DEFAULT_I = 555;\n        static final String DEFAULT_S = \"defaultS\";\n\n        final int\n                i01, i02, i03, i04, i05, i06, i07, i08,\n                i09, i10, i11, i12, i13, i14, i15, i16;\n\n        final String\n                s01, s02, s03, s04, s05, s06, s07, s08,\n                s09, s10, s11, s12, s13, s14, s15, s16;\n\n        @JsonCreator\n        public BigBucket(\n                @JsonProperty(\"i01\") int i01,\n                @JsonProperty(\"i02\") int i02,\n                @JsonProperty(\"i03\") int i03,\n                @JsonProperty(\"i04\") int i04,\n                @JsonProperty(\"i05\") int i05,\n                @JsonProperty(\"i06\") int i06,\n                @JsonProperty(\"i07\") int i07,\n                @JsonProperty(\"i08\") int i08,\n                @JsonProperty(\"i09\") int i09,\n                @JsonProperty(\"i10\") int i10,\n                @JsonProperty(\"i11\") int i11,\n                @JsonProperty(\"i12\") int i12,\n                @JsonProperty(\"i13\") int i13,\n                @JsonProperty(\"i14\") int i14,\n                @JsonProperty(\"i15\") int i15,\n                @JsonProperty(\"i16\") int i16,\n                @JsonProperty(\"s01\") String s01,\n                @JsonProperty(\"s02\") String s02,\n                @JsonProperty(\"s03\") String s03,\n                @JsonProperty(\"s04\") String s04,\n                @JsonProperty(\"s05\") String s05,\n                @JsonProperty(\"s06\") String s06,\n                @JsonProperty(\"s07\") String s07,\n                @JsonProperty(\"s08\") String s08,\n                @JsonProperty(\"s09\") String s09,\n                @JsonProperty(\"s10\") String s10,\n                @JsonProperty(\"s11\") String s11,\n                @JsonProperty(\"s12\") String s12,\n                @JsonProperty(\"s13\") String s13,\n                @JsonProperty(\"s14\") String s14,\n                @JsonProperty(\"s15\") String s15,\n                @JsonProperty(\"s16\") String s16,\n                // It is not clear why PropertyValueBuffer uses the BitSet for\n                // exactly 32 params.  The primitive int has 32 bits, so\n                // couldn't the int be used there?  We add this 33rd dummy\n                // parameter just in case PropertyValueBuffer is refactored to\n                // to so.\n                @JsonProperty(\"dummy\") boolean dummy) {\n            this.i01 = i01; this.i02 = i02; this.i03 = i03; this.i04 = i04;\n            this.i05 = i05; this.i06 = i06; this.i07 = i07; this.i08 = i08;\n            this.i09 = i09; this.i10 = i10; this.i11 = i11; this.i12 = i12;\n            this.i13 = i13; this.i14 = i14; this.i15 = i15; this.i16 = i16;\n            this.s01 = s01; this.s02 = s02; this.s03 = s03; this.s04 = s04;\n            this.s05 = s05; this.s06 = s06; this.s07 = s07; this.s08 = s08;\n            this.s09 = s09; this.s10 = s10; this.s11 = s11; this.s12 = s12;\n            this.s13 = s13; this.s14 = s14; this.s15 = s15; this.s16 = s16;\n        }\n    }\n\n    static class BucketInstantiator extends StdValueInstantiator\n    {\n        BucketInstantiator(StdValueInstantiator src)\n        {\n            super(src);\n        }\n\n        @Override\n        public Object createFromObjectWith(\n                DeserializationContext ctxt,\n                SettableBeanProperty[] props,\n                PropertyValueBuffer buffer) throws JsonMappingException\n        {\n            int a = Bucket.DEFAULT_A;\n            int b = Bucket.DEFAULT_B;\n            String c = Bucket.DEFAULT_C;\n            String d = Bucket.DEFAULT_D;\n            for (SettableBeanProperty prop : props) {\n                if (buffer.hasParameter(prop)) {\n                    if (prop.getName().equals(\"a\")) {\n                        a = (Integer) buffer.getParameter(prop);\n                    } else if (prop.getName().equals(\"b\")) {\n                        b = (Integer) buffer.getParameter(prop);\n                    } else if (prop.getName().equals(\"c\")) {\n                        c = (String) buffer.getParameter(prop);\n                    } else if (prop.getName().equals(\"d\")) {\n                        d = (String) buffer.getParameter(prop);\n            this.p12 = p12;\n            this.p13 = p13;\n            this.p14 = p14;\n            this.p15 = p15;\n            this.p16 = p16;\n            this.p17 = p17;\n            this.p18 = p18;\n            this.p19 = p19;\n            this.p20 = p20;\n            this.p21 = p21;\n            this.p22 = p22;\n            this.p23 = p23;\n            this.p24 = p24;\n            this.p25 = p25;\n            this.p26 = p26;\n            this.p27 = p27;\n            this.p28 = p28;\n            this.p29 = p29;\n            this.p30 = p30;\n            this.p31 = p31;\n            this.p32 = p32;\n        }\n\n        public final String p1, p2, p3, p4;\n        public final String p5, p6, p7, p8;\n        public final String p9, p10, p11, p12;\n        public final String p13, p14, p15, p16;\n        public final String p17, p18, p19, p20;\n        public final String p21, p22, p23, p24;\n        public final String p25, p26, p27, p28;\n        public final String p29, p30, p31, p32;\n    }\n\n    static class VerifyingValueInstantiator extends StdValueInstantiator {\n        protected VerifyingValueInstantiator(StdValueInstantiator src) {\n            super(src);\n        }\n\n        @Override\n        public Object createFromObjectWith(DeserializationContext ctxt, SettableBeanProperty[] props, PropertyValueBuffer buffer) throws IOException {\n            for (SettableBeanProperty prop : props) {\n                assertTrue(\"prop \" + prop.getName() + \" was expected to have buffer.hasParameter(prop) be true but was false\", buffer.hasParameter(prop));\n            }\n            return super.createFromObjectWith(ctxt, props, buffer);\n        }\n    }\n\n    // [databind#1432]\n    \n    public static class ClassWith32Module extends SimpleModule {\n        public ClassWith32Module() {\n            super(\"test\", Version.unknownVersion());\n        }\n\n        @Override\n        public void setupModule(SetupContext context) {\n            context.addValueInstantiators(new ValueInstantiators.Base() {\n                @Override\n                public ValueInstantiator findValueInstantiator(DeserializationConfig config,\n                        BeanDescription beanDesc, ValueInstantiator defaultInstantiator) {\n                    if (beanDesc.getBeanClass() == ClassWith32Props.class) {\n                        return new VerifyingValueInstantiator((StdValueInstantiator)\n                                defaultInstantiator);\n                    }\n                    return defaultInstantiator;\n                }\n            });\n        }\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n    \n    // When all values are in the source, no defaults should be used.\n    public void testAllPresent() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n",
+  "compaction": {
+    "source_lines": 555,
+    "mode": "windows",
+    "windows_total": 9,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        300,
+        380
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 22.94715731518019
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 9.10561921081395
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 10.81580584929135
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 22.94715731518019
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 9.10561921081395
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 8.413906818088014
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 6.105454068893337
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.976046898371739
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 10.81580584929135
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 4.076633583453038
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 5.695389551987592
+      },
+      {
+        "start": 480,
+        "end": 555,
+        "score": 6.280527244376007
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8905,
+  "representation_chars": 8905,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

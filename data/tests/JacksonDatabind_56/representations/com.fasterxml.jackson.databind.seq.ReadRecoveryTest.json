@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.seq.ReadRecoveryTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/seq/ReadRecoveryTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.seq.ReadRecoveryTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/seq/ReadRecoveryTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.seq;\n\nimport com.fasterxml.jackson.databind.*;\n\n/**\n * Tests to verify aspects of error recover for reading using\n * iterator.\n */\npublic class ReadRecoveryTest extends BaseMapTest\n{\n    static class Bean {\n        public int a, b;\n\n        @Override public String toString() { return \"{Bean, a=\"+a+\", b=\"+b+\"}\"; }\n    }\n\n    /*\n    /**********************************************************\n    /* Unit tests; root-level value sequences via Mapper\n    /**********************************************************\n     */\n\n    private final ObjectMapper MAPPER = new ObjectMapper();\n\n    public void testRootBeans() throws Exception\n    {\n        final String JSON = aposToQuotes(\"{'a':3} {'x':5}\");\n        MappingIterator<Bean> it = MAPPER.readerFor(Bean.class).readValues(JSON);\n        // First one should be fine\n        assertTrue(it.hasNextValue());\n        Bean bean = it.nextValue();\n        assertEquals(3, bean.a);\n        // but second one not\n        try {\n            bean = it.nextValue();\n            fail(\"Should not have succeeded\");\n        } catch (JsonMappingException e) {\n            verifyException(e, \"Unrecognized field \\\"x\\\"\");\n        }\n        // 21-May-2015, tatu: With [databind#734], recovery, we now know there's no more data!\n        assertFalse(it.hasNextValue());\n\n        it.close();\n    }\n\n    // for [databind#734]\n    // Simple test for verifying that basic recover works for a case of\n    // unknown structured value\n    public void testSimpleRootRecovery() throws Exception\n    {\n        final String JSON = aposToQuotes(\"{'a':3}{'a':27,'foo':[1,2],'b':{'x':3}}  {'a':1,'b':2} \");\n\n        MappingIterator<Bean> it = MAPPER.readerFor(Bean.class).readValues(JSON);\n        Bean bean = it.nextValue();\n\n        assertNotNull(bean);\n        assertEquals(3, bean.a);\n\n        // second one problematic\n        try {\n            it.nextValue();\n        } catch (JsonMappingException e) {\n            verifyException(e, \"Unrecognized field \\\"foo\\\"\");\n        }\n\n        // but should recover nicely\n        bean = it.nextValue();\n        assertNotNull(bean);\n        assertEquals(1, bean.a);\n        assertEquals(2, bean.b);\n\n        assertFalse(it.hasNextValue());\n        \n        it.close();\n    }\n\n    // Similar to \"raw\" root-level Object sequence, but in array\n    public void testSimpleArrayRecovery() throws Exception\n    {\n        final String JSON = aposToQuotes(\"[{'a':3},{'a':27,'foo':[1,2],'b':{'x':3}}  ,{'a':1,'b':2}  ]\");\n\n        MappingIterator<Bean> it = MAPPER.readerFor(Bean.class).readValues(JSON);\n        Bean bean = it.nextValue();\n\n        assertNotNull(bean);\n        assertEquals(3, bean.a);\n\n        // second one problematic\n        try {\n            it.nextValue();\n        } catch (JsonMappingException e) {\n            verifyException(e, \"Unrecognized field \\\"foo\\\"\");\n        }\n\n        // but should recover nicely\n        bean = it.nextValue();\n        assertNotNull(bean);\n        assertEquals(1, bean.a);\n        assertEquals(2, bean.b);\n\n        assertFalse(it.hasNextValue());\n        \n        it.close();\n    }\n}\n",
+  "compaction": {
+    "source_lines": 105,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3292,
+  "representation_chars": 3292,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

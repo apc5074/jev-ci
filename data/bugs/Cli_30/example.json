@@ -4,7 +4,7 @@
   "project": "Cli",
   "bug_id": "30",
   "split": "development",
-  "status": "incomplete",
+  "status": "complete",
   "revisions": {
     "base": "Bf",
     "proposed": "Bb",
@@ -53,9 +53,38 @@
     "representations_index"
   ],
   "error": null,
-  "checkouts": {
-    "fixed": "data/bugs/Cli_30/checkouts/fixed",
-    "buggy": "data/bugs/Cli_30/checkouts/buggy",
-    "provenance": "data/bugs/Cli_30/checkout_provenance.json"
+  "patch": {
+    "meta": "data/patches/Cli_30/patch_meta.json",
+    "diff": "data/patches/Cli_30/regression_patch.diff",
+    "representation": "data/patches/Cli_30/representation.txt",
+    "patch_truncated": false,
+    "original_patch_chars": 2265,
+    "representation_chars": 2265
+  },
+  "tests": {
+    "inventory": "data/tests/Cli_30/inventory.json",
+    "labels": "data/tests/Cli_30/labels.json",
+    "num_test_classes": 23,
+    "num_positive_classes": 5,
+    "num_trigger_methods": 9,
+    "source_resolved": 23,
+    "source_missing": 0,
+    "source_ambiguous": 0
+  },
+  "representations": {
+    "index": "data/tests/Cli_30/representations_index.json",
+    "dir": "data/tests/Cli_30/representations",
+    "num_representations": 23,
+    "source_missing": 0,
+    "representation_truncated": 0,
+    "window_compacted": 5
+  },
+  "content_hashes": {
+    "patch_representation": "fa1e2e36be84f2aa8eb591a4d78eb0780965976bca70dfbc9266fc05d5172760",
+    "patch_meta": "4e962369f0b49680153fcf892cde465d1f1c19cefc93fdc0bcd954763613c52f",
+    "test_inventory": "5e5d2fc561ba530d9af244ba83e8161962283ee2431956ba2f80543618fa72e1",
+    "test_labels": "c508103cc87c3b692ed964c8a5cc8ec919630ff02a59bed374d246ed616888c7",
+    "representations_index": "5db30cbf7a0064ea07fcc4e3e13304c9270adc6b305bddca96722b05c1d572ad",
+    "checkout_provenance": "23a939dbeb9e5b734578b28c52deafd37962bd7993ef6e2a380092753b5794b3"
   }
 }

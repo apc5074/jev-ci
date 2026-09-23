@@ -1,0 +1,131 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.jdk.JDKScalarsTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/jdk/JDKScalarsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.jdk.JDKScalarsTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/jdk/JDKScalarsTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser.jdk;\n\nimport java.io.*;\nimport java.lang.reflect.Array;\nimport java.util.List;\n\nimport org.junit.Assert;\n\nimport com.fasterxml.jackson.annotation.JsonCreator;\nimport com.fasterxml.jackson.annotation.JsonProperty;\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.JsonMappingException.Reference;\nimport com.fasterxml.jackson.databind.exc.MismatchedInputException;\n\n/**\n * Unit tests for verifying handling of simple basic non-structured\n * types; primitives (and/or their wrappers), Strings.\n */\npublic class JDKScalarsTest\n    extends BaseMapTest\n{\n    final static String NAN_STRING = \"NaN\";\n\n    final static class BooleanBean {\n        boolean _v;\n        void setV(boolean v) { _v = v; }\n    }\n\n    static class BooleanWrapper {\n        public Boolean wrapper;\n        public boolean primitive;\n        \n        protected Boolean ctor;\n        \n        @JsonCreator\n        public BooleanWrapper(@JsonProperty(\"ctor\") Boolean foo) {\n            ctor = foo;\n        }\n    }\n\n    static class IntBean {\n        int _v;\n        void setV(int v) { _v = v; }\n    }\n\n    static class LongBean {\n        long _v;\n        void setV(long v) { _v = v; }\n    }\n    \n    final static class DoubleBean {\n        double _v;\n        void setV(double v) { _v = v; }\n    }\n\n    final static class FloatBean {\n        float _v;\n        void setV(float v) { _v = v; }\n    }\n    \n    final static class CharacterBean {\n        char _v;\n        void setV(char v) { _v = v; }\n        char getV() { return _v; }\n    }\n    \n    final static class CharacterWrapperBean {\n        Character _v;\n        void setV(Character v) { _v = v; }\n        Character getV() { return _v; }\n    }\n\n    /**\n     * Also, let's ensure that it's ok to override methods.\n     */\n    static class IntBean2\n        extends IntBean\n    {\n        @Override\n        } catch (MismatchedInputException e) {\n            verifyException(e, \"Cannot map `null` into type double\");\n            verifyPath(e, \"doubleValue\");\n        }\n    }\n\n    // [databind#2101]\n    public void testNullForPrimitivesViaCreator() throws IOException\n    {\n        try {\n            /*PrimitiveCreatorBean bean =*/ MAPPER\n                    .readerFor(PrimitiveCreatorBean.class)\n                    .with(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)\n                    .readValue(aposToQuotes(\"{'a': null}\"));\n            fail(\"Expected failure for `int` and `null`\");\n        } catch (MismatchedInputException e) {\n            verifyException(e, \"Cannot map `null` into type int\");\n            verifyPath(e, \"a\");\n        }\n    }\n\n    private void verifyPath(MismatchedInputException e, String propName) {\n        final List<Reference> path = e.getPath();\n        assertEquals(1, path.size());\n        assertEquals(propName, path.get(0).getFieldName());\n    }\n\n    public void testNullForPrimitiveArrays() throws IOException\n    {\n        _testNullForPrimitiveArrays(boolean[].class, Boolean.FALSE);\n        _testNullForPrimitiveArrays(byte[].class, Byte.valueOf((byte) 0));\n        _testNullForPrimitiveArrays(char[].class, Character.valueOf((char) 0), false);\n        _testNullForPrimitiveArrays(short[].class, Short.valueOf((short)0));\n        _testNullForPrimitiveArrays(int[].class, Integer.valueOf(0));\n        _testNullForPrimitiveArrays(long[].class, Long.valueOf(0L));\n        _testNullForPrimitiveArrays(float[].class, Float.valueOf(0f));\n        _testNullForPrimitiveArrays(double[].class, Double.valueOf(0d));\n    }\n\n    private void _testNullForPrimitiveArrays(Class<?> cls, Object defValue) throws IOException {\n        _testNullForPrimitiveArrays(cls, defValue, true);\n    }\n\n    private void _testNullForPrimitiveArrays(Class<?> cls, Object defValue,\n            boolean testEmptyString) throws IOException\n    {\n        final String EMPTY_STRING_JSON = \"[ \\\"\\\" ]\";\n        final String JSON_WITH_NULL = \"[ null ]\";\n        final String SIMPLE_NAME = \"`\"+cls.getSimpleName()+\"`\";\n        final ObjectReader readerCoerceOk = MAPPER.readerFor(cls);\n        final ObjectReader readerNoCoerce = readerCoerceOk\n                .with(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES);\n\n        Object ob = readerCoerceOk.forType(cls).readValue(JSON_WITH_NULL);\n        assertEquals(1, Array.getLength(ob));\n        assertEquals(defValue, Array.get(ob, 0));\n        try {\n            readerNoCoerce.readValue(JSON_WITH_NULL);\n            fail(\"Should not pass\");\n        } catch (JsonMappingException e) {\n            verifyException(e, \"Cannot coerce `null`\");\n            verifyException(e, \"as content of type \"+SIMPLE_NAME);\n        }\n        \n        if (testEmptyString) {\n            ob = readerCoerceOk.forType(cls).readValue(EMPTY_STRING_JSON);\n            assertEquals(1, Array.getLength(ob));\n            assertEquals(defValue, Array.get(ob, 0));\n\n            try {\n                readerNoCoerce.readValue(EMPTY_STRING_JSON);\n                fail(\"Should not pass\");\n            } catch (JsonMappingException e) {\n                verifyException(e, \"Cannot coerce empty String (\\\"\\\")\");\n                verifyException(e, \"as content of type \"+SIMPLE_NAME);\n            }\n        }\n    }\n\n    // [databind#2197]\n    public void testVoidDeser() throws Exception\n    {\n        VoidBean bean = MAPPER.readValue(aposToQuotes(\"{'value' : 123 }\"),\n                VoidBean.class);\n        assertNull(bean.value);\n    }\n    \n    /*\n    /**********************************************************\n    /* Test for invalid String values\n    /**********************************************************\n     */\n\n    public void testInvalidStringCoercionFail() throws IOException\n    {\n        _testInvalidStringCoercionFail(boolean[].class);\n        _testInvalidStringCoercionFail(byte[].class);\n\n        // char[] is special, cannot use generalized test here\n//        _testInvalidStringCoercionFail(char[].class);\n        _testInvalidStringCoercionFail(short[].class);\n        _testInvalidStringCoercionFail(int[].class);\n        _testInvalidStringCoercionFail(long[].class);\n        _testInvalidStringCoercionFail(float[].class);\n        _testInvalidStringCoercionFail(double[].class);\n    }\n\n    private void _testInvalidStringCoercionFail(Class<?> cls) throws IOException\n    {\n        final String JSON = \"[ \\\"foobar\\\" ]\";\n        final String SIMPLE_NAME = cls.getSimpleName();\n\n        try {\n            MAPPER.readerFor(cls).readValue(JSON);\n            fail(\"Should not pass\");\n        } catch (JsonMappingException e) {\n            verifyException(e, \"Cannot deserialize value of type `\"+SIMPLE_NAME+\"` from String \\\"foobar\\\"\");\n        }\n    }\n}\n",
+  "compaction": {
+    "source_lines": 900,
+    "mode": "windows",
+    "windows_total": 15,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        780,
+        860
+      ],
+      [
+        840,
+        900
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 30.616329034869274
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 13.370250436212562
+      },
+      {
+        "start": 840,
+        "end": 900,
+        "score": 15.844431846997454
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 30.616329034869274
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.259104231269783
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 6.772195263371031
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 7.263838255592912
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 3.1055144505158103
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 2.626427961731914
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 9.113554922000521
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 4.659095534778706
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 4.625813665202752
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 8.363789261299363
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 8.196930198656496
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 7.056854033509717
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 4.896458124047945
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 13.370250436212562
+      },
+      {
+        "start": 840,
+        "end": 900,
+        "score": 15.844431846997454
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 6891,
+  "representation_chars": 6891,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

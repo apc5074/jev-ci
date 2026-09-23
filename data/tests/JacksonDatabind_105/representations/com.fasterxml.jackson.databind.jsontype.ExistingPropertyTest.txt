@@ -1,0 +1,207 @@
+TEST CLASS:
+com.fasterxml.jackson.databind.jsontype.ExistingPropertyTest
+
+SOURCE FILE:
+src/test/java/com/fasterxml/jackson/databind/jsontype/ExistingPropertyTest.java
+
+TEST SOURCE:
+package com.fasterxml.jackson.databind.jsontype;
+
+import java.util.*;
+
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import com.fasterxml.jackson.databind.BaseMapTest;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+public class ExistingPropertyTest extends BaseMapTest
+{
+    /**
+     * Polymorphic base class - existing property as simple property on subclasses
+     */
+    @JsonTypeInfo(use = Id.NAME, include = As.EXISTING_PROPERTY, property = "type",
+            visible=true)
+    @JsonSubTypes({
+        @Type(value = Apple.class, name = "apple") ,
+        @Type(value = Orange.class, name = "orange") 
+    })
+    static abstract class Fruit {
+        public String name;
+        protected Fruit(String n)  { name = n; }
+    }
+
+    @JsonTypeName("apple")
+    static class Apple extends Fruit
+    {
+        public int seedCount;
+        public String type;
+
+        private Apple() { super(null); }
+        public Apple(String name, int b) {
+            super(name);
+            seedCount = b;
+            type = "apple";
+        }
+    }
+
+    @JsonTypeName("orange")
+    static class Orange extends Fruit
+    {
+        public String color;
+        public String type;
+
+        private Orange() { super(null); }
+        public Orange(String name, String c) {
+            super(name);
+            color = c;
+            type = "orange";
+        }
+    }
+
+    static class FruitWrapper {
+        public Fruit fruit;
+        public FruitWrapper() {}
+        public FruitWrapper(Fruit f) { fruit = f; }
+    }
+
+    /**
+     * Polymorphic base class - existing property forced by abstract method
+     */
+	@JsonTypeInfo(use = Id.NAME, include = As.EXISTING_PROPERTY, property = "type")
+	@JsonSubTypes({
+		@Type(value = Dog.class, name = "doggie") ,
+		@Type(value = Cat.class, name = "kitty") 
+		})
+	static abstract class Animal {
+        public String name;
+        
+        protected Animal(String n)  { name = n; }
+        
+        public abstract String getType();
+    }
+
+    @JsonTypeName("doggie")
+    static class Dog extends Animal
+    {
+        public int boneCount;
+        
+        private Dog() { super(null); }
+        public Dog(String name, int b) {
+            super(name);
+            boneCount = b;
+        }
+        
+ 		@Override
+		public String getType() {
+        	return "doggie";
+        }        
+    }
+
+    @JsonTypeName("kitty")
+    static class Cat extends Animal
+    {
+        public String furColor;
+        
+        private Cat() { super(null); }
+        public Cat(String name, String c) {
+            super(name);
+            furColor = c;
+        }
+        
+		@Override
+		public String getType() {
+        	return "kitty";
+        }        
+    }
+
+    static class AnimalWrapper {
+        public Animal animal;
+        public AnimalWrapper() {}
+        public AnimalWrapper(Animal a) { animal = a; }
+    }
+
+    /**
+     * Polymorphic base class - existing property NOT forced by abstract method on base class
+     */
+	@JsonTypeInfo(use = Id.NAME, include = As.EXISTING_PROPERTY, property = "type")
+	@JsonSubTypes({
+		@Type(value = Accord.class, name = "accord") ,
+		@Type(value = Camry.class, name = "camry") 
+		})
+	static abstract class Car {
+        public String name;        
+        protected Car(String n)  { name = n; }
+    }
+
+    @JsonTypeName("accord")
+    static class Accord extends Car
+    {
+        public int speakerCount;
+        
+        private Accord() { super(null); }
+        public Accord(String name, int b) {
+            super(name);
+            speakerCount = b;
+        }
+        
+		public String getType() {
+        	return "accord";
+        }        
+    }
+
+    @JsonTypeName("camry")
+    static class Camry extends Car
+    {
+        public String exteriorColor;
+        
+        private Camry() { super(null); }
+        public Camry(String name, String c) {
+            super(name);
+            exteriorColor = c;
+        }
+        
+		public String getType() {
+        	return "camry";
+        }        
+    }
+
+    static class CarWrapper {
+        public Car car;
+        public CarWrapper() {}
+        public CarWrapper(Car c) { car = c; }
+    }
+
+    // for [databind#1635]
+
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
+            include = JsonTypeInfo.As.EXISTING_PROPERTY,
+            // IMPORTANT! Must be defined as `visible`
+            visible=true,
+            property = "type",
+            defaultImpl=Bean1635Default.class)
+    @JsonSubTypes({ @JsonSubTypes.Type(Bean1635A.class) })
+    static class Bean1635 {
+        public ABC type;
+    }
+
+    @JsonTypeName("A")
+    static class Bean1635A extends Bean1635 {
+        public int value;
+    }
+
+    static class Bean1635Default extends Bean1635 { }
+
+    /*
+    /**********************************************************
+    /* Mock data
+    /**********************************************************
+     */
+
+    private static final Orange mandarin = new Orange("Mandarin Orange", "orange");
+    private static final String mandarinJson = "{\"name\":\"Mandarin Orange\",\"color\":\"orange\",\"type\":\"orange\"}";	
+    private static final Apple pinguo = new Apple("Apple-A-Day", 16);    

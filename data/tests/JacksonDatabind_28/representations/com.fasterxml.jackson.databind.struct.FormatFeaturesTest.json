@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.struct.FormatFeaturesTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/struct/FormatFeaturesTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.struct.FormatFeaturesTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/struct/FormatFeaturesTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.struct;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.databind.*;\n\n/**\n * Tests for {@link JsonFormat} and specifically <code>JsonFormat.Feature</code>s.\n */\npublic class FormatFeaturesTest extends BaseMapTest\n{\n    @JsonPropertyOrder( { \"strings\", \"ints\", \"bools\" })\n    static class WrapWriteWithArrays\n    {\n        @JsonProperty(\"strings\")\n        @JsonFormat(with={ JsonFormat.Feature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED })\n        public String[] _strings = new String[] {\n            \"a\"\n        };\n\n        @JsonFormat(without={ JsonFormat.Feature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED })\n        public int[] ints = new int[] {\n            1\n        };\n\n        public boolean[] bools = new boolean[] { true };\n    }\n    \n    @JsonPropertyOrder( { \"strings\", \"ints\", \"bools\", \"enums\" })\n    static class WrapWriteWithCollections\n    {\n        @JsonFormat(with={ JsonFormat.Feature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED })\n        public List<String> strings = Arrays.asList(\"a\");\n\n        @JsonFormat(without={ JsonFormat.Feature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED })\n        public Collection<Integer> ints = Arrays.asList(Integer.valueOf(1));\n\n        public Set<Boolean> bools = Collections.singleton(true);\n\n        @JsonFormat(with={ JsonFormat.Feature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED })\n        public EnumSet<ABC> enums = EnumSet.of(ABC.B);\n    }\n\n    private final ObjectMapper MAPPER = new ObjectMapper();\n\n    public void testWithArrayTypes() throws Exception\n    {\n        // default: strings unwrapped, ints wrapped\n        assertEquals(aposToQuotes(\"{'strings':'a','ints':[1],'bools':[true]}\"),\n                MAPPER.writeValueAsString(new WrapWriteWithArrays()));\n\n        // change global default to \"yes, unwrap\"; changes 'bools' only\n        assertEquals(aposToQuotes(\"{'strings':'a','ints':[1],'bools':true}\"),\n                MAPPER.writer().with(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED)\n                .writeValueAsString(new WrapWriteWithArrays()));\n\n        // change global default to \"no, don't, unwrap\", same as first case\n        assertEquals(aposToQuotes(\"{'strings':'a','ints':[1],'bools':[true]}\"),\n                MAPPER.writer().without(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED)\n                .writeValueAsString(new WrapWriteWithArrays()));\n    }\n\n    public void testWithCollectionTypes() throws Exception\n    {\n        // default: strings unwrapped, ints wrapped\n        assertEquals(aposToQuotes(\"{'strings':'a','ints':[1],'bools':[true],'enums':'B'}\"),\n                MAPPER.writeValueAsString(new WrapWriteWithCollections()));\n\n        // change global default to \"yes, unwrap\"; changes 'bools' only\n        assertEquals(aposToQuotes(\"{'strings':'a','ints':[1],'bools':true,'enums':'B'}\"),\n                MAPPER.writer().with(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED)\n                .writeValueAsString(new WrapWriteWithCollections()));\n\n        // change global default to \"no, don't, unwrap\", same as first case\n        assertEquals(aposToQuotes(\"{'strings':'a','ints':[1],'bools':[true],'enums':'B'}\"),\n                MAPPER.writer().without(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED)\n                .writeValueAsString(new WrapWriteWithCollections()));\n    }\n}\n",
+  "compaction": {
+    "source_lines": 80,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3536,
+  "representation_chars": 3536,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

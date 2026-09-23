@@ -1,0 +1,59 @@
+{
+  "qualified_id": "Math-25",
+  "example_id": "Math_25",
+  "project": "Math",
+  "bug_id": "25",
+  "split": "development",
+  "status": "ok",
+  "reused": false,
+  "checked_at": "2026-09-22T23:48:25+00:00",
+  "defects4j_version": "3.0.1",
+  "defects4j_commit": "6d54320e0db5a357f9ab38a8e4d2e5aead7e1c09",
+  "d4j_home": "D4J_HOME",
+  "fixed": {
+    "version_id": "25f",
+    "role": "base",
+    "work_dir": "data/bugs/Math_25/checkouts/fixed",
+    "defects4j_config": {
+      "pid": "Math",
+      "vid": "25f"
+    },
+    "command": [
+      "defects4j",
+      "checkout",
+      "-p",
+      "Math",
+      "-v",
+      "25f",
+      "-w",
+      "data/bugs/Math_25/checkouts/fixed"
+    ],
+    "exit_status": 0
+  },
+  "buggy": {
+    "version_id": "25b",
+    "role": "proposed_change",
+    "work_dir": "data/bugs/Math_25/checkouts/buggy",
+    "defects4j_config": {
+      "pid": "Math",
+      "vid": "25b"
+    },
+    "command": [
+      "defects4j",
+      "checkout",
+      "-p",
+      "Math",
+      "-v",
+      "25b",
+      "-w",
+      "data/bugs/Math_25/checkouts/buggy"
+    ],
+    "exit_status": 0
+  },
+  "logs": {
+    "fixed_stdout_tail": "",
+    "fixed_stderr_tail": "Checking out 7994d3ee to /workspace/data/bugs/Math_25/checkouts/fixed...... OK\nInit local repository...................................................... OK\nTag post-fix revision...................................................... OK\nRun post-checkout hook..................................................... OK\nExcluding broken/flaky tests............................................... OK\nExcluding broken/flaky tests............................................... OK\nExcluding broken/flaky tests............................................... OK\nInitialize fixed program version........................................... OK\nApply patch................................................................ OK\nInitialize buggy program version........................................... OK\nDiff 7994d3ee:91d24dcb..................................................... OK\nApply patch................................................................ OK\nTag pre-fix revision....................................................... OK\nCheck out program version: Math-25f........................................ OK\n",
+    "buggy_stdout_tail": "",
+    "buggy_stderr_tail": "Checking out 7994d3ee to /workspace/data/bugs/Math_25/checkouts/buggy...... OK\nInit local repository...................................................... OK\nTag post-fix revision...................................................... OK\nRun post-checkout hook..................................................... OK\nExcluding broken/flaky tests............................................... OK\nExcluding broken/flaky tests............................................... OK\nExcluding broken/flaky tests............................................... OK\nInitialize fixed program version........................................... OK\nApply patch................................................................ OK\nInitialize buggy program version........................................... OK\nDiff 7994d3ee:91d24dcb..................................................... OK\nApply patch................................................................ OK\nTag pre-fix revision....................................................... OK\nCheck out program version: Math-25b........................................ OK\n"
+  }
+}

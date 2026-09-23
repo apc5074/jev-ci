@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.cli.BasicParserTest",
+  "source_file": "src/test/java/org/apache/commons/cli/BasicParserTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.cli.BasicParserTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/cli/BasicParserTest.java\n\nTEST SOURCE:\n/**\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *     http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.cli;\n\n/**\n * @author Emmanuel Bourg\n * @version $Revision$, $Date$\n */\npublic class BasicParserTest extends ParserTestCase\n{\n    public void setUp()\n    {\n        super.setUp();\n        parser = new BasicParser();\n    }\n\n    public void testDoubleDash2() throws Exception\n    {\n        // not supported by the BasicParser\n    }\n\n    public void testLongWithoutEqualSingleDash() throws Exception\n    {\n        // not supported by the BasicParser\n    }\n    \n    public void testAmbiguousLongWithoutEqualSingleDash() throws Exception\n    {\n        // not supported by the basicParser\n    }\n    \n    public void testNegativeOption() throws Exception\n    {\n        // not supported by the BasicParser (CLI-184)\n    }\n\n    public void testPropertiesOption1() throws Exception\n    {\n        // not supported by the BasicParser\n    }\n\n    public void testPropertiesOption2() throws Exception\n    {\n        // not supported by the BasicParser\n    }    \n\n    public void testShortWithEqual() throws Exception\n    {\n        // not supported by the BasicParser\n    }\n\n    public void testShortWithoutEqual() throws Exception\n    {\n        // not supported by the BasicParser\n    }\n\n    public void testLongWithEqualDoubleDash() throws Exception\n    {\n        // not supported by the BasicParser\n    }\n\n    public void testLongWithEqualSingleDash() throws Exception\n    {\n        // not supported by the BasicParser\n    }\n    \n    public void testUnambiguousPartialLongOption1() throws Exception\n    {\n        // not supported by the BasicParser\n    }\n\n    public void testUnambiguousPartialLongOption2() throws Exception\n    {\n        // not supported by the BasicParser\n    }\n\n    public void testUnambiguousPartialLongOption3() throws Exception\n    {\n        // not supported by the BasicParser\n    }\n\n    public void testUnambiguousPartialLongOption4() throws Exception\n    {\n        // not supported by the BasicParser\n    }\n\n    public void testAmbiguousPartialLongOption1() throws Exception\n    {\n        // not supported by the BasicParser\n    }\n\n    public void testAmbiguousPartialLongOption2() throws Exception\n    {\n        // not supported by the BasicParser\n    }\n\n    public void testAmbiguousPartialLongOption3() throws Exception\n    {\n        // not supported by the BasicParser\n    }\n\n    public void testAmbiguousPartialLongOption4() throws Exception\n    {\n        // not supported by the BasicParser\n    }\n\n    public void testPartialLongOptionSingleDash() throws Exception\n    {\n        // not supported by the BasicParser\n    }\n\n    public void testBursting() throws Exception\n    {\n        // not supported by the BasicParser\n    }\n\n    public void testUnrecognizedOptionWithBursting() throws Exception\n    {\n        // not supported by the BasicParser\n    }\n\n    public void testMissingArgWithBursting() throws Exception\n    {\n        // not supported by the BasicParser\n    }\n\n    public void testStopBursting() throws Exception\n    {\n        // not supported by the BasicParser\n    }\n\n    public void testStopBursting2() throws Exception\n    {\n        // not supported by the BasicParser\n    }\n}\n",
+  "compaction": {
+    "source_lines": 151,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 4077,
+  "representation_chars": 4077,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.creators.DelegatingCreatorImplicitNames1001Test",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/creators/DelegatingCreatorImplicitNames1001Test.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.creators.DelegatingCreatorImplicitNames1001Test\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/creators/DelegatingCreatorImplicitNames1001Test.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.creators;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.introspect.AnnotatedMember;\nimport com.fasterxml.jackson.databind.introspect.AnnotatedMethod;\nimport com.fasterxml.jackson.databind.introspect.AnnotatedParameter;\nimport com.fasterxml.jackson.databind.introspect.AnnotatedWithParams;\nimport com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;\n\npublic class DelegatingCreatorImplicitNames1001Test extends BaseMapTest\n{\n    static class D\n    {\n        private String raw1 = \"\";\n        private String raw2 = \"\";\n\n        private D(String raw1, String raw2) {\n            this.raw1 = raw1;\n            this.raw2 = raw2;\n        }\n\n        // not needed strictly speaking, but added for good measure\n        @JsonCreator\n        public static D make(String value) {\n            String[] split = value.split(\":\");\n            return new D(split[0], split[1]);\n        }\n\n        @JsonValue\n        public String getMyValue() {\n            return raw1 + \":\" + raw2;\n        }\n\n        @Override\n        public String toString() {\n            return getMyValue();\n        }\n\n        @Override\n        public boolean equals(Object o) {\n            D other = (D) o;\n            return other.raw1.equals(raw1)\n                    && other.raw2.equals(raw2);\n        }\n    }\n\n    // To test equivalent of parameter-names, let's use this one\n    protected static class CreatorNameIntrospector extends JacksonAnnotationIntrospector\n    {\n        private static final long serialVersionUID = 1L;\n\n        @Override\n        public String findImplicitPropertyName(AnnotatedMember member) {\n            if (member instanceof AnnotatedParameter) {\n                AnnotatedParameter p = (AnnotatedParameter) member;\n                AnnotatedWithParams owner = p.getOwner();\n                if (owner instanceof AnnotatedMethod) {\n                    if (p.getIndex() == 0) {\n                        return \"value\";\n                    }\n                }\n            }\n            return super.findImplicitPropertyName(member);\n        }\n    }\n\n    // Baseline test to show how things should work\n    public void testWithoutNamedParameters() throws Exception\n    {\n        ObjectMapper sut = new ObjectMapper();\n\n        D d = D.make(\"abc:def\");\n\n        String actualJson = sut.writeValueAsString(d);\n        D actualD = sut.readValue(actualJson, D.class);\n\n        assertEquals(\"\\\"abc:def\\\"\", actualJson);\n        assertEquals(d, actualD);\n    }\n\n    // And then case that fails with [databind#1001]\n    public void testWithNamedParameters() throws Exception\n    {\n        ObjectMapper sut = new ObjectMapper()\n            .setAnnotationIntrospector(new CreatorNameIntrospector());\n\n        D d = D.make(\"abc:def\");\n\n        String actualJson = sut.writeValueAsString(d);\n        D actualD = sut.readValue(actualJson, D.class);\n\n        assertEquals(\"\\\"abc:def\\\"\", actualJson);\n        assertEquals(d, actualD);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 96,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3264,
+  "representation_chars": 3264,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.lang3.concurrent.AtomicSafeInitializerTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/concurrent/AtomicSafeInitializerTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.concurrent.AtomicSafeInitializerTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/concurrent/AtomicSafeInitializerTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3.concurrent;\n\nimport static org.junit.Assert.assertEquals;\n\nimport java.util.concurrent.atomic.AtomicInteger;\n\nimport org.junit.Before;\nimport org.junit.Test;\n\n/**\n * Test class for {@code AtomicSafeInitializer}.\n *\n * @version $Id$\n */\npublic class AtomicSafeInitializerTest extends\n        AbstractConcurrentInitializerTest {\n    /** The instance to be tested. */\n    private AtomicSafeInitializerTestImpl initializer;\n\n    @Before\n    public void setUp() throws Exception {\n        initializer = new AtomicSafeInitializerTestImpl();\n    }\n\n    /**\n     * Returns the initializer to be tested.\n     *\n     * @return the {@code AtomicSafeInitializer} under test\n     */\n    @Override\n    protected ConcurrentInitializer<Object> createInitializer() {\n        return initializer;\n    }\n\n    /**\n     * Tests that initialize() is called only once.\n     */\n    @Test\n    public void testNumberOfInitializeInvocations() throws ConcurrentException,\n            InterruptedException {\n        testGetConcurrent();\n        assertEquals(\"Wrong number of invocations\", 1,\n                initializer.initCounter.get());\n    }\n\n    /**\n     * A concrete test implementation of {@code AtomicSafeInitializer}. This\n     * implementation also counts the number of invocations of the initialize()\n     * method.\n     */\n    private static class AtomicSafeInitializerTestImpl extends\n            AtomicSafeInitializer<Object> {\n        /** A counter for initialize() invocations. */\n        final AtomicInteger initCounter = new AtomicInteger();\n\n        @Override\n        protected Object initialize() throws ConcurrentException {\n            initCounter.incrementAndGet();\n            return new Object();\n        }\n    }\n}\n",
+  "compaction": {
+    "source_lines": 78,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2729,
+  "representation_chars": 2729,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

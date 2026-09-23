@@ -1,0 +1,81 @@
+{
+  "test_class": "org.apache.commons.math.analysis.BisectionSolverTest",
+  "source_file": "src/test/org/apache/commons/math/analysis/BisectionSolverTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math.analysis.BisectionSolverTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/math/analysis/BisectionSolverTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math.analysis;\n\nimport org.apache.commons.math.MathException;\nimport org.apache.commons.math.TestUtils;\n\nimport junit.framework.TestCase;\n\n/**\n * @version $Revision$ $Date$\n */\npublic final class BisectionSolverTest extends TestCase {\n    /**\n     *\n     */\n    public void testSinZero() throws MathException {\n        UnivariateRealFunction f = new SinFunction();\n        double result;\n        \n        UnivariateRealSolver solver = new BisectionSolver(f);\n        result = solver.solve(3, 4);\n        assertEquals(result, Math.PI, solver.getAbsoluteAccuracy());\n\n        result = solver.solve(1, 4);\n        assertEquals(result, Math.PI, solver.getAbsoluteAccuracy());\n    }\n\n    /**\n     *\n     */\n    public void testQuinticZero() throws MathException {\n        UnivariateRealFunction f = new QuinticFunction();\n        double result;\n\n        UnivariateRealSolver solver = new BisectionSolver(f);\n        result = solver.solve(-0.2, 0.2);\n        assertEquals(result, 0, solver.getAbsoluteAccuracy());\n\n        result = solver.solve(-0.1, 0.3);\n        assertEquals(result, 0, solver.getAbsoluteAccuracy());\n\n        result = solver.solve(-0.3, 0.45);\n        assertEquals(result, 0, solver.getAbsoluteAccuracy());\n\n        result = solver.solve(0.3, 0.7);\n        assertEquals(result, 0.5, solver.getAbsoluteAccuracy());\n\n        result = solver.solve(0.2, 0.6);\n        assertEquals(result, 0.5, solver.getAbsoluteAccuracy());\n\n        result = solver.solve(0.05, 0.95);\n        assertEquals(result, 0.5, solver.getAbsoluteAccuracy());\n\n        result = solver.solve(0.85, 1.25);\n        assertEquals(result, 1.0, solver.getAbsoluteAccuracy());\n\n        result = solver.solve(0.8, 1.2);\n        assertEquals(result, 1.0, solver.getAbsoluteAccuracy());\n\n        result = solver.solve(0.85, 1.75);\n        assertEquals(result, 1.0, solver.getAbsoluteAccuracy());\n\n        result = solver.solve(0.55, 1.45);\n        assertEquals(result, 1.0, solver.getAbsoluteAccuracy());\n\n    }        \n    \n    /**\n     * \n     */\n    public void testResetAbsoluteAccuracy(){\n        double newValue = 1.0e-2;       \n        UnivariateRealFunction f = new QuinticFunction();\n        UnivariateRealSolver solver = new BisectionSolver(f);\n        double oldValue = solver.getAbsoluteAccuracy();\n        solver.setAbsoluteAccuracy(newValue);\n        solver.resetAbsoluteAccuracy();\n        assertEquals(oldValue, solver.getAbsoluteAccuracy(), 1.0e-2);\n    }        \n    \n    /**\n     * \n     */\n    public void testSetMaximalIterationCount(){\n        int expected = 100;\n        \n        UnivariateRealFunction f = new QuinticFunction();\n        UnivariateRealSolver solver = new BisectionSolver(f);\n        solver.setMaximalIterationCount(expected);\n        assertEquals(expected, solver.getMaximalIterationCount());\n    }        \n    \n    /**\n     * \n     */\n    public void testResetMaximalIterationCount(){\n        int newValue = 10000;\n        \n        UnivariateRealFunction f = new QuinticFunction();\n        UnivariateRealSolver solver = new BisectionSolver(f);\n        int oldValue = solver.getMaximalIterationCount();\n        solver.setMaximalIterationCount(newValue);\n        solver.resetMaximalIterationCount();\n        assertEquals(oldValue, solver.getMaximalIterationCount());\n    }        \n    \n    /**\n     * \n     */\n    public void testSetRelativeAccuracy(){\n        double expected = 1.0e-2;\n        \n        UnivariateRealFunction f = new QuinticFunction();\n        UnivariateRealSolver solver = new BisectionSolver(f);\n        solver.setRelativeAccuracy(expected);\n        assertEquals(expected, solver.getRelativeAccuracy(), 1.0e-2);\n    }        \n    \n    /**\n     * \n     */\n    public void testResetRelativeAccuracy(){\n        double newValue = 1.0e-2;        \n        UnivariateRealFunction f = new QuinticFunction();\n        UnivariateRealSolver solver = new BisectionSolver(f);\n        double oldValue = solver.getRelativeAccuracy();\n        solver.setRelativeAccuracy(newValue);\n        solver.resetRelativeAccuracy();\n        assertEquals(oldValue, solver.getRelativeAccuracy(), 1.0e-2);\n    }        \n    \n    /**\n     * Test Serialization and Recovery\n     */\n   public void testSerialization() throws MathException {\n       UnivariateRealFunction f = (UnivariateRealFunction)TestUtils.serializeAndRecover(new QuinticFunction());\n       double result;\n       \n       BisectionSolver solver = new BisectionSolver(f);\n       UnivariateRealSolver solver2 = (UnivariateRealSolver)TestUtils.serializeAndRecover(solver);\n       \n       result = solver.solve(-0.2, 0.2);\n       assertEquals(result, 0, solver.getAbsoluteAccuracy());\n       assertEquals(solver2.solve(-0.2, 0.2), result, solver2.getAbsoluteAccuracy());\n       \n       result = solver.solve(-0.1, 0.3);\n       assertEquals(result, 0, solver.getAbsoluteAccuracy());\n       assertEquals(solver2.solve(-0.1, 0.3), result, solver2.getAbsoluteAccuracy());\n       \n       result = solver.solve(-0.3, 0.45);\n       assertEquals(result, 0, solver.getAbsoluteAccuracy());\n       assertEquals(solver2.solve(-0.3, 0.45), result, solver2.getAbsoluteAccuracy());\n       \n       result = solver.solve(0.3, 0.7);\n       assertEquals(result, 0.5, solver.getAbsoluteAccuracy());\n       assertEquals(solver2.solve(0.3, 0.7), result, solver2.getAbsoluteAccuracy());\n       \n       result = solver.solve(0.2, 0.6);\n       assertEquals(result, 0.5, solver.getAbsoluteAccuracy());\n       assertEquals(solver2.solve(0.2, 0.6), result, solver2.getAbsoluteAccuracy());\n       \n       result = solver.solve(0.05, 0.95);\n       assertEquals(result, 0.5, solver.getAbsoluteAccuracy());\n       assertEquals(solver2.solve(0.05, 0.95), result, solver2.getAbsoluteAccuracy());\n       \n       result = solver.solve(0.85, 1.25);\n       assertEquals(result, 1.0, solver.getAbsoluteAccuracy());\n       assertEquals(solver2.solve(0.85, 1.25), result, solver2.getAbsoluteAccuracy());\n       \n       result = solver.solve(0.8, 1.2);\n       assertEquals(result, 1.0, solver.getAbsoluteAccuracy());\n       assertEquals(solver2.solve(0.8, 1.2), result, solver2.getAbsoluteAccuracy());\n       \n       result = solver.solve(0.85, 1.75);\n       assertEquals(result, 1.0, solver.getAbsoluteAccuracy());\n       assertEquals(solver2.solve(0.85, 1.75), result, solver2.getAbsoluteAccuracy());\n       \n       result = solver.solve(0.55, 1.45);\n       assertEquals(result, 1.0, solver.getAbsoluteAccuracy());\n       assertEquals(solver2.solve(0.55, 1.45), result, solver2.getAbsoluteAccuracy());\n       \n       result = solver.solve(0.85, 5);\n       assertEquals(result, 1.0, solver.getAbsoluteAccuracy());\n       assertEquals(solver2.solve(0.85, 5), result, solver2.getAbsoluteAccuracy());\n       \n       /* Test Reset */\n       double newValue = 1.0e-2;\n       f = (UnivariateRealFunction)TestUtils.serializeAndRecover(new QuinticFunction());\n       solver = new BisectionSolver(f);\n       \n       double oldValue = solver.getRelativeAccuracy();\n       solver.setRelativeAccuracy(newValue);\n       solver.resetRelativeAccuracy();\n       assertEquals(oldValue, solver.getRelativeAccuracy(), 1.0e-2);\n       \n       solver2 = (UnivariateRealSolver)TestUtils.serializeAndRecover(solver); \n       \n       assertEquals(oldValue, solver2.getRelativeAccuracy(), 1.0e-2);\n       \n       solver2.setRelativeAccuracy(newValue);\n       solver2.resetRelativeAccuracy();\n       \n       assertEquals(oldValue, solver2.getRelativeAccuracy(), 1.0e-2);\n       \n   }\n",
+  "compaction": {
+    "source_lines": 262,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.89327869854052
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 4.157114063830938
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 2.135510334041527
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.89327869854052
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 1.9769525610677072
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 4.157114063830938
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 2.135510334041527
+      },
+      {
+        "start": 240,
+        "end": 262,
+        "score": 0.534050345633607
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8468,
+  "representation_chars": 8468,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

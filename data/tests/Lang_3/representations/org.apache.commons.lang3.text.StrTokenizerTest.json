@@ -1,0 +1,131 @@
+{
+  "test_class": "org.apache.commons.lang3.text.StrTokenizerTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/text/StrTokenizerTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.text.StrTokenizerTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/text/StrTokenizerTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.lang3.text;\n\nimport org.junit.Test;\nimport static org.junit.Assert.*;\nimport java.util.Arrays;\nimport java.util.Collections;\nimport java.util.List;\nimport java.util.NoSuchElementException;\n\nimport org.apache.commons.lang3.ArrayUtils;\nimport org.apache.commons.lang3.ObjectUtils;\n\n/**\n * Unit test for Tokenizer.\n * \n */\npublic class StrTokenizerTest {\n\n    private static final String CSV_SIMPLE_FIXTURE = \"A,b,c\";\n\n    private static final String TSV_SIMPLE_FIXTURE = \"A\\tb\\tc\";\n\n    private void checkClone(final StrTokenizer tokenizer) {\n        assertFalse(StrTokenizer.getCSVInstance() == tokenizer);\n        assertFalse(StrTokenizer.getTSVInstance() == tokenizer);\n    }\n\n    // -----------------------------------------------------------------------\n    @Test\n    public void test1() {\n\n        final String input = \"a;b;c;\\\"d;\\\"\\\"e\\\";f; ; ;  \";\n        final StrTokenizer tok = new StrTokenizer(input);\n        tok.setDelimiterChar(';');\n        tok.setQuoteChar('\"');\n        tok.setIgnoredMatcher(StrMatcher.trimMatcher());\n        tok.setIgnoreEmptyTokens(false);\n        final String tokens[] = tok.getTokenArray();\n\n        final String expected[] = new String[]{\"a\", \"b\", \"c\", \"d;\\\"e\", \"f\", \"\", \"\", \"\",};\n\n        assertEquals(ArrayUtils.toString(tokens), expected.length, tokens.length);\n        for (int i = 0; i < expected.length; i++) {\n            assertTrue(\"token[\" + i + \"] was '\" + tokens[i] + \"' but was expected to be '\" + expected[i] + \"'\",\n                    ObjectUtils.equals(expected[i], tokens[i]));\n        }\n\n    }\n\n    @Test\n    public void test2() {\n\n        final String input = \"a;b;c ;\\\"d;\\\"\\\"e\\\";f; ; ;\";\n        final StrTokenizer tok = new StrTokenizer(input);\n        tok.setDelimiterChar(';');\n        tok.setQuoteChar('\"');\n        tok.setIgnoredMatcher(StrMatcher.noneMatcher());\n        tok.setIgnoreEmptyTokens(false);\n        final String tokens[] = tok.getTokenArray();\n\n        final String expected[] = new String[]{\"a\", \"b\", \"c \", \"d;\\\"e\", \"f\", \" \", \" \", \"\",};\n\n        assertEquals(ArrayUtils.toString(tokens), expected.length, tokens.length);\n\n        assertEquals(ArrayUtils.toString(tokens), expected.length, tokens.length);\n        for (int i = 0; i < expected.length; i++) {\n            assertTrue(\"token[\" + i + \"] was '\" + tokens[i] + \"' but was expected to be '\" + expected[i] + \"'\",\n                    ObjectUtils.equals(expected[i], tokens[i]));\n        }\n\n    }\n\n    @Test\n    public void test5() {\n\n        final String input = \"a;b; c;\\\"d;\\\"\\\"e\\\";f; ; ;\";\n        final StrTokenizer tok = new StrTokenizer(input);\n        tok.setDelimiterChar(';');\n        tok.setQuoteChar('\"');\n        tok.setIgnoredMatcher(StrMatcher.trimMatcher());\n        tok.setIgnoreEmptyTokens(false);\n        tok.setEmptyTokenAsNull(true);\n        final String tokens[] = tok.getTokenArray();\n\n        final String expected[] = new String[]{\"a\", \"b\", \"c\", \"d;\\\"e\", \"f\", null, null, null,};\n\n        assertEquals(ArrayUtils.toString(tokens), expected.length, tokens.length);\n        for (int i = 0; i < expected.length; i++) {\n            assertTrue(\"token[\" + i + \"] was '\" + tokens[i] + \"' but was expected to be '\" + expected[i] + \"'\",\n                    ObjectUtils.equals(expected[i], tokens[i]));\n        }\n\n    }\n\n    @Test\n    public void test6() {\n\n        final String input = \"a;b; c;\\\"d;\\\"\\\"e\\\";f; ; ;\";\n        final StrTokenizer tok = new StrTokenizer(input);\n        tok.setDelimiterChar(';');\n        tok.setQuoteChar('\"');\n        tok.setIgnoredMatcher(StrMatcher.trimMatcher());\n        tok.setIgnoreEmptyTokens(false);\n        // tok.setTreatingEmptyAsNull(true);\n        final String tokens[] = tok.getTokenArray();\n\n        final String expected[] = new String[]{\"a\", \"b\", \" c\", \"d;\\\"e\", \"f\", null, null, null,};\n\n        int nextCount = 0;\n        while (tok.hasNext()) {\n            tok.next();\n            nextCount++;\n        }\n\n        int prevCount = 0;\n        while (tok.hasPrevious()) {\n            tok.previous();\n            prevCount++;\n        }\n\n        assertEquals(ArrayUtils.toString(tokens), expected.length, tokens.length);\n\n        assertTrue(\"could not cycle through entire token list\" + \" using the 'hasNext' and 'next' methods\",\n                nextCount == expected.length);\n\n        assertTrue(\"could not cycle through entire token list\" + \" using the 'hasPrevious' and 'previous' methods\",\n                prevCount == expected.length);\n\n    }\n\n    @Test\n    public void test7() {\n\n        final String input = \"a   b c \\\"d e\\\" f \";\n        final StrTokenizer tok = new StrTokenizer(input);\n        tok.setDelimiterMatcher(StrMatcher.spaceMatcher());\n        tok.setQuoteMatcher(StrMatcher.doubleQuoteMatcher());\n        tok.setIgnoredMatcher(StrMatcher.noneMatcher());\n        tok.setIgnoreEmptyTokens(false);\n        final String tokens[] = tok.getTokenArray();\n\n        final String expected[] = new String[]{\"a\", \"\", \"\", \"b\", \"c\", \"d e\", \"f\", \"\",};\n\n        assertEquals(\"b\", tokenizer.nextToken());\n        assertEquals(2, tokenizer.nextIndex());\n        assertEquals(\"c\", tokenizer.nextToken());\n        assertEquals(3, tokenizer.nextIndex());\n        assertEquals(null, tokenizer.nextToken());\n        assertEquals(3, tokenizer.nextIndex());\n        assertEquals(\"c\", tokenizer.previousToken());\n        assertEquals(2, tokenizer.nextIndex());\n        assertEquals(\"b\", tokenizer.previousToken());\n        assertEquals(1, tokenizer.nextIndex());\n        assertEquals(\"A\", tokenizer.previousToken());\n        assertEquals(0, tokenizer.nextIndex());\n        assertEquals(null, tokenizer.previousToken());\n        assertEquals(0, tokenizer.nextIndex());\n        assertEquals(-1, tokenizer.previousIndex());\n        assertEquals(3, tokenizer.size());\n    }\n\n    @Test\n    public void testIteration() {\n        final StrTokenizer tkn = new StrTokenizer(\"a b c\");\n        assertFalse(tkn.hasPrevious());\n        try {\n            tkn.previous();\n            fail();\n        } catch (final NoSuchElementException ex) {}\n        assertTrue(tkn.hasNext());\n        \n        assertEquals(\"a\", tkn.next());\n        try {\n            tkn.remove();\n            fail();\n        } catch (final UnsupportedOperationException ex) {}\n        try {\n            tkn.set(\"x\");\n            fail();\n        } catch (final UnsupportedOperationException ex) {}\n        try {\n            tkn.add(\"y\");\n            fail();\n        } catch (final UnsupportedOperationException ex) {}\n        assertTrue(tkn.hasPrevious());\n        assertTrue(tkn.hasNext());\n        \n        assertEquals(\"b\", tkn.next());\n        assertTrue(tkn.hasPrevious());\n        assertTrue(tkn.hasNext());\n        \n        assertEquals(\"c\", tkn.next());\n        assertTrue(tkn.hasPrevious());\n        assertFalse(tkn.hasNext());\n        \n        try {\n            tkn.next();\n            fail();\n        } catch (final NoSuchElementException ex) {}\n        assertTrue(tkn.hasPrevious());\n        assertFalse(tkn.hasNext());\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testTokenizeSubclassInputChange() {\n        final StrTokenizer tkn = new StrTokenizer(\"a b c d e\") {\n            @Override\n            protected List<String> tokenize(final char[] chars, final int offset, final int count) {\n                return super.tokenize(\"w x y z\".toCharArray(), 2, 5);\n            }\n        };\n        assertEquals(\"x\", tkn.next());\n        assertEquals(\"y\", tkn.next());\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testTokenizeSubclassOutputChange() {\n        final StrTokenizer tkn = new StrTokenizer(\"a b c\") {\n            @Override\n            protected List<String> tokenize(final char[] chars, final int offset, final int count) {\n                final List<String> list = super.tokenize(chars, offset, count);\n",
+  "compaction": {
+    "source_lines": 879,
+    "mode": "windows",
+    "windows_total": 15,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        780,
+        860
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 36.6118997585233
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 11.091233214535452
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 14.463145745619329
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 36.6118997585233
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.814479017612656
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 11.091233214535452
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 10.60146627049515
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 1.4518508833015824
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 1.651457484996746
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 1.6044167917648466
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 1.7631918750258653
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 6.232787214379728
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 10.040683379262827
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 3.4225231841585657
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 3.4405231138714294
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 0.7930200876955521
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 14.463145745619329
+      },
+      {
+        "start": 840,
+        "end": 879,
+        "score": 6.641596553386634
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8875,
+  "representation_chars": 8875,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

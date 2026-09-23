@@ -1,0 +1,106 @@
+{
+  "test_class": "org.apache.commons.math3.transform.FastFourierTransformerTest",
+  "source_file": "src/test/java/org/apache/commons/math3/transform/FastFourierTransformerTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.transform.FastFourierTransformerTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/transform/FastFourierTransformerTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.transform;\n\nimport java.util.Random;\n\nimport org.apache.commons.math3.analysis.SinFunction;\nimport org.apache.commons.math3.analysis.UnivariateFunction;\nimport org.apache.commons.math3.analysis.function.Sin;\nimport org.apache.commons.math3.analysis.function.Sinc;\nimport org.apache.commons.math3.complex.Complex;\nimport org.apache.commons.math3.exception.MathIllegalArgumentException;\nimport org.apache.commons.math3.exception.NotStrictlyPositiveException;\nimport org.apache.commons.math3.exception.NumberIsTooLargeException;\nimport org.apache.commons.math3.util.FastMath;\nimport org.junit.Assert;\nimport org.junit.Test;\n\n/**\n * Test case for fast Fourier transformer.\n * <p>\n * FFT algorithm is exact, the small tolerance number is used only\n * to account for round-off errors.\n *\n * @version $Id$\n */\npublic final class FastFourierTransformerTest {\n    /** The common seed of all random number generators used in this test. */\n    private final static long SEED = 20110111L;\n\n    /*\n     * Precondition checks.\n     */\n\n    @Test\n    public void testTransformComplexSizeNotAPowerOfTwo() {\n        final int n = 127;\n        final Complex[] x = createComplexData(n);\n        final DftNormalization[] norm;\n        norm = DftNormalization.values();\n        final TransformType[] type;\n        type = TransformType.values();\n        for (int i = 0; i < norm.length; i++) {\n            for (int j = 0; j < type.length; j++) {\n                final FastFourierTransformer fft;\n                fft = new FastFourierTransformer(norm[i]);\n                try {\n                    fft.transform(x, type[j]);\n                    Assert.fail(norm[i] + \", \" + type[j] +\n                        \": MathIllegalArgumentException was expected\");\n                } catch (MathIllegalArgumentException e) {\n                    // Expected behaviour\n                }\n            }\n        }\n    }\n\n    @Test\n    public void testTransformRealSizeNotAPowerOfTwo() {\n        final int n = 127;\n        final double[] x = createRealData(n);\n        final DftNormalization[] norm;\n        norm = DftNormalization.values();\n        final TransformType[] type;\n        type = TransformType.values();\n        for (int i = 0; i < norm.length; i++) {\n        for (int i = 0; i < n; i++) {\n            final String msg;\n            msg = String.format(\"%s, %s, %d, %d\", normalization, type, n, i);\n            final double re = s * expected[i].getReal();\n            Assert.assertEquals(msg, re, actual[i].getReal(),\n                tol * FastMath.abs(re));\n            final double im = s * expected[i].getImaginary();\n            Assert.assertEquals(msg, im, actual[i].getImaginary(), tol *\n                FastMath.abs(re));\n        }\n    }\n\n    private static void doTestTransformReal(final int n, final double tol,\n        final DftNormalization normalization,\n        final TransformType type) {\n        final FastFourierTransformer fft;\n        fft = new FastFourierTransformer(normalization);\n        final double[] x = createRealData(n);\n        final Complex[] xc = new Complex[n];\n        for (int i = 0; i < n; i++) {\n            xc[i] = new Complex(x[i], 0.0);\n        }\n        final Complex[] expected;\n        final double s;\n        if (type == TransformType.FORWARD) {\n            expected = dft(xc, -1);\n            if (normalization == DftNormalization.STANDARD) {\n                s = 1.0;\n            } else {\n                s = 1.0 / FastMath.sqrt(n);\n            }\n        } else {\n            expected = dft(xc, 1);\n            if (normalization == DftNormalization.STANDARD) {\n                s = 1.0 / n;\n            } else {\n                s = 1.0 / FastMath.sqrt(n);\n            }\n        }\n        final Complex[] actual = fft.transform(x, type);\n        for (int i = 0; i < n; i++) {\n            final String msg;\n            msg = String.format(\"%s, %s, %d, %d\", normalization, type, n, i);\n            final double re = s * expected[i].getReal();\n            Assert.assertEquals(msg, re, actual[i].getReal(),\n                tol * FastMath.abs(re));\n            final double im = s * expected[i].getImaginary();\n            Assert.assertEquals(msg, im, actual[i].getImaginary(), tol *\n                FastMath.abs(re));\n        }\n    }\n\n    private static void doTestTransformFunction(final UnivariateFunction f,\n        final double min, final double max, int n, final double tol,\n        final DftNormalization normalization,\n        final TransformType type) {\n        final FastFourierTransformer fft;\n        fft = new FastFourierTransformer(normalization);\n        final Complex[] x = new Complex[n];\n        for (int i = 0; i < n; i++) {\n            final double t = min + i * (max - min) / n;\n            x[i] = new Complex(f.value(t));\n        }\n        final Complex[] expected;\n        final double s;\n        if (type == TransformType.FORWARD) {\n            expected = dft(x, -1);\n            if (normalization == DftNormalization.STANDARD) {\n                s = 1.0;\n            } else {\n                s = 1.0 / FastMath.sqrt(n);\n            }\n        } else {\n            expected = dft(x, 1);\n            if (normalization == DftNormalization.STANDARD) {\n                s = 1.0 / n;\n            } else {\n                s = 1.0 / FastMath.sqrt(n);\n            }\n        }\n        final Complex[] actual = fft.transform(f, min, max, n, type);\n        for (int i = 0; i < n; i++) {\n            final String msg = String.format(\"%d, %d\", n, i);\n            final double re = s * expected[i].getReal();\n            Assert.assertEquals(msg, re, actual[i].getReal(),\n                tol * FastMath.abs(re));\n            final double im = s * expected[i].getImaginary();\n            Assert.assertEquals(msg, im, actual[i].getImaginary(), tol *\n                FastMath.abs(re));\n        }\n    }\n\n    /*\n     * Tests of standard transform (when data is valid).\n     */\n\n    @Test\n    public void testTransformComplex() {\n        final DftNormalization[] norm;\n        norm = DftNormalization.values();\n        final TransformType[] type;\n        type = TransformType.values();\n        for (int i = 0; i < norm.length; i++) {\n            for (int j = 0; j < type.length; j++) {\n                doTestTransformComplex(2, 1.0E-15, norm[i], type[j]);\n                doTestTransformComplex(4, 1.0E-14, norm[i], type[j]);\n                doTestTransformComplex(8, 1.0E-14, norm[i], type[j]);\n                doTestTransformComplex(16, 1.0E-13, norm[i], type[j]);\n                doTestTransformComplex(32, 1.0E-13, norm[i], type[j]);\n                doTestTransformComplex(64, 1.0E-12, norm[i], type[j]);\n                doTestTransformComplex(128, 1.0E-12, norm[i], type[j]);\n            }\n        }\n    }\n\n    @Test\n    public void testStandardTransformReal() {\n        final DftNormalization[] norm;\n        norm = DftNormalization.values();\n        final TransformType[] type;\n        type = TransformType.values();\n        for (int i = 0; i < norm.length; i++) {\n            for (int j = 0; j < type.length; j++) {\n                doTestTransformReal(2, 1.0E-15, norm[i], type[j]);\n                doTestTransformReal(4, 1.0E-14, norm[i], type[j]);\n                doTestTransformReal(8, 1.0E-14, norm[i], type[j]);\n                doTestTransformReal(16, 1.0E-13, norm[i], type[j]);\n                doTestTransformReal(32, 1.0E-13, norm[i], type[j]);\n                doTestTransformReal(64, 1.0E-13, norm[i], type[j]);\n                doTestTransformReal(128, 1.0E-11, norm[i], type[j]);\n            }\n        }\n    }\n\n    @Test\n    public void testStandardTransformFunction() {\n        final UnivariateFunction f = new Sinc();\n        final double min = -FastMath.PI;\n        final double max = FastMath.PI;\n        final DftNormalization[] norm;\n",
+  "compaction": {
+    "source_lines": 564,
+    "mode": "windows",
+    "windows_total": 10,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        240,
+        320
+      ],
+      [
+        300,
+        380
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 29.70711234113424
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 9.167377301469948
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 9.766817100249465
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 29.70711234113424
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 6.172526329596531
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 2.820923481133648
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 5.356549295664583
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 9.167377301469948
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 9.766817100249465
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 7.83251511223528
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 5.528182910856229
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 1.2853682558527275
+      },
+      {
+        "start": 540,
+        "end": 564,
+        "score": 0.06434676297530637
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8786,
+  "representation_chars": 8786,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.filter.NullConversionsSkipTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/filter/NullConversionsSkipTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.filter.NullConversionsSkipTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/filter/NullConversionsSkipTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser.filter;\n\nimport com.fasterxml.jackson.annotation.JsonSetter;\nimport com.fasterxml.jackson.annotation.Nulls;\nimport com.fasterxml.jackson.databind.*;\n\n// for [databind#1402]; configurable null handling, specifically with SKIP\npublic class NullConversionsSkipTest extends BaseMapTest\n{\n    static class NullSkipField {\n        public String nullsOk = \"a\";\n\n        @JsonSetter(nulls=Nulls.SKIP)\n        public String noNulls = \"b\";\n    }\n\n    static class NullSkipMethod {\n        String _nullsOk = \"a\";\n        String _noNulls = \"b\";\n\n        public void setNullsOk(String v) {\n            _nullsOk = v;\n        }\n\n        @JsonSetter(nulls=Nulls.SKIP)\n        public void setNoNulls(String v) {\n            _noNulls = v;\n        }\n    }\n    \n    static class StringValue {\n        String value = \"default\";\n\n        public void setValue(String v) {\n            value = v;\n        }\n    }\n\n    // for [databind#2015]\n    enum NUMS2015 {\n        ONE, TWO\n    }\n\n    public static class Pojo2015 {\n        @JsonSetter(value = \"number\", nulls = Nulls.SKIP)\n        NUMS2015 number = NUMS2015.TWO;\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods, straight annotation\n    /**********************************************************\n     */\n\n    private final ObjectMapper MAPPER = newObjectMapper();\n\n    public void testSkipNullField() throws Exception\n    {\n        // first, ok if assigning non-null to not-nullable, null for nullable\n        NullSkipField result = MAPPER.readValue(aposToQuotes(\"{'noNulls':'foo', 'nullsOk':null}\"),\n                NullSkipField.class);\n        assertEquals(\"foo\", result.noNulls);\n        assertNull(result.nullsOk);\n\n        // and then see that nulls are not ok for non-nullable\n        result = MAPPER.readValue(aposToQuotes(\"{'noNulls':null}\"),\n                NullSkipField.class);\n        assertEquals(\"b\", result.noNulls);\n        assertEquals(\"a\", result.nullsOk);\n    }\n\n    public void testSkipNullMethod() throws Exception\n    {\n        NullSkipMethod result = MAPPER.readValue(aposToQuotes(\"{'noNulls':'foo', 'nullsOk':null}\"),\n                NullSkipMethod.class);\n        assertEquals(\"foo\", result._noNulls);\n        assertNull(result._nullsOk);\n\n        result = MAPPER.readValue(aposToQuotes(\"{'noNulls':null}\"),\n                NullSkipMethod.class);\n        assertEquals(\"b\", result._noNulls);\n        assertEquals(\"a\", result._nullsOk);\n    }\n\n    // for [databind#2015]\n    public void testEnumAsNullThenSkip() throws Exception\n    {    \n        Pojo2015 p = MAPPER.readerFor(Pojo2015.class)\n                .with(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL)\n                .readValue(\"{\\\"number\\\":\\\"THREE\\\"}\"); \n        assertEquals(NUMS2015.TWO, p.number);\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods, defaulting\n    /**********************************************************\n     */\n    \n    public void testSkipNullWithDefaults() throws Exception\n    {\n        String json = aposToQuotes(\"{'value':null}\");\n        StringValue result = MAPPER.readValue(json, StringValue.class);\n        assertNull(result.value);\n\n        ObjectMapper mapper = newObjectMapper();\n        mapper.configOverride(String.class)\n            .setSetterInfo(JsonSetter.Value.forValueNulls(Nulls.SKIP));\n        result = mapper.readValue(json, StringValue.class);\n        assertEquals(\"default\", result.value);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 112,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3711,
+  "representation_chars": 3711,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

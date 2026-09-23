@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.node.TestMissingNode",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/node/TestMissingNode.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.node.TestMissingNode\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/node/TestMissingNode.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.node;\n\nimport java.io.StringReader;\nimport java.util.Iterator;\n\nimport com.fasterxml.jackson.core.JsonToken;\nimport com.fasterxml.jackson.databind.JsonNode;\n\npublic class TestMissingNode extends NodeTestBase\n{\n    public void testMissing()\n    {\n        MissingNode n = MissingNode.getInstance();\n        assertTrue(n.isMissingNode());\n        assertEquals(JsonToken.NOT_AVAILABLE, n.asToken());\n        assertEquals(\"\", n.asText());\n        assertStandardEquals(n);\n        assertEquals(\"\", n.toString());\n\n        assertNodeNumbersForNonNumeric(n);\n\n        assertTrue(n.asBoolean(true));\n        assertEquals(4, n.asInt(4));\n        assertEquals(5L, n.asLong(5));\n        assertEquals(0.25, n.asDouble(0.25));\n\n        assertEquals(\"foo\", n.asText(\"foo\"));\n    }\n\n    /**\n     * Let's also verify behavior of \"MissingNode\" -- one needs to be able\n     * to traverse such bogus nodes with appropriate methods.\n     */\n    @SuppressWarnings(\"unused\")\n    public void testMissingViaMapper() throws Exception\n    {\n        String JSON = \"[ { }, [ ] ]\";\n        JsonNode result = objectMapper().readTree(new StringReader(JSON));\n\n        assertTrue(result.isContainerNode());\n        assertTrue(result.isArray());\n        assertEquals(2, result.size());\n\n        int count = 0;\n        for (JsonNode node : result) {\n            ++count;\n        }\n        assertEquals(2, count);\n\n        Iterator<JsonNode> it = result.iterator();\n\n        JsonNode onode = it.next();\n        assertTrue(onode.isContainerNode());\n        assertTrue(onode.isObject());\n        assertEquals(0, onode.size());\n        assertFalse(onode.isMissingNode()); // real node\n        assertNull(onode.textValue());\n\n        // how about dereferencing?\n        assertNull(onode.get(0));\n        JsonNode dummyNode = onode.path(0);\n        assertNotNull(dummyNode);\n        assertTrue(dummyNode.isMissingNode());\n        assertNull(dummyNode.get(3));\n        assertNull(dummyNode.get(\"whatever\"));\n        JsonNode dummyNode2 = dummyNode.path(98);\n        assertNotNull(dummyNode2);\n        assertTrue(dummyNode2.isMissingNode());\n        JsonNode dummyNode3 = dummyNode.path(\"field\");\n        assertNotNull(dummyNode3);\n        assertTrue(dummyNode3.isMissingNode());\n\n        // and same for the array node\n\n        JsonNode anode = it.next();\n        assertTrue(anode.isContainerNode());\n        assertTrue(anode.isArray());\n        assertFalse(anode.isMissingNode()); // real node\n        assertEquals(0, anode.size());\n\n        assertNull(anode.get(0));\n        dummyNode = anode.path(0);\n        assertNotNull(dummyNode);\n        assertTrue(dummyNode.isMissingNode());\n        assertNull(dummyNode.get(0));\n        assertNull(dummyNode.get(\"myfield\"));\n        dummyNode2 = dummyNode.path(98);\n        assertNotNull(dummyNode2);\n        assertTrue(dummyNode2.isMissingNode());\n        dummyNode3 = dummyNode.path(\"f\");\n        assertNotNull(dummyNode3);\n        assertTrue(dummyNode3.isMissingNode());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 94,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3186,
+  "representation_chars": 3186,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.convert.TestBeanConversions",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/convert/TestBeanConversions.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.convert.TestBeanConversions\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/convert/TestBeanConversions.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.convert;\n\nimport java.util.LinkedHashMap;\nimport java.util.Map;\n\nimport com.fasterxml.jackson.core.JsonParser;\nimport com.fasterxml.jackson.core.JsonProcessingException;\nimport com.fasterxml.jackson.core.TreeNode;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\nimport com.fasterxml.jackson.databind.annotation.JsonSerialize;\nimport com.fasterxml.jackson.databind.node.ObjectNode;\nimport com.fasterxml.jackson.databind.util.StdConverter;\n\n/**\n * Tests for various conversions, especially ones using\n * {@link ObjectMapper#convertValue(Object, Class)}.\n */\npublic class TestBeanConversions\n    extends com.fasterxml.jackson.databind.BaseMapTest\n{\n    static class PointZ {\n        public int x, y;\n\n        public int z = -13;\n\n        public PointZ() { }\n        public PointZ(int a, int b, int c)\n        {\n            x = a;\n            y = b;\n            z = c;\n        }\n    }\n\n    static class PointStrings {\n        public final String x, y;\n\n        public PointStrings(String x, String y) {\n            this.x = x;\n            this.y = y;\n        }\n    }\n\n    public static class BooleanBean {\n        public boolean boolProp;\n    }\n\n    static class WrapperBean {\n        public BooleanBean x;\n    }\n\n    static class ObjectWrapper\n    {\n        private Object data;\n\n        public ObjectWrapper() { }\n        public ObjectWrapper(Object o) { data = o; }\n\n        public Object getData() { return data; }\n        public void setData(Object data) { this.data = data; }\n    }\n\n    static class Leaf {\n        public int value;\n\n        public Leaf() { }\n        public Leaf(int v) { value = v; }\n    }\n    \n    // [databind#288]\n\n    @JsonSerialize(converter = ConvertingBeanConverter.class)\n    static class ConvertingBean { \n       public int x, y; \n       public ConvertingBean(int v1, int v2) {\n          x = v1;\n          y = v2;\n       }\n    }\n\n    public static class DummyBean {\n       public final int a, b;\n       public DummyBean(int v1, int v2) {\n          a = v1 * 2;\n          b = v2 * 2;\n       }\n    }\n\n    static class ConvertingBeanConverter extends StdConverter<ConvertingBean, DummyBean>\n    {\n       @Override\n       public DummyBean convert(ConvertingBean cb) {\n          return new DummyBean(cb.x, cb.y);\n       }\n    }\n    \n    @JsonDeserialize(using = NullBeanDeserializer.class)\n    static class NullBean {\n        public static final NullBean NULL_INSTANCE = new NullBean();\n    }\n    \n    static class NullBeanDeserializer extends JsonDeserializer<NullBean> {\n        @Override\n        public NullBean getNullValue(final DeserializationContext context) {\n            return NullBean.NULL_INSTANCE;\n        }\n        \n        @Override\n        public NullBean deserialize(final JsonParser parser, final DeserializationContext context) {\n            throw new UnsupportedOperationException();\n        }\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n    \n    private final ObjectMapper MAPPER = new ObjectMapper();\n\n    public void testBeanConvert()\n    {\n        // should have no problems convert between compatible beans...\n        PointStrings input = new PointStrings(\"37\", \"-9\");\n        PointZ point = MAPPER.convertValue(input, PointZ.class);\n        assertEquals(37, point.x);\n        assertEquals(-9, point.y);\n        // z not included in input, will be whatever default constructor provides\n        assertEquals(-13, point.z);\n    }\n    \n    // For [JACKSON-371]; verify that we know property that caused issue...\n    // (note: not optimal place for test, but will have to do for now)\n    public void testErrorReporting() throws Exception\n    {\n        //String json = \"{\\\"boolProp\\\":\\\"oops\\\"}\";\n        // First: unknown property\n        try {\n            MAPPER.readValue(\"{\\\"unknownProp\\\":true}\", BooleanBean.class);\n        } catch (JsonProcessingException e) {\n            verifyException(e, \"unknownProp\");\n        }\n\n        // then bad conversion\n        try {\n            MAPPER.readValue(\"{\\\"boolProp\\\":\\\"foobar\\\"}\", BooleanBean.class);\n        } catch (JsonMappingException e) {\n            verifyException(e, \"Cannot deserialize value of type `boolean` from String\");\n        }\n    }\n\n    public void testIssue458() throws Exception\n    {\n        ObjectWrapper a = new ObjectWrapper(\"foo\");\n        ObjectWrapper b = new ObjectWrapper(a);\n        ObjectWrapper b2 = MAPPER.convertValue(b, ObjectWrapper.class);\n        ObjectWrapper a2 = MAPPER.convertValue(b2.getData(), ObjectWrapper.class);\n        assertEquals(\"foo\", a2.getData());\n    }\n\n    // should work regardless of wrapping...\n    public void testWrapping() throws Exception\n    {\n        ObjectMapper wrappingMapper = new ObjectMapper();\n        wrappingMapper.enable(DeserializationFeature.UNWRAP_ROOT_VALUE);\n        wrappingMapper.enable(SerializationFeature.WRAP_ROOT_VALUE);\n\n        // conversion is ok, even if it's bogus one\n        _convertAndVerifyPoint(wrappingMapper);\n\n        // also: ok to have mismatched settings, since as per [JACKSON-710], should\n        // not actually use wrapping internally in these cases\n        wrappingMapper = new ObjectMapper();\n        wrappingMapper.enable(DeserializationFeature.UNWRAP_ROOT_VALUE);\n        wrappingMapper.disable(SerializationFeature.WRAP_ROOT_VALUE);\n        _convertAndVerifyPoint(wrappingMapper);\n\n        wrappingMapper = new ObjectMapper();\n        wrappingMapper.disable(DeserializationFeature.UNWRAP_ROOT_VALUE);\n        wrappingMapper.enable(SerializationFeature.WRAP_ROOT_VALUE);\n        _convertAndVerifyPoint(wrappingMapper);\n    }\n\n    // [Issue-11]: simple cast, for POJOs etc\n    public void testConvertUsingCast() throws Exception\n    {\n        String str = new String(\"foo\");\n        CharSequence seq = str;\n        String result = MAPPER.convertValue(seq, String.class);\n        // should just cast...\n        assertSame(str, result);\n    }\n    \n    // [Issue-11]: simple cast, for Tree\n    public void testNodeConvert() throws Exception\n    {\n        ObjectNode src = (ObjectNode) MAPPER.readTree(\"{}\");\n        TreeNode node = src;\n",
+  "compaction": {
+    "source_lines": 289,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 14.441380200595509
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 9.440075046370076
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 7.973157999112878
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 14.441380200595509
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 9.440075046370076
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 7.973157999112878
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 3.8996641818639297
+      },
+      {
+        "start": 240,
+        "end": 289,
+        "score": 4.724319128971013
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 6435,
+  "representation_chars": 6435,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

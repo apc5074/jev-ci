@@ -1,0 +1,25 @@
+{
+  "test_class": "org.jsoup.DataUtilTest",
+  "source_file": "src/test/java/org/jsoup/DataUtilTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.jsoup.DataUtilTest\n\nSOURCE FILE:\nsrc/test/java/org/jsoup/DataUtilTest.java\n\nTEST SOURCE:\npackage org.jsoup;\n\nimport org.junit.Test;\n\nimport static org.junit.Assert.*;\n\npublic class DataUtilTest {\n    @Test public void testCharset() {\n        assertEquals(\"UTF-8\", DataUtil.getCharsetFromContentType(\"text/html;charset=utf-8 \"));\n        assertEquals(\"UTF-8\", DataUtil.getCharsetFromContentType(\"text/html; charset=UTF-8\"));\n        assertEquals(\"ISO-8859-1\", DataUtil.getCharsetFromContentType(\"text/html; charset=ISO-8859-1\"));\n        assertEquals(null, DataUtil.getCharsetFromContentType(\"text/html\"));\n        assertEquals(null, DataUtil.getCharsetFromContentType(null));\n    }\n}\n",
+  "compaction": {
+    "source_lines": 15,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 700,
+  "representation_chars": 700,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

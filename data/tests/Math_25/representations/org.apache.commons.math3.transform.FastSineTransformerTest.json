@@ -1,0 +1,81 @@
+{
+  "test_class": "org.apache.commons.math3.transform.FastSineTransformerTest",
+  "source_file": "src/test/java/org/apache/commons/math3/transform/FastSineTransformerTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.transform.FastSineTransformerTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/transform/FastSineTransformerTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.transform;\n\nimport java.util.Arrays;\nimport java.util.Collection;\n\nimport org.apache.commons.math3.analysis.SinFunction;\nimport org.apache.commons.math3.analysis.UnivariateFunction;\nimport org.apache.commons.math3.analysis.function.Sinc;\nimport org.apache.commons.math3.exception.MathIllegalArgumentException;\nimport org.apache.commons.math3.exception.MathIllegalStateException;\nimport org.apache.commons.math3.util.FastMath;\nimport org.junit.Assert;\nimport org.junit.Test;\nimport org.junit.runner.RunWith;\nimport org.junit.runners.Parameterized;\nimport org.junit.runners.Parameterized.Parameters;\n\n/**\n * Test case for fast sine transformer.\n * <p>\n * FST algorithm is exact, the small tolerance number is used only\n * to account for round-off errors.\n *\n * @version $Id$\n */\n@RunWith(value = Parameterized.class)\npublic final class FastSineTransformerTest extends RealTransformerAbstractTest {\n\n    private final DstNormalization normalization;\n\n    private final int[] invalidDataSize;\n\n    private final double[] relativeTolerance;\n\n    private final int[] validDataSize;\n\n    public FastSineTransformerTest(final DstNormalization normalization) {\n        this.normalization = normalization;\n        this.validDataSize = new int[] {\n            1, 2, 4, 8, 16, 32, 64, 128\n        };\n        this.invalidDataSize = new int[] {\n            129\n        };\n        this.relativeTolerance = new double[] {\n            1E-15, 1E-15, 1E-14, 1E-14, 1E-13, 1E-12, 1E-11, 1E-11\n        };\n    }\n\n    /**\n     * Returns an array containing {@code true, false} in order to check both\n     * standard and orthogonal DSTs.\n     *\n     * @return an array of parameters for this parameterized test\n     */\n    @Parameters\n    public static Collection<Object[]> data() {\n        final DstNormalization[] normalization = DstNormalization.values();\n        final Object[][] data = new DstNormalization[normalization.length][1];\n        for (int i = 0; i < normalization.length; i++) {\n            data[i][0] = normalization[i];\n        }\n        return Arrays.asList(data);\n    }\n    int getValidDataSize(final int i) {\n        return validDataSize[i];\n    }\n\n    @Override\n    UnivariateFunction getValidFunction() {\n        return new Sinc();\n    }\n\n    @Override\n    double getValidLowerBound() {\n        return 0.0;\n    }\n\n    @Override\n    double getValidUpperBound() {\n        return FastMath.PI;\n    }\n\n    @Override\n    double[] transform(final double[] x, final TransformType type) {\n        final int n = x.length;\n        final double[] y = new double[n];\n        final double[] sin = new double[2 * n];\n        for (int i = 0; i < sin.length; i++) {\n            sin[i] = FastMath.sin(FastMath.PI * i / (double) n);\n        }\n        for (int j = 0; j < n; j++) {\n            double yj = 0.0;\n            for (int i = 0; i < n; i++) {\n                yj += x[i] * sin[(i * j) % sin.length];\n            }\n            y[j] = yj;\n        }\n        final double s;\n        if (type == TransformType.FORWARD) {\n            if (normalization == DstNormalization.STANDARD_DST_I) {\n                s = 1.0;\n            } else if (normalization == DstNormalization.ORTHOGONAL_DST_I) {\n                s = FastMath.sqrt(2.0 / (double) n);\n            } else {\n                throw new MathIllegalStateException();\n            }\n        } else if (type == TransformType.INVERSE) {\n            if (normalization == DstNormalization.STANDARD_DST_I) {\n                s = 2.0 / n;\n            } else if (normalization == DstNormalization.ORTHOGONAL_DST_I) {\n                s = FastMath.sqrt(2.0 / (double) n);\n            } else {\n                throw new MathIllegalStateException();\n            }\n        } else {\n            /*\n             * Should never occur. This clause is a safeguard in case other\n             * types are used to TransformType (which should not be done).\n             */\n            throw new MathIllegalStateException();\n        }\n        TransformUtils.scaleArray(y, s);\n        return y;\n    }\n\n    /*\n     * Additional tests.\n     */\n    @Test\n    public void testTransformRealFirstElementNotZero() {\n        final TransformType[] type = TransformType.values();\n        final double[] data = new double[] {\n            1.0, 1.0, 1.0, 1.0\n        };\n        final RealTransformer transformer = createRealTransformer();\n        for (int j = 0; j < type.length; j++) {\n            try {\n                transformer.transform(data, type[j]);\n                Assert.fail(type[j].toString());\n            } catch (MathIllegalArgumentException e) {\n                // Expected: do nothing\n            }\n        }\n    }\n\n    /*\n     * Additional (legacy) tests.\n     */\n\n    /**\n     * Test of transformer for the ad hoc data.\n     */\n    @Test\n    public void testAdHocData() {\n        FastSineTransformer transformer;\n        transformer = new FastSineTransformer(DstNormalization.STANDARD_DST_I);\n        double result[], tolerance = 1E-12;\n\n        double x[] = { 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 };\n        double y[] = { 0.0, 20.1093579685034, -9.65685424949238,\n                       5.98642305066196, -4.0, 2.67271455167720,\n                      -1.65685424949238, 0.795649469518633 };\n\n        result = transformer.transform(x, TransformType.FORWARD);\n        for (int i = 0; i < result.length; i++) {\n            Assert.assertEquals(y[i], result[i], tolerance);\n        }\n\n        result = transformer.transform(y, TransformType.INVERSE);\n        for (int i = 0; i < result.length; i++) {\n            Assert.assertEquals(x[i], result[i], tolerance);\n        }\n\n        TransformUtils.scaleArray(x, FastMath.sqrt(x.length / 2.0));\n        transformer = new FastSineTransformer(DstNormalization.ORTHOGONAL_DST_I);\n\n        result = transformer.transform(y, TransformType.FORWARD);\n        for (int i = 0; i < result.length; i++) {\n            Assert.assertEquals(x[i], result[i], tolerance);\n        }\n\n        result = transformer.transform(x, TransformType.INVERSE);\n        for (int i = 0; i < result.length; i++) {\n            Assert.assertEquals(y[i], result[i], tolerance);\n        }\n    }\n\n    /**\n     * Test of transformer for the sine function.\n     */\n    @Test\n    public void testSinFunction() {\n        UnivariateFunction f = new SinFunction();\n        FastSineTransformer transformer;\n        transformer = new FastSineTransformer(DstNormalization.STANDARD_DST_I);\n        double min, max, result[], tolerance = 1E-12; int N = 1 << 8;\n\n        min = 0.0; max = 2.0 * FastMath.PI;\n        result = transformer.transform(f, min, max, N, TransformType.FORWARD);\n        Assert.assertEquals(N >> 1, result[2], tolerance);\n        for (int i = 0; i < N; i += (i == 1 ? 2 : 1)) {\n            Assert.assertEquals(0.0, result[i], tolerance);\n        }\n",
+  "compaction": {
+    "source_lines": 301,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.111922497048543
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 13.46529769572495
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 5.893692388483315
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.111922497048543
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 4.327480365533895
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 13.46529769572495
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 5.893692388483315
+      },
+      {
+        "start": 240,
+        "end": 301,
+        "score": 5.627755005679403
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7798,
+  "representation_chars": 7798,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

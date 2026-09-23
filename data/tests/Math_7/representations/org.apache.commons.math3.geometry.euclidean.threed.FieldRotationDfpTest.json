@@ -1,0 +1,116 @@
+{
+  "test_class": "org.apache.commons.math3.geometry.euclidean.threed.FieldRotationDfpTest",
+  "source_file": "src/test/java/org/apache/commons/math3/geometry/euclidean/threed/FieldRotationDfpTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.geometry.euclidean.threed.FieldRotationDfpTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/geometry/euclidean/threed/FieldRotationDfpTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math3.geometry.euclidean.threed;\n\nimport org.apache.commons.math3.dfp.Dfp;\nimport org.apache.commons.math3.dfp.DfpField;\nimport org.apache.commons.math3.exception.MathArithmeticException;\nimport org.apache.commons.math3.exception.MathIllegalArgumentException;\nimport org.apache.commons.math3.random.UnitSphereRandomVectorGenerator;\nimport org.apache.commons.math3.random.Well1024a;\nimport org.apache.commons.math3.util.FastMath;\nimport org.apache.commons.math3.util.MathUtils;\nimport org.junit.Assert;\nimport org.junit.Test;\n\n\npublic class FieldRotationDfpTest {\n\n    @Test\n    public void testIdentity() {\n\n        FieldRotation<Dfp> r = createRotation(1, 0, 0, 0, false);\n        checkVector(r.applyTo(createVector(1, 0, 0)), createVector(1, 0, 0));\n        checkVector(r.applyTo(createVector(0, 1, 0)), createVector(0, 1, 0));\n        checkVector(r.applyTo(createVector(0, 0, 1)), createVector(0, 0, 1));\n        checkAngle(r.getAngle(), 0);\n\n        r = createRotation(-1, 0, 0, 0, false);\n        checkVector(r.applyTo(createVector(1, 0, 0)), createVector(1, 0, 0));\n        checkVector(r.applyTo(createVector(0, 1, 0)), createVector(0, 1, 0));\n        checkVector(r.applyTo(createVector(0, 0, 1)), createVector(0, 0, 1));\n        checkAngle(r.getAngle(), 0);\n\n        r = createRotation(42, 0, 0, 0, true);\n        checkVector(r.applyTo(createVector(1, 0, 0)), createVector(1, 0, 0));\n        checkVector(r.applyTo(createVector(0, 1, 0)), createVector(0, 1, 0));\n        checkVector(r.applyTo(createVector(0, 0, 1)), createVector(0, 0, 1));\n        checkAngle(r.getAngle(), 0);\n\n    }\n\n    @Test\n    public void testAxisAngle() throws MathIllegalArgumentException {\n\n        FieldRotation<Dfp> r = new FieldRotation<Dfp>(createAxis(10, 10, 10), createAngle(2 * FastMath.PI / 3));\n        checkVector(r.applyTo(createVector(1, 0, 0)), createVector(0, 1, 0));\n        checkVector(r.applyTo(createVector(0, 1, 0)), createVector(0, 0, 1));\n        checkVector(r.applyTo(createVector(0, 0, 1)), createVector(1, 0, 0));\n        double s = 1 / FastMath.sqrt(3);\n        checkVector(r.getAxis(), createVector(s, s, s));\n        checkAngle(r.getAngle(), 2 * FastMath.PI / 3);\n\n        try {\n            new FieldRotation<Dfp>(createAxis(0, 0, 0), createAngle(2 * FastMath.PI / 3));\n            Assert.fail(\"an exception should have been thrown\");\n        } catch (MathIllegalArgumentException e) {\n        }\n\n        r = new FieldRotation<Dfp>(createAxis(0, 0, 1), createAngle(1.5 * FastMath.PI));\n        checkVector(r.getAxis(), createVector(0, 0, -1));\n        checkAngle(r.getAngle(), 0.5 * FastMath.PI);\n\n        r = new FieldRotation<Dfp>(createAxis(0, 1, 0), createAngle(FastMath.PI));\n        checkVector(r.getAxis(), createVector(0, 1, 0));\n        checkAngle(r.getAngle(), FastMath.PI);\n        double d02 = m2[0][2] - m3[0][2].getReal();\n        double d10 = m2[1][0] - m3[1][0].getReal();\n        double d11 = m2[1][1] - m3[1][1].getReal();\n        double d12 = m2[1][2] - m3[1][2].getReal();\n        double d20 = m2[2][0] - m3[2][0].getReal();\n        double d21 = m2[2][1] - m3[2][1].getReal();\n        double d22 = m2[2][2] - m3[2][2].getReal();\n\n        Assert.assertTrue(FastMath.abs(d00) < 6.0e-6);\n        Assert.assertTrue(FastMath.abs(d01) < 6.0e-6);\n        Assert.assertTrue(FastMath.abs(d02) < 6.0e-6);\n        Assert.assertTrue(FastMath.abs(d10) < 6.0e-6);\n        Assert.assertTrue(FastMath.abs(d11) < 6.0e-6);\n        Assert.assertTrue(FastMath.abs(d12) < 6.0e-6);\n        Assert.assertTrue(FastMath.abs(d20) < 6.0e-6);\n        Assert.assertTrue(FastMath.abs(d21) < 6.0e-6);\n        Assert.assertTrue(FastMath.abs(d22) < 6.0e-6);\n\n        Assert.assertTrue(FastMath.abs(d00) > 4.0e-7);\n        Assert.assertTrue(FastMath.abs(d01) > 4.0e-7);\n        Assert.assertTrue(FastMath.abs(d02) > 4.0e-7);\n        Assert.assertTrue(FastMath.abs(d10) > 4.0e-7);\n        Assert.assertTrue(FastMath.abs(d11) > 4.0e-7);\n        Assert.assertTrue(FastMath.abs(d12) > 4.0e-7);\n        Assert.assertTrue(FastMath.abs(d20) > 4.0e-7);\n        Assert.assertTrue(FastMath.abs(d21) > 4.0e-7);\n        Assert.assertTrue(FastMath.abs(d22) > 4.0e-7);\n\n        for (int i = 0; i < 3; ++i) {\n            for (int j = 0; j < 3; ++j) {\n                double m3tm3 = m3[i][0].getReal() * m3[j][0].getReal() +\n                               m3[i][1].getReal() * m3[j][1].getReal() +\n                               m3[i][2].getReal() * m3[j][2].getReal();\n                if (i == j) {\n                    Assert.assertTrue(FastMath.abs(m3tm3 - 1.0) < 1.0e-10);\n                } else {\n                    Assert.assertTrue(FastMath.abs(m3tm3) < 1.0e-10);\n                }\n            }\n        }\n\n        checkVector(r.applyTo(createVector(1, 0, 0)),\n                    new FieldVector3D<Dfp>(m3[0][0], m3[1][0], m3[2][0]));\n        checkVector(r.applyTo(createVector(0, 1, 0)),\n                    new FieldVector3D<Dfp>(m3[0][1], m3[1][1], m3[2][1]));\n        checkVector(r.applyTo(createVector(0, 0, 1)),\n                    new FieldVector3D<Dfp>(m3[0][2], m3[1][2], m3[2][2]));\n\n        double[][] m4 = { { 1.0,  0.0,  0.0 },\n            { 0.0, -1.0,  0.0 },\n            { 0.0,  0.0, -1.0 } };\n        r = createRotation(m4, 1.0e-7);\n        checkAngle(r.getAngle(), FastMath.PI);\n\n        try {\n            double[][] m5 = { { 0.0, 0.0, 1.0 },\n                { 0.0, 1.0, 0.0 },\n                { 1.0, 0.0, 0.0 } };\n            r = createRotation(m5, 1.0e-7);\n            Assert.fail(\"got \" + r + \", should have caught an exception\");\n        } catch (NotARotationMatrixException e) {\n            // expected\n        }\n\n    }\n\n    @Test\n    public void testAngles()\n            throws CardanEulerSingularityException {\n\n        DfpField field = new DfpField(15);\n\n        RotationOrder[] CardanOrders = {\n            RotationOrder.XYZ, RotationOrder.XZY, RotationOrder.YXZ,\n            RotationOrder.YZX, RotationOrder.ZXY, RotationOrder.ZYX\n        };\n\n        for (int i = 0; i < CardanOrders.length; ++i) {\n            for (double alpha1 = 0.1; alpha1 < 6.2; alpha1 += 2.0) {\n                for (double alpha2 = -1.55; alpha2 < 1.55; alpha2 += 0.8) {\n        Assert.assertEquals(0.0, FieldVector3D.angle(v1, quat.applyTo(u1)).getReal(), 1.0e-14);\n        Assert.assertEquals(0.0, FieldVector3D.angle(v2, quat.applyTo(u2)).getReal(), 1.0e-14);\n\n    }\n\n    private void checkAngle(Dfp a1, double a2) {\n        Assert.assertEquals(a1.getReal(), MathUtils.normalizeAngle(a2, a1.getReal()), 1.0e-10);\n    }\n\n    private void checkRotationDS(FieldRotation<Dfp> r, double q0, double q1, double q2, double q3) {\n        FieldRotation<Dfp> rPrime = createRotation(q0, q1, q2, q3, false);\n        Assert.assertEquals(0, FieldRotation.distance(r, rPrime).getReal(), 1.0e-12);\n    }\n\n    private FieldRotation<Dfp> createRotation(double q0, double q1, double q2, double q3,\n                                      boolean needsNormalization) {\n        DfpField field = new DfpField(20);\n        return new FieldRotation<Dfp>(field.newDfp(q0),\n                                      field.newDfp(q1),\n                                      field.newDfp(q2),\n                                      field.newDfp(q3),\n                                      needsNormalization);\n    }\n\n    private FieldRotation<Dfp> createRotation(double[][] m, double threshold) {\n        DfpField field = new DfpField(20);\n        Dfp[][] mds = new Dfp[m.length][m[0].length];\n        for (int i = 0; i < m.length; ++i) {\n            for (int j = 0; j < m[i].length; ++j) {\n                mds[i][j] = field.newDfp(m[i][j]);\n            }\n        }\n        return new FieldRotation<Dfp>(mds, threshold);\n    }\n\n    private FieldVector3D<Dfp> createVector(double x, double y, double z) {\n        DfpField field = new DfpField(20);\n        return new FieldVector3D<Dfp>(field.newDfp(x), field.newDfp(y), field.newDfp(z));\n    }\n\n    private FieldVector3D<Dfp> createAxis(double x, double y, double z) {\n        DfpField field = new DfpField(20);\n        return new FieldVector3D<Dfp>(field.newDfp(x), field.newDfp(y), field.newDfp(z));\n    }\n\n    private Dfp createAngle(double alpha) {\n        return new DfpField(20).newDfp(alpha);\n    }\n\n    private void checkVector(FieldVector3D<Dfp> u, FieldVector3D<Dfp> v) {\n        Assert.assertEquals(u.getX().getReal(), v.getX().getReal(), 1.0e-12);\n        Assert.assertEquals(u.getY().getReal(), v.getY().getReal(), 1.0e-12);\n        Assert.assertEquals(u.getZ().getReal(), v.getZ().getReal(), 1.0e-12);\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 716,
+    "mode": "windows",
+    "windows_total": 12,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        240,
+        320
+      ],
+      [
+        660,
+        716
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 31.588878203772488
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 5.966953725987828
+      },
+      {
+        "start": 660,
+        "end": 716,
+        "score": 8.837693920274887
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 31.588878203772488
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.284328815944658
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 3.620324638271018
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 3.092993756820869
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 5.966953725987828
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 2.8624688284935313
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 4.317150493006079
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 2.2881413078368857
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 2.1045499256951175
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 2.357243734993283
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 4.7849335384213205
+      },
+      {
+        "start": 660,
+        "end": 716,
+        "score": 8.837693920274887
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9561,
+  "representation_chars": 9561,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.util.EnumValuesTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/util/EnumValuesTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.util.EnumValuesTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/util/EnumValuesTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.util;\n\nimport java.util.List;\n\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.ObjectMapper;\nimport com.fasterxml.jackson.databind.SerializationConfig;\nimport com.fasterxml.jackson.databind.SerializationFeature;\n\npublic class EnumValuesTest extends BaseMapTest\n{\n    enum ABC {\n        A(\"A\"),\n        B(\"b\"),\n        C(\"C\");\n\n        private final String desc;\n\n        private ABC(String d) { desc = d; }\n\n        @Override\n        public String toString() { return desc; }\n    }\n\n    final ObjectMapper MAPPER = new ObjectMapper();\n\n    @SuppressWarnings(\"unchecked\")\n    public void testConstructFromName() {\n        SerializationConfig cfg = MAPPER.getSerializationConfig()\n                .without(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);\n        Class<Enum<?>> enumClass = (Class<Enum<?>>)(Class<?>) ABC.class;\n        EnumValues values = EnumValues.construct(cfg, enumClass);\n        assertEquals(\"A\", values.serializedValueFor(ABC.A).toString());\n        assertEquals(\"B\", values.serializedValueFor(ABC.B).toString());\n        assertEquals(\"C\", values.serializedValueFor(ABC.C).toString());\n        assertEquals(3, values.values().size());\n        assertEquals(3, values.internalMap().size());\n    }\n\n    @SuppressWarnings(\"unchecked\")\n    public void testConstructWithToString() {\n        SerializationConfig cfg = MAPPER.getSerializationConfig()\n                .with(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);\n        Class<Enum<?>> enumClass = (Class<Enum<?>>)(Class<?>) ABC.class;\n        EnumValues values = EnumValues.construct(cfg, enumClass);\n        assertEquals(\"A\", values.serializedValueFor(ABC.A).toString());\n        assertEquals(\"b\", values.serializedValueFor(ABC.B).toString());\n        assertEquals(\"C\", values.serializedValueFor(ABC.C).toString());\n        assertEquals(3, values.values().size());\n        assertEquals(3, values.internalMap().size());\n    }\n\n    public void testEnumResolver()\n    {\n        EnumResolver enumRes = EnumResolver.constructUnsafeUsingToString(ABC.class, null);\n        assertEquals(ABC.B, enumRes.getEnum(1));\n        assertNull(enumRes.getEnum(-1));\n        assertNull(enumRes.getEnum(3));\n        assertEquals(2, enumRes.lastValidIndex());\n        List<Enum<?>> enums = enumRes.getEnums();\n        assertEquals(3, enums.size());\n        assertEquals(ABC.A, enums.get(0));\n        assertEquals(ABC.B, enums.get(1));\n        assertEquals(ABC.C, enums.get(2));\n    }\n}\n",
+  "compaction": {
+    "source_lines": 66,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2685,
+  "representation_chars": 2685,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

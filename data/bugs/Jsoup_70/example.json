@@ -1,0 +1,95 @@
+{
+  "example_id": "Jsoup_70",
+  "qualified_id": "Jsoup-70",
+  "project": "Jsoup",
+  "bug_id": "70",
+  "split": "development",
+  "status": "complete",
+  "revisions": {
+    "base": "Bf",
+    "proposed": "Bb",
+    "direction": "fixed_to_buggy",
+    "notes": "Fixed (Bf) is the working base for tests/source. Buggy (Bb) is the proposed production change."
+  },
+  "manifest": {
+    "path": "data/manifest.json",
+    "selection_seed": 20260922,
+    "defects4j_version": "3.0.1",
+    "defects4j_commit": "6d54320e0db5a357f9ab38a8e4d2e5aead7e1c09",
+    "manifest_created_at": "2026-09-22T23:16:15+00:00",
+    "manifest_git_commit": "784d3d84dd09ae7f53cb828eac65532370906c56"
+  },
+  "artifacts": {
+    "bugs": "data/bugs/Jsoup_70/",
+    "patches": "data/patches/Jsoup_70/",
+    "tests": "data/tests/Jsoup_70/"
+  },
+  "visibility": {
+    "model_visible": [
+      "data/patches/<id>/representation.txt",
+      "data/patches/<id>/patch_meta.json (truncation stats only)",
+      "data/tests/<id>/inventory.json (test class ids + source paths)",
+      "data/tests/<id>/representations/*.json (compact test source)"
+    ],
+    "private": [
+      "data/tests/<id>/labels.json",
+      "data/tests/<id>/raw/tests.trigger",
+      "data/bugs/<id>/error.json",
+      "checkout trees under data/bugs/<id>/checkouts/"
+    ]
+  },
+  "complete_requirements": [
+    "example_json",
+    "checkout_provenance",
+    "checkout_fixed",
+    "checkout_buggy",
+    "patch_meta",
+    "patch_diff",
+    "patch_representation",
+    "raw_tests_all",
+    "raw_tests_trigger",
+    "test_inventory",
+    "test_labels",
+    "representations_index"
+  ],
+  "error": null,
+  "checkouts": {
+    "fixed": "data/bugs/Jsoup_70/checkouts/fixed",
+    "buggy": "data/bugs/Jsoup_70/checkouts/buggy",
+    "provenance": "data/bugs/Jsoup_70/checkout_provenance.json"
+  },
+  "patch": {
+    "meta": "data/patches/Jsoup_70/patch_meta.json",
+    "diff": "data/patches/Jsoup_70/regression_patch.diff",
+    "representation": "data/patches/Jsoup_70/representation.txt",
+    "patch_truncated": false,
+    "original_patch_chars": 827,
+    "representation_chars": 827
+  },
+  "tests": {
+    "inventory": "data/tests/Jsoup_70/inventory.json",
+    "labels": "data/tests/Jsoup_70/labels.json",
+    "num_test_classes": 34,
+    "num_positive_classes": 1,
+    "num_trigger_methods": 1,
+    "source_resolved": 34,
+    "source_missing": 0,
+    "source_ambiguous": 0
+  },
+  "representations": {
+    "index": "data/tests/Jsoup_70/representations_index.json",
+    "dir": "data/tests/Jsoup_70/representations",
+    "num_representations": 34,
+    "source_missing": 0,
+    "representation_truncated": 0,
+    "window_compacted": 10
+  },
+  "content_hashes": {
+    "patch_representation": "42af5c06850ce44942e1464b652aac41e761b77da02e80fe9aa6f7a1764d8f01",
+    "patch_meta": "a4b64ab1724430da60f4ad1f55505bbcbbaffcb7bf388d807631e52c218276fb",
+    "test_inventory": "d2c70f451982b48e21c70418bcc46a17a6a861d10761a255fe050461efee85b8",
+    "test_labels": "4968ca0e8ae7f29bb0d1d257ee6462b9f8d1028d1b91b64b0ee79665ebc17979",
+    "representations_index": "9bf53a1024cbfbdc0b94cd4e19ae9a2e512153d45d51a5e501ccce51187ea173",
+    "checkout_provenance": "754d91072c73ef48b8a54ca7b83a29527f81480b2788e3680c0133f0ba4c23a1"
+  }
+}

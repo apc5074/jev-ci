@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.jsontype.TestPolymorphicWithDefaultImpl1565",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/jsontype/TestPolymorphicWithDefaultImpl1565.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.jsontype.TestPolymorphicWithDefaultImpl1565\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/jsontype/TestPolymorphicWithDefaultImpl1565.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.jsontype;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.databind.*;\n\npublic class TestPolymorphicWithDefaultImpl1565 extends BaseMapTest\n{\n    // [databind#1565]\n    @JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY,\n        property=\"typeInfo\",  defaultImpl = CBaseClass1565.class)\n    @JsonSubTypes({\n        @JsonSubTypes.Type(CDerived1565.class)\n    })\n    public static interface CTestInterface1565\n    {\n         public String getName();\n         public void setName(String name);\n         public String getTypeInfo();\n    }\n\n    static class CBaseClass1565 implements CTestInterface1565\n    {\n         private String mName;\n         \n         @Override\n         public String getName() {\n              return(mName);\n         }\n\n         @Override\n         public void setName(String name) {\n              mName = name;\n         }\n\n         @Override\n         public String getTypeInfo() {\n              return \"base\";\n         }\n    }\n\n    @JsonTypeName(\"derived\")\n    static class CDerived1565 extends CBaseClass1565\n    {\n         public String description;\n\n         @Override\n         public String getTypeInfo() {\n              return \"derived\";\n         }\n    }\n\n    // [databind#1861]\n    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = \"type\", defaultImpl = DefaultImpl1861.class)\n    @JsonSubTypes({\n            @JsonSubTypes.Type(name = \"a\", value = Impl1861A.class)\n    })\n    static abstract class Bean1861 {\n        public String base;\n    }\n\n    static class DefaultImpl1861 extends Bean1861 {\n        public int id;\n    }\n\n    static class Impl1861A extends Bean1861 {\n        public int valueA;\n    }\n\n    /*\n    /**********************************************************************\n    /* Test methods\n    /**********************************************************************\n     */\n\n    private final ObjectMapper MAPPER = new ObjectMapper();\n\n    // [databind#1565]\n    public void testIncompatibleDefaultImpl1565() throws Exception\n    {\n        String value = \"{\\\"typeInfo\\\": \\\"derived\\\", \\\"name\\\": \\\"John\\\", \\\"description\\\": \\\"Owner\\\"}\";\n        CDerived1565 result = MAPPER.readValue(value, CDerived1565.class);\n        assertNotNull(result);\n    }\n\n    // [databind#1861]\n    public void testWithIncompatibleTargetType1861() throws Exception\n    {\n        // Should allow deserialization even if `defaultImpl` incompatible\n        Impl1861A result = MAPPER.readValue(aposToQuotes(\"{'type':'a','base':'foo','valueA':3}\"),\n                Impl1861A.class);\n        assertNotNull(result);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 94,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2835,
+  "representation_chars": 2835,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

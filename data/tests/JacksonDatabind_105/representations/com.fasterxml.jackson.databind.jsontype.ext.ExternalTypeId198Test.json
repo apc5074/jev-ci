@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.jsontype.ext.ExternalTypeId198Test",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/jsontype/ext/ExternalTypeId198Test.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.jsontype.ext.ExternalTypeId198Test\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/jsontype/ext/ExternalTypeId198Test.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.jsontype.ext;\n\nimport com.fasterxml.jackson.annotation.JsonCreator;\nimport com.fasterxml.jackson.annotation.JsonSubTypes;\nimport com.fasterxml.jackson.annotation.JsonTypeInfo;\n\nimport com.fasterxml.jackson.databind.*;\n\npublic class ExternalTypeId198Test extends BaseMapTest\n{\n    public enum Attacks { KICK, PUNCH }\n\n    static class Character {\n        public String name;\n        public Attacks preferredAttack;\n\n        @JsonTypeInfo(use=JsonTypeInfo.Id.NAME, defaultImpl=Kick.class,\n                include=JsonTypeInfo.As.EXTERNAL_PROPERTY, property=\"preferredAttack\")\n        @JsonSubTypes({\n            @JsonSubTypes.Type(value=Kick.class, name=\"KICK\"),\n            @JsonSubTypes.Type(value=Punch.class, name=\"PUNCH\")\n        })\n        public Attack attack;\n    }\n\n    public static abstract class Attack {\n        public String side;\n\n        @JsonCreator\n        public Attack(String side) {\n            this.side = side;\n        }\n    }\n\n    public static class Kick extends Attack {\n        @JsonCreator\n        public Kick(String side) {\n            super(side);\n        }\n    }\n\n    public static class Punch extends Attack {\n        @JsonCreator\n        public Punch(String side) {\n            super(side);\n        }\n    }\n\n    final ObjectMapper MAPPER = new ObjectMapper();\n\n    public void testFails() throws Exception {\n        String json = \"{ \\\"name\\\": \\\"foo\\\", \\\"attack\\\":\\\"right\\\" } }\";\n\n        Character character = MAPPER.readValue(json, Character.class);\n\n        assertNotNull(character);\n        assertNotNull(character.attack);\n        assertEquals(\"foo\", character.name);\n    }\n\n    public void testWorks() throws Exception {\n        String json = \"{ \\\"name\\\": \\\"foo\\\", \\\"preferredAttack\\\": \\\"KICK\\\", \\\"attack\\\":\\\"right\\\" } }\";\n\n        Character character = MAPPER.readValue(json, Character.class);\n\n        assertNotNull(character);\n        assertNotNull(character.attack);\n        assertEquals(\"foo\", character.name);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 70,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2190,
+  "representation_chars": 2190,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

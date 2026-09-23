@@ -1,0 +1,121 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.TestJdkTypes",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/TestJdkTypes.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.TestJdkTypes\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/TestJdkTypes.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser;\n\nimport java.io.*;\nimport java.net.*;\nimport java.nio.ByteBuffer;\nimport java.nio.charset.Charset;\nimport java.util.Currency;\nimport java.util.List;\nimport java.util.Locale;\nimport java.util.regex.Pattern;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;\nimport com.fasterxml.jackson.core.JsonParser;\nimport com.fasterxml.jackson.core.JsonProcessingException;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\nimport com.fasterxml.jackson.databind.deser.std.StdDeserializer;\nimport com.fasterxml.jackson.databind.module.SimpleModule;\n\npublic class TestJdkTypes extends BaseMapTest\n{\n    static class PrimitivesBean\n    {\n        public boolean booleanValue = true;\n        public byte byteValue = 3;\n        public char charValue = 'a';\n        public short shortValue = 37;\n        public int intValue = 1;\n        public long longValue = 100L;\n        public float floatValue = 0.25f;\n        public double doubleValue = -1.0;\n    }\n\n    // for [JACKSON-616]\n    static class WrappersBean\n    {\n        public Boolean booleanValue;\n        public Byte byteValue;\n        public Character charValue;\n        public Short shortValue;\n        public Integer intValue;\n        public Long longValue;\n        public Float floatValue;\n        public Double doubleValue;\n    }\n\n    \n    static class ParamClassBean\n    {\n         public String name = \"bar\";\n         public Class<String> clazz ;\n\n         public ParamClassBean() { }\n         public ParamClassBean(String name) {\n             this.name = name;\n             clazz = String.class;\n         }\n    }\n\n    static class BooleanBean {\n        public Boolean wrapper;\n        public boolean primitive;\n        \n        protected Boolean ctor;\n        \n        @JsonCreator\n        public BooleanBean(@JsonProperty(\"ctor\") Boolean foo) {\n            ctor = foo;\n        }\n    }\n\n    // [Issue#429]\n    static class StackTraceBean {\n        public final static int NUM = 13;\n\n        @JsonProperty(\"Location\")\n        @JsonDeserialize(using=MyStackTraceElementDeserializer.class)\n        private StackTraceElement location;    \n    }\n\n    @SuppressWarnings(\"serial\")\n    static class MyStackTraceElementDeserializer extends StdDeserializer<StackTraceElement>\n    {\n        public MyStackTraceElementDeserializer() { super(StackTraceElement.class); }\n        \n        @Override\n        public StackTraceElement deserialize(JsonParser jp,\n                DeserializationContext ctxt) throws IOException, JsonProcessingException {\n            jp.skipChildren();\n            return new StackTraceElement(\"a\", \"b\", \"b\", StackTraceBean.NUM);\n        }\n        \n    }\n    \n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n\n    private final ObjectMapper MAPPER = objectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);\n\n    /**\n     * Related to issues [JACKSON-155], [#170].\n     */\n    public void testFile() throws Exception\n    {\n        // Not portable etc... has to do:\n        File src = new File(\"/test\").getAbsoluteFile();\n        String abs = src.getAbsolutePath();\n\n        // escape backslashes (for portability with windows)\n        String json = MAPPER.writeValueAsString(abs);\n        File result = MAPPER.readValue(json, File.class);\n        assertEquals(abs, result.getAbsolutePath());\n\n        // Then #170\n        final ObjectMapper mapper2 = new ObjectMapper();\n        mapper2.setVisibility(PropertyAccessor.CREATOR, Visibility.NONE);\n\n        result = mapper2.readValue(json, File.class);\n        assertEquals(abs, result.getAbsolutePath());\n    }\n\n    public void testRegexps() throws IOException\n    {\n        final String PATTERN_STR = \"abc:\\\\s?(\\\\d+)\";\n        Pattern exp = Pattern.compile(PATTERN_STR);\n        /* Ok: easiest way is to just serialize first; problem\n         * is the backslash\n         */\n        String json = MAPPER.writeValueAsString(exp);\n        Pattern result = MAPPER.readValue(json, Pattern.class);\n        assertEquals(exp.pattern(), result.pattern());\n    }\n\n    public void testCurrency() throws IOException\n    {\n        Currency usd = Currency.getInstance(\"USD\");\n\n        ParamClassBean result = MAPPER.readValue(json, ParamClassBean.class);\n        assertEquals(\"Foobar\", result.name);\n        assertSame(String.class, result.clazz);\n    }\n\n    // by default, should return nulls, n'est pas?\n    public void testEmptyStringForWrappers() throws IOException\n    {\n        WrappersBean bean;\n\n        // by default, ok to rely on defaults\n        bean = MAPPER.readValue(\"{\\\"booleanValue\\\":\\\"\\\"}\", WrappersBean.class);\n        assertNull(bean.booleanValue);\n        bean = MAPPER.readValue(\"{\\\"byteValue\\\":\\\"\\\"}\", WrappersBean.class);\n        assertNull(bean.byteValue);\n\n        // char/Character is different... not sure if this should work or not:\n        bean = MAPPER.readValue(\"{\\\"charValue\\\":\\\"\\\"}\", WrappersBean.class);\n        assertNull(bean.charValue);\n\n        bean = MAPPER.readValue(\"{\\\"shortValue\\\":\\\"\\\"}\", WrappersBean.class);\n        assertNull(bean.shortValue);\n        bean = MAPPER.readValue(\"{\\\"intValue\\\":\\\"\\\"}\", WrappersBean.class);\n        assertNull(bean.intValue);\n        bean = MAPPER.readValue(\"{\\\"longValue\\\":\\\"\\\"}\", WrappersBean.class);\n        assertNull(bean.longValue);\n        bean = MAPPER.readValue(\"{\\\"floatValue\\\":\\\"\\\"}\", WrappersBean.class);\n        assertNull(bean.floatValue);\n        bean = MAPPER.readValue(\"{\\\"doubleValue\\\":\\\"\\\"}\", WrappersBean.class);\n        assertNull(bean.doubleValue);\n    }\n\n    // for [JACKSON-616]\n    // @since 1.9\n    public void testEmptyStringForPrimitives() throws IOException\n    {\n        PrimitivesBean bean;\n        bean = MAPPER.readValue(\"{\\\"booleanValue\\\":\\\"\\\"}\", PrimitivesBean.class);\n        assertFalse(bean.booleanValue);\n        bean = MAPPER.readValue(\"{\\\"byteValue\\\":\\\"\\\"}\", PrimitivesBean.class);\n        assertEquals((byte) 0, bean.byteValue);\n        bean = MAPPER.readValue(\"{\\\"charValue\\\":\\\"\\\"}\", PrimitivesBean.class);\n        assertEquals((char) 0, bean.charValue);\n        bean = MAPPER.readValue(\"{\\\"shortValue\\\":\\\"\\\"}\", PrimitivesBean.class);\n        assertEquals((short) 0, bean.shortValue);\n        bean = MAPPER.readValue(\"{\\\"intValue\\\":\\\"\\\"}\", PrimitivesBean.class);\n        assertEquals(0, bean.intValue);\n        bean = MAPPER.readValue(\"{\\\"longValue\\\":\\\"\\\"}\", PrimitivesBean.class);\n        assertEquals(0L, bean.longValue);\n        bean = MAPPER.readValue(\"{\\\"floatValue\\\":\\\"\\\"}\", PrimitivesBean.class);\n        assertEquals(0.0f, bean.floatValue);\n        bean = MAPPER.readValue(\"{\\\"doubleValue\\\":\\\"\\\"}\", PrimitivesBean.class);\n        assertEquals(0.0, bean.doubleValue);\n    }\n\n    // for [JACKSON-652]\n    // @since 1.9\n    public void testUntypedWithJsonArrays() throws Exception\n    {\n        // by default we get:\n        Object ob = MAPPER.readValue(\"[1]\", Object.class);\n        assertTrue(ob instanceof List<?>);\n\n        // but can change to produce Object[]:\n        MAPPER.configure(DeserializationFeature.USE_JAVA_ARRAY_FOR_JSON_ARRAY, true);\n        ob = MAPPER.readValue(\"[1]\", Object.class);\n        assertEquals(Object[].class, ob.getClass());\n    }\n\n    // Test for verifying that Long values are coerced to boolean correctly as well\n    public void testLongToBoolean() throws Exception\n    {\n        long value = 1L + Integer.MAX_VALUE;\n        BooleanBean b = MAPPER.readValue(\"{\\\"primitive\\\" : \"+value+\", \\\"wrapper\\\":\"+value+\", \\\"ctor\\\":\"+value+\"}\",\n                    BooleanBean.class);\n        assertEquals(Boolean.TRUE, b.wrapper);\n        assertTrue(b.primitive);\n        assertEquals(Boolean.TRUE, b.ctor);\n    }\n",
+  "compaction": {
+    "source_lines": 741,
+    "mode": "windows",
+    "windows_total": 13,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        300,
+        380
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 26.15390096452412
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 13.68978844223764
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 14.56043826682141
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 26.15390096452412
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 13.68978844223764
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 6.852479280126289
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 11.164706051470057
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 13.167741539614228
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 14.56043826682141
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 10.19068711187629
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 8.151901083619956
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 6.371370940854204
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 0.8522549857569877
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 0.8259014594068343
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 1.3936313704348238
+      },
+      {
+        "start": 720,
+        "end": 741,
+        "score": 1.3858835066935167
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8019,
+  "representation_chars": 8019,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

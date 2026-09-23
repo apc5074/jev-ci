@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.lang3.text.translate.OctalUnescaperTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/text/translate/OctalUnescaperTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.text.translate.OctalUnescaperTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/text/translate/OctalUnescaperTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.lang3.text.translate;\n\nimport org.junit.Test;\nimport static org.junit.Assert.*;\n\n/**\n * Unit tests for {@link org.apache.commons.lang3.text.translate.OctalUnescaper}.\n * @version $Id: OctalUnescaperTest.java 979392 2010-07-26 18:09:52Z mbenson $\n */\npublic class OctalUnescaperTest {\n\n    @Test\n    public void testBetween() {\n        final OctalUnescaper oue = new OctalUnescaper();   //.between(\"1\", \"377\");\n\n        String input = \"\\\\45\";\n        String result = oue.translate(input);\n        assertEquals(\"Failed to unescape octal characters via the between method\", \"\\45\", result);\n\n        input = \"\\\\377\";\n        result = oue.translate(input);\n        assertEquals(\"Failed to unescape octal characters via the between method\", \"\\377\", result);\n\n        input = \"\\\\377 and\";\n        result = oue.translate(input);\n        assertEquals(\"Failed to unescape octal characters via the between method\", \"\\377 and\", result);\n\n        input = \"\\\\378 and\";\n        result = oue.translate(input);\n        assertEquals(\"Failed to unescape octal characters via the between method\", \"\\378 and\", result);\n\n        input = \"\\\\378\";\n        result = oue.translate(input);\n        assertEquals(\"Failed to unescape octal characters via the between method\", \"\\378\", result);\n\n        input = \"\\\\1\";\n        result = oue.translate(input);\n        assertEquals(\"Failed to unescape octal characters via the between method\", \"\\1\", result);\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 58,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2443,
+  "representation_chars": 2443,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

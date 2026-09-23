@@ -1,0 +1,106 @@
+{
+  "test_class": "org.apache.commons.lang3.time.DurationFormatUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/time/DurationFormatUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.time.DurationFormatUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/time/DurationFormatUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.lang3.time;\n\nimport java.lang.reflect.Constructor;\nimport java.lang.reflect.Modifier;\nimport java.util.Calendar;\nimport java.util.TimeZone;\n\nimport junit.framework.TestCase;\n\n/**\n * TestCase for DurationFormatUtils.\n * \n * @author Apache Software Foundation\n * @author Apache Ant - DateUtilsTest\n * @author <a href=\"mailto:sbailliez@apache.org\">Stephane Bailliez</a>\n * @author <a href=\"mailto:stefan.bodewig@epost.de\">Stefan Bodewig</a>\n * @author <a href=\"mailto:ggregory@seagullsw.com\">Gary Gregory</a>\n */\npublic class DurationFormatUtilsTest extends TestCase {\n\n    public DurationFormatUtilsTest(String s) {\n        super(s);\n    }\n\n    // -----------------------------------------------------------------------\n    public void testConstructor() {\n        assertNotNull(new DurationFormatUtils());\n        Constructor<?>[] cons = DurationFormatUtils.class.getDeclaredConstructors();\n        assertEquals(1, cons.length);\n        assertEquals(true, Modifier.isPublic(cons[0].getModifiers()));\n        assertEquals(true, Modifier.isPublic(DurationFormatUtils.class.getModifiers()));\n        assertEquals(false, Modifier.isFinal(DurationFormatUtils.class.getModifiers()));\n    }\n\n    // -----------------------------------------------------------------------\n    public void testFormatDurationWords() {\n        String text = null;\n\n        text = DurationFormatUtils.formatDurationWords(50 * 1000, true, false);\n        assertEquals(\"50 seconds\", text);\n        text = DurationFormatUtils.formatDurationWords(65 * 1000, true, false);\n        assertEquals(\"1 minute 5 seconds\", text);\n        text = DurationFormatUtils.formatDurationWords(120 * 1000, true, false);\n        assertEquals(\"2 minutes 0 seconds\", text);\n        text = DurationFormatUtils.formatDurationWords(121 * 1000, true, false);\n        assertEquals(\"2 minutes 1 second\", text);\n        text = DurationFormatUtils.formatDurationWords(72 * 60 * 1000, true, false);\n        assertEquals(\"1 hour 12 minutes 0 seconds\", text);\n        text = DurationFormatUtils.formatDurationWords(24 * 60 * 60 * 1000, true, false);\n        assertEquals(\"1 day 0 hours 0 minutes 0 seconds\", text);\n\n        text = DurationFormatUtils.formatDurationWords(50 * 1000, true, true);\n        assertEquals(\"50 seconds\", text);\n        text = DurationFormatUtils.formatDurationWords(65 * 1000, true, true);\n        assertEquals(\"1 minute 5 seconds\", text);\n        text = DurationFormatUtils.formatDurationWords(120 * 1000, true, true);\n        assertEquals(\"2 minutes\", text);\n        text = DurationFormatUtils.formatDurationWords(121 * 1000, true, true);\n        assertEquals(\"2 minutes 1 second\", text);\n        text = DurationFormatUtils.formatDurationWords(72 * 60 * 1000, true, true);\n        assertEquals(\"1 hour 12 minutes\", text);\n        text = DurationFormatUtils.formatDurationWords(24 * 60 * 60 * 1000, true, true);\n        assertEquals(\"1 day\", text);\n\n        assertEqualDuration( \"369\", new int[] { 2004, 0, 29, 0, 0, 0 },\n                new int[] { 2005, 1, 1, 0, 0, 0 }, \"dd\"); \n\n        assertEqualDuration( \"338\", new int[] { 2004, 1, 29, 0, 0, 0 },\n                new int[] { 2005, 1, 1, 0, 0, 0 }, \"dd\"); \n\n        assertEqualDuration( \"28\", new int[] { 2004, 2, 8, 0, 0, 0 },\n                new int[] { 2004, 3, 5, 0, 0, 0 }, \"dd\"); \n\n        assertEqualDuration( \"48\", new int[] { 1992, 1, 29, 0, 0, 0 },\n                new int[] { 1996, 1, 29, 0, 0, 0 }, \"M\"); \n        \n        \n        // this seems odd - and will fail if I throw it in as a brute force \n        // below as it expects the answer to be 12. It's a tricky edge case\n        assertEqualDuration( \"11\", new int[] { 1996, 1, 29, 0, 0, 0 },\n                new int[] { 1997, 1, 28, 0, 0, 0 }, \"M\"); \n        // again - this seems odd\n        assertEqualDuration( \"11 28\", new int[] { 1996, 1, 29, 0, 0, 0 },\n                new int[] { 1997, 1, 28, 0, 0, 0 }, \"M d\"); \n        \n    }\n    \n    public void testDurationsByBruteForce() {\n        bruteForce(2006, 0, 1, \"d\", Calendar.DAY_OF_MONTH);\n        bruteForce(2006, 0, 2, \"d\", Calendar.DAY_OF_MONTH);\n        bruteForce(2007, 1, 2, \"d\", Calendar.DAY_OF_MONTH);\n        bruteForce(2004, 1, 29, \"d\", Calendar.DAY_OF_MONTH);\n        bruteForce(1996, 1, 29, \"d\", Calendar.DAY_OF_MONTH);\n\n        bruteForce(1969, 1, 28, \"M\", Calendar.MONTH);  // tests for 48 years\n        //bruteForce(1996, 1, 29, \"M\", Calendar.MONTH);  // this will fail\n    }\n    \n    private int FOUR_YEARS = 365 * 3 + 366;\n    \n    // Takes a minute to run, so generally turned off\n//    public void testBrutally() {\n//        Calendar c = Calendar.getInstance();\n//        c.set(2004, 0, 1, 0, 0, 0);\n//        for (int i=0; i < FOUR_YEARS; i++) {\n//            bruteForce(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), \"d\", Calendar.DAY_OF_MONTH );\n//            c.add(Calendar.DAY_OF_MONTH, 1);\n//        }\n//    }        \n    \n    private void bruteForce(int year, int month, int day, String format, int calendarType) {\n        String msg = year + \"-\" + month + \"-\" + day + \" to \";\n        Calendar c = Calendar.getInstance();\n        c.set(year, month, day, 0, 0, 0);\n        int[] array1 = new int[] { year, month, day, 0, 0, 0 };\n        int[] array2 = new int[] { year, month, day, 0, 0, 0 };\n        for (int i=0; i < FOUR_YEARS; i++) {\n            array2[0] = c.get(Calendar.YEAR);\n            array2[1] = c.get(Calendar.MONTH);\n            array2[2] = c.get(Calendar.DAY_OF_MONTH);\n            String tmpMsg = msg + array2[0] + \"-\" + array2[1] + \"-\" + array2[2] + \" at \";\n            assertEqualDuration( tmpMsg + i, Integer.toString(i), array1, array2, format );\n            c.add(calendarType, 1);\n        }\n    }\n\n    private void assertEqualDuration(String expected, int[] start, int[] end, String format) {\n        assertEqualDuration(null, expected, start, end, format);\n    }\n    private void assertEqualDuration(String message, String expected, int[] start, int[] end, String format) {\n        Calendar cal1 = Calendar.getInstance();\n        cal1.set(start[0], start[1], start[2], start[3], start[4], start[5]);\n        cal1.set(Calendar.MILLISECOND, 0);\n        Calendar cal2 = Calendar.getInstance();\n        cal2.set(end[0], end[1], end[2], end[3], end[4], end[5]);\n        cal2.set(Calendar.MILLISECOND, 0);\n        long milli1 = cal1.getTime().getTime();\n        long milli2 = cal2.getTime().getTime();\n        String result = DurationFormatUtils.formatPeriod(milli1, milli2, format);\n        if (message == null) {\n            assertEquals(expected, result);\n        } else {\n            assertEquals(message, expected, result);\n        }\n    }\n\n    private void assertArrayEquals(DurationFormatUtils.Token[] obj1, DurationFormatUtils.Token[] obj2) {\n        assertEquals(\"Arrays are unequal length. \", obj1.length, obj2.length);\n        for (int i = 0; i < obj1.length; i++) {\n            assertTrue(\"Index \" + i + \" not equal, \" + obj1[i] + \" vs \" + obj2[i], obj1[i].equals(obj2[i]));\n        }\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 571,
+    "mode": "windows",
+    "windows_total": 10,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        480,
+        560
+      ],
+      [
+        540,
+        571
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 26.072900732229932
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 20.868500656774675
+      },
+      {
+        "start": 540,
+        "end": 571,
+        "score": 12.005839694476286
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 26.072900732229932
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 11.273656203225844
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 9.581156917415358
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 1.4538333300207817
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.590835220436102
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 9.559871993246816
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 8.969882654186803
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 8.882270840058851
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 20.868500656774675
+      },
+      {
+        "start": 540,
+        "end": 571,
+        "score": 12.005839694476286
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8017,
+  "representation_chars": 8017,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

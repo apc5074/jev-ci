@@ -1,0 +1,86 @@
+{
+  "test_class": "org.apache.commons.math3.util.OpenIntToFieldTest",
+  "source_file": "src/test/java/org/apache/commons/math3/util/OpenIntToFieldTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.util.OpenIntToFieldTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/util/OpenIntToFieldTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.util;\n\nimport java.util.ConcurrentModificationException;\nimport java.util.HashMap;\nimport java.util.HashSet;\nimport java.util.Map;\nimport java.util.NoSuchElementException;\nimport java.util.Random;\nimport java.util.Set;\nimport java.util.Map.Entry;\n\nimport org.apache.commons.math3.Field;\nimport org.apache.commons.math3.fraction.Fraction;\nimport org.apache.commons.math3.fraction.FractionConversionException;\nimport org.apache.commons.math3.fraction.FractionField;\nimport org.junit.Assert;\nimport org.junit.Before;\nimport org.junit.Test;\n\n\npublic class OpenIntToFieldTest {\n\n    private Map<Integer, Fraction> javaMap = new HashMap<Integer, Fraction>();\n    private FractionField field = FractionField.getInstance();\n\n    @Before\n    public void setUp() throws FractionConversionException {\n        javaMap.put(50, new Fraction(100.0));\n        javaMap.put(75, new Fraction(75.0));\n        javaMap.put(25, new Fraction(500.0));\n        javaMap.put(Integer.MAX_VALUE, new Fraction(Integer.MAX_VALUE));\n        javaMap.put(0, new Fraction(-1.0));\n        javaMap.put(1, new Fraction(0.0));\n        javaMap.put(33, new Fraction(-0.1));\n        javaMap.put(23234234, new Fraction(-242343.0));\n        javaMap.put(23321, new Fraction (Integer.MIN_VALUE));\n        javaMap.put(-4444, new Fraction(332.0));\n        javaMap.put(-1, new Fraction(-2323.0));\n        javaMap.put(Integer.MIN_VALUE, new Fraction(44.0));\n\n        /* Add a few more to cause the table to rehash */\n        javaMap.putAll(generate());\n\n    }\n\n    private Map<Integer, Fraction> generate() {\n        Map<Integer, Fraction> map = new HashMap<Integer, Fraction>();\n        Random r = new Random();\n        double dd=0;\n        for (int i = 0; i < 2000; ++i)\n            dd = r.nextDouble();\n            try {\n                map.put(r.nextInt(), new Fraction(dd));\n            } catch (FractionConversionException e) {\n                throw new IllegalStateException(\"Invalid :\"+dd, e);\n            }\n        return map;\n    }\n\n    private OpenIntToFieldHashMap<Fraction> createFromJavaMap(Field<Fraction> field) {\n        OpenIntToFieldHashMap<Fraction> map = new OpenIntToFieldHashMap<Fraction>(field);\n        for (Map.Entry<Integer, Fraction> mapEntry : javaMap.entrySet()) {\n            map.put(mapEntry.getKey(), mapEntry.getValue());\n        }\n        return map;\n    }\n\n    @Test\n    public void testPutAndGetWith0ExpectedSize() {\n        OpenIntToFieldHashMap<Fraction> map = new OpenIntToFieldHashMap<Fraction>(field,0);\n        assertPutAndGet(map);\n    }\n\n    @Test\n    public void testPutAndGetWithExpectedSize() {\n        OpenIntToFieldHashMap<Fraction> map = new OpenIntToFieldHashMap<Fraction>(field,500);\n        assertPutAndGet(map);\n    }\n\n    @Test\n    public void testPutAndGet() {\n        OpenIntToFieldHashMap<Fraction> map = new OpenIntToFieldHashMap<Fraction>(field);\n        assertPutAndGet(map);\n    }\n\n    private void assertPutAndGet(OpenIntToFieldHashMap<Fraction> map) {\n        assertPutAndGet(map, 0, new HashSet<Integer>());\n    }\n\n    private void assertPutAndGet(OpenIntToFieldHashMap<Fraction> map, int mapSize,\n            Set<Integer> keysInMap) {\n        Assert.assertEquals(mapSize, map.size());\n        for (Map.Entry<Integer, Fraction> mapEntry : javaMap.entrySet()) {\n            map.put(mapEntry.getKey(), mapEntry.getValue());\n            if (!keysInMap.contains(mapEntry.getKey()))\n                ++mapSize;\n            Assert.assertEquals(mapSize, map.size());\n            Assert.assertEquals(mapEntry.getValue(), map.get(mapEntry.getKey()));\n        }\n    }\n\n    @Test\n    public void testPutAbsentOnExisting() {\n        OpenIntToFieldHashMap<Fraction> map = createFromJavaMap(field);\n        int size = javaMap.size();\n        for (Map.Entry<Integer, Fraction> mapEntry : generateAbsent().entrySet()) {\n            map.put(mapEntry.getKey(), mapEntry.getValue());\n            Assert.assertEquals(++size, map.size());\n            Assert.assertEquals(mapEntry.getValue(), map.get(mapEntry.getKey()));\n        }\n    }\n\n    @Test\n    public void testPutOnExisting() {\n        OpenIntToFieldHashMap<Fraction> map = createFromJavaMap(field);\n        for (Map.Entry<Integer, Fraction> mapEntry : javaMap.entrySet()) {\n            map.put(mapEntry.getKey(), mapEntry.getValue());\n            Assert.assertEquals(javaMap.size(), map.size());\n            Assert.assertEquals(mapEntry.getValue(), map.get(mapEntry.getKey()));\n        }\n    }\n\n    @Test\n    public void testGetAbsent() {\n            Assert.assertEquals(--mapSize, map.size());\n            Assert.assertTrue(field.getZero().equals(map.get(mapEntry.getKey())));\n            if (count++ > 5)\n                break;\n        }\n\n        /* Ensure that put and get still work correctly after removals */\n        assertPutAndGet(map, mapSize, keysInMap);\n    }\n\n    @Test\n    public void testRemoveFromEmpty() {\n        OpenIntToFieldHashMap<Fraction> map = new OpenIntToFieldHashMap<Fraction>(field);\n        Assert.assertTrue(field.getZero().equals(map.remove(50)));\n    }\n\n    @Test\n    public void testRemoveAbsent() {\n        Map<Integer, Fraction> generated = generateAbsent();\n\n        OpenIntToFieldHashMap<Fraction> map = createFromJavaMap(field);\n        int mapSize = map.size();\n\n        for (Map.Entry<Integer, Fraction> mapEntry : generated.entrySet()) {\n            map.remove(mapEntry.getKey());\n            Assert.assertEquals(mapSize, map.size());\n            Assert.assertTrue(field.getZero().equals(map.get(mapEntry.getKey())));\n        }\n    }\n\n    /**\n     * Returns a map with at least 100 elements where each element is absent from javaMap.\n     */\n    private Map<Integer, Fraction> generateAbsent() {\n        Map<Integer, Fraction> generated = new HashMap<Integer, Fraction>();\n        do {\n            generated.putAll(generate());\n            for (Integer key : javaMap.keySet())\n                generated.remove(key);\n        } while (generated.size() < 100);\n        return generated;\n    }\n\n    @Test\n    public void testCopy() {\n        OpenIntToFieldHashMap<Fraction> copy =\n            new OpenIntToFieldHashMap<Fraction>(createFromJavaMap(field));\n        Assert.assertEquals(javaMap.size(), copy.size());\n\n        for (Map.Entry<Integer, Fraction> mapEntry : javaMap.entrySet())\n            Assert.assertEquals(mapEntry.getValue(), copy.get(mapEntry.getKey()));\n    }\n\n    @Test\n    public void testContainsKey() {\n        OpenIntToFieldHashMap<Fraction> map = createFromJavaMap(field);\n        for (Entry<Integer, Fraction> mapEntry : javaMap.entrySet()) {\n            Assert.assertTrue(map.containsKey(mapEntry.getKey()));\n        }\n        for (Map.Entry<Integer, Fraction> mapEntry : generateAbsent().entrySet()) {\n            Assert.assertFalse(map.containsKey(mapEntry.getKey()));\n        }\n        for (Entry<Integer, Fraction> mapEntry : javaMap.entrySet()) {\n            int key = mapEntry.getKey();\n            Assert.assertTrue(map.containsKey(key));\n            map.remove(key);\n            Assert.assertFalse(map.containsKey(key));\n        }\n    }\n\n    @Test\n    public void testIterator() {\n        OpenIntToFieldHashMap<Fraction> map = createFromJavaMap(field);\n        OpenIntToFieldHashMap<Fraction>.Iterator iterator = map.iterator();\n        for (int i = 0; i < map.size(); ++i) {\n            Assert.assertTrue(iterator.hasNext());\n            iterator.advance();\n            int key = iterator.key();\n            Assert.assertTrue(map.containsKey(key));\n            Assert.assertEquals(javaMap.get(key), map.get(key));\n",
+  "compaction": {
+    "source_lines": 334,
+    "mode": "windows",
+    "windows_total": 6,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 19.36950131782195
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 3.6332799447984305
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 3.1538374928475217
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 19.36950131782195
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 3.6332799447984305
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 1.2609824744285536
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 3.1538374928475217
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 2.3664925099050764
+      },
+      {
+        "start": 300,
+        "end": 334,
+        "score": 1.256267086531569
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8530,
+  "representation_chars": 8530,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

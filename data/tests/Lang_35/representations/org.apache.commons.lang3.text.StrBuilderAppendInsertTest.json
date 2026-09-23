@@ -1,0 +1,171 @@
+{
+  "test_class": "org.apache.commons.lang3.text.StrBuilderAppendInsertTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/text/StrBuilderAppendInsertTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.text.StrBuilderAppendInsertTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/text/StrBuilderAppendInsertTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.lang3.text;\n\nimport java.util.Arrays;\nimport java.util.Collection;\nimport java.util.Collections;\nimport java.util.Iterator;\n\nimport junit.framework.TestCase;\n\nimport org.apache.commons.lang3.SystemUtils;\n\n/**\n * Unit tests for {@link org.apache.commons.lang3.text.StrBuilder}.\n *\n * @version $Id$\n */\npublic class StrBuilderAppendInsertTest extends TestCase {\n\n    /** The system line separator. */\n    private static final String SEP = SystemUtils.LINE_SEPARATOR;\n\n    /** Test subclass of Object, with a toString method. */\n    private static final Object FOO = new Object() {\n        @Override\n        public String toString() {\n            return \"foo\";\n        }\n    };\n\n    /**\n     * Create a new test case with the specified name.\n     * \n     * @param name  the name\n     */\n    public StrBuilderAppendInsertTest(String name) {\n        super(name);\n    }\n\n    //-----------------------------------------------------------------------\n    public void testAppendNewLine() {\n        StrBuilder sb = new StrBuilder(\"---\");\n        sb.appendNewLine().append(\"+++\");\n        assertEquals(\"---\" + SEP + \"+++\", sb.toString());\n        \n        sb = new StrBuilder(\"---\");\n        sb.setNewLineText(\"#\").appendNewLine().setNewLineText(null).appendNewLine();\n        assertEquals(\"---#\" + SEP, sb.toString());\n    }\n\n    //-----------------------------------------------------------------------\n    public void testAppendWithNullText() {\n        StrBuilder sb = new StrBuilder();\n        sb.setNullText(\"NULL\");\n        assertEquals(\"\", sb.toString());\n\n        sb.appendNull();\n        assertEquals(\"NULL\", sb.toString());\n\n        sb.append((Object) null);\n        assertEquals(\"NULLNULL\", sb.toString());\n\n        sb.append(FOO);\n        assertEquals(\"NULLNULLfoo\", sb.toString());\n            @Override\n            public StrBuilder appendNewLine() {\n                count[1]++;\n                return super.appendNewLine();\n            }\n        };\n        sb.appendln(new StringBuffer(\"foo\"), 0, 3);\n        assertEquals(\"foo\" + SEP, sb.toString());\n        assertEquals(1, count[0]);\n        assertEquals(1, count[1]);\n    }\n\n    //-----------------------------------------------------------------------\n    public void testAppendln_StrBuilder() {\n        final int[] count = new int[2];\n        StrBuilder sb = new StrBuilder() {\n            @Override\n            public StrBuilder append(StrBuilder str) {\n                count[0]++;\n                return super.append(str);\n            }\n            @Override\n            public StrBuilder appendNewLine() {\n                count[1]++;\n                return super.appendNewLine();\n            }\n        };\n        sb.appendln(new StrBuilder(\"foo\"));\n        assertEquals(\"foo\" + SEP, sb.toString());\n        assertEquals(1, count[0]);\n        assertEquals(1, count[1]);\n    }\n\n    //-----------------------------------------------------------------------\n    public void testAppendln_StrBuilder_int_int() {\n        final int[] count = new int[2];\n        StrBuilder sb = new StrBuilder() {\n            @Override\n            public StrBuilder append(StrBuilder str, int startIndex, int length) {\n                count[0]++;\n                return super.append(str, startIndex, length);\n            }\n            @Override\n            public StrBuilder appendNewLine() {\n                count[1]++;\n                return super.appendNewLine();\n            }\n        };\n        sb.appendln(new StrBuilder(\"foo\"), 0, 3);\n        assertEquals(\"foo\" + SEP, sb.toString());\n        assertEquals(1, count[0]);\n        assertEquals(1, count[1]);\n    }\n\n    //-----------------------------------------------------------------------\n    public void testAppendln_CharArray() {\n        final int[] count = new int[2];\n        StrBuilder sb = new StrBuilder() {\n            @Override\n            public StrBuilder append(char[] str) {\n                count[0]++;\n                return super.append(str);\n            }\n            @Override\n            public StrBuilder appendNewLine() {\n                count[1]++;\n                return super.appendNewLine();\n            }\n        };\n        sb.appendln(\"foo\".toCharArray());\n        assertEquals(\"foo\" + SEP, sb.toString());\n        assertEquals(1, count[0]);\n        assertEquals(1, count[1]);\n    }\n\n    //-----------------------------------------------------------------------\n    public void testAppendln_CharArray_int_int() {\n        final int[] count = new int[2];\n        StrBuilder sb = new StrBuilder() {\n            @Override\n            public StrBuilder append(char[] str, int startIndex, int length) {\n                count[0]++;\n                return super.append(str, startIndex, length);\n            }\n            @Override\n            public StrBuilder appendNewLine() {\n                count[1]++;\n                return super.appendNewLine();\n            }\n        };\n        sb.appendln(\"foo\".toCharArray(), 0, 3);\n        assertEquals(\"foo\" + SEP, sb.toString());\n        assertEquals(1, count[0]);\n        assertEquals(1, count[1]);\n    }\n\n    //-----------------------------------------------------------------------\n    public void testAppendln_Boolean() {\n        StrBuilder sb = new StrBuilder();\n        sb.appendln(true);\n        assertEquals(\"true\" + SEP, sb.toString());\n        \n        sb.clear();\n        sb.appendln(false);\n        assertEquals(\"false\" + SEP, sb.toString());\n    }\n\n    //-----------------------------------------------------------------------\n    public void testAppendln_PrimitiveNumber() {\n        StrBuilder sb = new StrBuilder();\n        sb.appendln(0);\n        assertEquals(\"0\" + SEP, sb.toString());\n        \n        sb.clear();\n        sb.appendln(1L);\n        assertEquals(\"1\" + SEP, sb.toString());\n        \n        sb.clear();\n        sb.appendln(2.3f);\n        assertEquals(\"2.3\" + SEP, sb.toString());\n        \n        sb.clear();\n        sb.appendln(4.5d);\n        assertEquals(\"4.5\" + SEP, sb.toString());\n    }\n\n    //-----------------------------------------------------------------------\n    public void testAppendPadding() {\n        StrBuilder sb = new StrBuilder();\n        sb.append(\"foo\");\n        assertEquals(\"foo\", sb.toString());\n\n        sb.appendPadding(-1, '-');\n        assertEquals(\"foo\", sb.toString());\n\n        sb.appendPadding(0, '-');\n        assertEquals(\"foo\", sb.toString());\n\n        sb.appendPadding(1, '-');\n        assertEquals(\"foo-\", sb.toString());\n",
+  "compaction": {
+    "source_lines": 1370,
+    "mode": "windows",
+    "windows_total": 23,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        540,
+        620
+      ],
+      [
+        600,
+        680
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 52.883432038055275
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 8.343871692995343
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 7.09210019761845
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 52.883432038055275
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.2498351091166082
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 4.562951043112946
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.58728499123232
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.560745907620008
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 6.430062363988966
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 5.9177973686171175
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 6.64944214625096
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 6.3096672912662894
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 8.343871692995343
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 7.09210019761845
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 0.5600304662677071
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 4.235532040152111
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 7.0886249652616184
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 3.9022458484327336
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 4.426852443878051
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 3.7062512557035574
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 5.7417081895685875
+      },
+      {
+        "start": 1080,
+        "end": 1160,
+        "score": 4.579656731778196
+      },
+      {
+        "start": 1140,
+        "end": 1220,
+        "score": 4.441796966443933
+      },
+      {
+        "start": 1200,
+        "end": 1280,
+        "score": 3.9951504557324986
+      },
+      {
+        "start": 1260,
+        "end": 1340,
+        "score": 6.086667457152261
+      },
+      {
+        "start": 1320,
+        "end": 1370,
+        "score": 6.030522975891456
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7456,
+  "representation_chars": 7456,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

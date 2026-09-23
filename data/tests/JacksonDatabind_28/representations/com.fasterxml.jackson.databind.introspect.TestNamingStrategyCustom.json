@@ -1,0 +1,76 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.introspect.TestNamingStrategyCustom",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/introspect/TestNamingStrategyCustom.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.introspect.TestNamingStrategyCustom\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/introspect/TestNamingStrategyCustom.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.introspect;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.ObjectMapper;\nimport com.fasterxml.jackson.databind.PropertyNamingStrategy;\nimport com.fasterxml.jackson.databind.annotation.*;\nimport com.fasterxml.jackson.databind.cfg.MapperConfig;\nimport com.fasterxml.jackson.databind.introspect.AnnotatedField;\nimport com.fasterxml.jackson.databind.introspect.AnnotatedMethod;\n\n/**\n * Unit tests to verify functioning of {@link PropertyNamingStrategy}.\n */\n@SuppressWarnings(\"serial\")\npublic class TestNamingStrategyCustom extends BaseMapTest\n{\n    /*\n    /**********************************************************************\n    /* Helper classes\n    /**********************************************************************\n     */\n\n\tstatic class PrefixStrategy extends PropertyNamingStrategy\n    {\n        @Override\n        public String nameForField(MapperConfig<?> config,\n                AnnotatedField field, String defaultName)\n        {\n            return \"Field-\"+defaultName;\n        }\n\n        @Override\n        public String nameForGetterMethod(MapperConfig<?> config,\n                AnnotatedMethod method, String defaultName)\n        {\n            return \"Get-\"+defaultName;\n        }\n\n        @Override\n        public String nameForSetterMethod(MapperConfig<?> config,\n                AnnotatedMethod method, String defaultName)\n        {\n            return \"Set-\"+defaultName;\n        }\n    }\n    \n    static class CStyleStrategy extends PropertyNamingStrategy\n    {\n        @Override\n        public String nameForField(MapperConfig<?> config, AnnotatedField field, String defaultName)\n        {\n            return convert(defaultName);\n        }\n\n        @Override\n        public String nameForGetterMethod(MapperConfig<?> config, AnnotatedMethod method, String defaultName)\n        {\n            return convert(defaultName);\n        }\n\n        @Override\n        public String nameForSetterMethod(MapperConfig<?> config, AnnotatedMethod method, String defaultName)\n        {\n            return convert(defaultName);\n        }\n\n        private String convert(String input)\n        {\n            // easy: replace capital letters with underscore, lower-cases equivalent\n            StringBuilder result = new StringBuilder();\n            for (int i = 0, len = input.length(); i < len; ++i) {\n                char c = input.charAt(i);\n                if (Character.isUpperCase(c)) {\n                    result.append('_');\n                    c = Character.toLowerCase(c);\n                }\n    static class Value {\n        public int intValue;\n        \n        public Value() { this(0); }\n        public Value(int v) { intValue = v; }\n    }\n\n    static class SetterlessWithValue\n    {\n        protected ArrayList<Value> values = new ArrayList<Value>();\n\n        public List<Value> getValueList() { return values; }\n\n        public SetterlessWithValue add(int v) {\n            values.add(new Value(v));\n            return this;\n        }\n    }\n\n    static class LcStrategy extends PropertyNamingStrategy.PropertyNamingStrategyBase\n    {\n        @Override\n        public String translate(String propertyName) {\n            return propertyName.toLowerCase();\n        }\n    }\n    \n    static class RenamedCollectionBean\n    {\n//        @JsonDeserialize\n        @JsonProperty\n        private List<String> theValues = Collections.emptyList();\n        \n        // intentionally odd name, to be renamed by naming strategy\n        public List<String> getTheValues() { return theValues; }\n    }\n\n    // [Issue#45]: Support @JsonNaming\n    @JsonNaming(PrefixStrategy.class)\n    static class BeanWithPrefixNames\n    {\n        protected int a = 3;\n        \n        public int getA() { return a; }\n        public void setA(int value) { a = value; }\n    }\n    \n    /*\n    /**********************************************************************\n    /* Test methods\n    /**********************************************************************\n     */\n    \n    public void testSimpleGetters() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.setPropertyNamingStrategy(new PrefixStrategy());\n        assertEquals(\"{\\\"Get-key\\\":123}\", mapper.writeValueAsString(new GetterBean()));\n    }\n\n    public void testSimpleSetters() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.setPropertyNamingStrategy(new PrefixStrategy());\n        SetterBean bean = mapper.readValue(\"{\\\"Set-key\\\":13}\", SetterBean.class);\n        assertEquals(13, bean.value);\n    }\n\n    public void testSimpleFields() throws Exception\n    {\n        // First serialize\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.setPropertyNamingStrategy(new PrefixStrategy());\n        String json = mapper.writeValueAsString(new FieldBean(999));\n        assertEquals(\"{\\\"Field-key\\\":999}\", json);\n\n        // then deserialize\n        FieldBean result = mapper.readValue(json, FieldBean.class);\n        assertEquals(999, result.key);\n    }\n\n    public void testCStyleNaming() throws Exception\n    {\n        // First serialize\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.setPropertyNamingStrategy(new CStyleStrategy());\n        String json = mapper.writeValueAsString(new PersonBean(\"Joe\", \"Sixpack\", 42));\n        assertEquals(\"{\\\"first_name\\\":\\\"Joe\\\",\\\"last_name\\\":\\\"Sixpack\\\",\\\"age\\\":42}\", json);\n        \n        // then deserialize\n        PersonBean result = mapper.readValue(json, PersonBean.class);\n        assertEquals(\"Joe\", result.firstName);\n        assertEquals(\"Sixpack\", result.lastName);\n        assertEquals(42, result.age);\n    }\n\n    public void testWithGetterAsSetter() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.setPropertyNamingStrategy(new CStyleStrategy());\n        SetterlessWithValue input = new SetterlessWithValue().add(3);\n        String json = mapper.writeValueAsString(input);\n        assertEquals(\"{\\\"value_list\\\":[{\\\"int_value\\\":3}]}\", json);\n\n        SetterlessWithValue result = mapper.readValue(json, SetterlessWithValue.class);\n        assertNotNull(result.values);\n        assertEquals(1, result.values.size());\n        assertEquals(3, result.values.get(0).intValue);\n    }\n\n    public void testLowerCase() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.setPropertyNamingStrategy(new LcStrategy());\n//        mapper.disable(DeserializationConfig.DeserializationFeature.USE_GETTERS_AS_SETTERS);\n        RenamedCollectionBean result = mapper.readValue(\"{\\\"thevalues\\\":[\\\"a\\\"]}\",\n                RenamedCollectionBean.class);\n        assertNotNull(result.getTheValues());\n        assertEquals(1, result.getTheValues().size());\n        assertEquals(\"a\", result.getTheValues().get(0));\n    }\n\n    // @JsonNaming / [databind#45]\n    public void testPerClassAnnotation() throws Exception\n    {\n        final ObjectMapper mapper = new ObjectMapper();\n        mapper.setPropertyNamingStrategy(new LcStrategy());\n        BeanWithPrefixNames input = new BeanWithPrefixNames();\n        String json = mapper.writeValueAsString(input);\n        assertEquals(\"{\\\"Get-a\\\":3}\", json);\n\n        BeanWithPrefixNames output = mapper.readValue(\"{\\\"Set-a\\\":7}\",\n                BeanWithPrefixNames.class);\n        assertEquals(7, output.a);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 256,
+    "mode": "windows",
+    "windows_total": 4,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        180,
+        256
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 19.082468973056443
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 12.386402816724269
+      },
+      {
+        "start": 180,
+        "end": 256,
+        "score": 10.745527450108993
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 19.082468973056443
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 6.429664971746771
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 12.386402816724269
+      },
+      {
+        "start": 180,
+        "end": 256,
+        "score": 10.745527450108993
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7650,
+  "representation_chars": 7650,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

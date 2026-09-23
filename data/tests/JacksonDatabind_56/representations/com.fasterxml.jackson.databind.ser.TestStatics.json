@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.ser.TestStatics",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/ser/TestStatics.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.ser.TestStatics\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/ser/TestStatics.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.ser;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.databind.*;\n\n/**\n * This unit test suite verifies that static fields and methods are\n * ignored wrt serialization\n */\npublic class TestStatics\n    extends BaseMapTest\n{\n    /*\n    /**********************************************************\n    /* Annotated helper classes\n    /**********************************************************\n     */\n\n    final static class FieldBean\n    {\n        public int x = 1;\n\n        public static int y = 2;\n\n        // not even @JsonProperty should make statics usable...\n        @JsonProperty public static int z = 3;\n    }\n\n    final static class GetterBean\n    {\n        public int getX() { return 3; }\n\n        public static int getA() { return -3; }\n\n        // not even @JsonProperty should make statics usable...\n        @JsonProperty public static int getFoo() { return 123; }\n    }\n\n    /*\n    /**********************************************************\n    /* Unit tests\n    /**********************************************************\n     */\n\n    public void testStaticFields() throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        Map<String,Object> result = writeAndMap(m, new FieldBean());\n        assertEquals(1, result.size());\n        assertEquals(Integer.valueOf(1), result.get(\"x\"));\n    }\n\n    public void testStaticMethods() throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        Map<String,Object> result = writeAndMap(m, new GetterBean());\n        assertEquals(1, result.size());\n        assertEquals(Integer.valueOf(3), result.get(\"x\"));\n    }\n}\n",
+  "compaction": {
+    "source_lines": 62,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1841,
+  "representation_chars": 1841,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

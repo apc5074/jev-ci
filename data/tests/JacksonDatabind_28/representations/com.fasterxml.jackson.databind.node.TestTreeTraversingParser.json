@@ -1,0 +1,81 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.node.TestTreeTraversingParser",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/node/TestTreeTraversingParser.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.node.TestTreeTraversingParser\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/node/TestTreeTraversingParser.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.node;\n\nimport java.util.*;\n\nimport static org.junit.Assert.*;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.node.BinaryNode;\nimport com.fasterxml.jackson.databind.node.ObjectNode;\nimport com.fasterxml.jackson.databind.node.POJONode;\nimport com.fasterxml.jackson.databind.node.TextNode;\n\npublic class TestTreeTraversingParser\n    extends BaseMapTest\n{\n    static class Person {\n        public String name;\n        public int magicNumber;\n        public List<String> kids;\n    }\n\n    // Helper class for [JACKSON-370]\n    @JsonIgnoreProperties(ignoreUnknown=true)\n    public static class Jackson370Bean {\n        public Inner inner;\n    }\n\n    public static class Inner {\n        public String value;\n    }\n    \n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n    \n    public void testSimple() throws Exception\n    {\n        // For convenience, parse tree from JSON first\n        final String JSON =\n            \"{ \\\"a\\\" : 123, \\\"list\\\" : [ 12.25, null, true, { }, [ ] ] }\";\n        ObjectMapper m = new ObjectMapper();\n        JsonNode tree = m.readTree(JSON);\n        JsonParser jp = tree.traverse();\n\n        assertNull(jp.getCurrentToken());\n        assertNull(jp.getCurrentName());\n\n        assertToken(JsonToken.START_OBJECT, jp.nextToken());\n        assertNull(jp.getCurrentName());\n        assertEquals(\"Expected START_OBJECT\", JsonToken.START_OBJECT.asString(), jp.getText());\n\n        assertToken(JsonToken.FIELD_NAME, jp.nextToken());\n        assertEquals(\"a\", jp.getCurrentName());\n        assertEquals(\"a\", jp.getText());\n\n        assertToken(JsonToken.VALUE_NUMBER_INT, jp.nextToken());\n        assertEquals(\"a\", jp.getCurrentName());\n        assertEquals(123, jp.getIntValue());\n        assertEquals(\"123\", jp.getText());\n\n        assertToken(JsonToken.FIELD_NAME, jp.nextToken());\n        assertEquals(\"list\", jp.getCurrentName());\n        assertEquals(\"list\", jp.getText());\n\n        assertToken(JsonToken.START_ARRAY, jp.nextToken());\n        assertEquals(\"list\", jp.getCurrentName());\n        assertEquals(JsonToken.START_ARRAY.asString(), jp.getText());\n\n        assertToken(JsonToken.VALUE_NUMBER_FLOAT, jp.nextToken());\n        assertNull(jp.getCurrentName());\n        assertEquals(12.25, jp.getDoubleValue(), 0);\n        assertEquals(\"12.25\", jp.getText());\n\n        assertToken(JsonToken.VALUE_NULL, jp.nextToken());\n        assertNull(jp.getCurrentName());\n        assertToken(JsonToken.START_ARRAY, jp.nextToken());\n        assertToken(JsonToken.END_ARRAY, jp.nextToken());\n        assertToken(JsonToken.END_ARRAY, jp.nextToken());\n        jp.close();\n\n        jp = m.readTree(\"[[ 12.1 ]]\").traverse();\n        assertToken(JsonToken.START_ARRAY, jp.nextToken());\n        assertToken(JsonToken.START_ARRAY, jp.nextToken());\n        assertToken(JsonToken.VALUE_NUMBER_FLOAT, jp.nextToken());\n        assertToken(JsonToken.END_ARRAY, jp.nextToken());\n        assertToken(JsonToken.END_ARRAY, jp.nextToken());\n        jp.close();\n    }\n    \n    public void testNested() throws Exception\n    {\n        // For convenience, parse tree from JSON first\n        final String JSON =\n            \"{\\\"coordinates\\\":[[[-3,\\n1],[179.859681,51.175092]]]}\"\n            ;\n        ObjectMapper m = new ObjectMapper();\n        JsonNode tree = m.readTree(JSON);\n        JsonParser jp = tree.traverse();\n        assertToken(JsonToken.START_OBJECT, jp.nextToken());\n        assertToken(JsonToken.FIELD_NAME, jp.nextToken());\n\n        assertToken(JsonToken.START_ARRAY, jp.nextToken());\n        assertToken(JsonToken.START_ARRAY, jp.nextToken());\n\n        assertToken(JsonToken.START_ARRAY, jp.nextToken());\n        assertToken(JsonToken.VALUE_NUMBER_INT, jp.nextToken());\n        assertToken(JsonToken.VALUE_NUMBER_INT, jp.nextToken());\n        assertToken(JsonToken.END_ARRAY, jp.nextToken());\n\n        assertToken(JsonToken.START_ARRAY, jp.nextToken());\n        assertToken(JsonToken.VALUE_NUMBER_FLOAT, jp.nextToken());\n        assertToken(JsonToken.VALUE_NUMBER_FLOAT, jp.nextToken());\n        assertToken(JsonToken.END_ARRAY, jp.nextToken());\n        \n        assertToken(JsonToken.END_ARRAY, jp.nextToken());\n        assertToken(JsonToken.END_ARRAY, jp.nextToken());\n\n        assertToken(JsonToken.END_OBJECT, jp.nextToken());\n        jp.close();\n    }\n    \n    /**\n     * Unit test that verifies that we can (re)parse sample document\n     * from JSON specification.\n     */\n    public void testSpecDoc() throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        JsonNode tree = m.readTree(SAMPLE_DOC_JSON_SPEC);\n        JsonParser jp = tree.traverse();\n        verifyJsonSpecSampleDoc(jp, true);\n        jp.close();\n    }\n\n    public void testBinaryPojo() throws Exception\n    {\n        byte[] inputBinary = new byte[] { 1, 2, 100 };\n        POJONode n = new POJONode(inputBinary);\n        JsonParser jp = n.traverse();\n\n        assertNull(jp.getCurrentToken());\n        assertToken(JsonToken.VALUE_EMBEDDED_OBJECT, jp.nextToken());\n        byte[] data = jp.getBinaryValue();\n        assertNotNull(data);\n        assertArrayEquals(inputBinary, data);\n        Object pojo = jp.getEmbeddedObject();\n        assertSame(data, pojo);\n        jp.close();\n    }\n\n    public void testBinaryNode() throws Exception\n    {\n        byte[] inputBinary = new byte[] { 0, -5 };\n        BinaryNode n = new BinaryNode(inputBinary);\n        JsonParser jp = n.traverse();\n\n        assertNull(jp.getCurrentToken());\n        // exposed as POJO... not as VALUE_STRING\n        assertToken(JsonToken.VALUE_EMBEDDED_OBJECT, jp.nextToken());\n        byte[] data = jp.getBinaryValue();\n        assertNotNull(data);\n        assertArrayEquals(inputBinary, data);\n\n        // but as importantly, can be viewed as base64 encoded thing:\n        assertEquals(\"APs=\", jp.getText());\n\n        assertNull(jp.nextToken());\n        jp.close();\n    }\n\n    public void testTextAsBinary() throws Exception\n    {\n        TextNode n = new TextNode(\"   APs=\\n\");\n        JsonParser jp = n.traverse();\n        assertNull(jp.getCurrentToken());\n        assertToken(JsonToken.VALUE_STRING, jp.nextToken());\n        byte[] data = jp.getBinaryValue();\n        assertNotNull(data);\n        assertArrayEquals(new byte[] { 0, -5 }, data);\n\n        assertNull(jp.nextToken());\n        jp.close();\n        assertTrue(jp.isClosed());\n\n        // Also: let's verify we get an exception for garbage...\n        n = new TextNode(\"?!??\");\n        jp = n.traverse();\n        assertToken(JsonToken.VALUE_STRING, jp.nextToken());\n        try {\n            jp.getBinaryValue();\n        } catch (JsonParseException e) {\n            verifyException(e, \"Illegal character\");\n        }\n        jp.close();\n    }\n\n    /**\n     * Very simple test case to verify that tree-to-POJO\n     * conversion works ok\n     */\n    public void testDataBind() throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        JsonNode tree = m.readTree\n            (\"{ \\\"name\\\" : \\\"Tatu\\\", \\n\"\n             +\"\\\"magicNumber\\\" : 42,\"\n             +\"\\\"kids\\\" : [ \\\"Leo\\\", \\\"Lila\\\", \\\"Leia\\\" ] \\n\"\n             +\"}\");\n        Person tatu = m.treeToValue(tree, Person.class);\n        assertNotNull(tatu);\n        assertEquals(42, tatu.magicNumber);\n        assertEquals(\"Tatu\", tatu.name);\n        assertNotNull(tatu.kids);\n        assertEquals(3, tatu.kids.size());\n        assertEquals(\"Leo\", tatu.kids.get(0));\n",
+  "compaction": {
+    "source_lines": 277,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 20.962841124631964
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 8.727464587514095
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 14.052237664089517
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 20.962841124631964
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 8.585696673083733
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 8.727464587514095
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 14.052237664089517
+      },
+      {
+        "start": 240,
+        "end": 277,
+        "score": 7.487059883547303
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7811,
+  "representation_chars": 7811,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

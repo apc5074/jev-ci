@@ -1,0 +1,91 @@
+{
+  "test_class": "org.apache.commons.math3.ode.nonstiff.GraggBulirschStoerIntegratorTest",
+  "source_file": "src/test/java/org/apache/commons/math3/ode/nonstiff/GraggBulirschStoerIntegratorTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.ode.nonstiff.GraggBulirschStoerIntegratorTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/ode/nonstiff/GraggBulirschStoerIntegratorTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math3.ode.nonstiff;\n\nimport org.apache.commons.math3.exception.DimensionMismatchException;\nimport org.apache.commons.math3.exception.NumberIsTooSmallException;\nimport org.apache.commons.math3.ode.FirstOrderDifferentialEquations;\nimport org.apache.commons.math3.ode.FirstOrderIntegrator;\nimport org.apache.commons.math3.ode.TestProblem1;\nimport org.apache.commons.math3.ode.TestProblem3;\nimport org.apache.commons.math3.ode.TestProblem4;\nimport org.apache.commons.math3.ode.TestProblem5;\nimport org.apache.commons.math3.ode.TestProblemAbstract;\nimport org.apache.commons.math3.ode.TestProblemHandler;\nimport org.apache.commons.math3.ode.events.EventHandler;\nimport org.apache.commons.math3.ode.sampling.StepHandler;\nimport org.apache.commons.math3.ode.sampling.StepInterpolator;\nimport org.apache.commons.math3.util.FastMath;\nimport org.junit.Assert;\nimport org.junit.Test;\n\n\npublic class GraggBulirschStoerIntegratorTest {\n\n  @Test(expected=DimensionMismatchException.class)\n  public void testDimensionCheck() {\n      TestProblem1 pb = new TestProblem1();\n      AdaptiveStepsizeIntegrator integrator =\n        new GraggBulirschStoerIntegrator(0.0, 1.0, 1.0e-10, 1.0e-10);\n      integrator.integrate(pb,\n                           0.0, new double[pb.getDimension()+10],\n                           1.0, new double[pb.getDimension()+10]);\n  }\n\n  @Test(expected=NumberIsTooSmallException.class)\n  public void testNullIntervalCheck() {\n      TestProblem1 pb = new TestProblem1();\n      GraggBulirschStoerIntegrator integrator =\n        new GraggBulirschStoerIntegrator(0.0, 1.0, 1.0e-10, 1.0e-10);\n      integrator.integrate(pb,\n                           0.0, new double[pb.getDimension()],\n                           0.0, new double[pb.getDimension()]);\n  }\n\n  @Test(expected=NumberIsTooSmallException.class)\n  public void testMinStep() {\n\n      TestProblem5 pb  = new TestProblem5();\n      double minStep   = 0.1 * FastMath.abs(pb.getFinalTime() - pb.getInitialTime());\n      double maxStep   = FastMath.abs(pb.getFinalTime() - pb.getInitialTime());\n      double[] vecAbsoluteTolerance = { 1.0e-20, 1.0e-21 };\n      double[] vecRelativeTolerance = { 1.0e-20, 1.0e-21 };\n\n      FirstOrderIntegrator integ =\n        new GraggBulirschStoerIntegrator(minStep, maxStep,\n                                         vecAbsoluteTolerance, vecRelativeTolerance);\n      TestProblemHandler handler = new TestProblemHandler(pb, integ);\n      integ.addStepHandler(handler);\n      integ.integrate(pb,\n                      pb.getInitialTime(), pb.getInitialState(),\n                      pb.getFinalTime(), new double[pb.getDimension()]);\n\n  }\n\n  @Test\n\n    final TestProblem3 pb = new TestProblem3(0.9);\n    double minStep        = 0;\n    double maxStep        = pb.getFinalTime() - pb.getInitialTime();\n    double absTolerance   = 1.0e-8;\n    double relTolerance   = 1.0e-8;\n    FirstOrderIntegrator integ =\n      new GraggBulirschStoerIntegrator(minStep, maxStep,\n                                       absTolerance, relTolerance);\n    integ.addStepHandler(new VariableStepHandler());\n    double stopTime = integ.integrate(pb,\n                                      pb.getInitialTime(), pb.getInitialState(),\n                                      pb.getFinalTime(), new double[pb.getDimension()]);\n    Assert.assertEquals(pb.getFinalTime(), stopTime, 1.0e-10);\n    Assert.assertEquals(\"Gragg-Bulirsch-Stoer\", integ.getName());\n  }\n\n  @Test\n  public void testTooLargeFirstStep() {\n\n      AdaptiveStepsizeIntegrator integ =\n              new GraggBulirschStoerIntegrator(0, Double.POSITIVE_INFINITY, Double.NaN, Double.NaN);\n      final double start = 0.0;\n      final double end   = 0.001;\n      FirstOrderDifferentialEquations equations = new FirstOrderDifferentialEquations() {\n\n          public int getDimension() {\n              return 1;\n          }\n\n          public void computeDerivatives(double t, double[] y, double[] yDot) {\n              Assert.assertTrue(t >= FastMath.nextAfter(start, Double.NEGATIVE_INFINITY));\n              Assert.assertTrue(t <= FastMath.nextAfter(end,   Double.POSITIVE_INFINITY));\n              yDot[0] = -100.0 * y[0];\n          }\n\n      };\n\n      integ.setStepSizeControl(0, 1.0, 1.0e-6, 1.0e-8);\n      integ.integrate(equations, start, new double[] { 1.0 }, end, new double[1]);\n\n  }\n\n  @Test\n  public void testUnstableDerivative() {\n    final StepProblem stepProblem = new StepProblem(0.0, 1.0, 2.0);\n    FirstOrderIntegrator integ =\n      new GraggBulirschStoerIntegrator(0.1, 10, 1.0e-12, 0.0);\n    integ.addEventHandler(stepProblem, 1.0, 1.0e-12, 1000);\n    double[] y = { Double.NaN };\n    integ.integrate(stepProblem, 0.0, new double[] { 0.0 }, 10.0, y);\n    Assert.assertEquals(8.0, y[0], 1.0e-12);\n  }\n\n  @Test\n  public void testIssue596() {\n    FirstOrderIntegrator integ = new GraggBulirschStoerIntegrator(1e-10, 100.0, 1e-7, 1e-7);\n      integ.addStepHandler(new StepHandler() {\n\n          public void init(double t0, double[] y0, double t) {\n          }\n\n          public void handleStep(StepInterpolator interpolator, boolean isLast) {\n              double t = interpolator.getCurrentTime();\n              interpolator.setInterpolatedTime(t);\n              double[] y = interpolator.getInterpolatedState();\n              double[] yDot = interpolator.getInterpolatedDerivatives();\n              Assert.assertEquals(3.0 * t - 5.0, y[0], 1.0e-14);\n              Assert.assertEquals(3.0, yDot[0], 1.0e-14);\n          }\n      });\n      double[] y = {4.0};\n      double t0 = 3.0;\n      double tend = 10.0;\n      integ.integrate(new FirstOrderDifferentialEquations() {\n          public int getDimension() {\n              return 1;\n          }\n\n          public void computeDerivatives(double t, double[] y, double[] yDot) {\n              yDot[0] = 3.0;\n          }\n      }, t0, y, tend, y);\n\n  }\n\n  private static class KeplerStepHandler implements StepHandler {\n    public KeplerStepHandler(TestProblem3 pb) {\n      this.pb = pb;\n    }\n    public void init(double t0, double[] y0, double t) {\n      nbSteps = 0;\n      maxError = 0;\n    }\n    public void handleStep(StepInterpolator interpolator, boolean isLast) {\n\n      ++nbSteps;\n      for (int a = 1; a < 100; ++a) {\n\n        double prev   = interpolator.getPreviousTime();\n        double curr   = interpolator.getCurrentTime();\n        double interp = ((100 - a) * prev + a * curr) / 100;\n        interpolator.setInterpolatedTime(interp);\n\n        double[] interpolatedY = interpolator.getInterpolatedState ();\n        double[] theoreticalY  = pb.computeTheoreticalState(interpolator.getInterpolatedTime());\n        double dx = interpolatedY[0] - theoreticalY[0];\n        double dy = interpolatedY[1] - theoreticalY[1];\n        double error = dx * dx + dy * dy;\n        if (error > maxError) {\n          maxError = error;\n        }\n      }\n      if (isLast) {\n        Assert.assertTrue(maxError < 2.7e-6);\n        Assert.assertTrue(nbSteps < 80);\n      }\n    }\n    private int nbSteps;\n    private double maxError;\n    private TestProblem3 pb;\n  }\n\n  public static class VariableStepHandler implements StepHandler {\n    public VariableStepHandler() {\n        firstTime = true;\n        minStep = 0;\n        maxStep = 0;\n    }\n    public void init(double t0, double[] y0, double t) {\n      firstTime = true;\n      minStep = 0;\n      maxStep = 0;\n    }\n    public void handleStep(StepInterpolator interpolator,\n                           boolean isLast) {\n\n      double step = FastMath.abs(interpolator.getCurrentTime()\n                             - interpolator.getPreviousTime());\n      if (firstTime) {\n",
+  "compaction": {
+    "source_lines": 403,
+    "mode": "windows",
+    "windows_total": 7,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        240,
+        320
+      ],
+      [
+        300,
+        380
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.38272572118457
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 3.123441822170615
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 3.264197720104292
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.38272572118457
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.3075462173138304
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 2.923230983943178
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 1.0502946144888794
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 3.123441822170615
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 3.264197720104292
+      },
+      {
+        "start": 360,
+        "end": 403,
+        "score": 0.2782261246239535
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8619,
+  "representation_chars": 8619,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

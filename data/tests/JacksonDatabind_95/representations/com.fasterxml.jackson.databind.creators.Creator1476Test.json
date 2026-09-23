@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.creators.Creator1476Test",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/creators/Creator1476Test.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.creators.Creator1476Test\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/creators/Creator1476Test.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.creators;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.databind.*;\n\npublic class Creator1476Test extends BaseMapTest\n{\n    static final class SimplePojo {\n        private final int intField;\n        private final String stringField;\n\n        public SimplePojo(@JsonProperty(\"intField\") int intField) {\n          this(intField, \"empty\");\n        }\n\n        public SimplePojo(@JsonProperty(\"stringField\") String stringField) {\n          this(-1, stringField);\n        }\n\n        @JsonCreator\n        public SimplePojo(@JsonProperty(\"intField\") int intField, @JsonProperty(\"stringField\") String stringField) {\n          this.intField = intField;\n          this.stringField = stringField;\n        }\n\n        public int getIntField() {\n          return intField;\n        }\n\n        public String getStringField() {\n          return stringField;\n        }\n    }\n\n    public void testConstructorChoice() throws Exception {\n        ObjectMapper mapper = new ObjectMapper();\n        SimplePojo pojo = mapper.readValue(\"{ \\\"intField\\\": 1, \\\"stringField\\\": \\\"foo\\\" }\", SimplePojo.class);\n\n        assertEquals(1, pojo.getIntField());\n        assertEquals(\"foo\", pojo.getStringField());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 43,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1422,
+  "representation_chars": 1422,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

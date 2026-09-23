@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.math3.stat.descriptive.StatisticalSummaryValuesTest",
+  "source_file": "src/test/java/org/apache/commons/math3/stat/descriptive/StatisticalSummaryValuesTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.stat.descriptive.StatisticalSummaryValuesTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/stat/descriptive/StatisticalSummaryValuesTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.stat.descriptive;\n\n\nimport java.util.Locale;\n\n\nimport org.apache.commons.math3.TestUtils;\nimport org.junit.Assert;\nimport org.junit.Test;\n/**\n * Test cases for the {@link StatisticalSummaryValues} class.\n *\n * @version $Id$\n */\n\npublic final class StatisticalSummaryValuesTest {\n\n    @Test\n    public void testSerialization() {\n        StatisticalSummaryValues u = new StatisticalSummaryValues(1, 2, 3, 4, 5, 6);\n        TestUtils.checkSerializedEquality(u);\n        StatisticalSummaryValues t = (StatisticalSummaryValues) TestUtils.serializeAndRecover(u);\n        verifyEquality(u, t);\n    }\n\n    @Test\n    public void testEqualsAndHashCode() {\n        StatisticalSummaryValues u  = new StatisticalSummaryValues(1, 2, 3, 4, 5, 6);\n        StatisticalSummaryValues t = null;\n        Assert.assertTrue(\"reflexive\", u.equals(u));\n        Assert.assertFalse(\"non-null compared to null\", u.equals(t));\n        Assert.assertFalse(\"wrong type\", u.equals(Double.valueOf(0)));\n        t = new StatisticalSummaryValues(1, 2, 3, 4, 5, 6);\n        Assert.assertTrue(\"instances with same data should be equal\", t.equals(u));\n        Assert.assertEquals(\"hash code\", u.hashCode(), t.hashCode());\n\n        u = new StatisticalSummaryValues(Double.NaN, 2, 3, 4, 5, 6);\n        t = new StatisticalSummaryValues(1, Double.NaN, 3, 4, 5, 6);\n        Assert.assertFalse(\"instances based on different data should be different\",\n                (u.equals(t) ||t.equals(u)));\n    }\n\n    private void verifyEquality(StatisticalSummaryValues s, StatisticalSummaryValues u) {\n        Assert.assertEquals(\"N\",s.getN(),u.getN());\n        TestUtils.assertEquals(\"sum\",s.getSum(),u.getSum(), 0);\n        TestUtils.assertEquals(\"var\",s.getVariance(),u.getVariance(), 0);\n        TestUtils.assertEquals(\"std\",s.getStandardDeviation(),u.getStandardDeviation(), 0);\n        TestUtils.assertEquals(\"mean\",s.getMean(),u.getMean(), 0);\n        TestUtils.assertEquals(\"min\",s.getMin(),u.getMin(), 0);\n        TestUtils.assertEquals(\"max\",s.getMax(),u.getMax(), 0);\n    }\n    \n    @Test\n    public void testToString() {\n        StatisticalSummaryValues u  = new StatisticalSummaryValues(4.5, 16, 10, 5, 4, 45);\n        Locale d = Locale.getDefault();\n        Locale.setDefault(Locale.US);\n        Assert.assertEquals(\"StatisticalSummaryValues:\\n\" +\n                     \"n: 10\\n\" +\n                     \"min: 4.0\\n\" +\n                     \"max: 5.0\\n\" +\n                     \"mean: 4.5\\n\" +\n                     \"std dev: 4.0\\n\" +\n                     \"variance: 16.0\\n\" +\n                     \"sum: 45.0\\n\",  u.toString());\n        Locale.setDefault(d);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 84,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3660,
+  "representation_chars": 3660,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.creators.DelegatingArrayCreator1804Test",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/creators/DelegatingArrayCreator1804Test.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.creators.DelegatingArrayCreator1804Test\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/creators/DelegatingArrayCreator1804Test.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser.creators;\n\nimport java.util.List;\n\nimport com.fasterxml.jackson.annotation.JsonCreator;\nimport com.fasterxml.jackson.annotation.JsonValue;\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.ObjectMapper;\n\npublic class DelegatingArrayCreator1804Test extends BaseMapTest\n{\n    public static class MyTypeImpl extends MyType {\n        private final List<Integer> values;\n\n        MyTypeImpl(List<Integer> values) {\n            this.values = values;\n        }\n\n        @Override\n        public List<Integer> getValues() {\n            return values;\n        }\n    }\n\n    static abstract class MyType {\n        @JsonValue\n        public abstract List<Integer> getValues();\n\n        @JsonCreator(mode=JsonCreator.Mode.DELEGATING)\n        public static MyType of(List<Integer> values) {\n            return new MyTypeImpl(values);\n        }\n    }\n\n\n    public void testDelegatingArray1804() throws Exception {\n        ObjectMapper mapper = new ObjectMapper();\n        MyType thing = mapper.readValue(\"[]\", MyType.class);\n        assertNotNull(thing);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 41,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1345,
+  "representation_chars": 1345,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

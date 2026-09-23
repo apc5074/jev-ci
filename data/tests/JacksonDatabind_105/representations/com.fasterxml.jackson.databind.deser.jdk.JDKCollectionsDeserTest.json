@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.jdk.JDKCollectionsDeserTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/jdk/JDKCollectionsDeserTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.jdk.JDKCollectionsDeserTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/jdk/JDKCollectionsDeserTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser.jdk;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.JsonTypeInfo;\n\nimport com.fasterxml.jackson.core.type.TypeReference;\n\nimport com.fasterxml.jackson.databind.*;\n\n/**\n * Tests for special collection/map types via `java.util.Collections`\n */\npublic class JDKCollectionsDeserTest extends BaseMapTest\n{\n    static class XBean {\n        public int x;\n\n        public XBean() { }\n        public XBean(int x) { this.x = x; }\n    }\n\n    /*\n    /**********************************************************************\n    /* Test methods\n    /**********************************************************************\n     */\n\n    private final static ObjectMapper MAPPER = new ObjectMapper();\n    \n    // And then a round-trip test for singleton collections\n    public void testSingletonCollections() throws Exception\n    {\n        final TypeReference<?> xbeanListType = new TypeReference<List<XBean>>() { };\n\n        String json = MAPPER.writeValueAsString(Collections.singleton(new XBean(3)));\n        Collection<XBean> result = MAPPER.readValue(json, xbeanListType);\n        assertNotNull(result);\n        assertEquals(1, result.size());\n        assertEquals(3, result.iterator().next().x);\n\n        json = MAPPER.writeValueAsString(Collections.singletonList(new XBean(28)));\n        result = MAPPER.readValue(json, xbeanListType);\n        assertNotNull(result);\n        assertEquals(1, result.size());\n        assertEquals(28, result.iterator().next().x);\n    }\n\n    // [databind#1868]: Verify class name serialized as is\n    public void testUnmodifiableSet() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);\n\n        Set<String> theSet = Collections.unmodifiableSet(Collections.singleton(\"a\"));\n        String json = mapper.writeValueAsString(theSet);\n\n        assertEquals(\"[\\\"java.util.Collections$UnmodifiableSet\\\",[\\\"a\\\"]]\", json);\n\n        // 04-Jan-2018, tatu: Alas, no way to make this actually work well, at this point.\n         //   In theory could jiggle things back on deser, using one of two ways:\n         //\n         //   1) Do mapping to regular Set/List types (abstract type mapping): would work, but get rid of immutability\n         //   2) Have actually separate deserializer OR ValueInstantiator\n        /*\n        Set<String> result = mapper.readValue(json, Set.class);\n        assertNotNull(result);\n        assertEquals(1, result.size());\n        */\n    }\n}\n",
+  "compaction": {
+    "source_lines": 71,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2747,
+  "representation_chars": 2747,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

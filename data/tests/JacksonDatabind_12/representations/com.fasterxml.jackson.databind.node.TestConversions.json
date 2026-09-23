@@ -1,0 +1,81 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.node.TestConversions",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/node/TestConversions.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.node.TestConversions\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/node/TestConversions.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.node;\n\nimport java.io.IOException;\nimport java.math.BigDecimal;\nimport java.util.*;\n\nimport static org.junit.Assert.*;\n\nimport org.junit.Assert;\n\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\nimport com.fasterxml.jackson.databind.annotation.JsonSerialize;\nimport com.fasterxml.jackson.databind.jsontype.TypeSerializer;\nimport com.fasterxml.jackson.databind.util.TokenBuffer;\n\n/**\n * Unit tests for verifying functionality of {@link JsonNode} methods that\n * convert values to other types\n */\npublic class TestConversions extends BaseMapTest\n{\n    static class Root {\n        public Leaf leaf;\n    }\n\n    static class Leaf {\n        public int value;\n\n        public Leaf() { }\n        public Leaf(int v) { value = v; }\n    }\n    \n    // MixIn for [JACKSON-554]\n    @JsonDeserialize(using = LeafDeserializer.class)\n    public static class LeafMixIn\n    {\n    }\n\n    // for [Issue#467]\n    @JsonSerialize(using=Issue467Serializer.class)\n    static class Issue467Bean  {\n        public int i;\n\n        public Issue467Bean(int i0) { i = i0; }\n        public Issue467Bean() { this(0); }\n    }\n\n    @JsonSerialize(using=Issue467TreeSerializer.class)\n    static class Issue467Tree  {\n    }\n    \n    static class Issue467Serializer extends JsonSerializer<Issue467Bean> {\n        @Override\n        public void serialize(Issue467Bean value, JsonGenerator jgen,\n                SerializerProvider provider) throws IOException {\n            jgen.writeObject(new Issue467TmpBean(value.i));\n        }\n    }    \n\n    static class Issue467TreeSerializer extends JsonSerializer<Issue467Tree> {\n        @Override\n        public void serialize(Issue467Tree value, JsonGenerator jgen,\n                SerializerProvider provider) throws IOException {\n            jgen.writeTree(BooleanNode.TRUE);\n        }\n    }    \n    \n    static class Issue467TmpBean  {\n        public int x;\n\n        public Issue467TmpBean(int i) { x = i; }\n    }\n    \n    /*\n    /**********************************************************\n    /* Unit tests\n    /**********************************************************\n     */\n\n    private final ObjectMapper MAPPER = objectMapper();\n    \n    public void testAsInt() throws Exception\n    {\n        assertEquals(9, IntNode.valueOf(9).asInt());\n        assertEquals(7, LongNode.valueOf(7L).asInt());\n        assertEquals(13, new TextNode(\"13\").asInt());\n        assertEquals(0, new TextNode(\"foobar\").asInt());\n        assertEquals(27, new TextNode(\"foobar\").asInt(27));\n        assertEquals(1, BooleanNode.TRUE.asInt());\n    }\n\n    public void testAsBoolean() throws Exception\n    {\n        assertEquals(false, BooleanNode.FALSE.asBoolean());\n        assertEquals(true, BooleanNode.TRUE.asBoolean());\n        assertEquals(false, IntNode.valueOf(0).asBoolean());\n        assertEquals(true, IntNode.valueOf(1).asBoolean());\n        assertEquals(false, LongNode.valueOf(0).asBoolean());\n        assertEquals(true, LongNode.valueOf(-34L).asBoolean());\n        assertEquals(true, new TextNode(\"true\").asBoolean());\n        assertEquals(false, new TextNode(\"false\").asBoolean());\n        assertEquals(false, new TextNode(\"barf\").asBoolean());\n        assertEquals(true, new TextNode(\"barf\").asBoolean(true));\n\n        assertEquals(true, new POJONode(Boolean.TRUE).asBoolean());\n    }\n    \n    // Deserializer to trigger the problem described in [JACKSON-554]\n    public static class LeafDeserializer extends JsonDeserializer<Leaf>\n    {\n        @Override\n        public Leaf deserialize(JsonParser jp, DeserializationContext ctxt)\n                throws IOException, JsonProcessingException\n        {\n            JsonNode tree = (JsonNode) jp.readValueAsTree();\n            Leaf leaf = new Leaf();\n            leaf.value = tree.get(\"value\").intValue();\n            return leaf;\n        }\n    }\n\n    // Test for [JACKSON-554]\n    public void testTreeToValue() throws Exception\n    {\n        String JSON = \"{\\\"leaf\\\":{\\\"value\\\":13}}\";\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.addMixInAnnotations(Leaf.class, LeafMixIn.class);\n        JsonNode root = mapper.readTree(JSON);\n        // Ok, try converting to bean using two mechanisms\n        Root r1 = mapper.treeToValue(root, Root.class);\n        assertNotNull(r1);\n        assertEquals(13, r1.leaf.value);\n    }\n\n    // Test for [JACKSON-631]\n    public void testBase64Text() throws Exception\n    {\n        // let's actually iterate over sets of encoding modes, lengths\n        node.put(\"data\", inputData);\n        Issue709Bean result = MAPPER.treeToValue(node, Issue709Bean.class);\n        String json = MAPPER.writeValueAsString(node);\n        Issue709Bean resultFromString = MAPPER.readValue(json, Issue709Bean.class);\n        Issue709Bean resultFromConvert = MAPPER.convertValue(node, Issue709Bean.class);\n        \n        // all methods should work equally well:\n        Assert.assertArrayEquals(inputData, resultFromString.data);\n        Assert.assertArrayEquals(inputData, resultFromConvert.data);\n        Assert.assertArrayEquals(inputData, result.data);\n    }\n\n    public void testEmbeddedByteArray() throws Exception\n    {\n        TokenBuffer buf = new TokenBuffer(MAPPER, false);\n        buf.writeObject(new byte[3]);\n        JsonNode node = MAPPER.readTree(buf.asParser());\n        buf.close();\n        assertTrue(node.isBinary());\n        byte[] data = node.binaryValue();\n        assertNotNull(data);\n        assertEquals(3, data.length);\n    }\n\n    // [Issue#232]\n    public void testBigDecimalAsPlainStringTreeConversion() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.enable(SerializationFeature.WRITE_BIGDECIMAL_AS_PLAIN);\n        Map<String, Object> map = new HashMap<String, Object>();\n        String PI_STR = \"3.00000000\";\n        map.put(\"pi\", new BigDecimal(PI_STR));\n        JsonNode tree = mapper.valueToTree(map);\n        assertNotNull(tree);\n        assertEquals(1, tree.size());\n        assertTrue(tree.has(\"pi\"));\n    }\n\n    static class CustomSerializedPojo implements JsonSerializable\n    {\n        private final ObjectNode node = JsonNodeFactory.instance.objectNode();\n\n        public void setFoo(final String foo) {\n            node.put(\"foo\", foo);\n        }\n    \n        @Override\n        public void serialize(final JsonGenerator jgen, final SerializerProvider provider) throws IOException\n        {\n            jgen.writeTree(node);\n        }\n\n        @Override\n        public void serializeWithType(JsonGenerator jgen,\n                SerializerProvider provider, TypeSerializer typeSer) throws IOException {\n            typeSer.writeTypePrefixForObject(this, jgen);\n            serialize(jgen, provider);\n            typeSer.writeTypeSuffixForObject(this, jgen);\n        }    \n    }\n\n    // [#433]\n    public void testBeanToTree() throws Exception\n    {\n        final CustomSerializedPojo pojo = new CustomSerializedPojo();\n        pojo.setFoo(\"bar\");\n        final JsonNode node = MAPPER.valueToTree(pojo);\n        assertEquals(JsonNodeType.OBJECT, node.getNodeType());\n    }\n\n    // [#467]\n    public void testConversionOfPojos() throws Exception\n    {\n        final Issue467Bean input = new Issue467Bean(13);\n        final String EXP = \"{\\\"x\\\":13}\";\n        \n        // first, sanity check\n        String json = MAPPER.writeValueAsString(input);\n        assertEquals(EXP, json);\n\n",
+  "compaction": {
+    "source_lines": 283,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.159404652052071
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.190493851258514
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.898531334419484
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.159404652052071
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.190493851258514
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 4.342133440609398
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.898531334419484
+      },
+      {
+        "start": 240,
+        "end": 283,
+        "score": 3.0152608059738117
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7634,
+  "representation_chars": 7634,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

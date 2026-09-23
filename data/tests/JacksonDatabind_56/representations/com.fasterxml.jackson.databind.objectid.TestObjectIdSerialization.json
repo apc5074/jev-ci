@@ -1,0 +1,86 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.objectid.TestObjectIdSerialization",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/objectid/TestObjectIdSerialization.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.objectid.TestObjectIdSerialization\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/objectid/TestObjectIdSerialization.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.objectid;\n\nimport com.fasterxml.jackson.annotation.JsonIdentityInfo;\nimport com.fasterxml.jackson.annotation.JsonIdentityReference;\nimport com.fasterxml.jackson.annotation.JsonPropertyOrder;\nimport com.fasterxml.jackson.annotation.ObjectIdGenerators;\nimport com.fasterxml.jackson.databind.*;\n\n/**\n * Unit test to verify handling of Object Id deserialization\n */\npublic class TestObjectIdSerialization extends BaseMapTest\n{\n    @JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property=\"id\")\n    static class Identifiable\n    {\n        public int value;\n\n        public Identifiable next;\n        \n        public Identifiable() { this(0); }\n        public Identifiable(int v) {\n            value = v;\n        }\n    }\n\n    @JsonIdentityInfo(generator=ObjectIdGenerators.StringIdGenerator.class, property=\"id\")\n    static class StringIdentifiable\n    {\n        public int value;\n\n        public StringIdentifiable next;\n        \n        public StringIdentifiable() { this(0); }\n        public StringIdentifiable(int v) {\n            value = v;\n        }\n    }\n\n    @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property=\"customId\")\n    static class IdentifiableWithProp\n    {\n        public int value;\n\n        // Property that contains Object Id to use\n        public int customId;\n\n        public IdentifiableWithProp next;\n        \n        public IdentifiableWithProp() { this(0, 0); }\n        public IdentifiableWithProp(int id, int value) {\n            this.customId = id;\n            this.value = value;\n        }\n    }\n\n    // For property reference, need another class:\n    \n    static class IdWrapper\n    {\n        @JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property=\"@id\")\n        public ValueNode node;\n\n        public IdWrapper() { }\n        public IdWrapper(int v) {\n            node = new ValueNode(v);\n        }\n    }\n\n    static class ValueNode {\n        public int value;\n        public IdWrapper next;\n        \n        public ValueNode() { this(0); }\n        public ValueNode(int v) { value = v; }\n    }\n\n    // Similarly for property-ref via property:\n    \n    protected static class IdWrapperCustom\n    {\n        @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property=\"id\")\n        public ValueNodeCustom node;\n\n        public IdWrapperCustom() { }\n        public IdWrapperCustom(int id, int value) {\n            node = new ValueNodeCustom(id, value);\n        }\n    }\n\n    protected static class ValueNodeCustom {\n        public int value;\n        private int id;\n        public IdWrapperCustom next;\n\n        public int getId() { return id; }\n        \n        public ValueNodeCustom() { this(0, 0); }\n        public ValueNodeCustom(int id, int value) {\n            this.id = id;\n            this.value = value;\n        }\n    }\n\n    @JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property=\"id\")\n    static class AlwaysAsId\n    {\n        public int value;\n        \n        public AlwaysAsId() { this(0); }\n        public AlwaysAsId(int v) {\n            value = v;\n        }\n    }\n\n    // For [https://github.com/FasterXML/jackson-annotations/issues/4]\n    @JsonPropertyOrder(alphabetic=true)\n    static class AlwaysContainer\n    {\n        @JsonIdentityReference(alwaysAsId=true)\n        public AlwaysAsId a = new AlwaysAsId(13);\n        \n        @JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property=\"id\")\n        @JsonIdentityReference(alwaysAsId=true)\n        public Value b = new Value();\n    }\n\n    static class Value {\n        public int x = 3;\n    }\n\n    @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property=\"id\")\n    static class TreeNode\n    {\n        public int id;\n        public String name;\n\n        @JsonIdentityReference(alwaysAsId=true)\n        public TreeNode parent;\n\n        // children serialized with ids if need be\n        public TreeNode child;\n\n        public TreeNode() { }\n        public TreeNode(TreeNode p, int id, String name) {\n            parent = p;\n            this.id = id;\n            this.name = name;\n        }\n    }\n\n    // // Let's also have one 'broken' test\n\n    // no \"id\" property\n    @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property=\"id\")\n    static class Broken\n    {\n        public int value;\n        public int customId;\n    }\n\n    // [databind#370]\n    @JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property=\"@id\")\n    public static class EmptyObject { }\n\n    //for [databind#1150]\n    @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property=\"id\")\n    static class IdentifiableStringId\n    {\n        public String id;\n        public int value;\n\n        public Identifiable next;\n\n        public IdentifiableStringId() { this(0); }\n        public IdentifiableStringId(int v) {\n            value = v;\n        }\n    }\n\n    /*\n    /*****************************************************\n    /* Unit tests, external id serialization\n    /*****************************************************\n     */\n\n    private final static String EXP_SIMPLE_INT_CLASS = \"{\\\"id\\\":1,\\\"value\\\":13,\\\"next\\\":1}\";\n    \n    private final ObjectMapper MAPPER = objectMapper();\n\n    public void testSimpleSerializationClass() throws Exception\n    {\n        Identifiable src = new Identifiable(13);\n        src.next = src;\n        \n        // First, serialize:\n        String json = MAPPER.writeValueAsString(src);\n        assertEquals(EXP_SIMPLE_INT_CLASS, json);\n\n        // and ensure that state is cleared in-between as well:\n",
+  "compaction": {
+    "source_lines": 337,
+    "mode": "windows",
+    "windows_total": 6,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 11.744798708446092
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.272206270600385
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 6.5306676095500755
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 11.744798708446092
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.272206270600385
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 6.5306676095500755
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 5.087079922402663
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 3.157212226501465
+      },
+      {
+        "start": 300,
+        "end": 337,
+        "score": 0.8867007829422042
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 5875,
+  "representation_chars": 5875,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

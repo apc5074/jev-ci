@@ -1,0 +1,101 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.creators.TestCreators",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/creators/TestCreators.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.creators.TestCreators\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/creators/TestCreators.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser.creators;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.exc.InvalidDefinitionException;\n\n/**\n * Unit tests for verifying that it is possible to annotate\n * various kinds of things with {@link JsonCreator} annotation.\n */\npublic class TestCreators\n    extends BaseMapTest\n{\n    /*\n    /**********************************************************\n    /* Annotated helper classes, simple\n    /**********************************************************\n     */\n\n    /**\n     * Simple(st) possible demonstration of using annotated\n     * constructors\n     */\n    static class ConstructorBean {\n        int x;\n\n        @JsonCreator protected ConstructorBean(@JsonProperty(\"x\") int x) {\n            this.x = x;\n        }\n    }\n\n    /**\n     * Another simple constructor, but with bit more unusual argument\n     * type\n     */\n    static class BooleanConstructorBean {\n        Boolean b;\n        protected BooleanConstructorBean(Boolean b) {\n            this.b = b;\n        }\n    }\n\n    static class BooleanConstructorBean2 {\n        boolean b;\n        protected BooleanConstructorBean2(boolean b) {\n            this.b = b;\n        }\n    }\n    \n    static class DoubleConstructorBean {\n        Double d; // cup?\n        @JsonCreator protected DoubleConstructorBean(Double d) {\n            this.d = d;\n        }\n    }\n\n    static class FactoryBean {\n        double d; // teehee\n\n        private FactoryBean(double value, boolean dummy) { d = value; }\n\n        @JsonCreator protected static FactoryBean createIt(@JsonProperty(\"f\") double value) {\n            return new FactoryBean(value, true);\n        }\n    }\n\n    static class LongFactoryBean {\n        long value;\n\n        private LongFactoryBean(long v) { value = v; }\n\n        @JsonCreator static protected LongFactoryBean valueOf(long v) {\n            return new LongFactoryBean(v);\n        }\n    }\n\n    static class StringFactoryBean {\n        String value;\n\n        private StringFactoryBean(String v, boolean dummy) { value = v; }\n\n        @JsonCreator static protected StringFactoryBean valueOf(String v) {\n            return new StringFactoryBean(v, true);\n        }\n    }\n\n    static class FactoryBeanMixIn { // static just to be able to use static methods\n        /**\n         * Note: signature (name and parameter types) must match; but\n         * only annotations will be used, not code or such. And use\n         * is by augmentation, so we only need to add things to add\n         * or override.\n         */\n        static FactoryBean createIt(@JsonProperty(\"mixed\") double xyz) {\n            return null;\n        }\n    }\n\n    /**\n     * Simple demonstration of INVALID construtor annotation (only\n     * defining name for first arg)\n     */\n    static class BrokenBean {\n        @JsonCreator protected BrokenBean(@JsonProperty(\"a\") int a,\n                                          int b) {\n        }\n    }\n\n    /**\n     * Bean that defines both creator and factory methor as\n     * creators. Constructors have priority; but it is possible\n     * to hide it using mix-in annotations.\n     */\n    static class CreatorBean\n    {\n        String a;\n        int x;\n\n        @JsonCreator\n        protected CreatorBean(@JsonProperty(\"a\") String paramA,\n                              @JsonProperty(\"x\") int paramX)\n        {\n            a = \"ctor:\"+paramA;\n            x = 1+paramX;\n        }\n\n        private CreatorBean(String a, int x, boolean dummy) {\n            this.a = a;\n            this.x = x;\n        }\n\n        @JsonCreator\n        public static CreatorBean buildMeUpButterCup(@JsonProperty(\"a\") String paramA,\n                                                     @JsonProperty(\"x\") int paramX)\n        {\n            return new CreatorBean(\"factory:\"+paramA, paramX-1, false);\n        }\n    }\n\n    /**\n     * Class for sole purpose of hosting mix-in annotations.\n     * Couple of things to note: (a) MUST be static class (non-static\n     * get implicit pseudo-arg, 'this';\n     * (b) for factory methods, must have static to match (part of signature)\n     */\n    abstract static class MixIn {\n        @JsonIgnore private MixIn(String a, int x) { }\n    }\n\n    static class MultiBean {\n        Object value;\n\n        @JsonCreator public MultiBean(int v) { value = v; }\n        @JsonCreator public MultiBean(double v) { value = v; }\n        @JsonCreator public MultiBean(String v) { value = v; }\n        @JsonCreator public MultiBean(boolean v) { value = v; }\n    }\n\n    // for [JACKSON-850]\n    static class NoArgFactoryBean {\n        public int x;\n        public int y;\n        \n        public NoArgFactoryBean(int value) { x = value; }\n        \n        @JsonCreator\n        public static NoArgFactoryBean create() { return new NoArgFactoryBean(123); }\n    }\n\n    // [Issue#208]\n    static class FromStringBean {\n        protected String value;\n\n        private FromStringBean(String s, boolean x) {\n            value = s;\n        }\n\n        // should be recognized as implicit factory method\n        public static FromStringBean fromString(String s) {\n            return new FromStringBean(s, false);\n        }\n    }\n    \n    /*\n    /**********************************************************\n    /* Annotated helper classes, mixed (creator and props)\n    /**********************************************************\n     */\n\n    /**\n     * Test bean for ensuring that constructors can be mixed with setters\n     */\n    static class ConstructorAndPropsBean\n    {\n        final int a, b;\n        boolean c;\n\n",
+  "compaction": {
+    "source_lines": 501,
+    "mode": "windows",
+    "windows_total": 9,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 20.28477730353985
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 10.870485638616472
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 7.411607019825609
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 20.28477730353985
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 10.870485638616472
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 7.411607019825609
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 6.436615814211718
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.779593125328188
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 3.6694753744298785
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 5.626698496988193
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 7.016895412011858
+      },
+      {
+        "start": 480,
+        "end": 501,
+        "score": 4.047425125787296
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 5786,
+  "representation_chars": 5786,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

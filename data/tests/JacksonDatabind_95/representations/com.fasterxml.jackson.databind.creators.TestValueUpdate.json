@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.creators.TestValueUpdate",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/creators/TestValueUpdate.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.creators.TestValueUpdate\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/creators/TestValueUpdate.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.creators;\n\nimport com.fasterxml.jackson.annotation.JsonCreator;\nimport com.fasterxml.jackson.annotation.JsonProperty;\n\nimport com.fasterxml.jackson.databind.*;\n\npublic class TestValueUpdate extends BaseMapTest\n{\n    static class Bean\n    {\n        private String a;\n        private String b;\n\n        @JsonCreator\n        public Bean(@JsonProperty(\"a\") String a, @JsonProperty(\"b\") String b)\n        {\n            this.a = a;\n            this.b = b;\n        }\n\n        String getA() {\n            return a;\n        }\n\n        void setA(String a) {\n            this.a = a;\n        }\n\n        String getB() {\n            return b;\n        }\n\n        void setB(String b) {\n            this.b = b;\n        }\n    }\n\n    private final ObjectMapper MAPPER = new ObjectMapper();\n    \n    // [databind#318] (and Scala module issue #83]\n    public void testValueUpdateWithCreator() throws Exception\n    {\n        Bean bean = new Bean(\"abc\", \"def\");\n        MAPPER.readerFor(Bean.class).withValueToUpdate(bean).readValue(\"{\\\"a\\\":\\\"ghi\\\",\\\"b\\\":\\\"jkl\\\"}\");\n        assertEquals(\"ghi\", bean.getA());\n        assertEquals(\"jkl\", bean.getB());\n    }\n\n    public void testValueUpdateOther() throws Exception\n    {\n        Bean bean = new Bean(\"abc\", \"def\");\n        ObjectReader r = MAPPER.reader().withValueToUpdate(bean);\n        // but, changed our minds, no update\n        r = r.withValueToUpdate(null);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 57,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1609,
+  "representation_chars": 1609,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

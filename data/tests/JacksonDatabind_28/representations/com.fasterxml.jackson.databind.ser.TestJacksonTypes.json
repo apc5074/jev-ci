@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.ser.TestJacksonTypes",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/ser/TestJacksonTypes.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.ser.TestJacksonTypes\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/ser/TestJacksonTypes.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.ser;\n\nimport java.io.*;\nimport java.util.*;\n\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.util.TokenBuffer;\n\n/**\n * Unit tests for those Jackson types we want to ensure can be serialized.\n */\npublic class TestJacksonTypes\n    extends BaseMapTest\n{\n    public void testLocation() throws IOException\n    {\n        File f = new File(\"/tmp/test.json\");\n        JsonLocation loc = new JsonLocation(f, -1, 100, 13);\n        ObjectMapper mapper = new ObjectMapper();\n        Map<String,Object> result = writeAndMap(mapper, loc);\n        assertEquals(5, result.size());\n        assertEquals(f.getAbsolutePath(), result.get(\"sourceRef\"));\n        assertEquals(Integer.valueOf(-1), result.get(\"charOffset\"));\n        assertEquals(Integer.valueOf(-1), result.get(\"byteOffset\"));\n        assertEquals(Integer.valueOf(100), result.get(\"lineNr\"));\n        assertEquals(Integer.valueOf(13), result.get(\"columnNr\"));\n\n    }\n\n    /**\n     * Verify that {@link TokenBuffer} can be properly serialized\n     * automatically, using the \"standard\" JSON sample document\n     */\n    public void testTokenBuffer() throws Exception\n    {\n        // First, copy events from known good source (StringReader)\n        JsonParser jp = createParserUsingReader(SAMPLE_DOC_JSON_SPEC);\n        TokenBuffer tb = new TokenBuffer(null, false);\n        while (jp.nextToken() != null) {\n            tb.copyCurrentEvent(jp);\n        }\n        jp.close();\n        // Then serialize as String\n        String str = serializeAsString(tb);\n        tb.close();\n        // and verify it looks ok\n        verifyJsonSpecSampleDoc(createParserUsingReader(str), true);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 50,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1898,
+  "representation_chars": 1898,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

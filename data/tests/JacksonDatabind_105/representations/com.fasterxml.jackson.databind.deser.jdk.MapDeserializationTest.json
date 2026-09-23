@@ -1,0 +1,101 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.jdk.MapDeserializationTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/jdk/MapDeserializationTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.jdk.MapDeserializationTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/jdk/MapDeserializationTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser.jdk;\n\nimport java.io.IOException;\nimport java.text.DateFormat;\nimport java.text.SimpleDateFormat;\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.JsonCreator;\nimport com.fasterxml.jackson.annotation.JsonTypeInfo;\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.core.type.TypeReference;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\nimport com.fasterxml.jackson.databind.deser.std.StdDeserializer;\n\n@SuppressWarnings(\"serial\")\npublic class MapDeserializationTest\n    extends BaseMapTest\n{\n    static enum Key {\n        KEY1, KEY2, WHATEVER;\n    }\n\n    static class BrokenMap\n        extends HashMap<Object,Object>\n    {\n        // No default ctor, nor @JsonCreators\n        public BrokenMap(boolean dummy) { super(); }\n    }\n\n    @JsonDeserialize(using=CustomMapDeserializer.class)\n    static class CustomMap extends LinkedHashMap<String,String> { }\n\n    static class CustomMapDeserializer extends StdDeserializer<CustomMap>\n    {\n        public CustomMapDeserializer() { super(CustomMap.class); }\n        @Override\n        public CustomMap deserialize(JsonParser p, DeserializationContext ctxt)\n            throws IOException\n        {\n            CustomMap result = new CustomMap();\n            result.put(\"x\", p.getText());\n            return result;\n        }\n    }\n\n    static class KeyType {\n        protected String value;\n        \n        private KeyType(String v, boolean bogus) {\n            value = v;\n        }\n\n        @JsonCreator\n        public static KeyType create(String v) {\n            return new KeyType(v, true);\n        }\n    }\n\n    public static class EnumMapContainer {\n        @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property=\"@class\")\n        public EnumMap<KeyEnum,ITestType> testTypes;\n    }\n\n    public static class ListContainer {\n        public List<ITestType> testTypes;\n    }\n\n    @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property=\"@class\")\n    public static interface ITestType { }\n\n    public static enum KeyEnum {\n        A, B\n    }\n    public static enum ConcreteType implements ITestType {\n        ONE, TWO;\n    }\n\n    static class ClassStringMap extends HashMap<Class<?>,String> { }\n    \n        assertNull(map.get(\"null\"));\n        assertEquals(5, map.size());\n    }\n    \n    // [JACKSON-620]: allow \"\" to mean 'null' for Maps\n    public void testFromEmptyString() throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        m.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);\n        Map<?,?> result = m.readValue(quote(\"\"), Map.class);\n        assertNull(result);\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods, typed maps\n    /**********************************************************\n     */\n\n    public void testExactStringIntMap() throws Exception\n    {\n        // to get typing, must use type reference\n        String JSON = \"{ \\\"foo\\\" : 13, \\\"bar\\\" : -39, \\n \\\"\\\" : 0 }\";\n        Map<String,Integer> result = MAPPER.readValue\n            (JSON, new TypeReference<HashMap<String,Integer>>() { });\n\n        assertNotNull(result);\n        assertEquals(HashMap.class, result.getClass());\n        assertEquals(3, result.size());\n\n        assertEquals(Integer.valueOf(13), result.get(\"foo\"));\n        assertEquals(Integer.valueOf(-39), result.get(\"bar\"));\n        assertEquals(Integer.valueOf(0), result.get(\"\"));\n        assertNull(result.get(\"foobar\"));\n        assertNull(result.get(\" \"));\n    }\n\n    /**\n     * Let's also check that it is possible to do type conversions\n     * to allow use of non-String Map keys.\n     */\n    public void testIntBooleanMap() throws Exception\n    {\n        // to get typing, must use type reference\n        String JSON = \"{ \\\"1\\\" : true, \\\"-1\\\" : false }\";\n        Map<?,Object> result = MAPPER.readValue\n            (JSON, new TypeReference<HashMap<Integer,Object>>() { });\n\n        assertNotNull(result);\n        assertEquals(HashMap.class, result.getClass());\n        assertEquals(2, result.size());\n\n        assertEquals(Boolean.TRUE, result.get(Integer.valueOf(1)));\n        assertEquals(Boolean.FALSE, result.get(Integer.valueOf(-1)));\n        assertNull(result.get(\"foobar\"));\n        assertNull(result.get(0));\n    }\n\n    public void testExactStringStringMap() throws Exception\n    {\n        // to get typing, must use type reference\n        String JSON = \"{ \\\"a\\\" : \\\"b\\\" }\";\n        Map<String,Integer> result = MAPPER.readValue\n            (JSON, new TypeReference<TreeMap<String,String>>() { });\n\n        assertNotNull(result);\n        assertEquals(TreeMap.class, result.getClass());\n        assertEquals(1, result.size());\n\n        assertEquals(\"b\", result.get(\"a\"));\n        assertNull(result.get(\"b\"));\n    }\n\n    /**\n     * Unit test that verifies that it's ok to have incomplete\n     * information about Map class itself, as long as it's something\n     * we good guess about: for example, <code>Map.Class</code> will\n     * be replaced by something like <code>HashMap.class</code>,\n     * if given.\n     */\n    \t assertTrue(result.containsKey(date1));\n    \t assertEquals(\"\", result.get(new Date(123456000L)));\n\n    \t assertTrue(result.containsKey(new Date(0)));\n    \t assertNull(result.get(new Date(0)));\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods, maps with various alternative key types\n    /**********************************************************\n     */\n\n    public void testCalendarMap() throws Exception\n    {\n        // 18-Jun-2015, tatu: Should be safest to use default timezone that mapper would use\n        TimeZone tz = MAPPER.getSerializationConfig().getTimeZone();        \n        Calendar c = Calendar.getInstance(tz);\n\n        c.setTimeInMillis(123456000L);\n        DateFormat fmt = new SimpleDateFormat(\"EEE, dd MMM yyyy HH:mm:ss zzz\", Locale.US);\n        String JSON = \"{ \\\"\"+fmt.format(c.getTime())+\"\\\" : \\\"\\\", \\\"\"+new Date(0).getTime()+\"\\\" : null }\";\n        HashMap<Calendar,String> result = MAPPER.readValue\n                (JSON, new TypeReference<HashMap<Calendar,String>>() { });\n\n        assertNotNull(result);\n        assertEquals(HashMap.class, result.getClass());\n        assertEquals(2, result.size());\n\n        assertTrue(result.containsKey(c));\n        assertEquals(\"\", result.get(c));\n        c.setTimeInMillis(0);\n        assertTrue(result.containsKey(c));\n        assertNull(result.get(c));\n    }\n\n    public void testUUIDKeyMap() throws Exception\n    {\n         UUID key = UUID.nameUUIDFromBytes(\"foobar\".getBytes(\"UTF-8\"));\n         String JSON = \"{ \\\"\"+key+\"\\\":4}\";\n         Map<UUID,Object> result = MAPPER.readValue(JSON, new TypeReference<Map<UUID,Object>>() { });\n         assertNotNull(result);\n         assertEquals(1, result.size());\n         Object ob = result.keySet().iterator().next();\n         assertNotNull(ob);\n         assertEquals(UUID.class, ob.getClass());\n         assertEquals(key, ob);\n    }\n\n    public void testLocaleKeyMap() throws Exception {\n        Locale key = Locale.CHINA;\n        String JSON = \"{ \\\"\" + key + \"\\\":4}\";\n        Map<Locale, Object> result = MAPPER.readValue(JSON, new TypeReference<Map<Locale, Object>>() {\n        });\n        assertNotNull(result);\n        assertEquals(1, result.size());\n        Object ob = result.keySet().iterator().next();\n        assertNotNull(ob);\n        assertEquals(Locale.class, ob.getClass());\n        assertEquals(key, ob);\n    }\n\n    public void testCurrencyKeyMap() throws Exception {\n        Currency key = Currency.getInstance(\"USD\");\n        String JSON = \"{ \\\"\" + key + \"\\\":4}\";\n        Map<Currency, Object> result = MAPPER.readValue(JSON, new TypeReference<Map<Currency, Object>>() {\n        });\n        assertNotNull(result);\n        assertEquals(1, result.size());\n        Object ob = result.keySet().iterator().next();\n        assertNotNull(ob);\n        assertEquals(Currency.class, ob.getClass());\n        assertEquals(key, ob);\n    }\n\n    // Test confirming that @JsonCreator may be used with Map Key types\n    public void testKeyWithCreator() throws Exception\n    {\n        // first, key should deserialize normally:\n        KeyType key = MAPPER.readValue(quote(\"abc\"), KeyType.class);\n",
+  "compaction": {
+    "source_lines": 510,
+    "mode": "windows",
+    "windows_total": 9,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        180,
+        260
+      ],
+      [
+        360,
+        440
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 31.81087070736479
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 8.924956194246182
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 9.748031269661396
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 31.81087070736479
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 4.5782087876819215
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 5.990080351874075
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 8.924956194246182
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 5.450080661244927
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 6.364585515626924
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 9.748031269661396
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 5.541426288174071
+      },
+      {
+        "start": 480,
+        "end": 510,
+        "score": 0.9577497715042412
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8553,
+  "representation_chars": 8553,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

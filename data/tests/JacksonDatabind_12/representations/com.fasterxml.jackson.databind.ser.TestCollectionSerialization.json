@@ -1,0 +1,86 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.ser.TestCollectionSerialization",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/ser/TestCollectionSerialization.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.ser.TestCollectionSerialization\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/ser/TestCollectionSerialization.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.ser;\n\nimport java.io.*;\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonSerialize;\n\npublic class TestCollectionSerialization\n    extends BaseMapTest\n{\n    enum Key { A, B, C };\n\n    // Field-based simple bean with a single property, \"values\"\n    final static class CollectionBean\n    {\n        @JsonProperty // not required\n        public Collection<Object> values;\n\n        public CollectionBean(Collection<Object> c) { values = c; }\n    }\n\n    static class EnumMapBean\n    {\n        EnumMap<Key,String> _map;\n\n        public EnumMapBean(EnumMap<Key,String> m)\n        {\n            _map = m;\n        }\n\n        public EnumMap<Key,String> getMap() { return _map; }\n    }\n\n    final static class IterableWrapper\n        implements Iterable<Integer>\n    {\n        List<Integer> _ints = new ArrayList<Integer>();\n\n        public IterableWrapper(int[] values) {\n            for (int i : values) {\n                _ints.add(Integer.valueOf(i));\n            }\n        }\n\n        @Override\n        public Iterator<Integer> iterator() {\n            return _ints.iterator();\n        }\n    }\n\n    /**\n     * Class needed for testing [JACKSON-220]\n     */\n    @SuppressWarnings(\"serial\")\n    @JsonSerialize(using=ListSerializer.class)    \n    static class PseudoList extends ArrayList<String>\n    {\n        public PseudoList(String... values) {\n            super(Arrays.asList(values));\n        }\n    }\n\n    static class ListSerializer extends JsonSerializer<List<String>>\n    {\n        @Override\n        public void serialize(List<String> value,\n                              JsonGenerator jgen,\n                              SerializerProvider provider)\n            throws IOException\n        {\n            // just use standard List.toString(), output as JSON String\n            jgen.writeString(value.toString());\n        }\n    }\n\n    // for [JACKSON-254], suppression of empty collections\n    static class EmptyListBean {\n        public Integer next() {\n            return i++;\n        }\n\n        @Override\n        public void remove() { }\n\n        public int getX() { return 13; }\n    }\n\n    // [Issue#358]\n    static class A {\n        public String unexpected = \"Bye.\";\n    }\n\n    static class B {\n        @JsonSerialize(as = Iterable.class, contentUsing = ASerializer.class)\n        public List<A> list = Arrays.asList(new A());\n    }\n    static class ASerializer extends JsonSerializer<A> {\n        @Override\n        public void serialize(A a, JsonGenerator jsonGenerator, SerializerProvider provider) throws IOException {\n            jsonGenerator.writeStartArray();\n            jsonGenerator.writeString(\"Hello world.\");\n            jsonGenerator.writeEndArray();\n        }\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n\n    private final static ObjectMapper MAPPER = new ObjectMapper();\n\n    public void testCollections()\n        throws IOException\n    {\n        // Let's try different collections, arrays etc\n        final int entryLen = 98;\n\n        for (int type = 0; type < 4; ++type) {\n            Object value;\n\n            if (type == 0) { // first, array\n                int[] ints = new int[entryLen];\n                for (int i = 0; i < entryLen; ++i) {\n                    ints[i] = Integer.valueOf(i);\n                }\n                value = ints;\n            } else {\n                Collection<Integer> c;\n\n                switch (type) {\n                case 1:\n                    c = new LinkedList<Integer>();\n                    break;\n                case 2:\n                    c = new TreeSet<Integer>(); // has to be ordered\n                    break;\n                default:\n                    c = new ArrayList<Integer>();\n                    break;\n                }\n                for (int i = 0; i < entryLen; ++i) {\n                    c.add(Integer.valueOf(i));\n                }\n                value = c;\n            }\n            String json = MAPPER.writeValueAsString(value);\n            \n            // and then need to verify:\n            JsonParser jp = new JsonFactory().createParser(json);\n            assertToken(JsonToken.START_ARRAY, jp.nextToken());\n            for (int i = 0; i < entryLen; ++i) {\n                assertToken(JsonToken.VALUE_NUMBER_INT, jp.nextToken());\n                assertEquals(i, jp.getIntValue());\n            }\n            assertToken(JsonToken.END_ARRAY, jp.nextToken());\n        CollectionBean cb = new CollectionBean(null);\n        Map<String,Object> result = writeAndMap(MAPPER, cb);\n        assertEquals(1, result.size());\n        assertTrue(result.containsKey(\"values\"));\n        assertNull(result.get(\"values\"));\n    }\n\n    @SuppressWarnings(\"unchecked\")\n    public void testEmptyBeanEnumMap()\n        throws IOException\n    {\n        EnumMap<Key,String> map = new EnumMap<Key,String>(Key.class);\n        EnumMapBean b = new EnumMapBean(map);\n        Map<String,Object> result = writeAndMap(MAPPER, b);\n\n        assertEquals(1, result.size());\n        assertTrue(result.containsKey(\"map\"));\n        // we deserialized to untyped, not back to bean, so:\n        Map<Object,Object> map2 = (Map<Object,Object>) result.get(\"map\");\n        assertNotNull(map2);\n        assertEquals(0, map2.size());\n    }\n\n    // Should also be able to serialize null EnumMaps as expected\n    public void testNullBeanEnumMap()\n        throws IOException\n    {\n        EnumMapBean b = new EnumMapBean(null);\n        Map<String,Object> result = writeAndMap(MAPPER, b);\n\n        assertEquals(1, result.size());\n        assertTrue(result.containsKey(\"map\"));\n        assertNull(result.get(\"map\"));\n    }\n\n    // Test [JACKSON-220]\n    public void testListSerializer() throws IOException\n    {\n        assertEquals(\"\\\"[ab, cd, ef]\\\"\",\n                MAPPER.writeValueAsString(new PseudoList(\"ab\", \"cd\", \"ef\")));\n    }\n\n    // [JACKSON-254]\n    public void testEmptyListOrArray() throws IOException\n    {\n        // by default, empty lists serialized normally\n        EmptyListBean list = new EmptyListBean();\n        EmptyArrayBean array = new EmptyArrayBean();\n        assertTrue(MAPPER.isEnabled(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS));\n        assertEquals(\"{\\\"empty\\\":[]}\", MAPPER.writeValueAsString(list));\n        assertEquals(\"{\\\"empty\\\":[]}\", MAPPER.writeValueAsString(array));\n\n        // note: value of setting may be cached when constructing serializer, need a new instance\n        ObjectMapper m = new ObjectMapper();\n        m.configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false);\n        assertEquals(\"{}\", m.writeValueAsString(list));\n        assertEquals(\"{}\", m.writeValueAsString(array));\n    }\n    \n    // [JACKSON-689], [JACKSON-876]\n    public void testWithIterable() throws IOException\n    {\n        // 689:\n        assertEquals(\"{\\\"values\\\":[\\\"value\\\"]}\",\n                MAPPER.writeValueAsString(new BeanWithIterable()));\n        // 876:\n        assertEquals(\"[1,2,3]\",\n                MAPPER.writeValueAsString(new IntIterable()));\n    }\n    \n    // [Issue#358]\n    public void testIterable358() throws Exception {\n        String json = MAPPER.writeValueAsString(new B());\n        assertEquals(\"{\\\"list\\\":[[\\\"Hello world.\\\"]]}\", json);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 376,
+    "mode": "windows",
+    "windows_total": 6,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        300,
+        376
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.35754259927985
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 6.49825681379605
+      },
+      {
+        "start": 300,
+        "end": 376,
+        "score": 9.112998633001837
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.35754259927985
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.462387435516123
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 6.49825681379605
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.641226534856916
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.979777534630907
+      },
+      {
+        "start": 300,
+        "end": 376,
+        "score": 9.112998633001837
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7638,
+  "representation_chars": 7638,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

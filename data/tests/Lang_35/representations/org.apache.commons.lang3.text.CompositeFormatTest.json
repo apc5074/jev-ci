@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.lang3.text.CompositeFormatTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/text/CompositeFormatTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.text.CompositeFormatTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/text/CompositeFormatTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.lang3.text;\n\nimport java.text.FieldPosition;\nimport java.text.Format;\nimport java.text.ParsePosition;\nimport java.text.SimpleDateFormat;\nimport java.util.Locale;\n\nimport junit.framework.TestCase;\n\n/**\n * Unit tests for {@link org.apache.commons.lang3.text.CompositeFormat}.\n */\npublic class CompositeFormatTest extends TestCase {\n\n    /**\n     * Create a new test case with the specified name.\n     * \n     * @param name\n     *            name\n     */\n    public CompositeFormatTest(String name) {\n        super(name);\n    }\n\n\n    /**\n     * Ensures that the parse/format separation is correctly maintained. \n     */\n    public void testCompositeFormat() {\n\n        Format parser = new Format() {\n            @Override\n            public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos) {\n                throw new UnsupportedOperationException(\"Not implemented\");\n            }\n\n            @Override\n            public Object parseObject(String source, ParsePosition pos) {\n                return null;    // do nothing\n            }\n        };\n\n        Format formatter = new Format() {\n            @Override\n            public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos) {\n                return null;    // do nothing\n            }\n\n            @Override\n            public Object parseObject(String source, ParsePosition pos) {\n                throw new UnsupportedOperationException(\"Not implemented\");\n            }\n        };\n\n        CompositeFormat composite = new CompositeFormat(parser, formatter);\n\n        composite.parseObject(\"\", null);\n        composite.format(new Object(), new StringBuffer(), null);\n        assertEquals( \"Parser get method incorrectly implemented\", parser, composite.getParser() );\n        assertEquals( \"Formatter get method incorrectly implemented\", formatter, composite.getFormatter() );\n    }\n\n    public void testUsage() throws Exception {\n        Format f1 = new SimpleDateFormat(\"MMddyyyy\", Locale.ENGLISH);\n        Format f2 = new SimpleDateFormat(\"MMMM d, yyyy\", Locale.ENGLISH);\n        CompositeFormat c = new CompositeFormat(f1, f2);\n        String testString = \"January 3, 2005\";\n        assertEquals(testString, c.format(c.parseObject(\"01032005\")));\n        assertEquals(testString, c.reformat(\"01032005\"));\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 90,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3320,
+  "representation_chars": 3320,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "test_class": "org.apache.commons.cli2.application.CvsTest",
+  "source_file": "src/test/org/apache/commons/cli2/application/CvsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.cli2.application.CvsTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/cli2/application/CvsTest.java\n\nTEST SOURCE:\n/**\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *     http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.cli2.application;\n\nimport junit.framework.TestCase;\n\nimport org.apache.commons.cli2.Group;\nimport org.apache.commons.cli2.builder.ArgumentBuilder;\nimport org.apache.commons.cli2.builder.CommandBuilder;\nimport org.apache.commons.cli2.builder.DefaultOptionBuilder;\nimport org.apache.commons.cli2.builder.GroupBuilder;\nimport org.apache.commons.cli2.option.ArgumentTest;\n\n//TODO Build up CvsTest like CpTest\npublic class CvsTest extends TestCase {\n    public void testCVS() {\n        final DefaultOptionBuilder obuilder = new DefaultOptionBuilder();\n        final ArgumentBuilder abuilder = new ArgumentBuilder();\n        final CommandBuilder cbuilder = new CommandBuilder();\n        final GroupBuilder gbuilder = new GroupBuilder();\n\n        final Group commands =\n            gbuilder\n                .withName(\"commands\")\n                .withOption(\n                    cbuilder\n                        .withName(\"add\")\n                        .withName(\"ad\")\n                        .withName(\"new\")\n                        .withDescription(\"Add a new file/directory to the repository\")\n                        .create())\n                .withOption(\n                    cbuilder\n                        .withName(\"admin\")\n                        .withName(\"adm\")\n                        .withName(\"rcs\")\n                        .withDescription(\"Administration front end for rcs\")\n                        .create())\n                .withOption(\n                    cbuilder\n                        .withName(\"annotate\")\n                        .withName(\"ann\")\n                        .withDescription(\"Show last revision where each line was modified\")\n                        .create())\n                .withOption(\n                    cbuilder\n                        .withName(\"checkout\")\n                        .withName(\"co\")\n                        .withName(\"get\")\n                        .withDescription(\"Checkout sources for editing\")\n                        .create())\n                .withOption(\n                    cbuilder\n                        .withName(\"commit\")\n                        .withName(\"ci\")\n                        .withName(\"com\")\n                        .withDescription(\"Check files into the repository\")\n                        .create())\n                .withOption(\n                    cbuilder\n                        .withName(\"diff\")\n                        .withName(\"di\")\n                        .withName(\"dif\")\n                        .withDescription(\"Show differences between revisions\")\n                        .create())\n                .withOption(\n                        .create())\n                .withOption(\n                    cbuilder\n                        .withName(\"update\")\n                        .withName(\"up\")\n                        .withName(\"upd\")\n                        .withDescription(\"Bring work tree in sync with repository\")\n                        .create())\n                .withOption(\n                    cbuilder\n                        .withName(\"watch\")\n                        .withDescription(\"Set watches\")\n                        .create())\n                .withOption(\n                    cbuilder\n                        .withName(\"watchers\")\n                        .withDescription(\"See who is watching a file\")\n                        .create())\n                .withOption(\n                    cbuilder\n                        .withName(\"version\")\n                        .withName(\"ve\")\n                        .withName(\"ver\")\n                        .withDescription(\"????\")\n                        .create())\n                .withOption(ArgumentTest.buildTargetsArgument())\n                .create();\n\n        final Group cvsOptions =\n            new GroupBuilder()\n                .withName(\"cvs-options\")\n                .withOption(\n                    obuilder\n                        .withShortName(\"H\")\n                        .withDescription(\"Displays usage information for command.\")\n                        .create())\n                .withOption(\n                    obuilder\n                        .withShortName(\"Q\")\n                        .withDescription(\"Cause CVS to be really quiet.\")\n                        .create())\n                .withOption(\n                    obuilder\n                        .withShortName(\"q\")\n                        .withDescription(\"Cause CVS to be somewhat quiet.\")\n                        .create())\n                .withOption(\n                    obuilder\n                        .withShortName(\"r\")\n                        .withDescription(\"Make checked-out files read-only.\")\n                        .create())\n                .withOption(\n                    obuilder\n                        .withShortName(\"w\")\n                        .withDescription(\"Make checked-out files read-write (default).\")\n                        .create())\n                .withOption(\n                    obuilder\n                        .withShortName(\"l\")\n                        .withDescription(\"Turn history logging off.\")\n                        .create())\n                .withOption(\n                    obuilder\n                        .withShortName(\"n\")\n                        .withDescription(\"Do not execute anything that will change the disk.\")\n                        .create())\n                .withOption(\n                    obuilder\n                        .withShortName(\"t\")\n                        .withDescription(\"Show trace of program execution -- try with -n.\")\n                        .create())\n                .withOption(\n                    obuilder\n                        .withShortName(\"v\")\n                        .withDescription(\"CVS version and copyright.\")\n                        .create())\n                .withOption(\n                    obuilder\n                        .withLongName(\"crlf\")\n                        .withDescription(\"Use the Dos line feed for text files (default).\")\n                        .create())\n                .withOption(\n                    obuilder\n                        .withLongName(\"lf\")\n                        .withDescription(\"Use the Unix line feed for text files.\")\n                        .create())\n                .withOption(\n                    obuilder\n                        .withShortName(\"T\")\n                        .withDescription(\"Use 'tmpdir' for temporary files.\")\n                        .withArgument(abuilder.withName(\"tmpdir\").create())\n                        .create())\n                .withOption(\n                    obuilder\n                        .withShortName(\"e\")\n                        .withDescription(\"Use 'editor' for editing log information.\")\n                        .withArgument(abuilder.withName(\"editor\").create())\n                        .create())\n                .withOption(\n                    obuilder\n                        .withShortName(\"d\")\n                        .withDescription(\"Overrides $CVSROOT as the root of the CVS tree.\")\n                        .withArgument(abuilder.withName(\"CVS_root\").create())\n                        .create())\n                .withOption(\n                    obuilder\n                        .withShortName(\"f\")\n                        .withDescription(\"Do not use the ~/.cvsrc file.\")\n                        .create())\n                .withOption(\n                    obuilder\n                        .withShortName(\"z\")\n                        .withDescription(\"Use compression level '#' for net traffic.\")\n                        .withArgument(abuilder.withName(\"#\").create())\n                        .create())\n                .withOption(\n                    obuilder\n                        .withShortName(\"a\")\n                        .withDescription(\"Authenticate all net traffic.\")\n                        .create())\n                .withOption(\n                    obuilder\n                        .withShortName(\"s\")\n                        .withDescription(\"Set CVS user variable.\")\n                        .withArgument(abuilder.withName(\"VAR=VAL\").create())\n                        .create())\n                .withOption(commands)\n                .create();\n\n        assertNotNull(cvsOptions);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 312,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        180,
+        260
+      ],
+      [
+        240,
+        312
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 24.97451872562136
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 5.293460715318704
+      },
+      {
+        "start": 240,
+        "end": 312,
+        "score": 5.558641511047704
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 24.97451872562136
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 4.221256520963653
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 3.491262529290559
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 5.293460715318704
+      },
+      {
+        "start": 240,
+        "end": 312,
+        "score": 5.558641511047704
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9196,
+  "representation_chars": 9196,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

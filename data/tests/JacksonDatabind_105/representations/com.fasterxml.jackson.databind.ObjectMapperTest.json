@@ -1,0 +1,91 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.ObjectMapperTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/ObjectMapperTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.ObjectMapperTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/ObjectMapperTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind;\n\nimport java.io.*;\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;\nimport com.fasterxml.jackson.annotation.JsonInclude;\nimport com.fasterxml.jackson.annotation.JsonSetter;\nimport com.fasterxml.jackson.annotation.Nulls;\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.core.util.MinimalPrettyPrinter;\n\nimport com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;\nimport com.fasterxml.jackson.databind.introspect.VisibilityChecker;\nimport com.fasterxml.jackson.databind.node.*;\n\npublic class ObjectMapperTest extends BaseMapTest\n{\n    static class Bean {\n        int value = 3;\n        \n        public void setX(int v) { value = v; }\n\n        protected Bean() { }\n        public Bean(int v) { value = v; }\n    }\n\n    static class EmptyBean { }\n\n    @SuppressWarnings(\"serial\")\n    static class MyAnnotationIntrospector extends JacksonAnnotationIntrospector { }\n\n    // for [databind#689]\n    @SuppressWarnings(\"serial\")\n    static class FooPrettyPrinter extends MinimalPrettyPrinter {\n        public FooPrettyPrinter() {\n            super(\" /*foo*/ \");\n        }\n\n        @Override\n        public void writeArrayValueSeparator(JsonGenerator g) throws IOException\n        {\n            g.writeRaw(\" , \");\n        }\n    }\n\n    // for [databind#206]\n    @SuppressWarnings(\"serial\")\n    static class NoCopyMapper extends ObjectMapper { }\n\n    final ObjectMapper MAPPER = new ObjectMapper();\n\n    /*\n    /**********************************************************\n    /* Test methods, config\n    /**********************************************************\n     */\n\n    public void testFactorFeatures()\n    {\n        assertTrue(MAPPER.isEnabled(JsonFactory.Feature.CANONICALIZE_FIELD_NAMES));\n    }\n\n    public void testGeneratorFeatures()\n    {\n        // and also for mapper\n        ObjectMapper mapper = new ObjectMapper();\n        assertFalse(mapper.isEnabled(JsonGenerator.Feature.ESCAPE_NON_ASCII));\n        assertTrue(mapper.isEnabled(JsonGenerator.Feature.QUOTE_FIELD_NAMES));\n        mapper.disable(JsonGenerator.Feature.FLUSH_PASSED_TO_STREAM,\n                JsonGenerator.Feature.QUOTE_FIELD_NAMES);\n    }\n\n    public void testParserFeatures()\n    {\n        // and also for mapper\n        ObjectMapper mapper = new ObjectMapper();\n                \n        assertTrue(mapper.isEnabled(JsonParser.Feature.AUTO_CLOSE_SOURCE));\n        assertFalse(mapper.isEnabled(JsonParser.Feature.ALLOW_COMMENTS));\n        assertTrue(m.isEnabled(DeserializationFeature.UNWRAP_ROOT_VALUE));\n        assertFalse(m2.isEnabled(DeserializationFeature.UNWRAP_ROOT_VALUE));\n\n        // // Also, underlying JsonFactory instances should be distinct\n        \n        assertNotSame(m.getFactory(), m2.getFactory());\n\n        // [databind#122]: Need to ensure mix-ins are not shared\n        assertEquals(0, m.getSerializationConfig().mixInCount());\n        assertEquals(0, m2.getSerializationConfig().mixInCount());\n        assertEquals(0, m.getDeserializationConfig().mixInCount());\n        assertEquals(0, m2.getDeserializationConfig().mixInCount());\n\n        m.addMixIn(String.class, Integer.class);\n        assertEquals(1, m.getSerializationConfig().mixInCount());\n        assertEquals(0, m2.getSerializationConfig().mixInCount());\n        assertEquals(1, m.getDeserializationConfig().mixInCount());\n        assertEquals(0, m2.getDeserializationConfig().mixInCount());\n\n        // [databind#913]: Ensure JsonFactory Features copied\n        assertTrue(m2.isEnabled(JsonParser.Feature.ALLOW_COMMENTS));\n    }\n\n    // [databind#1580]\n    public void testCopyOfConfigOverrides() throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        SerializationConfig config = m.getSerializationConfig();\n        assertEquals(JsonInclude.Value.empty(), config.getDefaultPropertyInclusion());\n        assertEquals(JsonSetter.Value.empty(), config.getDefaultSetterInfo());\n        assertNull(config.getDefaultMergeable());\n        VisibilityChecker<?> defaultVis = config.getDefaultVisibilityChecker();\n        assertEquals(VisibilityChecker.Std.class, defaultVis.getClass());\n\n        // change\n        JsonInclude.Value customIncl = JsonInclude.Value.empty().withValueInclusion(JsonInclude.Include.NON_DEFAULT);\n        m.setDefaultPropertyInclusion(customIncl);\n        JsonSetter.Value customSetter = JsonSetter.Value.forValueNulls(Nulls.SKIP);\n        m.setDefaultSetterInfo(customSetter);\n        m.setDefaultMergeable(Boolean.TRUE);\n        VisibilityChecker<?> customVis = VisibilityChecker.Std.defaultInstance()\n                .withFieldVisibility(Visibility.ANY);\n        m.setVisibility(customVis);\n        assertSame(customVis, m.getVisibilityChecker());\n\n        // and verify that copy retains these settings\n        ObjectMapper m2 = m.copy();\n        SerializationConfig config2 = m2.getSerializationConfig();\n        assertSame(customIncl, config2.getDefaultPropertyInclusion());\n        assertSame(customSetter, config2.getDefaultSetterInfo());\n        assertEquals(Boolean.TRUE, config2.getDefaultMergeable());\n        assertSame(customVis, config2.getDefaultVisibilityChecker());\n    }\n\n    public void testFailedCopy() throws Exception\n    {\n        NoCopyMapper src = new NoCopyMapper();\n        try {\n            src.copy();\n            fail(\"Should not pass\");\n        } catch (IllegalStateException e) {\n            verifyException(e, \"does not override copy()\");\n        }\n    }\n\n    public void testAnnotationIntrospectorCopyin() \n    {\n        ObjectMapper m = new ObjectMapper();\n        m.setAnnotationIntrospector(new MyAnnotationIntrospector());\n        assertEquals(MyAnnotationIntrospector.class,\n                m.getDeserializationConfig().getAnnotationIntrospector().getClass());\n        ObjectMapper m2 = m.copy();\n\n        assertEquals(MyAnnotationIntrospector.class,\n                m2.getDeserializationConfig().getAnnotationIntrospector().getClass());\n        assertEquals(MyAnnotationIntrospector.class,\n                m2.getSerializationConfig().getAnnotationIntrospector().getClass());\n    }\n\n    /*\n    }\n    \n    // For [databind#703], [databind#978]\n    public void testNonSerializabilityOfObject()\n    {\n        ObjectMapper m = new ObjectMapper();\n        assertFalse(m.canSerialize(Object.class));\n        // but this used to pass, incorrectly, second time around\n        assertFalse(m.canSerialize(Object.class));\n\n        // [databind#978]: Different answer if empty Beans ARE allowed\n        m = new ObjectMapper();\n        m.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);\n        assertTrue(m.canSerialize(Object.class));\n        assertTrue(MAPPER.writer().without(SerializationFeature.FAIL_ON_EMPTY_BEANS)\n                .canSerialize(Object.class));\n        assertFalse(MAPPER.writer().with(SerializationFeature.FAIL_ON_EMPTY_BEANS)\n                .canSerialize(Object.class));\n    }\n\n    // for [databind#756]\n    public void testEmptyBeanSerializability()\n    {\n        // with default settings, error\n        assertFalse(MAPPER.writer().with(SerializationFeature.FAIL_ON_EMPTY_BEANS)\n                .canSerialize(EmptyBean.class));\n        // but with changes\n        assertTrue(MAPPER.writer().without(SerializationFeature.FAIL_ON_EMPTY_BEANS)\n                .canSerialize(EmptyBean.class));\n    }\n\n    // for [databind#898]\n    public void testSerializerProviderAccess() throws Exception\n    {\n        // ensure we have \"fresh\" instance, just in case\n        ObjectMapper mapper = new ObjectMapper();\n        JsonSerializer<?> ser = mapper.getSerializerProviderInstance()\n                .findValueSerializer(Bean.class);\n        assertNotNull(ser);\n        assertEquals(Bean.class, ser.handledType());\n    }\n\n    // for [databind#1074]\n    public void testCopyOfParserFeatures() throws Exception\n    {\n        // ensure we have \"fresh\" instance to start with\n        ObjectMapper mapper = new ObjectMapper();\n        assertFalse(mapper.isEnabled(JsonParser.Feature.ALLOW_COMMENTS));\n        mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);\n        assertTrue(mapper.isEnabled(JsonParser.Feature.ALLOW_COMMENTS));\n\n        ObjectMapper copy = mapper.copy();\n        assertTrue(copy.isEnabled(JsonParser.Feature.ALLOW_COMMENTS));\n\n        // also verify there's no back-linkage\n        copy.configure(JsonParser.Feature.ALLOW_COMMENTS, false);\n        assertFalse(copy.isEnabled(JsonParser.Feature.ALLOW_COMMENTS));\n        assertTrue(mapper.isEnabled(JsonParser.Feature.ALLOW_COMMENTS));\n    }\n\n    // since 2.8\n    public void testDataOutputViaMapper() throws Exception\n    {\n        ByteArrayOutputStream bytes = new ByteArrayOutputStream();\n        ObjectNode input = MAPPER.createObjectNode();\n        input.put(\"a\", 1);\n        DataOutput data = new DataOutputStream(bytes);\n        final String exp = \"{\\\"a\\\":1}\";\n        MAPPER.writeValue(data, input);\n        assertEquals(exp, bytes.toString(\"UTF-8\"));\n\n        // and also via ObjectWriter...\n        bytes.reset();\n        data = new DataOutputStream(bytes);\n        MAPPER.writer().writeValue(data, input);\n        assertEquals(exp, bytes.toString(\"UTF-8\"));\n    }\n\n    // since 2.8\n    @SuppressWarnings(\"unchecked\")\n",
+  "compaction": {
+    "source_lines": 399,
+    "mode": "windows",
+    "windows_total": 7,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        300,
+        380
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.8851294806109
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 10.483660603970193
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 8.413917066746166
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.8851294806109
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 6.619267887426165
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 10.483660603970193
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 2.892687108234834
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 7.498094277653403
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 8.413917066746166
+      },
+      {
+        "start": 360,
+        "end": 399,
+        "score": 6.631167519148664
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9413,
+  "representation_chars": 9413,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.AnySetterTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/AnySetterTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.AnySetterTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/AnySetterTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.databind.*;\n\n/**\n * Unit tests for verifying that {@link JsonAnySetter} annotation\n * works as expected.\n */\npublic class AnySetterTest\n    extends BaseMapTest\n{\n    static class MapImitator\n    {\n        HashMap<String,Object> _map;\n\n        public MapImitator() {\n            _map = new HashMap<String,Object>();\n        }\n\n        @JsonAnySetter\n        void addEntry(String key, Object value)\n        {\n            _map.put(key, value);\n        }\n    }\n\n    // for [databind#1376]\n    static class MapImitatorDisabled extends MapImitator\n    {\n        @Override\n        @JsonAnySetter(enabled=false)\n        void addEntry(String key, Object value) {\n            throw new RuntimeException(\"Should not get called\");\n        }\n    }\n\n    /**\n     * Let's also verify that it is possible to define different\n     * value: not often useful, but possible.\n     */\n    static class MapImitatorWithValue\n    {\n        HashMap<String,int[]> _map;\n\n        public MapImitatorWithValue() {\n            _map = new HashMap<String,int[]>();\n        }\n\n        @JsonAnySetter\n        void addEntry(String key, int[] value)\n        {\n            _map.put(key, value);\n        }\n    }\n\n    // Bad; 2 \"any setters\"\n    static class Broken\n    {\n        @JsonAnySetter\n        void addEntry1(String key, Object value) { }\n        @JsonAnySetter\n        void addEntry2(String key, Object value) { }\n    }\n\n    @JsonIgnoreProperties(\"dummy\")\n    static class Ignored\n    {\n        HashMap<String,Object> map = new HashMap<String,Object>();\n \n        @JsonIgnore\n        public String bogus;\n        \n        @JsonAnySetter\n        void addEntry(String key, Object value)\n        {\n            map.put(key, value);\n        }        \n    }\n\n    static class Bean744\n    {\n        protected Map<String,Object> additionalProperties;\n        \n        @JsonAnySetter\n        public void addAdditionalProperty(String key, Object value) {\n            if (additionalProperties == null) additionalProperties = new HashMap<String, Object>();\n            additionalProperties.put(key,value);\n        }\n        \n        public void setAdditionalProperties(Map<String, Object> additionalProperties) {\n            this.additionalProperties = additionalProperties;\n        }\n\n        @JsonAnyGetter\n        public Map<String,Object> getAdditionalProperties() { return additionalProperties; }\n\n        @JsonIgnore\n        public String getName() {\n           return (String) additionalProperties.get(\"name\");\n        }\n    }\n\n    static class Bean797Base\n    {\n        @JsonAnyGetter\n        public Map<String, JsonNode> getUndefinedProperties() {\n            throw new IllegalStateException(\"Should not call parent version!\");\n        }\n    }\n\n    static class Bean797BaseImpl extends Bean797Base\n    {\n        @Override\n        public Map<String, JsonNode> getUndefinedProperties() {\n            return new HashMap<String, JsonNode>();\n        }\n    }\n\n    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)\n    static abstract class Base { }\n\n    static class Impl extends Base {\n        public String value;\n        \n        public Impl() { }\n        public Impl(String v) { value = v; }\n    }\n\n    static class PolyAnyBean\n    {\n        protected Map<String,Base> props = new HashMap<String,Base>();\n        \n        @JsonAnyGetter\n        public Map<String,Base> props() {\n            return props;\n        }\n\n        @JsonAnySetter\n        public void prop(String name, Base value) {\n            props.put(name, value);\n        }\n    }\n    \n    static class JsonAnySetterOnMap {\n        public int id;\n\n        @JsonAnySetter\n        protected HashMap<String, String> other = new HashMap<String, String>();\n\n        @JsonAnyGetter\n        public Map<String, String> any() {\n            return other;\n        }\n    }\n\n    static class JsonAnySetterOnNullMap {\n        public int id;\n\n        @JsonAnySetter\n        protected HashMap<String, String> other;\n\n        @JsonAnyGetter\n        public Map<String, String> any() {\n            return other;\n        }\n    }\n\n    static class MyGeneric<T>\n    {\n        private String staticallyMappedProperty;\n        private Map<T, Integer> dynamicallyMappedProperties = new HashMap<T, Integer>();\n    \n        public String getStaticallyMappedProperty() {\n            return staticallyMappedProperty;\n        }\n    \n        @JsonAnySetter\n        public void addDynamicallyMappedProperty(T key, int value) {\n            dynamicallyMappedProperties.put(key, value);\n        }\n\n        public void setStaticallyMappedProperty(String staticallyMappedProperty) {\n            this.staticallyMappedProperty = staticallyMappedProperty;\n        }\n    \n        @JsonAnyGetter\n        public Map<T, Integer> getDynamicallyMappedProperties() {\n            return dynamicallyMappedProperties;\n        }\n    }\n\n    static class MyWrapper\n    {\n        private MyGeneric<String> myStringGeneric;\n        private MyGeneric<Integer> myIntegerGeneric;\n\n",
+  "compaction": {
+    "source_lines": 385,
+    "mode": "windows",
+    "windows_total": 7,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 17.99955227377383
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 8.297920655474563
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 6.135876753251652
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 17.99955227377383
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 8.297920655474563
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 6.135876753251652
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.728496573510866
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 2.2121136981576948
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 4.397263268626847
+      },
+      {
+        "start": 360,
+        "end": 385,
+        "score": 2.5834749897038245
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 5246,
+  "representation_chars": 5246,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.ext.TestJava7Types",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/ext/TestJava7Types.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.ext.TestJava7Types\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/ext/TestJava7Types.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.ext;\n\nimport java.nio.file.Path;\nimport java.nio.file.Paths;\n\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;\n\n/**\n * @since 2.7\n */\npublic class TestJava7Types extends BaseMapTest\n{\n    public void testPathRoundtrip() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n\n        Path input = Paths.get(\"/tmp\", \"foo.txt\");\n\n        String json = mapper.writeValueAsString(input);\n        assertNotNull(json);\n\n        Path p = mapper.readValue(json, Path.class);\n        assertNotNull(p);\n        \n        assertEquals(input.toUri(), p.toUri());\n        assertEquals(input, p);\n    }\n\n    // [databind#1688]:\n    public void testPolymorphicPath() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.enableDefaultTyping(DefaultTyping.NON_FINAL);\n        Path input = Paths.get(\"/tmp\", \"foo.txt\");\n\n        String json = mapper.writeValueAsString(new Object[] { input });\n\n        Object[] obs = mapper.readValue(json, Object[].class);\n        assertEquals(1, obs.length);\n        Object ob = obs[0];\n        assertTrue(ob instanceof Path);\n\n        assertEquals(input.toString(), ob.toString());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 46,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1417,
+  "representation_chars": 1417,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.util.JSONPObjectTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/util/JSONPObjectTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.util.JSONPObjectTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/util/JSONPObjectTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.util;\n\nimport java.io.IOException;\n\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.ObjectMapper;\n\npublic class JSONPObjectTest extends BaseMapTest {\n\n  private final String CALLBACK = \"callback\";\n  private final ObjectMapper MAPPER = new ObjectMapper();\n\n  /**\n   * Unit tests for checking that JSONP breaking characters U+2028 and U+2029 are escaped when creating a {@link JSONPObject}.\n   */\n\n  public void testU2028Escaped() throws IOException {\n    String containsU2028 = String.format(\"This string contains %c char\", '\\u2028');\n    JSONPObject jsonpObject = new JSONPObject(CALLBACK, containsU2028);\n    String valueAsString = MAPPER.writeValueAsString(jsonpObject);\n    assertFalse(valueAsString.contains(\"\\u2028\"));\n  }\n\n  public void testU2029Escaped() throws IOException {\n    String containsU2029 = String.format(\"This string contains %c char\", '\\u2029');\n    JSONPObject jsonpObject = new JSONPObject(CALLBACK, containsU2029);\n    String valueAsString = MAPPER.writeValueAsString(jsonpObject);\n    assertFalse(valueAsString.contains(\"\\u2029\"));\n  }\n\n  public void testU2030NotEscaped() throws IOException {\n    String containsU2030 = String.format(\"This string contains %c char\", '\\u2030');\n    JSONPObject jsonpObject = new JSONPObject(CALLBACK, containsU2030);\n    String valueAsString = MAPPER.writeValueAsString(jsonpObject);\n    assertTrue(valueAsString.contains(\"\\u2030\"));\n  }\n}\n",
+  "compaction": {
+    "source_lines": 37,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1641,
+  "representation_chars": 1641,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "test_class": "org.apache.commons.math3.geometry.euclidean.threed.FieldRotationDSTest",
+  "source_file": "src/test/java/org/apache/commons/math3/geometry/euclidean/threed/FieldRotationDSTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.geometry.euclidean.threed.FieldRotationDSTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/geometry/euclidean/threed/FieldRotationDSTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math3.geometry.euclidean.threed;\n\nimport org.apache.commons.math3.analysis.differentiation.DerivativeStructure;\nimport org.apache.commons.math3.exception.MathArithmeticException;\nimport org.apache.commons.math3.exception.MathIllegalArgumentException;\nimport org.apache.commons.math3.linear.MatrixUtils;\nimport org.apache.commons.math3.linear.RealMatrix;\nimport org.apache.commons.math3.random.UnitSphereRandomVectorGenerator;\nimport org.apache.commons.math3.random.Well1024a;\nimport org.apache.commons.math3.util.FastMath;\nimport org.apache.commons.math3.util.MathUtils;\nimport org.junit.Assert;\nimport org.junit.Test;\n\n\npublic class FieldRotationDSTest {\n\n    @Test\n    public void testIdentity() {\n\n        FieldRotation<DerivativeStructure> r = createRotation(1, 0, 0, 0, false);\n        checkVector(r.applyTo(createVector(1, 0, 0)), createVector(1, 0, 0));\n        checkVector(r.applyTo(createVector(0, 1, 0)), createVector(0, 1, 0));\n        checkVector(r.applyTo(createVector(0, 0, 1)), createVector(0, 0, 1));\n        checkAngle(r.getAngle(), 0);\n\n        r = createRotation(-1, 0, 0, 0, false);\n        checkVector(r.applyTo(createVector(1, 0, 0)), createVector(1, 0, 0));\n        checkVector(r.applyTo(createVector(0, 1, 0)), createVector(0, 1, 0));\n        checkVector(r.applyTo(createVector(0, 0, 1)), createVector(0, 0, 1));\n        checkAngle(r.getAngle(), 0);\n\n        r = createRotation(42, 0, 0, 0, true);\n        checkVector(r.applyTo(createVector(1, 0, 0)), createVector(1, 0, 0));\n        checkVector(r.applyTo(createVector(0, 1, 0)), createVector(0, 1, 0));\n        checkVector(r.applyTo(createVector(0, 0, 1)), createVector(0, 0, 1));\n        checkAngle(r.getAngle(), 0);\n\n    }\n\n    @Test\n    public void testAxisAngle() throws MathIllegalArgumentException {\n\n        FieldRotation<DerivativeStructure> r = new FieldRotation<DerivativeStructure>(createAxis(10, 10, 10), createAngle(2 * FastMath.PI / 3));\n        checkVector(r.applyTo(createVector(1, 0, 0)), createVector(0, 1, 0));\n        checkVector(r.applyTo(createVector(0, 1, 0)), createVector(0, 0, 1));\n        checkVector(r.applyTo(createVector(0, 0, 1)), createVector(1, 0, 0));\n        double s = 1 / FastMath.sqrt(3);\n        checkVector(r.getAxis(), createVector(s, s, s));\n        checkAngle(r.getAngle(), 2 * FastMath.PI / 3);\n\n        try {\n            new FieldRotation<DerivativeStructure>(createAxis(0, 0, 0), createAngle(2 * FastMath.PI / 3));\n            Assert.fail(\"an exception should have been thrown\");\n        } catch (MathIllegalArgumentException e) {\n        }\n\n        r = new FieldRotation<DerivativeStructure>(createAxis(0, 0, 1), createAngle(1.5 * FastMath.PI));\n        checkVector(r.getAxis(), createVector(0, 0, -1));\n        checkAngle(r.getAngle(), 0.5 * FastMath.PI);\n\n        r = new FieldRotation<DerivativeStructure>(createAxis(0, 1, 0), createAngle(FastMath.PI));\n        checkVector(r.getAxis(), createVector(0, 1, 0));\n                        checkVector(rC.applyTo(uds), rD.applyTo(uds));\n                        checkVector(rC.applyInverseTo(uds), rD.applyInverseTo(uds));\n\n                    }\n                }\n            }\n        }\n\n    }\n\n    @Test\n    public void testDerivatives() {\n\n        double eps      = 5.0e-16;\n        double kx       = 2;\n        double ky       = -3;\n        double kz       = 5;\n        double n2       = kx * kx + ky * ky + kz * kz;\n        double n        = FastMath.sqrt(n2);\n        double theta    = 1.7;\n        double cosTheta = FastMath.cos(theta);\n        double sinTheta = FastMath.sin(theta);\n        FieldRotation<DerivativeStructure> r    = new FieldRotation<DerivativeStructure>(createAxis(kx, ky, kz), createAngle(theta));\n        Vector3D a      = new Vector3D(kx / n, ky / n, kz / n);\n\n        // Jacobian of the normalized rotation axis a with respect to the Cartesian vector k\n        RealMatrix dadk = MatrixUtils.createRealMatrix(new double[][] {\n            { (ky * ky + kz * kz) / ( n * n2),            -kx * ky / ( n * n2),            -kx * kz / ( n * n2) },\n            {            -kx * ky / ( n * n2), (kx * kx + kz * kz) / ( n * n2),            -ky * kz / ( n * n2) },\n            {            -kx * kz / ( n * n2),            -ky * kz / ( n * n2), (kx * kx + ky * ky) / ( n * n2) }\n        });\n\n        for (double x = -0.9; x < 0.9; x += 0.2) {\n            for (double y = -0.9; y < 0.9; y += 0.2) {\n                for (double z = -0.9; z < 0.9; z += 0.2) {\n                    Vector3D   u = new Vector3D(x, y, z);\n                    FieldVector3D<DerivativeStructure> v = r.applyTo(createVector(x, y, z));\n\n                    // explicit formula for rotation of vector u around axis a with angle theta\n                    double dot     = Vector3D.dotProduct(u, a);\n                    Vector3D cross = Vector3D.crossProduct(a, u);\n                    double c1      = 1 - cosTheta;\n                    double c2      = c1 * dot;\n                    Vector3D rt    = new Vector3D(cosTheta, u, c2, a, sinTheta, cross);\n                    Assert.assertEquals(rt.getX(), v.getX().getReal(), eps);\n                    Assert.assertEquals(rt.getY(), v.getY().getReal(), eps);\n                    Assert.assertEquals(rt.getZ(), v.getZ().getReal(), eps);\n\n                    // Jacobian of the image v = r(u) with respect to rotation axis a\n                    // (analytical differentiation of the explicit formula)\n                    RealMatrix dvda = MatrixUtils.createRealMatrix(new double[][] {\n                        { c1 * x * a.getX() + c2,           c1 * y * a.getX() + sinTheta * z, c1 * z * a.getX() - sinTheta * y },\n                        { c1 * x * a.getY() - sinTheta * z, c1 * y * a.getY() + c2,           c1 * z * a.getY() + sinTheta * x },\n                        { c1 * x * a.getZ() + sinTheta * y, c1 * y * a.getZ() - sinTheta * x, c1 * z * a.getZ() + c2           }\n                    });\n\n                    // compose Jacobians\n                    RealMatrix dvdk = dvda.multiply(dadk);\n\n                    // derivatives with respect to un-normalized axis\n                    Assert.assertEquals(dvdk.getEntry(0, 0), v.getX().getPartialDerivative(1, 0, 0, 0), eps);\n                    Assert.assertEquals(dvdk.getEntry(0, 1), v.getX().getPartialDerivative(0, 1, 0, 0), eps);\n                    Assert.assertEquals(dvdk.getEntry(0, 2), v.getX().getPartialDerivative(0, 0, 1, 0), eps);\n                    Assert.assertEquals(dvdk.getEntry(1, 0), v.getY().getPartialDerivative(1, 0, 0, 0), eps);\n                    Assert.assertEquals(dvdk.getEntry(1, 1), v.getY().getPartialDerivative(0, 1, 0, 0), eps);\n                    Assert.assertEquals(dvdk.getEntry(1, 2), v.getY().getPartialDerivative(0, 0, 1, 0), eps);\n                    Assert.assertEquals(dvdk.getEntry(2, 0), v.getZ().getPartialDerivative(1, 0, 0, 0), eps);\n                    Assert.assertEquals(dvdk.getEntry(2, 1), v.getZ().getPartialDerivative(0, 1, 0, 0), eps);\n                    Assert.assertEquals(dvdk.getEntry(2, 2), v.getZ().getPartialDerivative(0, 0, 1, 0), eps);\n\n                    // derivative with respect to rotation angle\n                    // (analytical differentiation of the explicit formula)\n                    Vector3D dvdTheta =\n                            new Vector3D(-sinTheta, u, sinTheta * dot, a, cosTheta, cross);\n                    Assert.assertEquals(dvdTheta.getX(), v.getX().getPartialDerivative(0, 0, 0, 1), eps);\n                    Assert.assertEquals(dvdTheta.getY(), v.getY().getPartialDerivative(0, 0, 0, 1), eps);\n                    Assert.assertEquals(dvdTheta.getZ(), v.getZ().getPartialDerivative(0, 0, 0, 1), eps);\n\n                }\n            }\n\n        FieldRotation<DerivativeStructure> quat = new FieldRotation<DerivativeStructure>(u1, u2, v1, v2);\n        double q2 = quat.getQ0().getReal() * quat.getQ0().getReal() +\n                    quat.getQ1().getReal() * quat.getQ1().getReal() +\n                    quat.getQ2().getReal() * quat.getQ2().getReal() +\n                    quat.getQ3().getReal() * quat.getQ3().getReal();\n        Assert.assertEquals(1.0, q2, 1.0e-14);\n        Assert.assertEquals(0.0, FieldVector3D.angle(v1, quat.applyTo(u1)).getReal(), 1.0e-14);\n        Assert.assertEquals(0.0, FieldVector3D.angle(v2, quat.applyTo(u2)).getReal(), 1.0e-14);\n\n    }\n\n    private void checkAngle(DerivativeStructure a1, double a2) {\n        Assert.assertEquals(a1.getReal(), MathUtils.normalizeAngle(a2, a1.getReal()), 1.0e-10);\n    }\n\n    private void checkRotationDS(FieldRotation<DerivativeStructure> r, double q0, double q1, double q2, double q3) {\n        FieldRotation<DerivativeStructure> rPrime = createRotation(q0, q1, q2, q3, false);\n        Assert.assertEquals(0, FieldRotation.distance(r, rPrime).getReal(), 1.0e-12);\n    }\n\n    private FieldRotation<DerivativeStructure> createRotation(double q0, double q1, double q2, double q3,\n                                      boolean needsNormalization) {\n        return new FieldRotation<DerivativeStructure>(new DerivativeStructure(4, 1, 0, q0),\n                              new DerivativeStructure(4, 1, 1, q1),\n                              new DerivativeStructure(4, 1, 2, q2),\n                              new DerivativeStructure(4, 1, 3, q3),\n                              needsNormalization);\n    }\n\n    private FieldRotation<DerivativeStructure> createRotation(double[][] m, double threshold) {\n        DerivativeStructure[][] mds = new DerivativeStructure[m.length][m[0].length];\n        int index = 0;\n        for (int i = 0; i < m.length; ++i) {\n            for (int j = 0; j < m[i].length; ++j) {\n                mds[i][j] = new DerivativeStructure(4, 1, index, m[i][j]);\n                index = (index + 1) % 4;\n            }\n        }\n        return new FieldRotation<DerivativeStructure>(mds, threshold);\n    }\n\n    private FieldVector3D<DerivativeStructure> createVector(double x, double y, double z) {\n        return new FieldVector3D<DerivativeStructure>(new DerivativeStructure(4, 1, x),\n                              new DerivativeStructure(4, 1, y),\n                              new DerivativeStructure(4, 1, z));\n    }\n\n    private FieldVector3D<DerivativeStructure> createAxis(double x, double y, double z) {\n        return new FieldVector3D<DerivativeStructure>(new DerivativeStructure(4, 1, 0, x),\n                              new DerivativeStructure(4, 1, 1, y),\n                              new DerivativeStructure(4, 1, 2, z));\n    }\n\n    private DerivativeStructure createAngle(double alpha) {\n        return new DerivativeStructure(4, 1, 3, alpha);\n    }\n\n    private void checkVector(FieldVector3D<DerivativeStructure> u, FieldVector3D<DerivativeStructure> v) {\n        Assert.assertEquals(u.getX().getReal(), v.getX().getReal(), 1.0e-12);\n        Assert.assertEquals(u.getY().getReal(), v.getY().getReal(), 1.0e-12);\n        Assert.assertEquals(u.getZ().getReal(), v.getZ().getReal(), 1.0e-12);\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 845,
+    "mode": "windows",
+    "windows_total": 14,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        600,
+        680
+      ],
+      [
+        780,
+        845
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 31.727332454457816
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 11.19090104960874
+      },
+      {
+        "start": 780,
+        "end": 845,
+        "score": 11.191574908555445
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 31.727332454457816
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.1429385431213697
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 3.066144689739846
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 3.8522057051905736
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 3.335865096290542
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 6.771363467688193
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 3.2536563733266055
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 5.130133852076925
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 2.357765126309209
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 3.969790236676642
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 11.19090104960874
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 6.234445439762858
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 2.137535621602824
+      },
+      {
+        "start": 780,
+        "end": 845,
+        "score": 11.191574908555445
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 11982,
+  "representation_chars": 11982,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

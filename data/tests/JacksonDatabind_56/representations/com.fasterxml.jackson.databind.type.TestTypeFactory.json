@@ -1,0 +1,106 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.type.TestTypeFactory",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/type/TestTypeFactory.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.type.TestTypeFactory\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/type/TestTypeFactory.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.type;\n\nimport java.lang.reflect.Field;\nimport java.util.*;\nimport java.util.concurrent.atomic.AtomicReference;\n\nimport com.fasterxml.jackson.core.type.TypeReference;\nimport com.fasterxml.jackson.databind.*;\n\n/**\n * Simple tests to verify that the {@link TypeFactory} constructs\n * type information as expected.\n */\npublic class TestTypeFactory\n    extends BaseMapTest\n{    \n    /*\n    /**********************************************************\n    /* Helper types\n    /**********************************************************\n     */\n\n    enum EnumForCanonical { YES, NO; }\n\n    static class SingleArgGeneric<X> { }\n\n    abstract static class MyMap extends IntermediateMap<String,Long> { }\n    abstract static class IntermediateMap<K,V> implements Map<K,V> { }\n\n    abstract static class MyList extends IntermediateList<Long> { }\n    abstract static class IntermediateList<E> implements List<E> { }\n\n    @SuppressWarnings(\"serial\")\n    static class GenericList<T> extends ArrayList<T> { }\n    \n    interface MapInterface extends Cloneable, IntermediateInterfaceMap<String> { }\n    interface IntermediateInterfaceMap<FOO> extends Map<FOO, Integer> { }\n\n    @SuppressWarnings(\"serial\")\n    static class MyStringIntMap extends MyStringXMap<Integer> { }\n    @SuppressWarnings(\"serial\")\n    static class MyStringXMap<V> extends HashMap<String,V> { }\n\n    // And one more, now with obfuscated type names; essentially it's just Map<Int,Long>\n    static abstract class IntLongMap extends XLongMap<Integer> { }\n    // trick here is that V now refers to key type, not value type\n    static abstract class XLongMap<V> extends XXMap<V,Long> { }\n    static abstract class XXMap<K,V> implements Map<K,V> { }\n\n    static class SneakyBean {\n        public IntLongMap intMap;\n        public MyList longList;\n    }\n\n    static class SneakyBean2 {\n        // self-reference; should be resolved as \"Comparable<Object>\"\n        public <T extends Comparable<T>> T getFoobar() { return null; }\n    }\n    \n    @SuppressWarnings(\"serial\")\n    public static class LongValuedMap<K> extends HashMap<K, Long> { }\n\n    static class StringLongMapBean {\n        public LongValuedMap<String> value;\n    }\n\n    static class StringListBean {\n        public GenericList<String> value;\n    }\n\n    static class CollectionLike<E> { }\n    static class MapLike<K,V> { }\n    \n    /*\n    /**********************************************************\n    /* Unit tests\n    /**********************************************************\n     */\n    \n    public void testSimpleTypes()\n    {\n        Class<?>[] classes = new Class<?>[] {\n            boolean.class, byte.class, char.class,\n                short.class, int.class, long.class,\n                float.class, double.class,\n\n            Boolean.class, Byte.class, Character.class,\n                Short.class, Integer.class, Long.class,\n                Float.class, Double.class,\n\n                String.class,\n                Object.class,\n\n                Calendar.class,\n                Date.class,\n        };\n\n        TypeFactory tf = TypeFactory.defaultInstance();\n        for (Class<?> clz : classes) {\n            assertSame(clz, tf.constructType(clz).getRawClass());\n            assertSame(clz, tf.constructType(clz).getRawClass());\n        }\n    }\n\n    public void testArrays()\n    {\n        Class<?>[] classes = new Class<?>[] {\n            boolean[].class, byte[].class, char[].class,\n                short[].class, int[].class, long[].class,\n                float[].class, double[].class,\n\n                String[].class, Object[].class,\n                Calendar[].class,\n        };\n\n        TypeFactory tf = TypeFactory.defaultInstance();\n        for (Class<?> clz : classes) {\n            assertSame(clz, tf.constructType(clz).getRawClass());\n            Class<?> elemType = clz.getComponentType();\n            assertSame(clz, tf.constructArrayType(elemType).getRawClass());\n        }\n    }\n\n    // [databind#810]: Fake Map type for Properties as <String,String>\n    public void testProperties()\n    {\n        TypeFactory tf = TypeFactory.defaultInstance();\n        JavaType t = tf.constructType(Properties.class);\n        assertEquals(MapType.class, t.getClass());\n        assertSame(Properties.class, t.getRawClass());\n\n        MapType mt = (MapType) t;\n\n        // so far so good. But how about parameterization?\n        assertSame(String.class, mt.getKeyType().getRawClass());\n        assertSame(String.class, mt.getContentType().getRawClass());\n    }\n    \n    public void testIterator()\n    {\n        assertNull(custom.containedType(1));\n\n        // should also be able to access variable name:\n        assertEquals(\"X\", custom.containedTypeName(0));\n\n        // And finally, ensure that we can't create invalid combinations\n        try {\n            // Maps must take 2 type parameters, not just one\n            tf.constructParametrizedType(Map.class, Map.class, strC);\n        } catch (IllegalArgumentException e) {\n            verifyException(e, \"Can not create TypeBindings for class java.util.Map\");\n        }\n\n        try {\n            // Type only accepts one type param\n            tf.constructParametrizedType(SingleArgGeneric.class, SingleArgGeneric.class, strC, strC);\n        } catch (IllegalArgumentException e) {\n            verifyException(e, \"Can not create TypeBindings for class \");\n        }\n    }\n\n    /**\n     * Test for checking that canonical name handling works ok\n     */\n    public void testCanonicalNames()\n    {\n        TypeFactory tf = TypeFactory.defaultInstance();\n        JavaType t = tf.constructType(java.util.Calendar.class);\n        String can = t.toCanonical();\n        assertEquals(\"java.util.Calendar\", can);\n        assertEquals(t, tf.constructFromCanonical(can));\n\n        // Generic maps and collections will default to Object.class if type-erased\n        t = tf.constructType(java.util.ArrayList.class);\n        can = t.toCanonical();\n        assertEquals(\"java.util.ArrayList<java.lang.Object>\", can);\n        assertEquals(t, tf.constructFromCanonical(can));\n\n        t = tf.constructType(java.util.TreeMap.class);\n        can = t.toCanonical();\n        assertEquals(\"java.util.TreeMap<java.lang.Object,java.lang.Object>\", can);\n        assertEquals(t, tf.constructFromCanonical(can));\n\n        // And then EnumMap (actual use case for us)\n        t = tf.constructMapType(EnumMap.class, EnumForCanonical.class, String.class);\n        can = t.toCanonical();\n        assertEquals(\"java.util.EnumMap<com.fasterxml.jackson.databind.type.TestTypeFactory$EnumForCanonical,java.lang.String>\",\n                can);\n        assertEquals(t, tf.constructFromCanonical(can));\n        \n    }\n\n    /*\n    /**********************************************************\n    /* Unit tests: collection type parameter resolution\n    /**********************************************************\n     */\n\n    public void testCollections()\n    {\n        // Ok, first: let's test what happens when we pass 'raw' Collection:\n        TypeFactory tf = TypeFactory.defaultInstance();\n        JavaType t = tf.constructType(ArrayList.class);\n        assertEquals(CollectionType.class, t.getClass());\n        assertSame(ArrayList.class, t.getRawClass());\n\n        // And then the proper way\n        t = tf.constructType(new TypeReference<ArrayList<String>>() { });\n        assertEquals(CollectionType.class, t.getClass());\n        assertSame(ArrayList.class, t.getRawClass());\n\n        JavaType elemType = ((CollectionType) t).getContentType();\n        assertNotNull(elemType);\n        assertSame(SimpleType.class, elemType.getClass());\n        assertSame(String.class, elemType.getRawClass());\n\n        // And alternate method too\n        t = tf.constructCollectionType(ArrayList.class, String.class);\n        assertEquals(CollectionType.class, t.getClass());\n        assertSame(String.class, ((CollectionType) t).getContentType().getRawClass());\n",
+  "compaction": {
+    "source_lines": 569,
+    "mode": "windows",
+    "windows_total": 10,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.117644269382101
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 10.005085849903324
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 19.638076464531125
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.117644269382101
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 10.005085849903324
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 9.505331792319636
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 19.638076464531125
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 3.139475034439121
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 2.0358954234556066
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 3.5632073195785043
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 8.65999588950848
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 5.875056402611653
+      },
+      {
+        "start": 540,
+        "end": 569,
+        "score": 3.4114637985127256
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8091,
+  "representation_chars": 8091,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

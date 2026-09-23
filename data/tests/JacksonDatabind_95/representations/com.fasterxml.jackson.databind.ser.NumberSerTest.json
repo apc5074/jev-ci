@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.ser.NumberSerTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/ser/NumberSerTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.ser.NumberSerTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/ser/NumberSerTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.ser;\n\nimport java.math.BigInteger;\n\nimport com.fasterxml.jackson.annotation.JsonFormat;\nimport com.fasterxml.jackson.annotation.JsonProperty;\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.ObjectMapper;\n\n/**\n * Unit tests for verifying serialization of simple basic non-structured\n * types; primitives (and/or their wrappers), Strings.\n */\npublic class NumberSerTest extends BaseMapTest\n{\n    private final ObjectMapper MAPPER = objectMapper();\n\n    static class IntWrapper {\n        public int i;\n\n        public IntWrapper(int value) { i = value; }\n    }\n    \n    static class IntAsString {\n        @JsonFormat(shape=JsonFormat.Shape.STRING)\n        @JsonProperty(\"value\")\n        public int foo = 3;\n    }\n\n    static class LongAsString {\n        @JsonFormat(shape=JsonFormat.Shape.STRING)\n        public long value = 4;\n    }\n\n    static class DoubleAsString {\n        @JsonFormat(shape=JsonFormat.Shape.STRING)\n        public double value = -0.5;\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n\n    public void testDouble() throws Exception\n    {\n        double[] values = new double[] {\n            0.0, 1.0, 0.1, -37.01, 999.99, 0.3, 33.3, Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY\n        };\n        for (double d : values) {\n            String expected = String.valueOf(d);\n            if (Double.isNaN(d) || Double.isInfinite(d)) {\n                expected = \"\\\"\"+d+\"\\\"\";\n            }\n            assertEquals(expected, MAPPER.writeValueAsString(Double.valueOf(d)));\n        }\n    }\n\n    public void testBigInteger() throws Exception\n    {\n        BigInteger[] values = new BigInteger[] {\n                BigInteger.ONE, BigInteger.TEN, BigInteger.ZERO,\n                BigInteger.valueOf(1234567890L),\n                new BigInteger(\"123456789012345678901234568\"),\n                new BigInteger(\"-1250000124326904597090347547457\")\n                };\n\n        for (BigInteger value : values) {\n            String expected = value.toString();\n            assertEquals(expected, MAPPER.writeValueAsString(value));\n        }\n    }\n\n    public void testNumbersAsString() throws Exception\n    {\n        assertEquals(aposToQuotes(\"{'value':'3'}\"), MAPPER.writeValueAsString(new IntAsString()));\n        assertEquals(aposToQuotes(\"{'value':'4'}\"), MAPPER.writeValueAsString(new LongAsString()));\n        assertEquals(aposToQuotes(\"{'value':'-0.5'}\"), MAPPER.writeValueAsString(new DoubleAsString()));\n    }\n\n    public void testConfigOverridesForNumbers() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.configOverride(Integer.TYPE) // for `int`\n            .setFormat(JsonFormat.Value.forShape(JsonFormat.Shape.STRING));\n        assertEquals(aposToQuotes(\"{'i':'3'}\"),\n                mapper.writeValueAsString(new IntWrapper(3)));\n    }\n}\n",
+  "compaction": {
+    "source_lines": 90,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3168,
+  "representation_chars": 3168,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

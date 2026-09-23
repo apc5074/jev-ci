@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.type.DeprecatedConstructType1456Test",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/type/DeprecatedConstructType1456Test.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.type.DeprecatedConstructType1456Test\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/type/DeprecatedConstructType1456Test.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.type;\n\nimport java.lang.reflect.Method;\nimport java.lang.reflect.Type;\n\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.introspect.AnnotatedClass;\nimport com.fasterxml.jackson.databind.introspect.AnnotatedMethod;\nimport com.fasterxml.jackson.databind.introspect.AnnotatedParameter;\n\n// Tests for [databind#1456]: resolution using methods deprecated\n// in 2.7, but used to work in 2.6\npublic class DeprecatedConstructType1456Test extends BaseMapTest\n{\n    public static class BaseController<Entity extends BaseEntity> {\n        public void process(Entity entity) {}\n    }\n\n    public static class ImplController extends BaseController<ImplEntity> {}\n\n    public static class BaseEntity {}\n\n    public static class ImplEntity extends BaseEntity {}\n\n    private final ObjectMapper MAPPER = new ObjectMapper();\n\n    @SuppressWarnings(\"deprecation\")\n    public void testGenericResolutionUsingDeprecated() throws Exception\n    {\n        Method proceed = BaseController.class.getMethod(\"process\", BaseEntity.class);\n        Type entityType = proceed.getGenericParameterTypes()[0];\n\n        JavaType resolvedType = MAPPER.getTypeFactory().constructType(entityType, ImplController.class);\n        assertEquals(ImplEntity.class, resolvedType.getRawClass());\n    }\n\n    // and this is how new code should resolve types if at all possible\n    public void testGenericParameterViaClass() throws Exception\n    {\n        BeanDescription desc = MAPPER.getDeserializationConfig().introspect(\n                MAPPER.constructType(ImplController.class));\n        AnnotatedClass ac = desc.getClassInfo();\n        AnnotatedMethod m = ac.findMethod(\"process\", new Class<?>[] { BaseEntity.class });\n        assertNotNull(m);\n        assertEquals(1, m.getParameterCount());\n        AnnotatedParameter param = m.getParameter(0);\n        assertEquals(ImplEntity.class, param.getType().getRawClass());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 49,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2147,
+  "representation_chars": 2147,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

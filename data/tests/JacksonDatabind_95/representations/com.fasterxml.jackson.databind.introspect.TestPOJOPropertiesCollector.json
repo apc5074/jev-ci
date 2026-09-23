@@ -1,0 +1,101 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.introspect.TestPOJOPropertiesCollector",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/introspect/TestPOJOPropertiesCollector.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.introspect.TestPOJOPropertiesCollector\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/introspect/TestPOJOPropertiesCollector.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.introspect;\n\nimport java.lang.annotation.ElementType;\nimport java.lang.annotation.Retention;\nimport java.lang.annotation.RetentionPolicy;\nimport java.lang.annotation.Target;\nimport java.math.BigDecimal;\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\n\npublic class TestPOJOPropertiesCollector\n    extends BaseMapTest\n{\n    static class Simple {\n        public int value;\n        \n        @JsonProperty(\"value\")\n        public void valueSetter(int v) { value = v; }\n\n        @JsonProperty(\"value\")\n        public int getFoobar() { return value; }\n    }\n\n    static class SimpleFieldDeser\n    {\n        @JsonDeserialize String[] values;\n    }\n    \n    static class SimpleGetterVisibility {\n        public int getA() { return 0; }\n        protected int getB() { return 1; }\n        @SuppressWarnings(\"unused\")\n        private int getC() { return 2; }\n    }\n    \n    // Class for testing 'shared ignore'\n    static class Empty {\n        public int value;\n        \n        public void setValue(int v) { value = v; }\n\n        @JsonIgnore\n        public int getValue() { return value; }\n    }\n\n    static class IgnoredSetter {\n        @JsonProperty\n        public int value;\n        \n        @JsonIgnore\n        public void setValue(int v) { value = v; }\n\n        public int getValue() { return value; }\n    }\n\n    static class ImplicitIgnores {\n        @JsonIgnore public int a;\n        @JsonIgnore public void setB(int b) { }\n        public int c;\n    }\n    \n    // Should find just one setter for \"y\", due to partial ignore\n    static class IgnoredRenamedSetter {\n        @JsonIgnore public void setY(int value) { }\n        @JsonProperty(\"y\") void foobar(int value) { }\n    }\n    \n    // should produce a single property, \"x\"\n    static class RenamedProperties {\n        @JsonProperty(\"x\")\n        public int value;\n        \n        public void setValue(int v) { value = v; }\n\n        public int getX() { return value; }\n    }\n\n    {\n        ObjectMapper m = new ObjectMapper();\n        m.configure(MapperFeature.AUTO_DETECT_GETTERS, false);\n        POJOPropertiesCollector coll = collector(m, SimpleGetterVisibility.class, true);\n        // should be 1, expect that we disabled getter auto-detection, so\n        Map<String, POJOPropertyBuilder> props = coll.getPropertyMap();\n        assertEquals(0, props.size());\n    }\n\n    public void testCollectionOfIgnored()\n    {\n        POJOPropertiesCollector coll = collector(MAPPER, ImplicitIgnores.class, false);\n        // should be 1, due to ignorals\n        Map<String, POJOPropertyBuilder> props = coll.getPropertyMap();\n        assertEquals(1, props.size());\n        // but also have 2 ignored properties\n        Collection<String> ign = coll.getIgnoredPropertyNames();\n        assertEquals(2, ign.size());\n        assertTrue(ign.contains(\"a\"));\n        assertTrue(ign.contains(\"b\"));\n    }\n\n    public void testSimpleOrderingForDeserialization()\n    {\n        POJOPropertiesCollector coll = collector(MAPPER, SortedProperties.class, false);\n        List<BeanPropertyDefinition> props = coll.getProperties();\n        assertEquals(4, props.size());\n        assertEquals(\"a\", props.get(0).getName());\n        assertEquals(\"b\", props.get(1).getName());\n        assertEquals(\"c\", props.get(2).getName());\n        assertEquals(\"d\", props.get(3).getName());\n    }\n\n    public void testSimpleWithType()\n    {\n        // first for serialization; should base choice on getter\n        POJOPropertiesCollector coll = collector(MAPPER, TypeTestBean.class, true);\n        List<BeanPropertyDefinition> props = coll.getProperties();\n        assertEquals(1, props.size());\n        assertEquals(\"value\", props.get(0).getName());\n        AnnotatedMember m = props.get(0).getAccessor();\n        assertTrue(m instanceof AnnotatedMethod);\n        assertEquals(Integer.class, m.getRawType());\n\n        // then for deserialization; prefer ctor param\n        coll = collector(MAPPER, TypeTestBean.class, false);\n        props = coll.getProperties();\n        assertEquals(1, props.size());\n        assertEquals(\"value\", props.get(0).getName());\n        m = props.get(0).getMutator();\n        assertEquals(AnnotatedParameter.class, m.getClass());\n        assertEquals(String.class, m.getRawType());\n    }\n\n    public void testInnerClassWithAnnotationsInCreator() throws Exception\n    {\n        BasicBeanDescription beanDesc;\n        // first with serialization\n        beanDesc = MAPPER.getSerializationConfig().introspect(MAPPER.constructType(Issue701Bean.class));\n        assertNotNull(beanDesc);\n        // then with deserialization\n        beanDesc = MAPPER.getDeserializationConfig().introspect(MAPPER.constructType(Issue701Bean.class));\n        assertNotNull(beanDesc);\n    }\n\n    public void testUseAnnotationsFalse() throws Exception\n    {\n        // note: need a separate mapper, need to reconfigure\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.configure(MapperFeature.USE_ANNOTATIONS, false);\n        BasicBeanDescription beanDesc = mapper.getSerializationConfig().introspect(mapper.constructType(Jackson703.class));\n        assertNotNull(beanDesc);\n\n        Jackson703 bean = new Jackson703();\n        String json = mapper.writeValueAsString(bean);\n        assertNotNull(json);\n    }\n\n    public void testJackson744() throws Exception\n    {\n        List<BeanPropertyDefinition> props = coll.getProperties();\n        assertEquals(1, props.size());\n        POJOPropertyBuilder prop = (POJOPropertyBuilder) props.get(0);\n        assertEquals(\"bloop\", prop.getName());\n        // Can't call getGetter or the duplicate will be removed\n        assertTrue(prop._getters.value.hasAnnotation(A.class));\n        assertNotNull(prop._getters.next);\n        assertTrue(prop._getters.next.value.hasAnnotation(A.class));\n    }\n\n    private void _verifyProperty(BeanDescription beanDesc,\n    \t\tboolean verifyDesc, boolean verifyIndex, String expDefaultValue)\n    {\n        assertNotNull(beanDesc);\n        List<BeanPropertyDefinition> props = beanDesc.findProperties();\n        assertEquals(2, props.size());\n        for (BeanPropertyDefinition prop : props) {\n            String name = prop.getName();\n            final PropertyMetadata md = prop.getMetadata();\n            if (\"a\".equals(name)) {\n                assertFalse(md.isRequired());\n                assertNull(md.getRequired());\n                if (verifyDesc) {\n                \tassertEquals(PropDescBean.A_DESC, md.getDescription());\n                }\n                if (verifyIndex) {\n                \tassertNull(md.getIndex());\n                }\n            } else if (\"b\".equals(name)) {\n                assertTrue(md.isRequired());\n                assertEquals(Boolean.TRUE, md.getRequired());\n                if (verifyDesc) {\n                \tassertNull(md.getDescription());\n                }\n                if (verifyIndex) {\n                \tassertEquals(Integer.valueOf(PropDescBean.B_INDEX), md.getIndex());\n                }\n                if (expDefaultValue != null) {\n                    assertEquals(expDefaultValue, md.getDefaultValue());\n                }\n            } else {\n                fail(\"Unrecognized property '\"+name+\"'\");\n            }\n        }\n    }\n\n    /*\n    /**********************************************************\n    /* Helper methods\n    /**********************************************************\n     */\n\n    protected POJOPropertiesCollector collector(ObjectMapper m0,\n            Class<?> cls, boolean forSerialization)\n    {\n        BasicClassIntrospector bci = new BasicClassIntrospector();\n        // no real difference between serialization, deserialization, at least here\n        if (forSerialization) {\n            return bci.collectProperties(m0.getSerializationConfig(),\n                    m0.constructType(cls), null, true, \"set\");\n        }\n        return bci.collectProperties(m0.getDeserializationConfig(),\n                m0.constructType(cls), null, false, \"set\");\n    }\n}\n",
+  "compaction": {
+    "source_lines": 545,
+    "mode": "windows",
+    "windows_total": 9,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        360,
+        440
+      ],
+      [
+        480,
+        545
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 29.523729573796373
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 16.86048645695191
+      },
+      {
+        "start": 480,
+        "end": 545,
+        "score": 17.497495698771694
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 29.523729573796373
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 15.777806887245063
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 11.597343800501877
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 15.97379570212903
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 11.8751258846817
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 9.691906442468287
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 16.86048645695191
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 12.503883967521642
+      },
+      {
+        "start": 480,
+        "end": 545,
+        "score": 17.497495698771694
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8299,
+  "representation_chars": 8299,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.struct.TestUnwrappedRecursive383",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/struct/TestUnwrappedRecursive383.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.struct.TestUnwrappedRecursive383\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/struct/TestUnwrappedRecursive383.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.struct;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.databind.*;\n\n// Problem with recursive definition of unwrapping\npublic class TestUnwrappedRecursive383 extends BaseMapTest\n{\n    // [databind#383]\n    static class RecursivePerson {\n        public String name;\n        public int age;\n        @JsonUnwrapped(prefix=\"child.\") public RecursivePerson child;\n    }\n\n    /*\n    /**********************************************************\n    /* Tests, serialization\n    /**********************************************************\n     */\n\n    private final ObjectMapper MAPPER = new ObjectMapper();\n\n    public void testRecursiveUsage() throws Exception\n    {\n        final String JSON = \"{ 'name': 'Bob', 'age': 45, 'gender': 0, 'child.name': 'Bob jr', 'child.age': 15 }\";\n        RecursivePerson p = MAPPER.readValue(aposToQuotes(JSON), RecursivePerson.class);\n        assertNotNull(p);\n        assertEquals(\"Bob\", p.name);\n        assertNotNull(p.child);\n        assertEquals(\"Bob jr\", p.child.name);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 34,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1264,
+  "representation_chars": 1264,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "org.jsoup.parser.TokenQueueTest",
+  "source_file": "src/test/java/org/jsoup/parser/TokenQueueTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.jsoup.parser.TokenQueueTest\n\nSOURCE FILE:\nsrc/test/java/org/jsoup/parser/TokenQueueTest.java\n\nTEST SOURCE:\npackage org.jsoup.parser;\n\nimport org.junit.Test;\nimport static org.junit.Assert.*;\n\n/**\n * Token queue tests.\n */\npublic class TokenQueueTest {\n    @Test public void chompBalanced() {\n        TokenQueue tq = new TokenQueue(\":contains(one (two) three) four\");\n        String pre = tq.consumeTo(\"(\");\n        String guts = tq.chompBalanced('(', ')');\n        String remainder = tq.remainder();\n\n        assertEquals(\":contains\", pre);\n        assertEquals(\"one (two) three\", guts);\n        assertEquals(\" four\", remainder);\n    }\n    \n    @Test public void chompEscapedBalanced() {\n        TokenQueue tq = new TokenQueue(\":contains(one (two) \\\\( \\\\) \\\\) three) four\");\n        String pre = tq.consumeTo(\"(\");\n        String guts = tq.chompBalanced('(', ')');\n        String remainder = tq.remainder();\n\n        assertEquals(\":contains\", pre);\n        assertEquals(\"one (two) \\\\( \\\\) \\\\) three\", guts);\n        assertEquals(\"one (two) ( ) ) three\", TokenQueue.unescape(guts));\n        assertEquals(\" four\", remainder);\n    }\n\n    @Test public void chompBalancedMatchesAsMuchAsPossible() {\n        TokenQueue tq = new TokenQueue(\"unbalanced(something(or another)) else\");\n        tq.consumeTo(\"(\");\n        String match = tq.chompBalanced('(', ')');\n        assertEquals(\"something(or another)\", match);\n    }\n    \n    @Test public void unescape() {\n        assertEquals(\"one ( ) \\\\\", TokenQueue.unescape(\"one \\\\( \\\\) \\\\\\\\\"));\n    }\n    \n    @Test public void chompToIgnoreCase() {\n        String t = \"<textarea>one < two </TEXTarea>\";\n        TokenQueue tq = new TokenQueue(t);\n        String data = tq.chompToIgnoreCase(\"</textarea\");\n        assertEquals(\"<textarea>one < two \", data);\n        \n        tq = new TokenQueue(\"<textarea> one two < three </oops>\");\n        data = tq.chompToIgnoreCase(\"</textarea\");\n        assertEquals(\"<textarea> one two < three </oops>\", data);\n    }\n\n    @Test public void addFirst() {\n        TokenQueue tq = new TokenQueue(\"One Two\");\n        tq.consumeWord();\n        tq.addFirst(\"Three\");\n        assertEquals(\"Three Two\", tq.remainder());\n    }\n    \n    \n    @Test \n    public void consumeToIgnoreSecondCallTest(){\n\t\tString t = \"<textarea>one < two </TEXTarea> third </TEXTarea>\";\n\t\tTokenQueue tq = new TokenQueue(t);\n\t\tString data = tq.chompToIgnoreCase(\"</textarea>\");\n\t\tassertEquals(\"<textarea>one < two \", data);\n\t\t\n\t\tdata = tq.chompToIgnoreCase(\"</textarea>\");\n\t\tassertEquals(\" third \", data);\n    }\n    \n}\n",
+  "compaction": {
+    "source_lines": 74,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2575,
+  "representation_chars": 2575,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

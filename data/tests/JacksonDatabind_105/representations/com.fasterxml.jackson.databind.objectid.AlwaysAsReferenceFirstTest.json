@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.objectid.AlwaysAsReferenceFirstTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/objectid/AlwaysAsReferenceFirstTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.objectid.AlwaysAsReferenceFirstTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/objectid/AlwaysAsReferenceFirstTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.objectid;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.databind.*;\n\npublic class AlwaysAsReferenceFirstTest extends BaseMapTest\n{\n    // [databind#1255]\n    @JsonPropertyOrder({ \"bar1\", \"bar2\" })\n    static class Foo {\n\n        @JsonIdentityReference(alwaysAsId = true)\n        public Bar bar1;\n\n        @JsonIdentityReference\n        public Bar bar2;\n    }\n\n    @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class)\n    static class Bar {\n        public int value = 3;\n    }\n\n    // [databind#1607]\n\n    @JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property=\"id\")\n    static class Value1607\n    {\n        public int value;\n        \n        public Value1607() { this(0); }\n        public Value1607(int v) {\n            value = v;\n        }\n}\n    @JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property=\"id\")\n    @JsonIdentityReference(alwaysAsId=true)\n    static class Value1607ViaClass\n    {\n        public int value;\n\n        public Value1607ViaClass() { this(0); }\n        public Value1607ViaClass(int v) {\n            value = v;\n        }\n    }\n\n    @JsonPropertyOrder(alphabetic=true)\n    static class ReallyAlwaysContainer\n    {\n        public Value1607ViaClass alwaysClass = new Value1607ViaClass(13);\n\n        @JsonIdentityReference(alwaysAsId=true)\n        public Value1607 alwaysProp = new Value1607(13);\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n    \n    private final ObjectMapper MAPPER = new ObjectMapper();\n\n    // [databind#1255]\n    public void testIssue1255() throws Exception\n    {\n        Foo mo = new Foo();\n        mo.bar1 = new Bar();\n        mo.bar2 = mo.bar1;\n\n        String json = MAPPER.writeValueAsString(mo);\n\n        Foo result = MAPPER.readValue(json, Foo.class);\n        assertNotNull(result);\n    }\n\n    // [databind#1607]\n    public void testIssue1607() throws Exception\n    {\n        String json = MAPPER.writeValueAsString(new ReallyAlwaysContainer());\n        assertEquals(aposToQuotes(\"{'alwaysClass':1,'alwaysProp':2}\"), json);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 84,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2445,
+  "representation_chars": 2445,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

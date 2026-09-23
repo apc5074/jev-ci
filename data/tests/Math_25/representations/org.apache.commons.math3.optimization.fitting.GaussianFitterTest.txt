@@ -1,0 +1,232 @@
+TEST CLASS:
+org.apache.commons.math3.optimization.fitting.GaussianFitterTest
+
+SOURCE FILE:
+src/test/java/org/apache/commons/math3/optimization/fitting/GaussianFitterTest.java
+
+TEST SOURCE:
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.commons.math3.optimization.fitting;
+
+import org.apache.commons.math3.exception.MathIllegalArgumentException;
+import org.apache.commons.math3.optimization.general.LevenbergMarquardtOptimizer;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+/**
+ * Tests {@link GaussianFitter}.
+ *
+ * @since 2.2
+ * @version $Id$
+ */
+public class GaussianFitterTest {
+    /** Good data. */
+    protected static final double[][] DATASET1 = new double[][] {
+        {4.0254623,  531026.0},
+        {4.02804905, 664002.0},
+        {4.02934242, 787079.0},
+        {4.03128248, 984167.0},
+        {4.03386923, 1294546.0},
+        {4.03580929, 1560230.0},
+        {4.03839603, 1887233.0},
+        {4.0396894,  2113240.0},
+        {4.04162946, 2375211.0},
+        {4.04421621, 2687152.0},
+        {4.04550958, 2862644.0},
+        {4.04744964, 3078898.0},
+        {4.05003639, 3327238.0},
+        {4.05132976, 3461228.0},
+        {4.05326982, 3580526.0},
+        {4.05585657, 3576946.0},
+        {4.05779662, 3439750.0},
+        {4.06038337, 3220296.0},
+        {4.06167674, 3070073.0},
+        {4.0636168,  2877648.0},
+        {4.06620355, 2595848.0},
+        {4.06749692, 2390157.0},
+        {4.06943698, 2175960.0},
+        {4.07202373, 1895104.0},
+        {4.0733171,  1687576.0},
+        {4.07525716, 1447024.0},
+        {4.0778439,  1130879.0},
+        {4.07978396, 904900.0},
+        {4.08237071, 717104.0},
+        {4.08366408, 620014.0}
+    };
+    /** Poor data: right of peak not symmetric with left of peak. */
+    protected static final double[][] DATASET2 = new double[][] {
+        {-20.15,   1523.0},
+        {-19.65,   1566.0},
+        {-19.15,   1592.0},
+        {-18.65,   1927.0},
+        {-18.15,   3089.0},
+        {-17.65,   6068.0},
+        {-17.15,  14239.0},
+        {-16.65,  34124.0},
+        {-16.15,  64097.0},
+        {-15.65, 110352.0},
+        {-15.15, 164742.0},
+        {-14.65, 209499.0},
+        {-14.15, 267274.0},
+
+    /**
+     * Basic.
+     */
+    @Test
+    public void testFit01() {
+        GaussianFitter fitter = new GaussianFitter(new LevenbergMarquardtOptimizer());
+        addDatasetToGaussianFitter(DATASET1, fitter);
+        double[] parameters = fitter.fit();
+
+        Assert.assertEquals(3496978.1837704973, parameters[0], 1e-4);
+        Assert.assertEquals(4.054933085999146, parameters[1], 1e-4);
+        Assert.assertEquals(0.015039355620304326, parameters[2], 1e-4);
+    }
+
+    /**
+     * Zero points is not enough observed points.
+     */
+    @Test(expected=MathIllegalArgumentException.class)
+    public void testFit02() {
+        GaussianFitter fitter = new GaussianFitter(new LevenbergMarquardtOptimizer());
+        fitter.fit();
+    }
+    
+    /**
+     * Two points is not enough observed points.
+     */
+    @Test(expected=MathIllegalArgumentException.class)
+    public void testFit03() {
+        GaussianFitter fitter = new GaussianFitter(new LevenbergMarquardtOptimizer());
+        addDatasetToGaussianFitter(new double[][] {
+            {4.0254623,  531026.0},
+            {4.02804905, 664002.0}},
+            fitter);
+        fitter.fit();
+    }
+    
+    /**
+     * Poor data: right of peak not symmetric with left of peak.
+     */
+    @Test
+    public void testFit04() {
+        GaussianFitter fitter = new GaussianFitter(new LevenbergMarquardtOptimizer());
+        addDatasetToGaussianFitter(DATASET2, fitter);
+        double[] parameters = fitter.fit();
+
+        Assert.assertEquals(233003.2967252038, parameters[0], 1e-4);
+        Assert.assertEquals(-10.654887521095983, parameters[1], 1e-4);
+        Assert.assertEquals(4.335937353196641, parameters[2], 1e-4);
+    }  
+    
+    /**
+     * Poor data: long tails.
+     */
+    @Test
+    public void testFit05() {
+        GaussianFitter fitter = new GaussianFitter(new LevenbergMarquardtOptimizer());
+        addDatasetToGaussianFitter(DATASET3, fitter);
+        double[] parameters = fitter.fit();
+
+        Assert.assertEquals(283863.81929180305, parameters[0], 1e-4);
+        Assert.assertEquals(-13.29641995105174, parameters[1], 1e-4);
+        Assert.assertEquals(1.7297330293549908, parameters[2], 1e-4);
+    }
+    
+    /**
+     * Poor data: right of peak is missing.
+     */
+    @Test
+    public void testFit06() {
+        GaussianFitter fitter = new GaussianFitter(new LevenbergMarquardtOptimizer());
+        addDatasetToGaussianFitter(DATASET4, fitter);
+        double[] parameters = fitter.fit();
+
+        Assert.assertEquals(285250.66754309234, parameters[0], 1e-4);
+        Assert.assertEquals(-13.528375695228455, parameters[1], 1e-4);
+        Assert.assertEquals(1.5204344894331614, parameters[2], 1e-4);
+    }    
+
+    /**
+            1.3956427429045787E-13,
+            3.655705706448139E-13,
+            9.253753324779779E-13,
+            2.267636001476696E-12,
+            5.3880460095836855E-12,
+            1.2431632654852931E-11
+        };
+
+        GaussianFitter fitter = new GaussianFitter(new LevenbergMarquardtOptimizer());
+        for (int i = 0; i < data.length; i++) {
+            fitter.addObservedPoint(i, data[i]);
+        }
+        final double[] p = fitter.fit();
+
+        Assert.assertEquals(53.1572792, p[1], 1e-7);
+        Assert.assertEquals(5.75214622, p[2], 1e-8);
+    }
+
+    @Test
+    public void testMath798() {
+        final GaussianFitter fitter = new GaussianFitter(new LevenbergMarquardtOptimizer());
+
+        // When the data points are not commented out below, the fit stalls.
+        // This is expected however, since the whole dataset hardly looks like
+        // a Gaussian.
+        // When commented out, the fit proceeds fine.
+
+        fitter.addObservedPoint(0.23, 395.0);
+        //fitter.addObservedPoint(0.68, 0.0);
+        fitter.addObservedPoint(1.14, 376.0);
+        //fitter.addObservedPoint(1.59, 0.0);
+        fitter.addObservedPoint(2.05, 163.0);
+        //fitter.addObservedPoint(2.50, 0.0);
+        fitter.addObservedPoint(2.95, 49.0);
+        //fitter.addObservedPoint(3.41, 0.0);
+        fitter.addObservedPoint(3.86, 16.0);
+        //fitter.addObservedPoint(4.32, 0.0);
+        fitter.addObservedPoint(4.77, 1.0);
+
+        final double[] p = fitter.fit();
+
+        // Values are copied from a previous run of this test.
+        Assert.assertEquals(420.8397296167364, p[0], 1e-12);
+        Assert.assertEquals(0.603770729862231, p[1], 1e-15);
+        Assert.assertEquals(1.0786447936766612, p[2], 1e-14);
+    }
+    
+    /**
+     * Adds the specified points to specified <code>GaussianFitter</code>
+     * instance.
+     *
+     * @param points data points where first dimension is a point index and
+     *        second dimension is an array of length two representing the point
+     *        with the first value corresponding to X and the second value
+     *        corresponding to Y
+     * @param fitter fitter to which the points in <code>points</code> should be
+     *        added as observed points
+     */
+    protected static void addDatasetToGaussianFitter(double[][] points,
+                                                     GaussianFitter fitter) {
+        for (int i = 0; i < points.length; i++) {
+            fitter.addObservedPoint(points[i][0], points[i][1]);
+        }
+    }
+}

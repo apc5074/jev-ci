@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.introspect.TestPropertyRename",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/introspect/TestPropertyRename.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.introspect.TestPropertyRename\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/introspect/TestPropertyRename.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.introspect;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.databind.*;\n\n/**\n * Unit tests verifying handling of potential and actual\n * conflicts, regarding property handling.\n */\npublic class TestPropertyRename extends BaseMapTest\n{\n    static class Bean323WithIgnore { \n        @JsonIgnore\n        private int a;\n\n        public Bean323WithIgnore(@JsonProperty(\"a\") final int a ) {\n            this.a = a;\n        }\n\n        @JsonProperty(\"b\")\n        private int getA () {\n            return a;\n        }\n    }    \n\n    @JsonPropertyOrder({ \"a\",\"b\" })\n    static class Bean323WithExplicitCleave1 { \n        @JsonProperty(\"a\")\n        private int a;\n\n        public Bean323WithExplicitCleave1(@JsonProperty(\"a\") final int a ) {\n            this.a = a;\n        }\n\n        @JsonProperty(\"b\")\n        private int getA () {\n            return a;\n        }\n    } \n\n    @JsonPropertyOrder({ \"a\",\"b\" })\n    static class Bean323WithExplicitCleave2 { \n        @JsonProperty(\"b\")\n        private int a;\n\n        public Bean323WithExplicitCleave2(@JsonProperty(\"a\") final int a ) {\n            this.a = a;\n        }\n\n        @JsonProperty(\"b\")\n        private int getA () {\n            return a;\n        }\n    }    \n   \n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n\n    public void testCreatorPropRenameWithIgnore() throws Exception\n    {\n        Bean323WithIgnore input = new Bean323WithIgnore(7);\n        assertEquals(\"{\\\"b\\\":7}\", objectWriter().writeValueAsString(input));\n    }\n\n    public void testCreatorPropRenameWithCleave() throws Exception\n    {\n        assertEquals(\"{\\\"a\\\":7,\\\"b\\\":7}\",\n        \t\tobjectWriter().writeValueAsString(new Bean323WithExplicitCleave1(7)));\n        // note: 'a' NOT included as only ctor property found for it, no getter/field\n        assertEquals(\"{\\\"b\\\":7}\", objectWriter().writeValueAsString(new Bean323WithExplicitCleave2(7)));\n    }\n}\n",
+  "compaction": {
+    "source_lines": 75,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2233,
+  "representation_chars": 2233,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.lang3.EnumUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/EnumUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.EnumUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/EnumUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one\n * or more contributor license agreements.  See the NOTICE file\n * distributed with this work for additional information\n * regarding copyright ownership.  The ASF licenses this file\n * to you under the Apache License, Version 2.0 (the\n * \"License\"); you may not use this file except in compliance\n * with the License.  You may obtain a copy of the License at\n *\n * http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing,\n * software distributed under the License is distributed on an\n * \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY\n * KIND, either express or implied.  See the License for the\n * specific language governing permissions and limitations\n * under the License.\n */\npackage org.apache.commons.lang3;\n\nimport java.util.List;\nimport java.util.Map;\n\nimport junit.framework.TestCase;\n\n/**\n * \n * @version $Id$\n */\npublic class EnumUtilsTest extends TestCase {\n\n    public void testConstructable() {\n        // enforce public constructor\n        new EnumUtils();\n    }\n\n    public void test_getEnumMap() {\n        Map<String, Traffic> test = EnumUtils.getEnumMap(Traffic.class);\n        assertEquals( \"getEnumMap not created correctly\", \"{RED=RED, AMBER=AMBER, GREEN=GREEN}\", test.toString());\n        assertEquals(3, test.size());\n        assertEquals(true, test.containsKey(\"RED\"));\n        assertEquals(Traffic.RED, test.get(\"RED\"));\n        assertEquals(true, test.containsKey(\"AMBER\"));\n        assertEquals(Traffic.AMBER, test.get(\"AMBER\"));\n        assertEquals(true, test.containsKey(\"GREEN\"));\n        assertEquals(Traffic.GREEN, test.get(\"GREEN\"));\n        assertEquals(false, test.containsKey(\"PURPLE\"));\n    }\n\n    public void test_getEnumList() {\n        List<Traffic> test = EnumUtils.getEnumList(Traffic.class);\n        assertEquals(3, test.size());\n        assertEquals(Traffic.RED, test.get(0));\n        assertEquals(Traffic.AMBER, test.get(1));\n        assertEquals(Traffic.GREEN, test.get(2));\n    }\n\n    public void test_isEnum() {\n        assertEquals(true, EnumUtils.isValidEnum(Traffic.class, \"RED\"));\n        assertEquals(true, EnumUtils.isValidEnum(Traffic.class, \"AMBER\"));\n        assertEquals(true, EnumUtils.isValidEnum(Traffic.class, \"GREEN\"));\n        assertEquals(false, EnumUtils.isValidEnum(Traffic.class, \"PURPLE\"));\n    }\n\n    public void test_getEnum() {\n        assertEquals(Traffic.RED, EnumUtils.getEnum(Traffic.class, \"RED\"));\n        assertEquals(Traffic.AMBER, EnumUtils.getEnum(Traffic.class, \"AMBER\"));\n        assertEquals(Traffic.GREEN, EnumUtils.getEnum(Traffic.class, \"GREEN\"));\n        assertEquals(null, EnumUtils.getEnum(Traffic.class, \"PURPLE\"));\n    }\n\n}\n\nenum Traffic {\n    RED, AMBER, GREEN\n}\n",
+  "compaction": {
+    "source_lines": 76,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2921,
+  "representation_chars": 2921,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

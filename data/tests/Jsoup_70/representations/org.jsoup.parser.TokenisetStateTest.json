@@ -1,0 +1,25 @@
+{
+  "test_class": "org.jsoup.parser.TokenisetStateTest",
+  "source_file": "src/test/java/org/jsoup/parser/TokenisetStateTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.jsoup.parser.TokenisetStateTest\n\nSOURCE FILE:\nsrc/test/java/org/jsoup/parser/TokenisetStateTest.java\n\nTEST SOURCE:\npackage org.jsoup.parser;\n\nimport org.junit.Test;\n\nimport java.util.Arrays;\n\nimport static org.junit.Assert.assertArrayEquals;\n\npublic class TokenisetStateTest {\n    @Test\n    public void ensureSearchArraysAreSorted() {\n        char[][] arrays = {\n            TokeniserState.attributeSingleValueCharsSorted,\n            TokeniserState.attributeDoubleValueCharsSorted,\n            TokeniserState.attributeNameCharsSorted,\n            TokeniserState.attributeValueUnquoted\n        };\n\n        for (char[] array : arrays) {\n            char[] copy = Arrays.copyOf(array, array.length);\n            Arrays.sort(array);\n            assertArrayEquals(array, copy);\n        }\n    }\n}\n",
+  "compaction": {
+    "source_lines": 25,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 808,
+  "representation_chars": 808,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

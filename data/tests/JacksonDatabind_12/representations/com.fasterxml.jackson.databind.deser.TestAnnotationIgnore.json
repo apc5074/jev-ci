@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.TestAnnotationIgnore",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/TestAnnotationIgnore.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.TestAnnotationIgnore\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/TestAnnotationIgnore.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.databind.*;\n\n/**\n * This unit test suite that tests use of {@link JsonIgnore}\n * annotation with deserialization.\n */\npublic class TestAnnotationIgnore\n    extends BaseMapTest\n{\n    // Class for testing {@link JsonIgnore} annotations with setters\n    final static class SizeClassIgnore\n    {\n        int _x = 0;\n        int _y = 0;\n\n        public void setX(int value) { _x = value; }\n        @JsonIgnore public void setY(int value) { _y = value; }\n\n        /* Just igoring won't help a lot here; let's define a replacement\n         * so that we won't get an exception for \"unknown field\"\n         */\n        @JsonProperty(\"y\") void foobar(int value) {\n            ; // nop\n        }\n    }\n\n    @JsonIgnoreProperties({ \"z\" })\n    final static class NoYOrZ\n    {\n        public int x;\n\n        @JsonIgnore\n        public int y = 1;\n    }\n    \n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n\n    private final ObjectMapper MAPPER = objectMapper();\n    \n    public void testSimpleIgnore() throws Exception\n    {\n        SizeClassIgnore result = MAPPER.readValue\n            (\"{ \\\"x\\\":1, \\\"y\\\" : 2 }\",\n             SizeClassIgnore.class);\n        // x should be set, y not\n        assertEquals(1, result._x);\n        assertEquals(0, result._y);\n    }\n\n    public void testFailOnIgnore() throws Exception\n    {\n        ObjectReader r = MAPPER.reader(NoYOrZ.class);\n        \n        // First, fine to get \"x\":\n        NoYOrZ result = r.readValue(aposToQuotes(\"{'x':3}\"));\n        assertEquals(3, result.x);\n        assertEquals(1, result.y);\n\n        // but not 'y'\n        r = r.with(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);\n        try {\n            result = r.readValue(aposToQuotes(\"{'x':3, 'y':4}\"));\n            fail(\"Should fail\");\n        } catch (JsonMappingException e) {\n            verifyException(e, \"Ignored field\");\n        }\n\n        // or 'z'\n        try {\n            result = r.readValue(aposToQuotes(\"{'z':2 }\"));\n            fail(\"Should fail\");\n        } catch (JsonMappingException e) {\n            verifyException(e, \"Ignored field\");\n        }\n    }\n}\n",
+  "compaction": {
+    "source_lines": 84,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2493,
+  "representation_chars": 2493,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

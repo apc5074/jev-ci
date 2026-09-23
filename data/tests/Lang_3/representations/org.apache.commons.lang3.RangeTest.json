@@ -1,0 +1,86 @@
+{
+  "test_class": "org.apache.commons.lang3.RangeTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/RangeTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.RangeTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/RangeTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.lang3;\n\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertFalse;\nimport static org.junit.Assert.assertNotNull;\nimport static org.junit.Assert.assertSame;\nimport static org.junit.Assert.assertTrue;\nimport static org.junit.Assert.fail;\n\nimport java.util.Comparator;\n\nimport org.junit.Before;\nimport org.junit.Test;\n\n/**\n * <p>\n * Tests the methods in the {@link org.apache.commons.lang3.Range} class.\n * </p>\n * \n * @version $Id$\n */\n@SuppressWarnings(\"boxing\")\npublic class RangeTest {\n\n    private Range<Byte> byteRange;\n    private Range<Byte> byteRange2;\n    private Range<Byte> byteRange3;\n\n    private Range<Integer> intRange;\n    private Range<Long> longRange;\n    private Range<Float> floatRange;\n    private Range<Double> doubleRange;\n\n    @SuppressWarnings(\"cast\") // intRange\n    @Before\n    public void setUp() {\n        byteRange   = Range.between((byte) 0, (byte) 5);\n        byteRange2  = Range.between((byte) 0, (byte) 5);\n        byteRange3  = Range.between((byte) 0, (byte) 10);\n\n        intRange    = Range.between((int) 10, (int) 20);\n        longRange   = Range.between((long) 10, (long) 20);\n        floatRange  = Range.between((float) 10, (float) 20);\n        doubleRange = Range.between((double) 10, (double) 20);\n    }\n\n    //-----------------------------------------------------------------------\n    @SuppressWarnings({ \"rawtypes\", \"unchecked\" })\n    @Test\n    public void testComparableConstructors() {\n        final Comparable c = \n            new Comparable() { \n                @Override\n                public int compareTo(final Object other) {\n                    return 1;\n                }\n            };\n        final Range r1 = Range.is(c);\n        final Range r2 = Range.between(c, c);\n        assertEquals(true, r1.isNaturalOrdering());\n        assertEquals(true, r2.isNaturalOrdering());\n    }\n\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testRangeOfChars() {\n        final Range<Character> chars = Range.between('a', 'z');\n        assertTrue(chars.contains('b'));\n        assertFalse(chars.contains('B'));\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testEqualsObject() {\n        assertEquals(byteRange, byteRange);\n        assertEquals(byteRange, byteRange2);\n        assertEquals(byteRange2, byteRange2);\n        assertTrue(byteRange.equals(byteRange));\n        assertTrue(byteRange2.equals(byteRange2));\n        assertTrue(byteRange3.equals(byteRange3));\n        assertFalse(byteRange2.equals(byteRange3));\n        assertFalse(byteRange2.equals(null));\n        assertFalse(byteRange2.equals(\"Ni!\"));\n    }\n\n    @Test\n    public void testHashCode() {\n        assertEquals(byteRange.hashCode(), byteRange2.hashCode());\n        assertFalse(byteRange.hashCode() == byteRange3.hashCode());\n        \n        assertEquals(intRange.hashCode(), intRange.hashCode());\n        assertTrue(intRange.hashCode() != 0);\n    }\n\n    @Test\n    public void testToString() {\n        assertNotNull(byteRange.toString());\n        \n        final String str = intRange.toString();\n        assertEquals(\"[10..20]\", str);\n        assertEquals(\"[-20..-10]\", Range.between(-20, -10).toString());\n    }\n\n    @Test\n    public void testToStringFormat() {\n        final String str = intRange.toString(\"From %1$s to %2$s\");\n        assertEquals(\"From 10 to 20\", str);\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testGetMinimum() {\n        assertEquals(10, (int) intRange.getMinimum());\n        assertEquals(10L, (long) longRange.getMinimum());\n        assertEquals(10f, floatRange.getMinimum(), 0.00001f);\n        assertEquals(10d, doubleRange.getMinimum(), 0.00001d);\n    }\n\n    @Test\n    public void testGetMaximum() {\n        assertEquals(20, (int) intRange.getMaximum());\n        assertEquals(20L, (long) longRange.getMaximum());\n        assertEquals(20f, floatRange.getMaximum(), 0.00001f);\n        assertEquals(20d, doubleRange.getMaximum(), 0.00001d);\n    }\n\n    @Test\n    public void testContains() {\n        assertFalse(intRange.contains(null));\n        \n        assertFalse(intRange.contains(5));\n        assertTrue(intRange.contains(10));\n        assertTrue(intRange.contains(15));\n        assertTrue(intRange.contains(20));\n        assertFalse(intRange.contains(25));\n    }\n\n    @Test\n    public void testIsAfter() {\n        assertFalse(intRange.isAfter(null));\n        \n        assertTrue(intRange.isAfter(5));\n        \n        assertFalse(intRange.isAfterRange(Range.between(10, 20)));\n    }\n\n    @Test\n    public void testIsOverlappedBy() {\n\n        // null handling\n        assertFalse(intRange.isOverlappedBy(null));\n\n        // easy inside range\n        assertTrue(intRange.isOverlappedBy(Range.between(12, 18)));\n\n        // outside range on each side\n        assertFalse(intRange.isOverlappedBy(Range.between(32, 45)));\n        assertFalse(intRange.isOverlappedBy(Range.between(2, 8)));\n\n        // equals range\n        assertTrue(intRange.isOverlappedBy(Range.between(10, 20)));\n\n        // overlaps\n        assertTrue(intRange.isOverlappedBy(Range.between(9, 14)));\n        assertTrue(intRange.isOverlappedBy(Range.between(16, 21)));\n\n        // touches lower boundary\n        assertTrue(intRange.isOverlappedBy(Range.between(10, 19)));\n        assertTrue(intRange.isOverlappedBy(Range.between(10, 21)));\n\n        // touches upper boundary\n        assertTrue(intRange.isOverlappedBy(Range.between(11, 20)));\n        assertTrue(intRange.isOverlappedBy(Range.between(9, 20)));\n        \n        // negative\n        assertFalse(intRange.isOverlappedBy(Range.between(-11, -18)));\n    }\n\n    @Test\n    public void testIsBeforeRange() {\n        assertFalse(intRange.isBeforeRange(null));\n        \n        assertFalse(intRange.isBeforeRange(Range.between(5, 9)));\n        \n        assertFalse(intRange.isBeforeRange(Range.between(5, 10)));\n        assertFalse(intRange.isBeforeRange(Range.between(5, 20)));\n        assertFalse(intRange.isBeforeRange(Range.between(5, 25)));\n        assertFalse(intRange.isBeforeRange(Range.between(15, 25)));\n        \n        assertTrue(intRange.isBeforeRange(Range.between(21, 25)));\n        \n        assertFalse(intRange.isBeforeRange(Range.between(10, 20)));\n    }\n\n    @Test\n    public void testIntersectionWith() {\n        assertSame(intRange, intRange.intersectionWith(intRange));\n        assertSame(byteRange, byteRange.intersectionWith(byteRange));\n        assertSame(longRange, longRange.intersectionWith(longRange));\n        assertSame(floatRange, floatRange.intersectionWith(floatRange));\n        assertSame(doubleRange, doubleRange.intersectionWith(doubleRange));\n\n        assertEquals(Range.between(10, 15), intRange.intersectionWith(Range.between(5, 15)));\n    }\n\n    @Test(expected = IllegalArgumentException.class)\n    public void testIntersectionWithNull() {\n        intRange.intersectionWith(null);\n    }\n\n    @Test(expected = IllegalArgumentException.class)\n    public void testIntersectionWithNonOverlapping() {\n        intRange.intersectionWith(Range.between(0, 9));\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testSerializing() {\n        SerializationUtils.clone(intRange);\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 380,
+    "mode": "windows",
+    "windows_total": 6,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        300,
+        380
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 23.63264349638407
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 9.595345187812978
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 6.7814058221415845
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 23.63264349638407
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.44926806001039
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 9.595345187812978
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.204952896489421
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 6.6608893208317435
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 6.7814058221415845
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8316,
+  "representation_chars": 8316,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

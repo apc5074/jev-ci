@@ -1,0 +1,171 @@
+{
+  "test_class": "org.apache.commons.lang3.text.StrBuilderAppendInsertTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/text/StrBuilderAppendInsertTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.text.StrBuilderAppendInsertTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/text/StrBuilderAppendInsertTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.lang3.text;\n\nimport java.util.Arrays;\nimport java.util.Collection;\nimport java.util.Collections;\nimport java.util.Iterator;\n\nimport junit.framework.TestCase;\n\nimport org.apache.commons.lang3.SystemUtils;\n\n/**\n * Unit tests for {@link org.apache.commons.lang3.text.StrBuilder}.\n *\n * @version $Id$\n */\npublic class StrBuilderAppendInsertTest extends TestCase {\n\n    /** The system line separator. */\n    private static final String SEP = SystemUtils.LINE_SEPARATOR;\n\n    /** Test subclass of Object, with a toString method. */\n    private static final Object FOO = new Object() {\n        @Override\n        public String toString() {\n            return \"foo\";\n        }\n    };\n\n    /**\n     * Create a new test case with the specified name.\n     * \n     * @param name  the name\n     */\n    public StrBuilderAppendInsertTest(String name) {\n        super(name);\n    }\n\n    //-----------------------------------------------------------------------\n    public void testAppendNewLine() {\n        StrBuilder sb = new StrBuilder(\"---\");\n        sb.appendNewLine().append(\"+++\");\n        assertEquals(\"---\" + SEP + \"+++\", sb.toString());\n        \n        sb = new StrBuilder(\"---\");\n        sb.setNewLineText(\"#\").appendNewLine().setNewLineText(null).appendNewLine();\n        assertEquals(\"---#\" + SEP, sb.toString());\n    }\n\n    //-----------------------------------------------------------------------\n    public void testAppendWithNullText() {\n        StrBuilder sb = new StrBuilder();\n        sb.setNullText(\"NULL\");\n        assertEquals(\"\", sb.toString());\n\n        sb.appendNull();\n        assertEquals(\"NULL\", sb.toString());\n\n        sb.append((Object) null);\n        assertEquals(\"NULLNULL\", sb.toString());\n\n        sb.append(FOO);\n        assertEquals(\"NULLNULLfoo\", sb.toString());\n        assertEquals(\"foo\", sb.toString());\n\n        sb.append(new char[]{'a', 'b', 'c', 'b', 'a', 'r', 'd', 'e', 'f'}, 3, 3);\n        assertEquals(\"foobar\", sb.toString());\n    }\n\n    //-----------------------------------------------------------------------\n    public void testAppend_Boolean() {\n        StrBuilder sb = new StrBuilder();\n        sb.append(true);\n        assertEquals(\"true\", sb.toString());\n\n        sb.append(false);\n        assertEquals(\"truefalse\", sb.toString());\n\n        sb.append('!');\n        assertEquals(\"truefalse!\", sb.toString());\n    }\n\n    //-----------------------------------------------------------------------\n    public void testAppend_PrimitiveNumber() {\n        StrBuilder sb = new StrBuilder();\n        sb.append(0);\n        assertEquals(\"0\", sb.toString());\n\n        sb.append(1L);\n        assertEquals(\"01\", sb.toString());\n\n        sb.append(2.3f);\n        assertEquals(\"012.3\", sb.toString());\n\n        sb.append(4.5d);\n        assertEquals(\"012.34.5\", sb.toString());\n    }\n\n    //-----------------------------------------------------------------------\n    public void testAppendln_Object() {\n        StrBuilder sb = new StrBuilder();\n        sb.appendln((Object) null);\n        assertEquals(\"\" + SEP, sb.toString());\n\n        sb.appendln(FOO);\n        assertEquals(SEP + \"foo\" + SEP, sb.toString());\n\n        sb.appendln(Integer.valueOf(6));\n        assertEquals(SEP + \"foo\" + SEP + \"6\" + SEP, sb.toString());\n    }\n\n    //-----------------------------------------------------------------------\n    public void testAppendln_String() {\n        final int[] count = new int[2];\n        StrBuilder sb = new StrBuilder() {\n            @Override\n            public StrBuilder append(String str) {\n                count[0]++;\n                return super.append(str);\n            }\n            @Override\n            public StrBuilder appendNewLine() {\n                count[1]++;\n                return super.appendNewLine();\n            }\n        };\n        sb.appendln(\"foo\");\n        assertEquals(\"foo\" + SEP, sb.toString());\n        assertEquals(2, count[0]);  // appendNewLine() calls append(String)\n        assertEquals(1, count[1]);\n    }\n\n    //-----------------------------------------------------------------------\n    public void testAppendln_String_int_int() {\n        final int[] count = new int[2];\n        StrBuilder sb = new StrBuilder() {\n            @Override\n            public StrBuilder append(String str, int startIndex, int length) {\n                count[0]++;\n                return super.append(str, startIndex, length);\n            }\n            @Override\n            public StrBuilder appendNewLine() {\n        sb.setNullText(\"null\");\n        sb.appendFixedWidthPadLeft(null, 5, '-');\n        assertEquals(\"-null\", sb.toString());\n    }\n\n    //-----------------------------------------------------------------------\n    public void testAppendFixedWidthPadLeft_int() {\n        StrBuilder sb = new StrBuilder();\n        sb.appendFixedWidthPadLeft(123, -1, '-');\n        assertEquals(\"\", sb.toString());\n\n        sb.clear();\n        sb.appendFixedWidthPadLeft(123, 0, '-');\n        assertEquals(\"\", sb.toString());\n\n        sb.clear();\n        sb.appendFixedWidthPadLeft(123, 1, '-');\n        assertEquals(\"3\", sb.toString());\n\n        sb.clear();\n        sb.appendFixedWidthPadLeft(123, 2, '-');\n        assertEquals(\"23\", sb.toString());\n\n        sb.clear();\n        sb.appendFixedWidthPadLeft(123, 3, '-');\n        assertEquals(\"123\", sb.toString());\n\n        sb.clear();\n        sb.appendFixedWidthPadLeft(123, 4, '-');\n        assertEquals(\"-123\", sb.toString());\n\n        sb.clear();\n        sb.appendFixedWidthPadLeft(123, 10, '-');\n        assertEquals(10, sb.length());\n        //            1234567890\n        assertEquals(\"-------123\", sb.toString());\n    }\n\n    //-----------------------------------------------------------------------\n    public void testAppendFixedWidthPadRight() {\n        StrBuilder sb = new StrBuilder();\n        sb.appendFixedWidthPadRight(\"foo\", -1, '-');\n        assertEquals(\"\", sb.toString());\n\n        sb.clear();\n        sb.appendFixedWidthPadRight(\"foo\", 0, '-');\n        assertEquals(\"\", sb.toString());\n\n        sb.clear();\n        sb.appendFixedWidthPadRight(\"foo\", 1, '-');\n        assertEquals(\"f\", sb.toString());\n\n        sb.clear();\n        sb.appendFixedWidthPadRight(\"foo\", 2, '-');\n        assertEquals(\"fo\", sb.toString());\n\n        sb.clear();\n        sb.appendFixedWidthPadRight(\"foo\", 3, '-');\n        assertEquals(\"foo\", sb.toString());\n\n        sb.clear();\n        sb.appendFixedWidthPadRight(\"foo\", 4, '-');\n        assertEquals(\"foo-\", sb.toString());\n\n        sb.clear();\n        sb.appendFixedWidthPadRight(\"foo\", 10, '-');\n        assertEquals(10, sb.length());\n        //            1234567890\n        assertEquals(\"foo-------\", sb.toString());\n\n        sb.clear();\n        sb.setNullText(\"null\");\n        sb.appendFixedWidthPadRight(null, 5, '-');\n        assertEquals(\"null-\", sb.toString());\n    }\n\n    // See: http://issues.apache.org/jira/browse/LANG-299\n    public void testLang299() {\n        StrBuilder sb = new StrBuilder(1);\n        sb.appendFixedWidthPadRight(\"foo\", 1, '-');\n",
+  "compaction": {
+    "source_lines": 1370,
+    "mode": "windows",
+    "windows_total": 23,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        420,
+        500
+      ],
+      [
+        720,
+        800
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 50.77156466512038
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 7.3801834813173555
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 6.386357827387623
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 50.77156466512038
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 1.5161835875890453
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 4.034265874010985
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.025594713347548
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.007998618546387
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 4.027525677516058
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 3.8005809674808733
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 7.3801834813173555
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 5.593063805725582
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 5.121314219418751
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 4.800015650546726
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 2.588666593967395
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 6.386357827387623
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 6.251680585293325
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 0.3416365217540983
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 0.9088179108521803
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 4.562490319361097
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 2.9024765795908
+      },
+      {
+        "start": 1080,
+        "end": 1160,
+        "score": 3.1577781826279385
+      },
+      {
+        "start": 1140,
+        "end": 1220,
+        "score": 3.1525363283893415
+      },
+      {
+        "start": 1200,
+        "end": 1280,
+        "score": 2.924607192051292
+      },
+      {
+        "start": 1260,
+        "end": 1340,
+        "score": 3.7257111004437786
+      },
+      {
+        "start": 1320,
+        "end": 1370,
+        "score": 2.84431934326547
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8008,
+  "representation_chars": 8008,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "test_class": "org.apache.commons.math3.stat.regression.MillerUpdatingRegressionTest",
+  "source_file": "src/test/java/org/apache/commons/math3/stat/regression/MillerUpdatingRegressionTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.stat.regression.MillerUpdatingRegressionTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/stat/regression/MillerUpdatingRegressionTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.stat.regression;\n\nimport org.apache.commons.math3.linear.RealMatrix;\nimport org.apache.commons.math3.stat.correlation.PearsonsCorrelation;\nimport org.apache.commons.math3.TestUtils;\nimport org.apache.commons.math3.util.FastMath;\nimport org.junit.Assert;\nimport org.junit.Test;\n\n/**\n * MillerUpdatingRegression tests.\n */\npublic class MillerUpdatingRegressionTest {\n\n    public MillerUpdatingRegressionTest() {\n    }\n    /* This is the Greene Airline Cost data. \n     * The data can be downloaded from http://www.indiana.edu/~statmath/stat/all/panel/airline.csv\n     */ \n    private final static double[][] airdata = {\n        /*\"I\",*/new double[]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6},\n        /*\"T\",*/ new double[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15},\n        /*\"C\",*/ new double[]{1140640, 1215690, 1309570, 1511530, 1676730, 1823740, 2022890, 2314760, 2639160, 3247620, 3787750, 3867750, 3996020, 4282880, 4748320, 569292, 640614, 777655, 999294, 1203970, 1358100, 1501350, 1709270, 2025400, 2548370, 3137740, 3557700, 3717740, 3962370, 4209390, 286298, 309290, 342056, 374595, 450037, 510412, 575347, 669331, 783799, 913883, 1041520, 1125800, 1096070, 1198930, 1170470, 145167, 170192, 247506, 309391, 354338, 373941, 420915, 474017, 532590, 676771, 880438, 1052020, 1193680, 1303390, 1436970, 91361, 95428, 98187, 115967, 138382, 156228, 183169, 210212, 274024, 356915, 432344, 524294, 530924, 581447, 610257, 68978, 74904, 83829, 98148, 118449, 133161, 145062, 170711, 199775, 276797, 381478, 506969, 633388, 804388, 1009500},\n        /*\"Q\",*/ new double[]{0.952757, 0.986757, 1.09198, 1.17578, 1.16017, 1.17376, 1.29051, 1.39067, 1.61273, 1.82544, 1.54604, 1.5279, 1.6602, 1.82231, 1.93646, 0.520635, 0.534627, 0.655192, 0.791575, 0.842945, 0.852892, 0.922843, 1, 1.19845, 1.34067, 1.32624, 1.24852, 1.25432, 1.37177, 1.38974, 0.262424, 0.266433, 0.306043, 0.325586, 0.345706, 0.367517, 0.409937, 0.448023, 0.539595, 0.539382, 0.467967, 0.450544, 0.468793, 0.494397, 0.493317, 0.086393, 0.09674, 0.1415, 0.169715, 0.173805, 0.164272, 0.170906, 0.17784, 0.192248, 0.242469, 0.256505, 0.249657, 0.273923, 0.371131, 0.421411, 0.051028, 0.052646, 0.056348, 0.066953, 0.070308, 0.073961, 0.084946, 0.095474, 0.119814, 0.150046, 0.144014, 0.1693, 0.172761, 0.18667, 0.213279, 0.037682, 0.039784, 0.044331, 0.050245, 0.055046, 0.052462, 0.056977, 0.06149, 0.069027, 0.092749, 0.11264, 0.154154, 0.186461, 0.246847, 0.304013},\n        /*\"PF\",*/ new double[]{106650, 110307, 110574, 121974, 196606, 265609, 263451, 316411, 384110, 569251, 871636, 997239, 938002, 859572, 823411, 103795, 111477, 118664, 114797, 215322, 281704, 304818, 348609, 374579, 544109, 853356, 1003200, 941977, 856533, 821361, 118788, 123798, 122882, 131274, 222037, 278721, 306564, 356073, 378311, 555267, 850322, 1015610, 954508, 886999, 844079, 114987, 120501, 121908, 127220, 209405, 263148, 316724, 363598, 389436, 547376, 850418, 1011170, 951934, 881323, 831374, 118222, 116223, 115853, 129372, 243266, 277930, 317273, 358794, 397667, 566672, 848393, 1005740, 958231, 872924, 844622, 117112, 119420, 116087, 122997, 194309, 307923, 323595, 363081, 386422, 564867, 874818, 1013170, 930477, 851676, 819476},\n        /*\"LF\",*/ new double[]{0.534487, 0.532328, 0.547736, 0.540846, 0.591167, 0.575417, 0.594495, 0.597409, 0.638522, 0.676287, 0.605735, 0.61436, 0.633366, 0.650117, 0.625603, 0.490851, 0.473449, 0.503013, 0.512501, 0.566782, 0.558133, 0.558799, 0.57207, 0.624763, 0.628706, 0.58915, 0.532612, 0.526652, 0.540163, 0.528775, 0.524334, 0.537185, 0.582119, 0.579489, 0.606592, 0.60727, 0.582425, 0.573972, 0.654256, 0.631055, 0.56924, 0.589682, 0.587953, 0.565388, 0.577078, 0.432066, 0.439669, 0.488932, 0.484181, 0.529925, 0.532723, 0.549067, 0.55714, 0.611377, 0.645319, 0.611734, 0.580884, 0.572047, 0.59457, 0.585525, 0.442875, 0.462473, 0.519118, 0.529331, 0.557797, 0.556181, 0.569327, 0.583465, 0.631818, 0.604723, 0.587921, 0.616159, 0.605868, 0.594688, 0.635545, 0.448539, 0.475889, 0.500562, 0.500344, 0.528897, 0.495361, 0.510342, 0.518296, 0.546723, 0.554276, 0.517766, 0.580049, 0.556024, 0.537791, 0.525775}\n    };\n\n    /**\n     * Test of hasIntercept method, of class MillerUpdatingRegression.\n     */\n    @Test\n    public void testHasIntercept() {\n        MillerUpdatingRegression instance = new MillerUpdatingRegression(10, false);\n        if (instance.hasIntercept()) {\n            Assert.fail(\"Should not have intercept\");\n        }\n        instanc[...TEST TRUNCATED...]     xAll[i] = new double[3];\n            xAll[i][0] = Math.log(airdata[3][i]);\n            xAll[i][1] = Math.log(airdata[4][i]);\n            xAll[i][2] = airdata[5][i];\n            y[i] = Math.log(airdata[2][i]);\n        }\n        instance.addObservations(xAll, y);\n        if (instance.getN() != xAll.length) {\n            Assert.fail(\"Number of observations not correct in bulk addition\");\n        }\n        instance.clear();\n        for (int i = 0; i < xAll.length; i++) {\n                new double[]{1.0,\n                    1.0, 1.0,\n                    1.0, 1.0,\n                    1.0}, 1E-8); //\n        double[] se = result.getStdErrorOfEstimates();\n        TestUtils.assertEquals(se,\n                new double[]{2152.32624678170,\n                    2363.55173469681, 779.343524331583,\n                    101.475507550350, 5.64566512170752,\n                    0.112324854679312}, 1E-8); //\n\n        TestUtils.assertEquals(.999995559025820, result.getRSquared(), 1.0e-10);\n        TestUtils.assertEquals(5570284.53333333, result.getMeanSquareError(), 1.0e-7);\n        TestUtils.assertEquals(83554268.0000000, result.getErrorSumSquares(), 1.0e-6);\n        return;\n    }\n\n    //@Test\n    public void testWampler4() {\n        double[] data = new double[]{\n            75901, 0,\n            -204794, 1,\n            204863, 2,\n            -204436, 3,\n            253665, 4,\n            -200894, 5,\n            214131, 6,\n            -185192, 7,\n            221249, 8,\n            -138370, 9,\n            315911, 10,\n            -27644, 11,\n            455253, 12,\n            197434, 13,\n            783995, 14,\n            608816, 15,\n            1370781, 16,\n            1303798, 17,\n            2205519, 18,\n            2408860, 19,\n            3444321, 20};\n        MillerUpdatingRegression model = new MillerUpdatingRegression(5, true);\n        int off = 0;\n        double[] tmp = new double[5];\n        int nobs = 21;\n        for (int i = 0; i < nobs; i++) {\n            tmp[0] = data[off + 1];\n            tmp[1] = tmp[0] * tmp[0];\n            tmp[2] = tmp[0] * tmp[1];\n            tmp[3] = tmp[0] * tmp[2];\n            tmp[4] = tmp[0] * tmp[3];\n            model.addObservation(tmp, data[off]);\n            off += 2;\n        }\n        RegressionResults result = model.regress();\n        double[] betaHat = result.getParameterEstimates();\n        TestUtils.assertEquals(betaHat,\n                new double[]{1.0,\n                    1.0, 1.0,\n                    1.0, 1.0,\n                    1.0}, 1E-8); //\n//\n        double[] se = result.getStdErrorOfEstimates();\n        TestUtils.assertEquals(se,\n                new double[]{215232.624678170,\n                    236355.173469681, 77934.3524331583,\n                    10147.5507550350, 564.566512170752,\n                    11.2324854679312}, 1E-8); //\n\n        TestUtils.assertEquals(.957478440825662, result.getRSquared(), 1.0e-10);\n        TestUtils.assertEquals(55702845333.3333, result.getMeanSquareError(), 1.0e-4);\n        TestUtils.assertEquals(835542680000.000, result.getErrorSumSquares(), 1.0e-3);\n\n        return;\n    }\n\n    /**\n     * Test Longley dataset against certified values provided by NIST.\n     * Data Source: J. Longley (1967) \"An Appraisal of Least Squares\n     * Programs for the Electronic Computer from the Point of View of the User\"\n     * Journal of the American Statistical Association, vol. 62. September,\n     * pp. 819-841.\n     *\n     * Certified values (and data) are from NIST:\n     * http://www.itl.nist.gov/div898/strd/lls/data/LINKS/DATA/Longley.dat\n     */\n    @Test\n    public void testLongly() {\n        // Y values are first, then independent vars\n        // Each row is one observation\n        double[] design = new double[]{\n            60323, 83.0, 234289, 2356, 1590, 107608, 1947,\n            61122, 88.5, 259426, 2325, 1456, 108632, 1948,\n            60171, 88.2, 258054, 3682, 1616, 109773, 1949,\n            61187, 89.5, 284599, 3351, 1650, 110929, 1950,\n            63221, 96.2, 328975, 2099, 3099, 112075, 1951,\n            63639, 98.1, 346999, 1932, 3594, 113270, 1952,\n            64989, 99.0, 365385, 1870, 3547, 115094, 1953,\n            63761, 100.0, 363112, 3578, 3350, 116219, 1954,\n            66019, 101.2, 397469, 2904, 3048, 117388, 1955,\n            67857, 104.6, 419180, 2822, 2857, 118734, 1956,\n            68169, 108.4, 442769, 2936, 2798, 120445, 1957,\n            66513, 110.8, 444546, 4681, 2637, 121950, 1958,\n            68655, 112.6, 482704, 3813, 2552, 123366, 1959,\n            69564, 114.2, 502601, 3931, 2514, 125368, 1960,\n            69331, 115.7, 518173, 4806, 2572, 127852, 1961,\n            70551, 116.9, 554894, 4007, 2827, 130081, 1962\n        };\n\n        final int nobs = 16;\n        final int nvars = 6;\n\n        // Estimate the model\n        MillerUpdatingRegression model = new MillerUpdatingRegression(6, true);\n        int off = 0;\n        double[] tmp = new double[6];\n        for (int i = 0; i < nobs; i++) {\n            System.arraycopy(design, off + 1, tmp, 0, nvars);\n            model.addObservation(tmp, design[off]);\n            off += nvars + 1;\n        }\n\n        // Check expected beta values from NIST\n        RegressionResults result = model.regress();\n        double[] betaHat = result.getParameterEstimates();\n        TestUtils.assertEquals(betaHat,\n                new double[]{-3482258.63459582, 15.0618722713733,\n                    -0.358191792925910E-01, -2.02022980381683,\n                    -1.03322686717359, -0.511041056535807E-01,\n                    1829.15146461355}, 1E-8); //\n\n        // Check standard errors from NIST\n        double[] errors = result.getStdErrorOfEstimates();\n        TestUtils.assertEquals(new double[]{890420.383607373,\n                    84.9149257747669,\n                    0.334910077722432E-01,\n                    0.488399681651699,\n                    0.214274163161675,\n                    0.226073200069370,\n                    455.478499142212}, errors, 1E-6);\n",
+  "compaction": {
+    "source_lines": 1082,
+    "mode": "windows",
+    "windows_total": 18,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        540,
+        620
+      ],
+      [
+        600,
+        680
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 21.132812646105144
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 3.2946328020845543
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 5.360587328141925
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 21.132812646105144
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 0.9915038895213792
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 1.6739695096140945
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 2.2278147035084945
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 0.044127018845347664
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 0.05530105537700587
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 0.9771295172535823
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 1.2098299451796894
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 1.27590342491992
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 3.2946328020845543
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 5.360587328141925
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 0.26867171580452415
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 0.26760453643214566
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 0.8035286345145456
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 0.04579348446187125
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 0.8549880020736021
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 1.2587346103436168
+      },
+      {
+        "start": 1020,
+        "end": 1082,
+        "score": 1.2898500012433873
+      }
+    ]
+  },
+  "representation_truncated": true,
+  "original_representation_chars": 12513,
+  "representation_chars": 12000,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

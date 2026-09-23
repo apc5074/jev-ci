@@ -1,0 +1,227 @@
+TEST CLASS:
+org.apache.commons.lang3.StringUtilsTest
+
+SOURCE FILE:
+src/test/java/org/apache/commons/lang3/StringUtilsTest.java
+
+TEST SOURCE:
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.commons.lang3;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.nio.CharBuffer;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Locale;
+
+import org.apache.commons.lang3.text.WordUtils;
+import org.junit.Test;
+
+/**
+ * Unit tests {@link org.apache.commons.lang3.StringUtils}.
+ *
+ * @version $Id$
+ */
+public class StringUtilsTest {
+    
+    static final String WHITESPACE;
+    static final String NON_WHITESPACE;
+    static final String TRIMMABLE;
+    static final String NON_TRIMMABLE;
+    static {
+        String ws = "";
+        String nws = "";
+        String tr = "";
+        String ntr = "";
+        for (int i = 0; i < Character.MAX_VALUE; i++) {
+            if (Character.isWhitespace((char) i)) {
+                ws += String.valueOf((char) i);
+                if (i > 32) {
+                    ntr += String.valueOf((char) i);
+                }
+            } else if (i < 40) {
+                nws += String.valueOf((char) i);
+            }
+        }
+        for (int i = 0; i <= 32; i++) {
+            tr += String.valueOf((char) i);
+        }
+        WHITESPACE = ws;
+        NON_WHITESPACE = nws;
+        TRIMMABLE = tr;
+        NON_TRIMMABLE = ntr;
+    }
+
+    private static final String[] ARRAY_LIST = { "foo", "bar", "baz" };
+    private static final String[] EMPTY_ARRAY_LIST = {};
+    private static final String[] NULL_ARRAY_LIST = {null};
+    private static final Object[] NULL_TO_STRING_LIST = {
+        new Object(){
+        assertEquals("", StringUtils.getCommonPrefix(null, null));
+        assertEquals("", StringUtils.getCommonPrefix("", ""));
+        assertEquals("", StringUtils.getCommonPrefix("", null));
+        assertEquals("", StringUtils.getCommonPrefix("abc", null, null));
+        assertEquals("", StringUtils.getCommonPrefix(null, null, "abc"));
+        assertEquals("", StringUtils.getCommonPrefix("", "abc"));
+        assertEquals("", StringUtils.getCommonPrefix("abc", ""));
+        assertEquals("abc", StringUtils.getCommonPrefix("abc", "abc"));
+        assertEquals("a", StringUtils.getCommonPrefix("abc", "a"));
+        assertEquals("ab", StringUtils.getCommonPrefix("ab", "abxyz"));
+        assertEquals("ab", StringUtils.getCommonPrefix("abcde", "abxyz"));
+        assertEquals("", StringUtils.getCommonPrefix("abcde", "xyz"));
+        assertEquals("", StringUtils.getCommonPrefix("xyz", "abcde"));
+        assertEquals("i am a ", StringUtils.getCommonPrefix("i am a machine", "i am a robot"));
+    }
+        
+    @Test
+    public void testNormalizeSpace() {
+        assertEquals(null, StringUtils.normalizeSpace(null));
+        assertEquals("", StringUtils.normalizeSpace(""));
+        assertEquals("", StringUtils.normalizeSpace(" "));
+        assertEquals("", StringUtils.normalizeSpace("\t"));
+        assertEquals("", StringUtils.normalizeSpace("\n"));        
+        assertEquals("", StringUtils.normalizeSpace("\u0009"));
+        assertEquals("", StringUtils.normalizeSpace("\u000B"));
+        assertEquals("", StringUtils.normalizeSpace("\u000C"));
+        assertEquals("", StringUtils.normalizeSpace("\u001C"));
+        assertEquals("", StringUtils.normalizeSpace("\u001D"));
+        assertEquals("", StringUtils.normalizeSpace("\u001E"));
+        assertEquals("", StringUtils.normalizeSpace("\u001F"));
+        assertEquals("", StringUtils.normalizeSpace("\f"));
+        assertEquals("", StringUtils.normalizeSpace("\r"));
+        assertEquals("a", StringUtils.normalizeSpace("  a  "));
+        assertEquals("a b c", StringUtils.normalizeSpace("  a  b   c  "));
+        assertEquals("a b c", StringUtils.normalizeSpace("a\t\f\r  b\u000B   c\n"));
+    }
+
+    @Test
+    public void testLANG666() {
+        assertEquals("12",StringUtils.stripEnd("120.00", ".0"));
+        assertEquals("121",StringUtils.stripEnd("121.00", ".0"));
+    }
+
+    // Methods on StringUtils that are immutable in spirit (i.e. calculate the length) 
+    // should take a CharSequence parameter. Methods that are mutable in spirit (i.e. capitalize) 
+    // should take a String or String[] parameter and return String or String[].
+    // This test enforces that this is done.
+    @Test
+    public void testStringUtilsCharSequenceContract() {
+        final Class<StringUtils> c = StringUtils.class;
+        final Method[] methods = c.getMethods();
+        for (final Method m : methods) {
+            if (m.getReturnType() == String.class || m.getReturnType() == String[].class) {
+                // Assume this is mutable and ensure the first parameter is not CharSequence.
+                // It may be String or it may be something else (String[], Object, Object[]) so 
+                // don't actively test for that.
+                final Class<?>[] params = m.getParameterTypes();
+                if ( params.length > 0 && (params[0] == CharSequence.class || params[0] == CharSequence[].class)) {
+                    fail("The method " + m + " appears to be mutable in spirit and therefore must not accept a CharSequence");
+                }
+            } else {
+                // Assume this is immutable in spirit and ensure the first parameter is not String.
+                // As above, it may be something other than CharSequence.
+                final Class<?>[] params = m.getParameterTypes();
+                if ( params.length > 0 && (params[0] == String.class || params[0] == String[].class)) {
+                    fail("The method " + m + " appears to be immutable in spirit and therefore must not accept a String");
+                }
+            }
+        }
+    }
+
+    /**
+     * Tests {@link StringUtils#toString(byte[], String)}
+     * 
+     * @throws UnsupportedEncodingException
+     * @see StringUtils#toString(byte[], String)
+     */
+    @Test
+    public void testToString() throws UnsupportedEncodingException {
+        final String expectedString = "The quick brown fox jumped over the lazy dog.";
+        String encoding = SystemUtils.FILE_ENCODING;
+        byte[] expectedBytes = expectedString.getBytes(encoding);
+        // sanity check start
+        assertArrayEquals(expectedBytes, expectedString.getBytes());
+        // sanity check end
+        assertEquals(expectedString, StringUtils.toString(expectedBytes, null));
+        assertEquals(expectedString, StringUtils.toString(expectedBytes, encoding));
+        encoding = "UTF-16";
+        expectedBytes = expectedString.getBytes(encoding);
+        assertEquals(expectedString, StringUtils.toString(expectedBytes, encoding));
+    }
+    
+    @Test
+    public void testEscapeSurrogatePairs() throws Exception {
+        assertEquals("\uD83D\uDE30", StringEscapeUtils.escapeCsv("\uD83D\uDE30"));
+        // Examples from https://en.wikipedia.org/wiki/UTF-16
+        assertEquals("\uD800\uDC00", StringEscapeUtils.escapeCsv("\uD800\uDC00"));
+        assertEquals("\uD834\uDD1E", StringEscapeUtils.escapeCsv("\uD834\uDD1E"));
+        assertEquals("\uDBFF\uDFFD", StringEscapeUtils.escapeCsv("\uDBFF\uDFFD"));
+        assertEquals("\uDBFF\uDFFD", StringEscapeUtils.escapeHtml3("\uDBFF\uDFFD"));
+        assertEquals("\uDBFF\uDFFD", StringEscapeUtils.escapeHtml4("\uDBFF\uDFFD"));
+        assertEquals("\uDBFF\uDFFD", StringEscapeUtils.escapeXml("\uDBFF\uDFFD"));
+    }
+    
+    /**
+     * Tests LANG-858.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testEscapeSurrogatePairsLang858() throws Exception {
+        assertEquals("\\uDBFF\\uDFFD", StringEscapeUtils.escapeJava("\uDBFF\uDFFD"));       //fail LANG-858
+        assertEquals("\\uDBFF\\uDFFD", StringEscapeUtils.escapeEcmaScript("\uDBFF\uDFFD")); //fail LANG-858
+    }
+    
+    @Test
+    public void testUnescapeSurrogatePairs() throws Exception {
+        assertEquals("\uD83D\uDE30", StringEscapeUtils.unescapeCsv("\uD83D\uDE30"));
+        // Examples from https://en.wikipedia.org/wiki/UTF-16
+        assertEquals("\uD800\uDC00", StringEscapeUtils.unescapeCsv("\uD800\uDC00"));
+        assertEquals("\uD834\uDD1E", StringEscapeUtils.unescapeCsv("\uD834\uDD1E"));
+        assertEquals("\uDBFF\uDFFD", StringEscapeUtils.unescapeCsv("\uDBFF\uDFFD"));
+        assertEquals("\uDBFF\uDFFD", StringEscapeUtils.unescapeHtml3("\uDBFF\uDFFD"));
+        assertEquals("\uDBFF\uDFFD", StringEscapeUtils.unescapeHtml4("\uDBFF\uDFFD"));
+    }
+
+    /**
+     * Tests {@code appendIfMissing}.
+     */
+    @Test
+    public void testAppendIfMissing() {
+        assertEquals("appendIfMissing(null,null)", null, StringUtils.appendIfMissing(null,null));
+        assertEquals("appendIfMissing(abc,null)", "abc", StringUtils.appendIfMissing("abc",null));
+        assertEquals("appendIfMissing(\"\",xyz)", "xyz", StringUtils.appendIfMissing("","xyz"));
+        assertEquals("appendIfMissing(abc,xyz)", "abcxyz", StringUtils.appendIfMissing("abc","xyz"));
+        assertEquals("appendIfMissing(abcxyz,xyz)", "abcxyz", StringUtils.appendIfMissing("abcxyz","xyz"));
+        assertEquals("appendIfMissing(aXYZ,xyz)", "aXYZxyz", StringUtils.appendIfMissing("aXYZ","xyz"));
+
+        assertEquals("appendIfMissing(null,null,null)", null, StringUtils.appendIfMissing(null,null,(CharSequence[]) null));
+        assertEquals("appendIfMissing(abc,null,null)", "abc", StringUtils.appendIfMissing("abc",null,(CharSequence[]) null));

@@ -1,0 +1,91 @@
+{
+  "test_class": "org.apache.commons.math3.analysis.polynomials.PolynomialsUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/math3/analysis/polynomials/PolynomialsUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.analysis.polynomials.PolynomialsUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/analysis/polynomials/PolynomialsUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.analysis.polynomials;\n\nimport org.apache.commons.math3.analysis.UnivariateFunction;\nimport org.apache.commons.math3.analysis.integration.LegendreGaussIntegrator;\nimport org.apache.commons.math3.util.ArithmeticUtils;\nimport org.apache.commons.math3.util.FastMath;\nimport org.apache.commons.math3.util.Precision;\nimport org.junit.Assert;\nimport org.junit.Test;\n\n/**\n * Tests the PolynomialsUtils class.\n *\n * @version $Id$\n */\npublic class PolynomialsUtilsTest {\n\n    @Test\n    public void testFirstChebyshevPolynomials() {\n        checkPolynomial(PolynomialsUtils.createChebyshevPolynomial(3), \"-3 x + 4 x^3\");\n        checkPolynomial(PolynomialsUtils.createChebyshevPolynomial(2), \"-1 + 2 x^2\");\n        checkPolynomial(PolynomialsUtils.createChebyshevPolynomial(1), \"x\");\n        checkPolynomial(PolynomialsUtils.createChebyshevPolynomial(0), \"1\");\n\n        checkPolynomial(PolynomialsUtils.createChebyshevPolynomial(7), \"-7 x + 56 x^3 - 112 x^5 + 64 x^7\");\n        checkPolynomial(PolynomialsUtils.createChebyshevPolynomial(6), \"-1 + 18 x^2 - 48 x^4 + 32 x^6\");\n        checkPolynomial(PolynomialsUtils.createChebyshevPolynomial(5), \"5 x - 20 x^3 + 16 x^5\");\n        checkPolynomial(PolynomialsUtils.createChebyshevPolynomial(4), \"1 - 8 x^2 + 8 x^4\");\n\n    }\n\n    @Test\n    public void testChebyshevBounds() {\n        for (int k = 0; k < 12; ++k) {\n            PolynomialFunction Tk = PolynomialsUtils.createChebyshevPolynomial(k);\n            for (double x = -1; x <= 1; x += 0.02) {\n                Assert.assertTrue(k + \" \" + Tk.value(x), FastMath.abs(Tk.value(x)) < (1 + 1e-12));\n            }\n        }\n    }\n\n    @Test\n    public void testChebyshevDifferentials() {\n        for (int k = 0; k < 12; ++k) {\n\n            PolynomialFunction Tk0 = PolynomialsUtils.createChebyshevPolynomial(k);\n            PolynomialFunction Tk1 = Tk0.polynomialDerivative();\n            PolynomialFunction Tk2 = Tk1.polynomialDerivative();\n\n            PolynomialFunction g0 = new PolynomialFunction(new double[] { k * k });\n            PolynomialFunction g1 = new PolynomialFunction(new double[] { 0, -1});\n            PolynomialFunction g2 = new PolynomialFunction(new double[] { 1, 0, -1 });\n\n            PolynomialFunction Tk0g0 = Tk0.multiply(g0);\n            PolynomialFunction Tk1g1 = Tk1.multiply(g1);\n            PolynomialFunction Tk2g2 = Tk2.multiply(g2);\n\n            checkNullPolynomial(Tk0g0.add(Tk1g1.add(Tk2g2)));\n\n        }\n    }\n\n    @Test\n    public void testChebyshevOrthogonality() {\n        for (int v = 0; v < 5; ++v) {\n            for (int w = v; w < 5; ++w) {\n                final int vv = v;\n                final int ww = w;\n                UnivariateFunction weight = new UnivariateFunction() {\n                    public double value(double x) {\n                        return FastMath.pow(1 - x, vv) * FastMath.pow(1 + x, ww);\n                    }\n                };\n                for (int i = 0; i < 10; ++i) {\n                    PolynomialFunction pi = PolynomialsUtils.createJacobiPolynomial(i, v, w);\n                    for (int j = 0; j <= i; ++j) {\n                        PolynomialFunction pj = PolynomialsUtils.createJacobiPolynomial(j, v, w);\n                        checkOrthogonality(pi, pj, weight, -1, 1, 0.1, 1.0e-12);\n                    }\n                }\n            }\n        }\n    }\n\n    @Test\n    public void testShift() {\n        // f1(x) = 1 + x + 2 x^2\n        PolynomialFunction f1x = new PolynomialFunction(new double[] { 1, 1, 2 });\n\n        PolynomialFunction f1x1\n            = new PolynomialFunction(PolynomialsUtils.shift(f1x.getCoefficients(), 1));\n        checkPolynomial(f1x1, \"4 + 5 x + 2 x^2\");\n\n        PolynomialFunction f1xM1\n            = new PolynomialFunction(PolynomialsUtils.shift(f1x.getCoefficients(), -1));\n        checkPolynomial(f1xM1, \"2 - 3 x + 2 x^2\");\n        \n        PolynomialFunction f1x3\n            = new PolynomialFunction(PolynomialsUtils.shift(f1x.getCoefficients(), 3));\n        checkPolynomial(f1x3, \"22 + 13 x + 2 x^2\");\n\n        // f2(x) = 2 + 3 x^2 + 8 x^3 + 121 x^5\n        PolynomialFunction f2x = new PolynomialFunction(new double[]{2, 0, 3, 8, 0, 121});\n\n        PolynomialFunction f2x1\n            = new PolynomialFunction(PolynomialsUtils.shift(f2x.getCoefficients(), 1));\n        checkPolynomial(f2x1, \"134 + 635 x + 1237 x^2 + 1218 x^3 + 605 x^4 + 121 x^5\");\n\n        PolynomialFunction f2x3\n            = new PolynomialFunction(PolynomialsUtils.shift(f2x.getCoefficients(), 3));\n        checkPolynomial(f2x3, \"29648 + 49239 x + 32745 x^2 + 10898 x^3 + 1815 x^4 + 121 x^5\");\n    }\n\n\n    private void checkPolynomial(PolynomialFunction p, long denominator, String reference) {\n        PolynomialFunction q = new PolynomialFunction(new double[] { denominator});\n        Assert.assertEquals(reference, p.multiply(q).toString());\n    }\n\n    private void checkPolynomial(PolynomialFunction p, String reference) {\n        Assert.assertEquals(reference, p.toString());\n    }\n\n    private void checkNullPolynomial(PolynomialFunction p) {\n        for (double coefficient : p.getCoefficients()) {\n            Assert.assertEquals(0, coefficient, 1e-13);\n        }\n    }\n\n    private void checkOrthogonality(final PolynomialFunction p1,\n                                    final PolynomialFunction p2,\n                                    final UnivariateFunction weight,\n                                    final double a, final double b,\n                                    final double nonZeroThreshold,\n                                    final double zeroThreshold) {\n        UnivariateFunction f = new UnivariateFunction() {\n            public double value(double x) {\n                return weight.value(x) * p1.value(x) * p2.value(x);\n            }\n        };\n        double dotProduct =\n                new LegendreGaussIntegrator(5, 1.0e-9, 1.0e-8, 2, 15).integrate(1000000, f, a, b);\n        if (p1.degree() == p2.degree()) {\n            // integral should be non-zero\n            Assert.assertTrue(\"I(\" + p1.degree() + \", \" + p2.degree() + \") = \"+ dotProduct,\n                              FastMath.abs(dotProduct) > nonZeroThreshold);\n        } else {\n            // integral should be zero\n            Assert.assertEquals(\"I(\" + p1.degree() + \", \" + p2.degree() + \") = \"+ dotProduct,\n                                0.0, FastMath.abs(dotProduct), zeroThreshold);\n        }\n    }\n}\n",
+  "compaction": {
+    "source_lines": 389,
+    "mode": "windows",
+    "windows_total": 7,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        300,
+        380
+      ],
+      [
+        360,
+        389
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 19.356998890776257
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 4.18424594714048
+      },
+      {
+        "start": 360,
+        "end": 389,
+        "score": 5.583240301508439
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 19.356998890776257
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 1.8922726365148033
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 0.31467087720735104
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 1.0599054689993967
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 3.664454953986456
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 4.18424594714048
+      },
+      {
+        "start": 360,
+        "end": 389,
+        "score": 5.583240301508439
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7411,
+  "representation_chars": 7411,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

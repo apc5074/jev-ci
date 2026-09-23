@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.math3.analysis.function.SincTest",
+  "source_file": "src/test/java/org/apache/commons/math3/analysis/function/SincTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.analysis.function.SincTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/analysis/function/SincTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.analysis.function;\n\nimport org.apache.commons.math3.analysis.UnivariateFunction;\nimport org.apache.commons.math3.util.FastMath;\nimport org.junit.Test;\nimport org.junit.Assert;\n\npublic class SincTest {\n\n   @Test\n   public void testShortcut() {\n       final Sinc s = new Sinc();\n       final UnivariateFunction f = new UnivariateFunction() {\n               public double value(double x) {\n                   return FastMath.sin(x) / x;\n               }\n           };\n\n       for (double x = 1e-30; x < 1e10; x *= 2) {\n           final double fX = f.value(x);\n           final double sX = s.value(x);\n           Assert.assertEquals(\"x=\" + x, fX, sX, 0);\n       }\n   }\n\n   @Test\n   public void testCrossings() {\n       final Sinc s = new Sinc(true);\n       final int numCrossings = 1000;\n       final double tol = 2e-16;\n       for (int i = 1; i <= numCrossings; i++) {\n           Assert.assertEquals(\"i=\" + i, 0, s.value(i), tol);\n       }\n   }\n\n   @Test\n   public void testZero() {\n       final Sinc s = new Sinc();\n       Assert.assertEquals(1d, s.value(0), 0);\n   }\n\n   @Test\n   public void testEuler() {\n       final Sinc s = new Sinc();\n       final double x = 123456.789;\n       double prod = 1;\n       double xOverPow2 = x / 2;\n       while (xOverPow2 > 0) {\n           prod *= FastMath.cos(xOverPow2);\n           xOverPow2 /= 2;\n       }\n       Assert.assertEquals(prod, s.value(x), 1e-13);\n   }\n\n   @Test\n   public void testDerivativeZero() {\n       final UnivariateFunction sPrime = (new Sinc(true)).derivative();\n\n       Assert.assertEquals(0, sPrime.value(0), 0);\n   }\n\n   @Test\n   public void testDerivativeShortcut() {\n       final UnivariateFunction sPrime = (new Sinc()).derivative();\n       final UnivariateFunction f = new UnivariateFunction() {\n               public double value(double x) {\n                   return (FastMath.cos(x) - FastMath.sin(x) / x) / x;\n               }\n           };\n\n       for (double x = 1e-30; x < 1e10; x *= 2) {\n           final double fX = f.value(x);\n           final double sX = sPrime.value(x);\n           Assert.assertEquals(\"x=\" + x, fX, sX, 0);\n       }\n   }\n}\n",
+  "compaction": {
+    "source_lines": 93,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3116,
+  "representation_chars": 3116,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

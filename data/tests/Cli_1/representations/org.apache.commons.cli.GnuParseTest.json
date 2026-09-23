@@ -1,0 +1,81 @@
+{
+  "test_class": "org.apache.commons.cli.GnuParseTest",
+  "source_file": "src/test/org/apache/commons/cli/GnuParseTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.cli.GnuParseTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/cli/GnuParseTest.java\n\nTEST SOURCE:\n/**\n * Copyright 2001-2004 The Apache Software Foundation\n *\n * Licensed under the Apache License, Version 2.0 (the \"License\");\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of the License at\n *\n *     http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.cli;\n\nimport junit.framework.Test;\nimport junit.framework.TestCase;\nimport junit.framework.TestSuite;\n\npublic class GnuParseTest extends TestCase\n{\n    private Options _options = null;\n    private CommandLineParser _parser = null;\n\n    public static Test suite() { \n        return new TestSuite( GnuParseTest.class ); \n    }\n\n    public GnuParseTest( String name )\n    {\n        super( name );\n    }\n\n    public void setUp()\n    {\n        _options = new Options()\n            .addOption(\"a\",\n                       \"enable-a\",\n                       false,\n                       \"turn [a] on or off\")\n            .addOption(\"b\",\n                       \"bfile\",\n                       true,\n                       \"set the value of [b]\")\n            .addOption(\"c\",\n                       \"copt\",\n                       false,\n                       \"turn [c] on or off\");\n\n        _parser = new GnuParser( );\n    }\n\n    public void tearDown()\n    {\n\n    }\n\n    public void testSimpleShort()\n    {\n        String[] args = new String[] { \"-a\",\n                                       \"-b\", \"toast\",\n                                       \"foo\", \"bar\" };\n\n        try\n        {\n            CommandLine cl = _parser.parse(_options, args);\n            \n            assertTrue( \"Confirm -a is set\", cl.hasOption(\"a\") );\n            assertTrue( \"Confirm -b is set\", cl.hasOption(\"b\") );\n            assertTrue( \"Confirm arg of -b\", cl.getOptionValue(\"b\").equals(\"toast\") );\n            assertTrue( \"Confirm size of extra args\", cl.getArgList().size() == 2);\n        }\n        catch (ParseException e)\n        {\n            fail( e.toString() );\n        }\n    }\n\n    public void testSimpleLong()\n    {\n        String[] args = new String[] { \"--enable-a\",\n                                       \"--bfile\", \"toast\",\n                                       \"foo\", \"bar\" };\n\n        try\n        {\n            CommandLine cl = _parser.parse(_options, args);\n            \n            assertTrue( \"Confirm -a is set\", cl.hasOption(\"a\") );\n            assertTrue( \"Confirm -b is set\", cl.hasOption(\"b\") );\n            assertTrue( \"Confirm arg of -b\", cl.getOptionValue(\"b\").equals(\"toast\") );\n            assertTrue( \"Confirm size of extra args\", cl.getArgList().size() == 2);\n        } \n        catch (ParseException e)\n        {\n            fail( e.toString() );\n        }\n    }\n\n    public void testExtraOption()\n    {\n        String[] args = new String[] { \"-a\", \"-d\", \"-b\", \"toast\",\n                                       \"foo\", \"bar\" };\n\n        boolean caught = false;\n\n        try\n        {\n            CommandLine cl = _parser.parse(_options, args);\n            \n            assertTrue( \"Confirm -a is set\", cl.hasOption(\"a\") );\n            assertTrue( \"Confirm -b is set\", cl.hasOption(\"b\") );\n            assertTrue( \"confirm arg of -b\", cl.getOptionValue(\"b\").equals(\"toast\") );\n            assertTrue( \"Confirm size of extra args\", cl.getArgList().size() == 3);\n        }\n        catch (UnrecognizedOptionException e)\n        {\n            caught = true;\n        }\n        catch (ParseException e)\n        {\n            fail( e.toString() );\n        }\n        assertTrue( \"Confirm UnrecognizedOptionException caught\", caught );\n    }\n\n    public void testMissingArg()\n    {\n\n        String[] args = new String[] { \"-b\" };\n\n        boolean caught = false;\n\n        try\n        {\n            CommandLine cl = _parser.parse(_options, args);\n        }\n        catch (MissingArgumentException e)\n        {\n            caught = true;\n        }\n        catch (ParseException e)\n        {\n            fail( e.toString() );\n        }\n\n        assertTrue( \"Confirm MissingArgumentException caught\", caught );\n    }\n\n    public void testStop()\n    {\n        String[] args = new String[] { \"-c\",\n                                       \"foober\",\n                                       \"-b\",\n                                       \"toast\" };\n\n        try\n        {\n            CommandLine cl = _parser.parse(_options, args, true);\n            assertTrue( \"Confirm -c is set\", cl.hasOption(\"c\") );\n            assertTrue( \"Confirm  3 extra args: \" + cl.getArgList().size(), cl.getArgList().size() == 3);\n        }\n        catch (ParseException e)\n        {\n            fail( e.toString() );\n        }\n    }\n\n    public void testMultiple()\n    {\n        String[] args = new String[] { \"-c\",\n                                       \"foobar\",\n                                       \"-b\",\n                                       \"toast\" };\n\n        try\n        {\n            CommandLine cl = _parser.parse(_options, args, true);\n            assertTrue( \"Confirm -c is set\", cl.hasOption(\"c\") );\n            assertTrue( \"Confirm  3 extra args: \" + cl.getArgList().size(), cl.getArgList().size() == 3);\n\n            cl = _parser.parse(_options, cl.getArgs() );\n\n            assertTrue( \"Confirm -c is not set\", ! cl.hasOption(\"c\") );\n            assertTrue( \"Confirm -b is set\", cl.hasOption(\"b\") );\n            assertTrue( \"Confirm arg of -b\", cl.getOptionValue(\"b\").equals(\"toast\") );\n            assertTrue( \"Confirm  1 extra arg: \" + cl.getArgList().size(), cl.getArgList().size() == 1);\n            assertTrue( \"Confirm  value of extra arg: \" + cl.getArgList().get(0), cl.getArgList().get(0).equals(\"foobar\") );\n        }\n        catch (ParseException e)\n        {\n            fail( e.toString() );\n        }\n    }\n\n    public void testMultipleWithLong()\n    {\n        String[] args = new String[] { \"--copt\",\n",
+  "compaction": {
+    "source_lines": 269,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 33.31196093855644
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 4.706065105679493
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 4.274311197041652
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 33.31196093855644
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 4.706065105679493
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 4.274311197041652
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 3.329184268138651
+      },
+      {
+        "start": 240,
+        "end": 269,
+        "score": 2.695665170777208
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 6261,
+  "representation_chars": 6261,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.TestExceptionHandling",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/TestExceptionHandling.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.TestExceptionHandling\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/TestExceptionHandling.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser;\n\nimport java.io.*;\n\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;\n\n/**\n * Unit test for verifying that exceptions are properly handled (caught,\n * re-thrown or wrapped, depending)\n * with Object deserialization.\n */\npublic class TestExceptionHandling\n    extends BaseMapTest\n{\n    static class Bean {\n        public String propX;\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n    \n    /**\n     * Verification of [JACKSON-301]\n     */\n    public void testHandlingOfUnrecognized() throws Exception\n    {\n        UnrecognizedPropertyException exc = null;\n        try {\n            new ObjectMapper().readValue(\"{\\\"bar\\\":3}\", Bean.class);\n        } catch (UnrecognizedPropertyException e) {\n            exc = e;\n        }\n        if (exc == null) {\n            fail(\"Should have failed binding\");\n        }\n        assertEquals(\"bar\", exc.getPropertyName());\n        assertEquals(Bean.class, exc.getReferringClass());\n        // also: should get list of known properties\n        verifyException(exc, \"propX\");\n    }\n\n    /**\n     * Simple test to check behavior when end-of-stream is encountered\n     * without content. Used to expect EOFException (Jackson 1.x); but\n     * nowadays ought to be JsonMappingException\n     */\n    public void testExceptionWithEmpty() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        try {\n            Object result = mapper.readValue(\"    \", Object.class);\n            fail(\"Expected an exception, but got result value: \"+result);\n        } catch (Exception e) {\n            verifyException(e, JsonMappingException.class, \"No content\");\n        }\n    }\n\n    @SuppressWarnings(\"resource\")\n    public void testExceptionWithIncomplete()\n        throws Exception\n    {\n        BrokenStringReader r = new BrokenStringReader(\"[ 1, \", \"TEST\");\n        JsonFactory f = new JsonFactory();\n        JsonParser jp = f.createParser(r);\n        ObjectMapper mapper = new ObjectMapper();\n        try {\n            @SuppressWarnings(\"unused\")\n            Object ob = mapper.readValue(jp, Object.class);\n            fail(\"Should have gotten an exception\");\n        } catch (IOException e) {\n            /* For \"bona fide\" IO problems (due to low-level problem,\n             * thrown by reader/stream), IOException must be thrown\n             */\n            verifyException(e, IOException.class, \"TEST\");\n        }\n    }\n\n    public void testExceptionWithEOF()\n        throws Exception\n    {\n        StringReader r = new StringReader(\"  3\");\n        JsonFactory f = new JsonFactory();\n        JsonParser jp = f.createParser(r);\n        ObjectMapper mapper = new ObjectMapper();\n\n        Integer I = mapper.readValue(jp, Integer.class);\n        assertEquals(3, I.intValue());\n\n        // and then end-of-input...\n        try {\n            I = mapper.readValue(jp, Integer.class);\n            fail(\"Should have gotten an exception\");\n        } catch (IOException e) {\n            verifyException(e, JsonMappingException.class, \"No content\");\n        }\n        // also: should have no current token after end-of-input\n        JsonToken t = jp.getCurrentToken();\n        if (t != null) {\n            fail(\"Expected current token to be null after end-of-stream, was: \"+t);\n        }\n        jp.close();\n    }\n\n    /*\n    /**********************************************************\n    /* Helper methods\n    /**********************************************************\n     */\n\n    void verifyException(Exception e, Class<?> expType, String expMsg)\n        throws Exception\n    {\n        if (e.getClass() != expType) {\n            fail(\"Expected exception of type \"+expType.getName()+\", got \"+e.getClass().getName());\n        }\n        if (expMsg != null) {\n            verifyException(e, expMsg);\n        }\n    }\n}\n",
+  "compaction": {
+    "source_lines": 125,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 4202,
+  "representation_chars": 4202,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

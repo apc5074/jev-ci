@@ -1,0 +1,247 @@
+TEST CLASS:
+org.apache.commons.math3.linear.BlockFieldMatrixTest
+
+SOURCE FILE:
+src/test/java/org/apache/commons/math3/linear/BlockFieldMatrixTest.java
+
+TEST SOURCE:
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.commons.math3.linear;
+
+import java.util.Arrays;
+import java.util.Random;
+
+import org.junit.Test;
+import org.junit.Assert;
+
+import org.apache.commons.math3.TestUtils;
+import org.apache.commons.math3.fraction.Fraction;
+import org.apache.commons.math3.fraction.FractionField;
+import org.apache.commons.math3.exception.NoDataException;
+import org.apache.commons.math3.exception.NullArgumentException;
+import org.apache.commons.math3.exception.OutOfRangeException;
+import org.apache.commons.math3.exception.NumberIsTooSmallException;
+import org.apache.commons.math3.exception.NotStrictlyPositiveException;
+import org.apache.commons.math3.exception.MathIllegalArgumentException;
+
+/**
+ * Test cases for the {@link BlockFieldMatrix} class.
+ *
+ * @version $Id$
+ */
+
+public final class BlockFieldMatrixTest {
+
+    // 3 x 3 identity matrix
+    protected Fraction[][] id = {
+            {new Fraction(1),new Fraction(0),new Fraction(0)},
+            {new Fraction(0),new Fraction(1),new Fraction(0)},
+            {new Fraction(0),new Fraction(0),new Fraction(1)}
+    };
+
+    // Test data for group operations
+    protected Fraction[][] testData = {
+            {new Fraction(1),new Fraction(2),new Fraction(3)},
+            {new Fraction(2),new Fraction(5),new Fraction(3)},
+            {new Fraction(1),new Fraction(0),new Fraction(8)}
+    };
+    protected Fraction[][] testDataLU = {
+            {new Fraction(2), new Fraction(5), new Fraction(3)},
+            {new Fraction(1, 2), new Fraction(-5, 2), new Fraction(13, 2)},
+            {new Fraction(1, 2), new Fraction(1, 5), new Fraction(1, 5)}
+    };
+    protected Fraction[][] testDataPlus2 = {
+            {new Fraction(3),new Fraction(4),new Fraction(5)},
+            {new Fraction(4),new Fraction(7),new Fraction(5)},
+            {new Fraction(3),new Fraction(2),new Fraction(10)}
+    };
+    protected Fraction[][] testDataMinus = {
+            {new Fraction(-1),new Fraction(-2),new Fraction(-3)},
+            {new Fraction(-2),new Fraction(-5),new Fraction(-3)},
+            {new Fraction(-1),new Fraction(0),new Fraction(-8)}
+    };
+    protected Fraction[] testDataRow1 = {new Fraction(1),new Fraction(2),new Fraction(3)};
+    protected Fraction[] testDataCol3 = {new Fraction(3),new Fraction(3),new Fraction(8)};
+    protected Fraction[][] testDataInv = {
+            {new Fraction(-40),new Fraction(16),new Fraction(9)},
+            {new Fraction(13),new Fraction(-5),new Fraction(-3)},
+            {new Fraction(5),new Fraction(-2),new Fraction(-1)}
+    };
+    protected Fraction[] preMultTest = {new Fraction(8), new Fraction(12), new Fraction(33)};
+    protected Fraction[][] testData2 = {
+            {new Fraction(1),new Fraction(2),new Fraction(3)},
+            m.setColumnVector(-1, mColumn3);
+            Assert.fail("Expecting OutOfRangeException");
+        } catch (OutOfRangeException ex) {
+            // expected
+        }
+        try {
+            m.setColumnVector(0, new ArrayFieldVector<Fraction>(FractionField.getInstance(), 5));
+            Assert.fail("Expecting MatrixDimensionMismatchException");
+        } catch (MatrixDimensionMismatchException ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void testGetSetColumnVectorLarge() {
+        int n = 3 * BlockFieldMatrix.BLOCK_SIZE;
+        FieldMatrix<Fraction> m = new BlockFieldMatrix<Fraction>(FractionField.getInstance(), n, n);
+        FieldVector<Fraction> sub = new ArrayFieldVector<Fraction>(n, new Fraction(1));
+
+        m.setColumnVector(2, sub);
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (j != 2) {
+                    Assert.assertEquals(new Fraction(0), m.getEntry(i, j));
+                } else {
+                    Assert.assertEquals(new Fraction(1), m.getEntry(i, j));
+                }
+            }
+        }
+        Assert.assertEquals(sub, m.getColumnVector(2));
+
+    }
+
+    private FieldVector<Fraction> columnToVector(Fraction[][] column) {
+        Fraction[] data = new Fraction[column.length];
+        for (int i = 0; i < data.length; ++i) {
+            data[i] = column[i][0];
+        }
+        return new ArrayFieldVector<Fraction>(data, false);
+    }
+
+    @Test
+    public void testGetRow() {
+        FieldMatrix<Fraction> m = new BlockFieldMatrix<Fraction>(subTestData);
+        checkArrays(subRow0[0], m.getRow(0));
+        checkArrays(subRow3[0], m.getRow(3));
+        try {
+            m.getRow(-1);
+            Assert.fail("Expecting OutOfRangeException");
+        } catch (OutOfRangeException ex) {
+            // expected
+        }
+        try {
+            m.getRow(4);
+            Assert.fail("Expecting OutOfRangeException");
+        } catch (OutOfRangeException ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void testSetRow() {
+        FieldMatrix<Fraction> m = new BlockFieldMatrix<Fraction>(subTestData);
+        Assert.assertTrue(subRow3[0][0] != m.getRow(0)[0]);
+        m.setRow(0, subRow3[0]);
+        checkArrays(subRow3[0], m.getRow(0));
+        try {
+            m.setRow(-1, subRow3[0]);
+            Assert.fail("Expecting OutOfRangeException");
+        } catch (OutOfRangeException ex) {
+            // expected
+        }
+        try {
+            m.setRow(0, new Fraction[5]);
+            Assert.fail("Expecting MatrixDimensionMismatchException");
+        } catch (MatrixDimensionMismatchException ex) {
+            // expected
+        }
+    }
+
+    }
+
+    @Test
+    public void testSetColumn() {
+        FieldMatrix<Fraction> m = new BlockFieldMatrix<Fraction>(subTestData);
+        Fraction[] mColumn3 = columnToArray(subColumn3);
+        Assert.assertTrue(mColumn3[0] != m.getColumn(1)[0]);
+        m.setColumn(1, mColumn3);
+        checkArrays(mColumn3, m.getColumn(1));
+        try {
+            m.setColumn(-1, mColumn3);
+            Assert.fail("Expecting OutOfRangeException");
+        } catch (OutOfRangeException ex) {
+            // expected
+        }
+        try {
+            m.setColumn(0, new Fraction[5]);
+            Assert.fail("Expecting MatrixDimensionMismatchException");
+        } catch (MatrixDimensionMismatchException ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void testGetSetColumnLarge() {
+        int n = 3 * BlockFieldMatrix.BLOCK_SIZE;
+        FieldMatrix<Fraction> m = new BlockFieldMatrix<Fraction>(FractionField.getInstance(), n, n);
+        Fraction[] sub = new Fraction[n];
+        Arrays.fill(sub, new Fraction(1));
+
+        m.setColumn(2, sub);
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (j != 2) {
+                    Assert.assertEquals(new Fraction(0), m.getEntry(i, j));
+                } else {
+                    Assert.assertEquals(new Fraction(1), m.getEntry(i, j));
+                }
+            }
+        }
+        checkArrays(sub, m.getColumn(2));
+
+    }
+
+    private Fraction[] columnToArray(Fraction[][] column) {
+        Fraction[] data = new Fraction[column.length];
+        for (int i = 0; i < data.length; ++i) {
+            data[i] = column[i][0];
+        }
+        return data;
+    }
+
+    private void checkArrays(Fraction[] expected, Fraction[] actual) {
+        Assert.assertEquals(expected.length, actual.length);
+        for (int i = 0; i < expected.length; ++i) {
+            Assert.assertEquals(expected[i], actual[i]);
+        }
+    }
+
+    @Test
+    public void testEqualsAndHashCode() {
+        BlockFieldMatrix<Fraction> m = new BlockFieldMatrix<Fraction>(testData);
+        BlockFieldMatrix<Fraction> m1 = (BlockFieldMatrix<Fraction>) m.copy();
+        BlockFieldMatrix<Fraction> mt = (BlockFieldMatrix<Fraction>) m.transpose();
+        Assert.assertTrue(m.hashCode() != mt.hashCode());
+        Assert.assertEquals(m.hashCode(), m1.hashCode());
+        Assert.assertEquals(m, m);
+        Assert.assertEquals(m, m1);
+        Assert.assertFalse(m.equals(null));
+        Assert.assertFalse(m.equals(mt));
+        Assert.assertFalse(m.equals(new BlockFieldMatrix<Fraction>(bigSingular)));
+    }
+
+    @Test
+    public void testToString() {
+        BlockFieldMatrix<Fraction> m = new BlockFieldMatrix<Fraction>(testData);
+        Assert.assertEquals("BlockFieldMatrix{{1,2,3},{2,5,3},{1,0,8}}", m.toString());
+    }
+
+    @Test

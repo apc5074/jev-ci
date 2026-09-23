@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.lang3.mutable.MutableObjectTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/mutable/MutableObjectTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.mutable.MutableObjectTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/mutable/MutableObjectTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3.mutable;\n\nimport org.junit.Test;\nimport static org.junit.Assert.*;\n\n/**\n * JUnit tests.\n * \n * @version $Id$\n * @see MutableShort\n */\npublic class MutableObjectTest {\n\n    // ----------------------------------------------------------------\n    @Test\n    public void testConstructors() {\n        assertEquals(null, new MutableObject<String>().getValue());\n        \n        final Integer i = Integer.valueOf(6);\n        assertSame(i, new MutableObject<Integer>(i).getValue());\n        assertSame(\"HI\", new MutableObject<String>(\"HI\").getValue());\n        assertSame(null, new MutableObject<Object>(null).getValue());\n    }\n\n    @Test\n    public void testGetSet() {\n        final MutableObject<String> mutNum = new MutableObject<String>();\n        assertEquals(null, new MutableObject<Object>().getValue());\n        \n        mutNum.setValue(\"HELLO\");\n        assertSame(\"HELLO\", mutNum.getValue());\n        \n        mutNum.setValue(null);\n        assertSame(null, mutNum.getValue());\n    }\n\n    @Test\n    public void testEquals() {\n        final MutableObject<String> mutNumA = new MutableObject<String>(\"ALPHA\");\n        final MutableObject<String> mutNumB = new MutableObject<String>(\"ALPHA\");\n        final MutableObject<String> mutNumC = new MutableObject<String>(\"BETA\");\n        final MutableObject<String> mutNumD = new MutableObject<String>(null);\n\n        assertTrue(mutNumA.equals(mutNumA));\n        assertTrue(mutNumA.equals(mutNumB));\n        assertTrue(mutNumB.equals(mutNumA));\n        assertTrue(mutNumB.equals(mutNumB));\n        assertFalse(mutNumA.equals(mutNumC));\n        assertFalse(mutNumB.equals(mutNumC));\n        assertTrue(mutNumC.equals(mutNumC));\n        assertFalse(mutNumA.equals(mutNumD));\n        assertTrue(mutNumD.equals(mutNumD));\n        \n        assertFalse(mutNumA.equals(null));\n        assertFalse(mutNumA.equals(new Object()));\n        assertFalse(mutNumA.equals(\"0\"));\n    }\n\n    @Test\n    public void testHashCode() {\n        final MutableObject<String> mutNumA = new MutableObject<String>(\"ALPHA\");\n        final MutableObject<String> mutNumB = new MutableObject<String>(\"ALPHA\");\n        final MutableObject<String> mutNumC = new MutableObject<String>(\"BETA\");\n        final MutableObject<String> mutNumD = new MutableObject<String>(null);\n\n        assertTrue(mutNumA.hashCode() == mutNumA.hashCode());\n        assertTrue(mutNumA.hashCode() == mutNumB.hashCode());\n        assertFalse(mutNumA.hashCode() == mutNumC.hashCode());\n        assertFalse(mutNumA.hashCode() == mutNumD.hashCode());\n        assertTrue(mutNumA.hashCode() == \"ALPHA\".hashCode());\n        assertEquals(0, mutNumD.hashCode());\n    }\n\n    @Test\n    public void testToString() {\n        assertEquals(\"HI\", new MutableObject<String>(\"HI\").toString());\n        assertEquals(\"10.0\", new MutableObject<Double>(Double.valueOf(10)).toString());\n        assertEquals(\"null\", new MutableObject<Object>(null).toString());\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 97,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3931,
+  "representation_chars": 3931,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

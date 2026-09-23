@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.ser.TestJsonSerializeAs",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/ser/TestJsonSerializeAs.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.ser.TestJsonSerializeAs\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/ser/TestJsonSerializeAs.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.ser;\n\nimport java.io.IOException;\n\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonSerialize;\n\npublic class TestJsonSerializeAs extends BaseMapTest\n{\n    // [JACKSON-799] stuff:\n    \n    public interface Fooable {\n        public int getFoo();\n    }\n\n    // force use of interface\n    @JsonSerialize(as=Fooable.class)\n    public static class FooImpl implements Fooable {\n        @Override\n        public int getFoo() { return 42; }\n        public int getBar() { return 15; }\n    }\n\n    public class Fooables {\n        public FooImpl[] getFoos() {\n            return new FooImpl[] { new FooImpl() };\n        }\n    }\n\n    public class FooableWrapper {\n        public FooImpl getFoo() {\n            return new FooImpl();\n        }\n    }\n    \n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n\n    private final ObjectWriter WRITER = objectWriter();\n    \n    // [JACKSON-799]\n    public void testSerializeAsInClass() throws IOException\n    {\n        assertEquals(\"{\\\"foo\\\":42}\", WRITER.writeValueAsString(new FooImpl()));\n    }\n\n    public void testSerializeAsForArrayProp() throws IOException\n    {\n        assertEquals(\"{\\\"foos\\\":[{\\\"foo\\\":42}]}\", WRITER.writeValueAsString(new Fooables()));\n    }\n\n    public void testSerializeAsForSimpleProp() throws IOException\n    {\n        assertEquals(\"{\\\"foo\\\":{\\\"foo\\\":42}}\", WRITER.writeValueAsString(new FooableWrapper()));\n    }\n}\n",
+  "compaction": {
+    "source_lines": 59,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1740,
+  "representation_chars": 1740,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

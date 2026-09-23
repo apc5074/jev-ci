@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.jsontype.DefaultTypingWithPrimitivesTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/jsontype/DefaultTypingWithPrimitivesTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.jsontype.DefaultTypingWithPrimitivesTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/jsontype/DefaultTypingWithPrimitivesTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.jsontype;\n\nimport com.fasterxml.jackson.annotation.JsonTypeInfo;\n\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.jsontype.impl.StdTypeResolverBuilder;\n\nimport java.util.*;\n\n// [databind#1395]: prevent attempts at including type info for primitives\npublic class DefaultTypingWithPrimitivesTest extends BaseMapTest\n{\n    static class Data {\n        public long key;\n    }\n\n    public void testDefaultTypingWithLong() throws Exception\n    {\n        Data data = new Data();\n        data.key = 1L;\n        Map<String, Object> mapData = new HashMap<String, Object>();\n        mapData.put(\"longInMap\", 2L);\n        mapData.put(\"longAsField\", data);\n\n        // Configure Jackson to preserve types\n        ObjectMapper mapper = new ObjectMapper();\n        StdTypeResolverBuilder resolver = new StdTypeResolverBuilder();\n        resolver.init(JsonTypeInfo.Id.CLASS, null);\n        resolver.inclusion(JsonTypeInfo.As.PROPERTY);\n        resolver.typeProperty(\"__t\");\n        mapper.setDefaultTyping(resolver);\n        mapper.enable(SerializationFeature.INDENT_OUTPUT);\n\n        // Serialize\n        String json = mapper.writeValueAsString(mapData);\n\n        // Deserialize\n        Map<?,?> result = mapper.readValue(json, Map.class);\n        assertNotNull(result);\n        assertEquals(2, result.size());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 42,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1576,
+  "representation_chars": 1576,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

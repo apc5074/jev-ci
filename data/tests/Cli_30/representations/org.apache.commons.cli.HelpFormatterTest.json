@@ -1,0 +1,96 @@
+{
+  "test_class": "org.apache.commons.cli.HelpFormatterTest",
+  "source_file": "src/test/java/org/apache/commons/cli/HelpFormatterTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.cli.HelpFormatterTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/cli/HelpFormatterTest.java\n\nTEST SOURCE:\n/**\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *     http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.cli;\n\nimport java.io.ByteArrayOutputStream;\nimport java.io.PrintWriter;\nimport java.io.StringWriter;\nimport java.util.Comparator;\n\nimport junit.framework.TestCase;\n\n/** \n * Test case for the HelpFormatter class \n *\n * @author Slawek Zachcial\n * @author John Keyes ( john at integralsource.com )\n * @author brianegge\n */\npublic class HelpFormatterTest extends TestCase\n{\n    private static final String EOL = System.getProperty(\"line.separator\");\n\n    public void testFindWrapPos() throws Exception\n    {\n        HelpFormatter hf = new HelpFormatter();\n\n        String text = \"This is a test.\";\n        //text width should be max 8; the wrap position is 7\n        assertEquals(\"wrap position\", 7, hf.findWrapPos(text, 8, 0));\n        //starting from 8 must give -1 - the wrap pos is after end\n        assertEquals(\"wrap position 2\", -1, hf.findWrapPos(text, 8, 8));\n        //if there is no a good position before width to make a wrapping look for the next one\n        text = \"aaaa aa\";\n        assertEquals(\"wrap position 3\", 4, hf.findWrapPos(text, 3, 0));\n    }\n\n    public void testPrintWrapped() throws Exception\n    {\n        StringBuffer sb = new StringBuffer();\n        HelpFormatter hf = new HelpFormatter();\n\n        String text = \"This is a test.\";\n\n        String expected = \"This is a\" + hf.getNewLine() + \"test.\";\n        hf.renderWrappedText(sb, 12, 0, text);\n        assertEquals(\"single line text\", expected, sb.toString());\n\n        sb.setLength(0);\n        expected = \"This is a\" + hf.getNewLine() + \"    test.\";\n        hf.renderWrappedText(sb, 12, 4, text);\n        assertEquals(\"single line padded text\", expected, sb.toString());\n\n        text = \"  -p,--period <PERIOD>  PERIOD is time duration of form \" +\n               \"DATE[-DATE] where DATE has form YYYY[MM[DD]]\";\n\n        sb.setLength(0);\n        expected = \"  -p,--period <PERIOD>  PERIOD is time duration of\" +\n                hf.getNewLine() +\n                \"                        form DATE[-DATE] where DATE\" +\n                hf.getNewLine() +\n                \"                        has form YYYY[MM[DD]]\";\n        hf.renderWrappedText(sb, 53, 24, text);\n        assertEquals(\"single line padded text 2\", expected, sb.toString());\n\n        text = \"aaaa aaaa aaaa\" + hf.getNewLine() +\n        assertEquals(\"simple auto usage\", expected, out.toString().trim());\n        out.reset();\n\n        expected = \"usage: app [-a] [-b]\";\n        options = new Options().addOption(\"a\", false, \"aaaa aaaa aaaa aaaa aaaa\")\n                .addOption(\"b\", false, \"bbb\");\n        hf.printUsage(pw, 60, \"app\", options);\n        pw.flush();\n        assertEquals(\"simple auto usage\", expected, out.toString().trim());\n        out.reset();\n    }\n\n    // This test ensures the options are properly sorted\n    // See https://issues.apache.org/jira/browse/CLI-131\n    public void testPrintUsage()\n    {\n        Option optionA = new Option(\"a\", \"first\");\n        Option optionB = new Option(\"b\", \"second\");\n        Option optionC = new Option(\"c\", \"third\");\n        Options opts = new Options();\n        opts.addOption(optionA);\n        opts.addOption(optionB);\n        opts.addOption(optionC);\n        HelpFormatter helpFormatter = new HelpFormatter();\n        ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();\n        PrintWriter printWriter = new PrintWriter(bytesOut);\n        helpFormatter.printUsage(printWriter, 80, \"app\", opts);\n        printWriter.close();\n        assertEquals(\"usage: app [-a] [-b] [-c]\" + EOL, bytesOut.toString());\n    }\n\n    // uses the test for CLI-131 to implement CLI-155\n    public void testPrintSortedUsage()\n    {\n        Options opts = new Options();\n        opts.addOption(new Option(\"a\", \"first\"));\n        opts.addOption(new Option(\"b\", \"second\"));\n        opts.addOption(new Option(\"c\", \"third\"));\n\n        HelpFormatter helpFormatter = new HelpFormatter();\n        helpFormatter.setOptionComparator(new Comparator()\n        {\n            public int compare(Object o1, Object o2)\n            {\n                // reverses the fuctionality of the default comparator\n                Option opt1 = (Option) o1;\n                Option opt2 = (Option) o2;\n                return opt2.getKey().compareToIgnoreCase(opt1.getKey());\n            }\n        });\n\n        StringWriter out = new StringWriter();\n        helpFormatter.printUsage(new PrintWriter(out), 80, \"app\", opts);\n\n        assertEquals(\"usage: app [-c] [-b] [-a]\" + EOL, out.toString());\n    }\n\n    public void testPrintSortedUsageWithNullComparator()\n    {\n        Options opts = new Options();\n        opts.addOption(new Option(\"a\", \"first\"));\n        opts.addOption(new Option(\"b\", \"second\"));\n        opts.addOption(new Option(\"c\", \"third\"));\n\n        HelpFormatter helpFormatter = new HelpFormatter();\n        helpFormatter.setOptionComparator(null);\n\n        StringWriter out = new StringWriter();\n        helpFormatter.printUsage(new PrintWriter(out), 80, \"app\", opts);\n\n        assertEquals(\"usage: app [-a] [-b] [-c]\" + EOL, out.toString());\n    }\n\n    public void testPrintOptionGroupUsage()\n    {\n        OptionGroup group = new OptionGroup();\n        group.addOption(OptionBuilder.create(\"a\"));\n        group.addOption(OptionBuilder.create(\"b\"));\n        group.addOption(OptionBuilder.create(\"c\"));\n\n                , out.toString());\n    }\n\n    public void testOptionWithoutShortFormat()\n    {\n        // related to Bugzilla #19383 (CLI-67)\n        Options options = new Options();\n        options.addOption(new Option(\"a\", \"aaa\", false, \"aaaaaaa\"));\n        options.addOption(new Option(null, \"bbb\", false, \"bbbbbbb\"));\n        options.addOption(new Option(\"c\", null, false, \"ccccccc\"));\n\n        HelpFormatter formatter = new HelpFormatter();\n        StringWriter out = new StringWriter();\n        formatter.printHelp(new PrintWriter(out), 80, \"foobar\", \"\", options, 2, 2, \"\", true);\n        assertEquals(\n                \"usage: foobar [-a] [--bbb] [-c]\" + EOL +\n                \"  -a,--aaa  aaaaaaa\" + EOL +\n                \"     --bbb  bbbbbbb\" + EOL +\n                \"  -c        ccccccc\" + EOL\n                , out.toString());\n    }\n    \n\n    public void testOptionWithoutShortFormat2()\n    {\n        // related to Bugzilla #27635 (CLI-26)\n        Option help = new Option(\"h\", \"help\", false, \"print this message\");\n        Option version = new Option(\"v\", \"version\", false, \"print version information\");\n        Option newRun = new Option(\"n\", \"new\", false, \"Create NLT cache entries only for new items\");\n        Option trackerRun = new Option(\"t\", \"tracker\", false, \"Create NLT cache entries only for tracker items\");\n        \n        Option timeLimit = OptionBuilder.withLongOpt(\"limit\")\n                                        .hasArg()\n                                        .withValueSeparator()\n                                        .withDescription(\"Set time limit for execution, in mintues\")\n                                        .create(\"l\");\n        \n        Option age = OptionBuilder.withLongOpt(\"age\")\n                                        .hasArg()\n                                        .withValueSeparator()\n                                        .withDescription(\"Age (in days) of cache item before being recomputed\")\n                                        .create(\"a\");\n        \n        Option server = OptionBuilder.withLongOpt(\"server\")\n                                        .hasArg()\n                                        .withValueSeparator()\n                                        .withDescription(\"The NLT server address\")\n                                        .create(\"s\");\n        \n        Option numResults = OptionBuilder.withLongOpt(\"results\")\n                                        .hasArg()\n                                        .withValueSeparator()\n                                        .withDescription(\"Number of results per item\")\n                                        .create(\"r\");\n        \n        Option configFile = OptionBuilder.withLongOpt(\"config\")\n                                        .hasArg()\n                                        .withValueSeparator()\n                                        .withDescription(\"Use the specified configuration file\")\n                                        .create();\n        \n        Options mOptions = new Options();\n        mOptions.addOption(help);\n        mOptions.addOption(version);\n        mOptions.addOption(newRun);\n        mOptions.addOption(trackerRun);\n        mOptions.addOption(timeLimit);\n        mOptions.addOption(age);\n        mOptions.addOption(server);\n        mOptions.addOption(numResults);\n        mOptions.addOption(configFile);\n        \n        HelpFormatter formatter = new HelpFormatter();\n        final String EOL = System.getProperty(\"line.separator\");\n        StringWriter out = new StringWriter();\n        formatter.printHelp(new PrintWriter(out),80,\"commandline\",\"header\",mOptions,2,2,\"footer\",true);\n        assertEquals(\n                \"usage: commandline [-a <arg>] [--config <arg>] [-h] [-l <arg>] [-n] [-r <arg>]\" + EOL +\n                \"       [-s <arg>] [-t] [-v]\" + EOL +\n                \"header\"+EOL+\n",
+  "compaction": {
+    "source_lines": 496,
+    "mode": "windows",
+    "windows_total": 8,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        180,
+        260
+      ],
+      [
+        360,
+        440
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 22.65276369901075
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 10.021734686268957
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 11.654725727081587
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 22.65276369901075
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 9.217170842097602
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 7.802525602465061
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 10.021734686268957
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.848719135556014
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 4.652436503668803
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 11.654725727081587
+      },
+      {
+        "start": 420,
+        "end": 496,
+        "score": 9.6906541004417
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 10124,
+  "representation_chars": 10124,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

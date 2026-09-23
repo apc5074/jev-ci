@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.jsontype.TestNoTypeInfo",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/jsontype/TestNoTypeInfo.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.jsontype.TestNoTypeInfo\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/jsontype/TestNoTypeInfo.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.jsontype;\n\nimport com.fasterxml.jackson.annotation.JsonTypeInfo;\n\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\n\npublic class TestNoTypeInfo extends BaseMapTest\n{\n    @JsonTypeInfo(use=JsonTypeInfo.Id.NONE)\n    @JsonDeserialize(as=NoType.class)\n    private static interface NoTypeInterface {\n    }\n    \n    private final static class NoType implements NoTypeInterface {\n        public int a = 3;\n    }\n    \n    /*\n    /**********************************************************\n    /* Unit tests\n    /**********************************************************\n     */\n\n    // for [JACKSON-746]\n    public void testWithIdNone() throws Exception\n    {\n        final ObjectMapper mapper = new ObjectMapper();\n        mapper.enableDefaultTyping();\n        // serialize without type info\n        String json = mapper.writeValueAsString(new NoType());\n        assertEquals(\"{\\\"a\\\":3}\", json);\n\n        // and deserialize successfully\n        NoTypeInterface bean = mapper.readValue(\"{\\\"a\\\":6}\", NoTypeInterface.class);\n        assertNotNull(bean);\n        NoType impl = (NoType) bean;\n        assertEquals(6, impl.a);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 40,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1389,
+  "representation_chars": 1389,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

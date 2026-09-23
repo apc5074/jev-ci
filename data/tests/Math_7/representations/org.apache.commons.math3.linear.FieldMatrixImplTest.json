@@ -1,0 +1,151 @@
+{
+  "test_class": "org.apache.commons.math3.linear.FieldMatrixImplTest",
+  "source_file": "src/test/java/org/apache/commons/math3/linear/FieldMatrixImplTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.linear.FieldMatrixImplTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/linear/FieldMatrixImplTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.linear;\n\nimport org.junit.Test;\nimport org.junit.Assert;\n\nimport org.apache.commons.math3.TestUtils;\nimport org.apache.commons.math3.fraction.Fraction;\nimport org.apache.commons.math3.fraction.FractionField;\nimport org.apache.commons.math3.exception.MathIllegalStateException;\nimport org.apache.commons.math3.exception.DimensionMismatchException;\nimport org.apache.commons.math3.exception.NoDataException;\nimport org.apache.commons.math3.exception.OutOfRangeException;\nimport org.apache.commons.math3.exception.NumberIsTooSmallException;\nimport org.apache.commons.math3.exception.NotStrictlyPositiveException;\nimport org.apache.commons.math3.exception.NullArgumentException;\nimport org.apache.commons.math3.exception.MathIllegalArgumentException;\n\n/**\n * Test cases for the {@link Array2DRowFieldMatrix} class.\n *\n * @version $Id$\n */\n\npublic final class FieldMatrixImplTest {\n\n    // 3 x 3 identity matrix\n    protected Fraction[][] id = { {new Fraction(1),new Fraction(0),new Fraction(0)}, {new Fraction(0),new Fraction(1),new Fraction(0)}, {new Fraction(0),new Fraction(0),new Fraction(1)} };\n\n    // Test data for group operations\n    protected Fraction[][] testData = { {new Fraction(1),new Fraction(2),new Fraction(3)}, {new Fraction(2),new Fraction(5),new Fraction(3)}, {new Fraction(1),new Fraction(0),new Fraction(8)} };\n    protected Fraction[][] testDataLU = {{new Fraction(2), new Fraction(5), new Fraction(3)}, {new Fraction(1, 2), new Fraction(-5, 2), new Fraction(13, 2)}, {new Fraction(1, 2), new Fraction(1, 5), new Fraction(1, 5)}};\n    protected Fraction[][] testDataPlus2 = { {new Fraction(3),new Fraction(4),new Fraction(5)}, {new Fraction(4),new Fraction(7),new Fraction(5)}, {new Fraction(3),new Fraction(2),new Fraction(10)} };\n    protected Fraction[][] testDataMinus = { {new Fraction(-1),new Fraction(-2),new Fraction(-3)}, {new Fraction(-2),new Fraction(-5),new Fraction(-3)},\n       {new Fraction(-1),new Fraction(0),new Fraction(-8)} };\n    protected Fraction[] testDataRow1 = {new Fraction(1),new Fraction(2),new Fraction(3)};\n    protected Fraction[] testDataCol3 = {new Fraction(3),new Fraction(3),new Fraction(8)};\n    protected Fraction[][] testDataInv =\n        { {new Fraction(-40),new Fraction(16),new Fraction(9)}, {new Fraction(13),new Fraction(-5),new Fraction(-3)}, {new Fraction(5),new Fraction(-2),new Fraction(-1)} };\n    protected Fraction[] preMultTest = {new Fraction(8),new Fraction(12),new Fraction(33)};\n    protected Fraction[][] testData2 ={ {new Fraction(1),new Fraction(2),new Fraction(3)}, {new Fraction(2),new Fraction(5),new Fraction(3)}};\n    protected Fraction[][] testData2T = { {new Fraction(1),new Fraction(2)}, {new Fraction(2),new Fraction(5)}, {new Fraction(3),new Fraction(3)}};\n    protected Fraction[][] testDataPlusInv =\n        { {new Fraction(-39),new Fraction(18),new Fraction(12)}, {new Fraction(15),new Fraction(0),new Fraction(0)}, {new Fraction(6),new Fraction(-2),new Fraction(7)} };\n\n    // lu decomposition tests\n    protected Fraction[][] luData = { {new Fraction(2),new Fraction(3),new Fraction(3)}, {new Fraction(0),new Fraction(5),new Fraction(7)}, {new Fraction(6),new Fraction(9),new Fraction(8)} };\n    protected Fraction[][] luDataLUDecomposition = { {new Fraction(6),new Fraction(9),new Fraction(8)}, {new Fraction(0),new Fraction(5),new Fraction(7)},\n            {new Fraction(1, 3),new Fraction(0),new Fraction(1, 3)} };\n\n    // singular matrices\n    protected Fraction[][] singular = { {new Fraction(2),new Fraction(3)}, {new Fraction(2),new Fraction(3)} };\n    protected Fraction[][] bigSingular = {{new Fraction(1),new Fraction(2),new Fraction(3),new Fraction(4)}, {new Fraction(2),new Fraction(5),new Fraction(3),new Fraction(4)},\n        {new Fraction(7),new Fraction(3),new Fraction(256),new Fraction(1930)}, {new Fraction(3),new Fraction(7),new Fraction(6),new Fraction(8)}}; // 4th row = 1st + 2nd\n    protected Fraction[][] detData = { {new Fraction(1),new Fraction(2),new Fraction(3)}, {new Fraction(4),new Fraction(5),new Fraction(6)}, {new Fraction(7),new Fraction(8),new Fraction(10)} };\n    protected Fraction[][] detData2 = { {new Fraction(1), new Fraction(3)}, {new Fraction(2), new Fraction(4)}};\n\n    // vectors\n    protected Fraction[] testVector = {new Fraction(1),new Fraction(2),new Fraction(3)};\n    protected Fraction[] testVector2 = {new Fraction(1),new Fraction(2),new Fraction(3),new Fraction(4)};\n\n    // submatrix accessor tests\n    protected Fraction[][] subTestData = {{new Fraction(1), new Fraction(2), new Fraction(3), new Fraction(4)}, {new Fraction(3, 2), new Fraction(5, 2), new Fraction(7, 2), new Fraction(9, 2)},\n            {new Fraction(2), new Fraction(4), new Fraction(6), new Fraction(8)}, {new Fraction(4), new Fraction(5), new Fraction(6), new Fraction(7)}};\n    // array selections\n    }\n\n    private Fraction[] columnToArray(Fraction[][] column) {\n        Fraction[] data = new Fraction[column.length];\n        for (int i = 0; i < data.length; ++i) {\n            data[i] = column[i][0];\n        }\n        return data;\n    }\n\n    private void checkArrays(Fraction[] expected, Fraction[] actual) {\n        Assert.assertEquals(expected.length, actual.length);\n        for (int i = 0; i < expected.length; ++i) {\n            Assert.assertEquals(expected[i], actual[i]);\n        }\n    }\n\n    @Test\n    public void testEqualsAndHashCode() {\n        Array2DRowFieldMatrix<Fraction> m = new Array2DRowFieldMatrix<Fraction>(testData);\n        Array2DRowFieldMatrix<Fraction> m1 = (Array2DRowFieldMatrix<Fraction>) m.copy();\n        Array2DRowFieldMatrix<Fraction> mt = (Array2DRowFieldMatrix<Fraction>) m.transpose();\n        Assert.assertTrue(m.hashCode() != mt.hashCode());\n        Assert.assertEquals(m.hashCode(), m1.hashCode());\n        Assert.assertEquals(m, m);\n        Assert.assertEquals(m, m1);\n        Assert.assertFalse(m.equals(null));\n        Assert.assertFalse(m.equals(mt));\n        Assert.assertFalse(m.equals(new Array2DRowFieldMatrix<Fraction>(bigSingular)));\n    }\n\n    @Test\n    public void testToString() {\n        Array2DRowFieldMatrix<Fraction> m = new Array2DRowFieldMatrix<Fraction>(testData);\n        Assert.assertEquals(\"Array2DRowFieldMatrix{{1,2,3},{2,5,3},{1,0,8}}\", m.toString());\n        m = new Array2DRowFieldMatrix<Fraction>(FractionField.getInstance());\n        Assert.assertEquals(\"Array2DRowFieldMatrix{}\", m.toString());\n    }\n\n    @Test\n    public void testSetSubMatrix() {\n        Array2DRowFieldMatrix<Fraction> m = new Array2DRowFieldMatrix<Fraction>(testData);\n        m.setSubMatrix(detData2,1,1);\n        FieldMatrix<Fraction> expected = new Array2DRowFieldMatrix<Fraction>\n            (new Fraction[][] {\n                    {new Fraction(1),new Fraction(2),new Fraction(3)},\n                    {new Fraction(2),new Fraction(1),new Fraction(3)},\n                    {new Fraction(1),new Fraction(2),new Fraction(4)}\n             });\n        Assert.assertEquals(expected, m);\n\n        m.setSubMatrix(detData2,0,0);\n        expected = new Array2DRowFieldMatrix<Fraction>\n            (new Fraction[][] {\n                    {new Fraction(1),new Fraction(3),new Fraction(3)},\n                    {new Fraction(2),new Fraction(4),new Fraction(3)},\n                    {new Fraction(1),new Fraction(2),new Fraction(4)}\n             });\n        Assert.assertEquals(expected, m);\n\n        m.setSubMatrix(testDataPlus2,0,0);\n        expected = new Array2DRowFieldMatrix<Fraction>\n            (new Fraction[][] {\n                    {new Fraction(3),new Fraction(4),new Fraction(5)},\n                    {new Fraction(4),new Fraction(7),new Fraction(5)},\n                    {new Fraction(3),new Fraction(2),new Fraction(10)}\n             });\n        Assert.assertEquals(expected, m);\n\n        // dimension overflow\n        try {\n            m.setSubMatrix(testData,1,1);\n            Assert.fail(\"expecting OutOfRangeException\");\n        } catch (OutOfRangeException e) {\n            // expected\n        }\n        // dimension underflow\n        try {\n            m.setSubMatrix(testData,-1,1);\n            Assert.fail(\"expecting OutOfRangeException\");\n            ++count;\n            Assert.assertEquals(new Fraction(i * 1024 + j, 1024), value);\n        }\n        public int getCount() {\n            return count;\n        }\n    }\n\n    //--------------- -----------------Protected methods\n\n    /** extracts the l  and u matrices from compact lu representation */\n    protected void splitLU(FieldMatrix<Fraction> lu,\n                           Fraction[][] lowerData,\n                           Fraction[][] upperData) {\n        if (!lu.isSquare()) {\n            throw new NonSquareMatrixException(lu.getRowDimension(), lu.getColumnDimension());\n        }\n        if (lowerData.length != lowerData[0].length) {\n            throw new DimensionMismatchException(lowerData.length, lowerData[0].length);\n        }\n        if (upperData.length != upperData[0].length) {\n            throw new DimensionMismatchException(upperData.length, upperData[0].length);\n        }\n        if (lowerData.length != upperData.length) {\n            throw new DimensionMismatchException(lowerData.length, upperData.length);\n        }\n        if (lowerData.length != lu.getRowDimension()) {\n            throw new DimensionMismatchException(lowerData.length, lu.getRowDimension());\n        }\n        int n = lu.getRowDimension();\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < n; j++) {\n                if (j < i) {\n                    lowerData[i][j] = lu.getEntry(i, j);\n                    upperData[i][j] = Fraction.ZERO;\n                } else if (i == j) {\n                    lowerData[i][j] = Fraction.ONE;\n                    upperData[i][j] = lu.getEntry(i, j);\n                } else {\n                    lowerData[i][j] = Fraction.ZERO;\n                    upperData[i][j] = lu.getEntry(i, j);\n                }\n            }\n        }\n    }\n\n    /** Returns the result of applying the given row permutation to the matrix */\n    protected FieldMatrix<Fraction> permuteRows(FieldMatrix<Fraction> matrix, int[] permutation) {\n        if (!matrix.isSquare()) {\n            throw new NonSquareMatrixException(matrix.getRowDimension(),\n                                               matrix.getColumnDimension());\n        }\n        if (matrix.getRowDimension() != permutation.length) {\n            throw new DimensionMismatchException(matrix.getRowDimension(), permutation.length);\n        }\n        int n = matrix.getRowDimension();\n        int m = matrix.getColumnDimension();\n        Fraction out[][] = new Fraction[m][n];\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < m; j++) {\n                out[i][j] = matrix.getEntry(permutation[i], j);\n            }\n        }\n        return new Array2DRowFieldMatrix<Fraction>(out);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 1146,
+    "mode": "windows",
+    "windows_total": 19,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        840,
+        920
+      ],
+      [
+        1080,
+        1146
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 34.36891541855704
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 14.986399426590896
+      },
+      {
+        "start": 1080,
+        "end": 1146,
+        "score": 14.754920083721357
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 34.36891541855704
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 9.816821673689018
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 2.192904747206736
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.5668314854497005
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 2.1390830093431275
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 2.5362356139130884
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 3.7931300582427747
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 5.451593540126895
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 7.04287326990333
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 6.80278308031973
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 1.0393534218770164
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 2.5069325645884932
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 8.823974329246818
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 11.467868802602151
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 14.986399426590896
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 6.301387488354512
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 1.456119537917251
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 9.522223004172371
+      },
+      {
+        "start": 1080,
+        "end": 1146,
+        "score": 14.754920083721357
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 11832,
+  "representation_chars": 11832,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

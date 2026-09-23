@@ -1,0 +1,196 @@
+{
+  "test_class": "org.apache.commons.math3.dfp.DfpTest",
+  "source_file": "src/test/java/org/apache/commons/math3/dfp/DfpTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.dfp.DfpTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/dfp/DfpTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math3.dfp;\n\nimport org.apache.commons.math3.ExtendedFieldElementAbstractTest;\nimport org.apache.commons.math3.util.FastMath;\nimport org.apache.commons.math3.util.Precision;\nimport org.junit.After;\nimport org.junit.Assert;\nimport org.junit.Before;\nimport org.junit.Test;\n\npublic class DfpTest extends ExtendedFieldElementAbstractTest<Dfp> {\n\n    protected Dfp build(final double x) {\n        return field.newDfp(x);\n    }\n\n    private DfpField field;\n    private Dfp pinf;\n    private Dfp ninf;\n    private Dfp nan;\n    private Dfp snan;\n    private Dfp qnan;\n\n    @Before\n    public void setUp() {\n        // Some basic setup.  Define some constants and clear the status flags\n        field = new DfpField(20);\n        pinf = field.newDfp(\"1\").divide(field.newDfp(\"0\"));\n        ninf = field.newDfp(\"-1\").divide(field.newDfp(\"0\"));\n        nan = field.newDfp(\"0\").divide(field.newDfp(\"0\"));\n        snan = field.newDfp((byte)1, Dfp.SNAN);\n        qnan = field.newDfp((byte)1, Dfp.QNAN);\n        ninf.getField().clearIEEEFlags();\n    }\n\n    @After\n    public void tearDown() {\n        field = null;\n        pinf    = null;\n        ninf    = null;\n        nan     = null;\n        snan    = null;\n        qnan    = null;\n    }\n\n    // Generic test function.  Takes params x and y and tests them for\n    // equality.  Then checks the status flags against the flags argument.\n    // If the test fail, it prints the desc string\n    private void test(Dfp x, Dfp y, int flags, String desc)\n    {\n        boolean b = x.equals(y);\n\n        if (!x.equals(y) && !x.unequal(y))  // NaNs involved\n            b = (x.toString().equals(y.toString()));\n\n        if (x.equals(field.newDfp(\"0\")))  // distinguish +/- zero\n            b = (b && (x.toString().equals(y.toString())));\n\n        b = (b && x.getField().getIEEEFlags() == flags);\n\n        if (!b)\n            Assert.assertTrue(\"assersion failed \"+desc+\" x = \"+x.toString()+\" flags = \"+x.getField().getIEEEFlags(), b);\n\n        cmptst(qnan.negate(), qnan, \"equal\", false, 52);\n\n        //\n        // Tests for un equal  -- do it all over again\n        //\n\n        cmptst(field.newDfp(\"0\"), field.newDfp(\"0\"), \"unequal\", false, 1);         // 0 == 0\n        cmptst(field.newDfp(\"0\"), field.newDfp(\"-0\"), \"unequal\", false, 2);        // 0 == -0\n        cmptst(field.newDfp(\"-0\"), field.newDfp(\"-0\"), \"unequal\", false, 3);       // -0 == -0\n        cmptst(field.newDfp(\"-0\"), field.newDfp(\"0\"), \"unequal\", false, 4);        // -0 == 0\n\n        // check zero vs normal numbers\n\n        cmptst(field.newDfp(\"0\"), field.newDfp(\"1\"), \"unequal\", true, 5);         // 0 == 1\n        cmptst(field.newDfp(\"1\"), field.newDfp(\"0\"), \"unequal\", true, 6);         // 1 == 0\n        cmptst(field.newDfp(\"-1\"), field.newDfp(\"0\"), \"unequal\", true, 7);        // -1 == 0\n        cmptst(field.newDfp(\"0\"), field.newDfp(\"-1\"), \"unequal\", true, 8);        // 0 == -1\n        cmptst(field.newDfp(\"0\"), field.newDfp(\"1e-131072\"), \"unequal\", true, 9); // 0 == 1e-131072\n        // check flags\n        if (field.getIEEEFlags() != 0)\n            Assert.fail(\"assersion failed.  compare flags = \"+field.getIEEEFlags());\n\n        cmptst(field.newDfp(\"0\"), field.newDfp(\"1e-131078\"), \"unequal\", true, 10); // 0 == 1e-131078\n\n        // check flags  -- underflow should be set\n        if (field.getIEEEFlags() != DfpField.FLAG_UNDERFLOW)\n            Assert.fail(\"assersion failed.  compare flags = \"+field.getIEEEFlags());\n\n        field.clearIEEEFlags();\n\n        cmptst(field.newDfp(\"0\"), field.newDfp(\"1e+131071\"), \"unequal\", true, 11); // 0 == 1e+131071\n\n        // check zero vs infinities\n\n        cmptst(field.newDfp(\"0\"), pinf, \"unequal\", true, 12);    // 0 == pinf\n        cmptst(field.newDfp(\"0\"), ninf, \"unequal\", true, 13);    // 0 == ninf\n        cmptst(field.newDfp(\"-0\"), pinf, \"unequal\", true, 14);   // -0 == pinf\n        cmptst(field.newDfp(\"-0\"), ninf, \"unequal\", true, 15);   // -0 == ninf\n        cmptst(pinf, field.newDfp(\"0\"), \"unequal\", true, 16);    // pinf == 0\n        cmptst(ninf, field.newDfp(\"0\"), \"unequal\", true, 17);    // ninf == 0\n        cmptst(pinf, field.newDfp(\"-0\"), \"unequal\", true, 18);   // pinf == -0\n        cmptst(ninf, field.newDfp(\"-0\"), \"unequal\", true, 19);   // ninf == -0\n        cmptst(ninf, pinf, \"unequal\", true, 19.10);     // ninf == pinf\n        cmptst(pinf, ninf, \"unequal\", true, 19.11);     // pinf == ninf\n        cmptst(pinf, pinf, \"unequal\", false, 19.12);     // pinf == pinf\n        cmptst(ninf, ninf, \"unequal\", false, 19.13);     // ninf == ninf\n\n        // check some normal numbers\n        cmptst(field.newDfp(\"1\"), field.newDfp(\"1\"), \"unequal\", false, 20);   // 1 == 1\n        cmptst(field.newDfp(\"1\"), field.newDfp(\"-1\"), \"unequal\", true, 21);   // 1 == -1\n        cmptst(field.newDfp(\"-1\"), field.newDfp(\"-1\"), \"unequal\", false, 22);   // -1 == -1\n        cmptst(field.newDfp(\"1\"), field.newDfp(\"1.0000000000000001\"), \"unequal\", true, 23);   // 1 == 1.0000000000000001\n\n        // The tests below checks to ensure that comparisons don't set FLA[...TEST TRUNCATED...]cmptst(field.newDfp(\"1e20\"), field.newDfp(\"1.0000000000000001\"), \"unequal\", true, 24);\n        if (field.getIEEEFlags() != 0)\n            Assert.fail(\"assersion failed.  compare flags = \"+field.getIEEEFlags());\n\n        cmptst(field.newDfp(\"0.000001\"), field.newDfp(\"1e-6\"), \"unequal\", false, 25);\n\n        // check some nans -- nans shouldnt be unequal to anything\n\n        cmptst(snan, snan, \"unequal\", false, 27);\n        cmptst(qnan, qnan, \"unequal\", false, 28);\n        cmptst(snan, qnan, \"unequal\", false, 29);\n        cmptst(qnan, snan, \"unequal\", false, 30);\n        cmptst(qnan, field.newDfp(\"0\"), \"unequal\", false, 31);\n        cmptst(snan, field.newDfp(\"0\"), \"unequal\", false, 32);\n        cmptst(field.newDfp(\"0\"), snan, \"unequal\", false, 33);\n        cmptst(field.newDfp(\"0\"), qnan, \"unequal\", false, 34);\n        cmptst(qnan, pinf, \"unequal\", false, 35);\n        cmptst(snan, pinf, \"unequal\", false, 36);\n        cmptst(pinf, snan, \"unequal\", false, 37);\n        cmptst(pinf, qnan, \"unequal\", false, 38);\n        cmptst(qnan, ninf, \"unequal\", false, 39);\n        cmptst(snan, ninf, \"unequal\", false, 40);\n        cmptst(ninf, snan, \"unequal\", false, 41);\n        cmptst(ninf, qnan, \"unequal\", false, 42);\n        cmptst(qnan, field.newDfp(\"-1\"), \"unequal\", false, 43);\n        if (field.getIEEEFlags() != DfpField.FLAG_INVALID)\n            Assert.fail(\"assersion failed.  compare lessThan flags = \"+field.getIEEEFlags());\n        field.clearIEEEFlags();\n\n        //\n        // Tests for greaterThan  -- do it all over again\n        //\n\n        cmptst(field.newDfp(\"0\"), field.newDfp(\"0\"), \"greaterThan\", false, 1);         // 0 > 0\n        cmptst(field.newDfp(\"0\"), field.newDfp(\"-0\"), \"greaterThan\", false, 2);        // 0 > -0\n        cmptst(field.newDfp(\"-0\"), field.newDfp(\"-0\"), \"greaterThan\", false, 3);       // -0 > -0\n        cmptst(field.newDfp(\"-0\"), field.newDfp(\"0\"), \"greaterThan\", false, 4);        // -0 > 0\n\n        // check zero vs normal numbers\n\n        cmptst(field.newDfp(\"0\"), field.newDfp(\"1\"), \"greaterThan\", false, 5);         // 0 > 1\n        cmptst(field.newDfp(\"1\"), field.newDfp(\"0\"), \"greaterThan\", true, 6);         // 1 > 0\n        cmptst(field.newDfp(\"-1\"), field.newDfp(\"0\"), \"greaterThan\", false, 7);        // -1 > 0\n        cmptst(field.newDfp(\"0\"), field.newDfp(\"-1\"), \"greaterThan\", true, 8);        // 0 > -1\n        cmptst(field.newDfp(\"0\"), field.newDfp(\"1e-131072\"), \"greaterThan\", false, 9); // 0 > 1e-131072\n        // check flags\n        if (field.getIEEEFlags() != 0)\n            Assert.fail(\"assersion failed.  compare flags = \"+field.getIEEEFlags());\n\n        cmptst(field.newDfp(\"0\"), field.newDfp(\"1e-131078\"), \"greaterThan\", false, 10); // 0 > 1e-131078\n\n        // check flags  -- underflow should be set\n        if (field.getIEEEFlags() != DfpField.FLAG_UNDERFLOW)\n            Assert.fail(\"assersion failed.  compare flags = \"+field.getIEEEFlags());\n        field.clearIEEEFlags();\n\n        cmptst(field.newDfp(\"0\"), field.newDfp(\"1e+131071\"), \"greaterThan\", false, 11); // 0 > 1e+131071\n\n        // check zero vs infinities\n\n        cmptst(field.newDfp(\"0\"), pinf, \"greaterThan\", false, 12);    // 0 > pinf\n        cmptst(field.newDfp(\"0\"), ninf, \"greaterThan\", true, 13);    // 0 > ninf\n        cmptst(field.newDfp(\"-0\"), pinf, \"greaterThan\", false, 14);   // -0 > pinf\n        cmptst(field.newDfp(\"-0\"), ninf, \"greaterThan\", true, 15);   // -0 > ninf\n        cmptst(pinf, field.newDfp(\"0\"), \"greaterThan\", true, 16);    // pinf > 0\n        cmptst(ninf, field.newDfp(\"0\"), \"greaterThan\", false, 17);    // ninf > 0\n        cmptst(pinf, field.newDfp(\"-0\"), \"greaterThan\", true, 18);   // pinf > -0\n        cmptst(ninf, field.newDfp(\"-0\"), \"greaterThan\", false, 19);   // ninf > -0\n        cmptst(ninf, pinf, \"greaterThan\", false, 19.10);     // ninf > pinf\n        cmptst(pinf, ninf, \"greaterThan\", true, 19.11);     // pinf > ninf\n        cmptst(pinf, pinf, \"greaterThan\", false, 19.12);     // pinf > pinf\n        cmptst(ninf, ninf, \"greaterThan\", false, 19.13);     // ninf > ninf\n\n        // check some normal numbers\n        cmptst(field.newDfp(\"1\"), field.newDfp(\"1\"), \"greaterThan\", false, 20);   // 1 > 1\n        cmptst(field.newDfp(\"1\"), field.newDfp(\"-1\"), \"greaterThan\", true, 21);   // 1 > -1\n        cmptst(field.newDfp(\"-1\"), field.newDfp(\"-1\"), \"greaterThan\", false, 22);   // -1 > -1\n        cmptst(field.newDfp(\"1\"), field.newDfp(\"1.0000000000000001\"), \"greaterThan\", false, 23);   // 1 > 1.0000000000000001\n\n        // The tests below checks to ensure that comparisons don't set FLAG_INEXACT\n        // 100000 > 1.0000000000000001\n        cmptst(field.newDfp(\"1e20\"), field.newDfp(\"1.0000000000000001\"), \"greaterThan\", true, 24);\n        if (field.getIEEEFlags() != 0)\n            Assert.fail(\"assersion failed.  compare flags = \"+field.getIEEEFlags());\n\n        cmptst(field.newDfp(\"0.000001\"), field.newDfp(\"1e-6\"), \"greaterThan\", false, 25);\n\n        // check some nans -- nans shouldnt be greaterThan to anything\n        cmptst(snan, snan, \"greaterThan\", false, 27);\n        cmptst(qnan, qnan, \"greaterThan\", false, 28);\n        cmptst(snan, qnan, \"greaterThan\", false, 29);\n        cmptst(qnan, snan, \"greaterThan\", false, 30);\n        cmptst(qnan, field.newDfp(\"0\"), \"greaterThan\", false, 31);\n        cmptst(snan, field.newDfp(\"0\"), \"greaterThan\", false, 32);\n        cmptst(field.newDfp(\"0\"), snan, \"greaterThan\", false, 33);\n        cmptst(field.newDfp(\"0\"), qnan, \"greaterThan\", false, 34);\n        cmptst(qnan, pinf, \"greaterThan\", false, 35);\n        cmptst(snan, pinf, \"greaterThan\", false, 36);\n        cmptst(pinf, snan, \"greaterThan\", false, 37);\n        cmptst(pinf, qnan, \"greaterThan\", false, 38);\n        cmptst(qnan, ninf, \"greaterThan\", false, 39);\n        cmptst(snan, ninf, \"greaterThan\", false, 40);\n        cmptst(ninf, snan, \"greaterThan\", false, 41);\n        cmptst(ninf, qnan, \"greaterThan\", false, 42);\n        cmptst(qnan, field.newDfp(\"-1\"), \"greaterThan\", false, 43);\n",
+  "compaction": {
+    "source_lines": 1647,
+    "mode": "windows",
+    "windows_total": 28,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        480,
+        560
+      ],
+      [
+        660,
+        740
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 60.25526291546543
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 18.394220386898784
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 17.792243137985864
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 60.25526291546543
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 15.893811368925045
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 2.715799472858142
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.046080883610655
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 0.0
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 6.418315262895807
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 15.355952466526599
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 16.994612307161916
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 18.394220386898784
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 14.138773660674264
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 16.52840903671427
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 17.792243137985864
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 6.547511246643556
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 2.675353744893581
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 1.9901793434633592
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 0.7635515961848479
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 2.6097906661931587
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 0.0
+      },
+      {
+        "start": 1080,
+        "end": 1160,
+        "score": 2.200598494623403
+      },
+      {
+        "start": 1140,
+        "end": 1220,
+        "score": 1.4432859280277737
+      },
+      {
+        "start": 1200,
+        "end": 1280,
+        "score": 5.346045378757329
+      },
+      {
+        "start": 1260,
+        "end": 1340,
+        "score": 4.270232378026778
+      },
+      {
+        "start": 1320,
+        "end": 1400,
+        "score": 4.9424348960625215
+      },
+      {
+        "start": 1380,
+        "end": 1460,
+        "score": 0.8509455507840721
+      },
+      {
+        "start": 1440,
+        "end": 1520,
+        "score": 1.8936366726091143
+      },
+      {
+        "start": 1500,
+        "end": 1580,
+        "score": 13.946019398760452
+      },
+      {
+        "start": 1560,
+        "end": 1640,
+        "score": 13.766117474673315
+      },
+      {
+        "start": 1620,
+        "end": 1647,
+        "score": 9.928747618191899
+      }
+    ]
+  },
+  "representation_truncated": true,
+  "original_representation_chars": 12036,
+  "representation_chars": 12000,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

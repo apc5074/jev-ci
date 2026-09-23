@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.math3.distribution.UniformIntegerDistributionTest",
+  "source_file": "src/test/java/org/apache/commons/math3/distribution/UniformIntegerDistributionTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.distribution.UniformIntegerDistributionTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/distribution/UniformIntegerDistributionTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math3.distribution;\n\nimport org.junit.Assert;\nimport org.junit.Test;\n\n/**\n * Test cases for UniformIntegerDistribution. See class javadoc for\n * {@link IntegerDistributionAbstractTest} for further details.\n */\npublic class UniformIntegerDistributionTest extends IntegerDistributionAbstractTest {\n\n    // --- Override tolerance -------------------------------------------------\n\n    @Override\n    public void setUp() {\n        super.setUp();\n        setTolerance(1e-9);\n    }\n\n    //--- Implementations for abstract methods --------------------------------\n\n    /** Creates the default discrete distribution instance to use in tests. */\n    @Override\n    public IntegerDistribution makeDistribution() {\n        return new UniformIntegerDistribution(-3, 5);\n    }\n\n    /** Creates the default probability density test input values. */\n    @Override\n    public int[] makeDensityTestPoints() {\n        return new int[] {-4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6};\n    }\n\n    /** Creates the default probability density test expected values. */\n    @Override\n    public double[] makeDensityTestValues() {\n        double d = 1.0 / (5 - -3 + 1);\n        return new double[] {0, d, d, d, d, d, d, d, d, d, 0};\n    }\n\n    /** Creates the default cumulative probability density test input values. */\n    @Override\n    public int[] makeCumulativeTestPoints() {\n        return makeDensityTestPoints();\n    }\n\n    /** Creates the default cumulative probability density test expected values. */\n    @Override\n    public double[] makeCumulativeTestValues() {\n        return new double[] {0, 1 / 9.0, 2 / 9.0, 3 / 9.0, 4 / 9.0, 5 / 9.0,\n                             6 / 9.0, 7 / 9.0, 8 / 9.0, 1, 1};\n    }\n\n    /** Creates the default inverse cumulative probability test input values */\n    @Override\n    public double[] makeInverseCumulativeTestPoints() {\n        return new double[] {0, 0.001, 0.010, 0.025, 0.050, 0.100, 0.200,\n                             0.5, 0.999, 0.990, 0.975, 0.950, 0.900, 1};\n    }\n\n    /** Creates the default inverse cumulative probability density test expected values */\n    @Override\n    public int[] makeInverseCumulativeTestValues() {\n        return new int[] {-3, -3, -3, -3, -3, -3, -2, 1, 5, 5, 5, 5, 5, 5};\n    }\n\n    //--- Additional test cases -----------------------------------------------\n\n    /** Test mean/variance. */\n    @Test\n    public void testMoments() {\n        UniformIntegerDistribution dist;\n\n        dist = new UniformIntegerDistribution(0, 5);\n        Assert.assertEquals(dist.getNumericalMean(), 2.5, 0);\n        Assert.assertEquals(dist.getNumericalVariance(), 35 / 12.0, 0);\n\n        dist = new UniformIntegerDistribution(0, 1);\n        Assert.assertEquals(dist.getNumericalMean(), 0.5, 0);\n        Assert.assertEquals(dist.getNumericalVariance(), 3 / 12.0, 0);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 99,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3836,
+  "representation_chars": 3836,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "test_class": "org.apache.commons.math3.util.FastMathStrictComparisonTest",
+  "source_file": "src/test/java/org/apache/commons/math3/util/FastMathStrictComparisonTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.util.FastMathStrictComparisonTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/util/FastMathStrictComparisonTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.util;\n\nimport java.lang.reflect.InvocationTargetException;\nimport java.lang.reflect.Method;\nimport java.lang.reflect.Modifier;\nimport java.lang.reflect.Type;\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.List;\n\nimport org.junit.Assert;\nimport org.junit.Test;\nimport org.junit.runner.RunWith;\nimport org.junit.runners.Parameterized;\nimport org.junit.runners.Parameterized.Parameters;\n\n/**\n * Test to compare FastMath results against StrictMath results for boundary values.\n * <p>\n * Running all tests independently: <br/>\n * {@code mvn test -Dtest=FastMathStrictComparisonTest}<br/>\n * or just run tests against a single method (e.g. scalb):<br/>\n * {@code mvn test -Dtest=FastMathStrictComparisonTest -DargLine=\"-DtestMethod=scalb\"}\n */\n@RunWith(Parameterized.class)\npublic class FastMathStrictComparisonTest {\n\n    // Values which often need special handling\n    private static final Double[] DOUBLE_SPECIAL_VALUES = {\n        -0.0, +0.0,                                         // 1,2\n        Double.NaN,                                         // 3\n        Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, // 4,5\n        -Double.MAX_VALUE, Double.MAX_VALUE,                // 6,7\n        // decreasing order of absolute value to help catch first failure\n        -Precision.EPSILON, Precision.EPSILON,              // 8,9\n        -Precision.SAFE_MIN, Precision.SAFE_MIN,            // 10,11\n        -Double.MIN_VALUE, Double.MIN_VALUE,                // 12,13\n    };\n\n    private static final Float [] FLOAT_SPECIAL_VALUES = {\n        -0.0f, +0.0f,                                       // 1,2\n        Float.NaN,                                          // 3\n        Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY,   // 4,5\n        Float.MIN_VALUE, Float.MAX_VALUE,                   // 6,7\n        -Float.MIN_VALUE, -Float.MAX_VALUE,                 // 8,9\n    };\n\n    private static final Object [] LONG_SPECIAL_VALUES = {\n        -1,0,1,                                             // 1,2,3\n        Long.MIN_VALUE, Long.MAX_VALUE,                     // 4,5\n    };\n\n    private static final Object[] INT_SPECIAL_VALUES = {\n        -1,0,1,                                             // 1,2,3\n        Integer.MIN_VALUE, Integer.MAX_VALUE,               // 4,5\n    };\n\n    private final Method mathMethod;\n    private final Method fastMethod;\n    private final Type[] types;\n    private final Object[][] valueArrays;\n\n    public FastMathStrictComparisonTest(Method m, Method f, Type[] types, Object[][] data) throws Exception{\n        this.mathMethod=m;\n        this.fastMethod=f;\n        this.types=types;\n        this.valueArrays=data;\n    }\n\n    @Test\n    public void test1() throws Exception{\n        setupMethodCall(mathMethod, fastMethod, types, valueArrays);\n    }\n    private static boolean isNumber(Double d) {\n        return !(d.isInfinite() || d.isNaN());\n    }\n\n    private static boolean isNumber(Float f) {\n        return !(f.isInfinite() || f.isNaN());\n    }\n\n    private static void reportFailedResults(Method mathMethod, Object[] params, Object expected, Object actual, int[] entries){\n        final String methodName = mathMethod.getName();\n        String format = null;\n        long actL=0;\n        long expL=0;\n        if (expected instanceof Double) {\n            Double exp = (Double) expected;\n            Double act = (Double) actual;\n            if (isNumber(exp) && isNumber(act) && exp != 0) { // show difference as hex\n                actL = Double.doubleToLongBits(act);\n                expL = Double.doubleToLongBits(exp);\n                if (Math.abs(actL-expL)==1) {\n                    // Not 100% sure off-by-one errors are allowed everywhere, so only allow for these methods\n                    if (methodName.equals(\"toRadians\") || methodName.equals(\"atan2\")) {\n                        return;\n                    }\n                }\n                format = \"%016x\";\n            }\n        } else if (expected instanceof Float ){\n            Float exp = (Float) expected;\n            Float act = (Float) actual;\n            if (isNumber(exp) && isNumber(act) && exp != 0) { // show difference as hex\n                actL = Float.floatToIntBits(act);\n                expL = Float.floatToIntBits(exp);\n                format = \"%08x\";\n            }\n        }\n        StringBuilder sb = new StringBuilder();\n        sb.append(mathMethod.getReturnType().getSimpleName());\n        sb.append(\" \");\n        sb.append(methodName);\n        sb.append(\"(\");\n        String sep = \"\";\n        for(Object o : params){\n            sb.append(sep);\n            sb.append(o);\n            sep=\", \";\n        }\n        sb.append(\") expected \");\n        if (format != null){\n            sb.append(String.format(format, expL));\n        } else {\n            params[0] = d;\n            entries[0] = entry1;\n            if (params.length > 1){\n                int entry2 = 0;\n                for(Object d1 : valueArrays[1]) {\n                    entry2++;\n                    params[1] = d1;\n                    entries[1] = entry2;\n                    callMethods(mathMethod, fastMethod, params, entries);\n                }\n            } else {\n                callMethods(mathMethod, fastMethod, params, entries);\n            }\n        }\n    }\n\n    @Parameters\n    public static List<Object[]> data() throws Exception {\n        String singleMethod = System.getProperty(\"testMethod\");\n        List<Object[]> list = new ArrayList<Object[]>();\n        for(Method mathMethod : StrictMath.class.getDeclaredMethods()) {\n            method:\n            if (Modifier.isPublic(mathMethod.getModifiers())){// Only test public methods\n                Type []types = mathMethod.getGenericParameterTypes();\n                if (types.length >=1) { // Only check methods with at least one parameter\n                    try {\n                        // Get the corresponding FastMath method\n                        Method fastMethod = FastMath.class.getDeclaredMethod(mathMethod.getName(), (Class[]) types);\n                        if (Modifier.isPublic(fastMethod.getModifiers())) { // It must be public too\n                            if (singleMethod != null && !fastMethod.getName().equals(singleMethod)) {\n                                break method;\n                            }\n                            Object [][] values = new Object[types.length][];\n                            int index = 0;\n                            for(Type t : types) {\n                                if (t.equals(double.class)){\n                                    values[index]=DOUBLE_SPECIAL_VALUES;\n                                } else if (t.equals(float.class)) {\n                                    values[index]=FLOAT_SPECIAL_VALUES;\n                                } else if (t.equals(long.class)) {\n                                    values[index]=LONG_SPECIAL_VALUES;\n                                } else if (t.equals(int.class)) {\n                                    values[index]=INT_SPECIAL_VALUES;\n                                } else {\n                                    System.out.println(\"Cannot handle class \"+t+\" for \"+mathMethod);\n                                    break method;\n                                }\n                                index++;\n                            }\n//                            System.out.println(fastMethod);\n                            /*\n                             * The current implementation runs each method as a separate test.\n                             * Could be amended to run each value as a separate test\n                             */\n                            list.add(new Object[]{mathMethod, fastMethod, types, values});\n//                            setupMethodCall(mathMethod, fastMethod, params, data);\n                        } else {\n                            System.out.println(\"Cannot find public FastMath method corresponding to: \"+mathMethod);\n                        }\n                    } catch (NoSuchMethodException e) {\n                        System.out.println(\"Cannot find FastMath method corresponding to: \"+mathMethod);\n                    }\n                }\n            }\n        }\n        return list;\n    }\n}\n",
+  "compaction": {
+    "source_lines": 248,
+    "mode": "windows",
+    "windows_total": 4,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        180,
+        248
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 13.57483204750597
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 3.5279108065386193
+      },
+      {
+        "start": 180,
+        "end": 248,
+        "score": 2.804323476852306
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 13.57483204750597
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 3.5279108065386193
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 0.6774434210688365
+      },
+      {
+        "start": 180,
+        "end": 248,
+        "score": 2.804323476852306
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9253,
+  "representation_chars": 9253,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

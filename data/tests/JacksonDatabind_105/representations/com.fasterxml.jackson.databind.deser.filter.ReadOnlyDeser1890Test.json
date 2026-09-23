@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.filter.ReadOnlyDeser1890Test",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/filter/ReadOnlyDeser1890Test.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.filter.ReadOnlyDeser1890Test\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/filter/ReadOnlyDeser1890Test.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser.filter;\n\nimport java.beans.ConstructorProperties;\nimport java.io.IOException;\n\nimport com.fasterxml.jackson.annotation.JsonProperty;\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.ObjectMapper;\n\npublic class ReadOnlyDeser1890Test\n    extends BaseMapTest\n{\n    public static class PersonAnnotations {\n        public String name;\n        @JsonProperty(access = JsonProperty.Access.READ_ONLY)\n        private TestEnum testEnum = TestEnum.DEFAULT;\n\n        PersonAnnotations() { }\n\n        @ConstructorProperties({\"testEnum\", \"name\"})\n        public PersonAnnotations(TestEnum testEnum, String name) {\n            this.testEnum = testEnum;\n            this.name = name;\n        }\n\n        public TestEnum getTestEnum() {\n            return testEnum;\n        }\n\n        public void setTestEnum(TestEnum testEnum) {\n            this.testEnum = testEnum;\n        }\n   }\n\n    public static class Person {\n        public String name;\n        @JsonProperty(access = JsonProperty.Access.READ_ONLY)\n        private TestEnum testEnum = TestEnum.DEFAULT;\n\n        Person() { }\n\n        public Person(TestEnum testEnum, String name) {\n            this.testEnum = testEnum;\n            this.name = name;\n        }\n\n        public TestEnum getTestEnum() {\n            return testEnum;\n        }\n\n        public void setTestEnum(TestEnum testEnum) {\n            this.testEnum = testEnum;\n        }\n   }\n\n   enum TestEnum{\n       DEFAULT, TEST;\n   }\n\n   /*\n   /**********************************************************\n   /* Test methods\n   /**********************************************************\n    */\n\n   private final ObjectMapper MAPPER = objectMapper();\n\n   public void testDeserializeAnnotationsOneField() throws IOException {\n       PersonAnnotations person = MAPPER.readValue(\"{\\\"testEnum\\\":\\\"\\\"}\", PersonAnnotations.class);\n       // can not remain as is, so becomes `null`\n       assertEquals(null, person.getTestEnum());\n       assertNull(person.name);\n   }\n\n   public void testDeserializeAnnotationsTwoFields() throws IOException {\n       PersonAnnotations person = MAPPER.readValue(\"{\\\"testEnum\\\":\\\"\\\",\\\"name\\\":\\\"changyong\\\"}\",\n               PersonAnnotations.class);\n       // can not remain as is, so becomes `null`\n       assertEquals(null, person.getTestEnum());\n       assertEquals(\"changyong\", person.name);\n   }\n\n   public void testDeserializeOneField() throws IOException {\n       Person person = MAPPER.readValue(\"{\\\"testEnum\\\":\\\"\\\"}\", Person.class);\n       assertEquals(TestEnum.DEFAULT, person.getTestEnum());\n       assertNull(person.name);\n   }\n\n   public void testDeserializeTwoFields() throws IOException {\n       Person person = MAPPER.readValue(\"{\\\"testEnum\\\":\\\"\\\",\\\"name\\\":\\\"changyong\\\"}\",\n               Person.class);\n       assertEquals(TestEnum.DEFAULT, person.getTestEnum());\n       assertEquals(\"changyong\", person.name);\n   }\n}\n",
+  "compaction": {
+    "source_lines": 95,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3132,
+  "representation_chars": 3132,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

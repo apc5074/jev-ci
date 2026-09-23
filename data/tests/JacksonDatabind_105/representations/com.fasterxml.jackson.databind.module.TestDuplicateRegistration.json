@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.module.TestDuplicateRegistration",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/module/TestDuplicateRegistration.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.module.TestDuplicateRegistration\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/module/TestDuplicateRegistration.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.module;\n\nimport com.fasterxml.jackson.core.Version;\nimport com.fasterxml.jackson.databind.*;\n\npublic class TestDuplicateRegistration extends BaseMapTest\n{\n    static class MyModule extends com.fasterxml.jackson.databind.Module {\n        public int regCount;\n        \n        public MyModule() {\n            super();\n        }\n\n        @Override\n        public String getModuleName() {\n            return \"TestModule\";\n        }\n\n        @Override\n        public Version version() {\n            return Version.unknownVersion();\n        }\n\n        @Override\n        public void setupModule(SetupContext context) {\n            ++regCount;\n        }\n    }\n\n    public void testDuplicateRegistration() throws Exception\n    {\n        // by default, duplicate registration should be prevented\n        ObjectMapper mapper = new ObjectMapper();\n        assertTrue(mapper.isEnabled(MapperFeature.IGNORE_DUPLICATE_MODULE_REGISTRATIONS));\n        MyModule module = new MyModule();\n        mapper.registerModule(module);\n        mapper.registerModule(module);\n        mapper.registerModule(module);\n        assertEquals(1, module.regCount);\n\n        // but may be allowed by changing setting\n        mapper.disable(MapperFeature.IGNORE_DUPLICATE_MODULE_REGISTRATIONS);\n        mapper.registerModule(module);\n        assertEquals(2, module.regCount);\n\n        // and ditto for a new instance\n        ObjectMapper mapper2 = new ObjectMapper();\n        mapper2.disable(MapperFeature.IGNORE_DUPLICATE_MODULE_REGISTRATIONS);\n        MyModule module2 = new MyModule();\n        mapper.registerModule(module2);\n        mapper.registerModule(module2);\n        mapper.registerModule(module2);\n        assertEquals(3, module2.regCount);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 56,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1947,
+  "representation_chars": 1947,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

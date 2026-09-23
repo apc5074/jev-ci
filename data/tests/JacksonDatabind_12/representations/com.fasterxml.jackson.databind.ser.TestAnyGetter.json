@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.ser.TestAnyGetter",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/ser/TestAnyGetter.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.ser.TestAnyGetter\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/ser/TestAnyGetter.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.ser;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.ObjectMapper;\nimport com.fasterxml.jackson.databind.SerializationFeature;\n\npublic class TestAnyGetter\n    extends BaseMapTest\n{\n    /*\n    /**********************************************************\n    /* Helper bean classes\n    /**********************************************************\n     */\n\n    static class Bean\n    {\n        final static Map<String,Boolean> extra = new HashMap<String,Boolean>();\n        static {\n            extra.put(\"a\", Boolean.TRUE);\n        }\n        \n        public int getX() { return 3; }\n\n        @JsonAnyGetter\n        public Map<String,Boolean> getExtra() { return extra; }\n    }\n\n    static class AnyOnlyBean\n    {\n        @JsonAnyGetter\n        public Map<String,Integer> any() {\n            HashMap<String,Integer> map = new HashMap<String,Integer>();\n            map.put(\"a\", 3);\n            return map;\n        }\n    }\n\n    /*\n    /**********************************************************\n    /* Test cases\n    /**********************************************************\n     */\n\n    public void testSimpleJsonValue() throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        String json = serializeAsString(m, new Bean());\n        Map<?,?> map = m.readValue(json, Map.class);\n        assertEquals(2, map.size());\n        assertEquals(Integer.valueOf(3), map.get(\"x\"));\n        assertEquals(Boolean.TRUE, map.get(\"a\"));\n    }\n\n    // [JACKSON-392]\n    public void testAnyOnly() throws Exception\n    {\n        ObjectMapper m;\n\n        // First, with normal fail settings:\n        m = new ObjectMapper();\n        m.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, true);\n        String json = serializeAsString(m, new AnyOnlyBean());\n        assertEquals(\"{\\\"a\\\":3}\", json);\n\n        // then without fail\n        m = new ObjectMapper();\n        m.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);\n        json = serializeAsString(m, new AnyOnlyBean());\n        assertEquals(\"{\\\"a\\\":3}\", json);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 76,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2333,
+  "representation_chars": 2333,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

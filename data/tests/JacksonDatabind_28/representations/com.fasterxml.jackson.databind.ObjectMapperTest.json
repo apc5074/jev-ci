@@ -1,0 +1,81 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.ObjectMapperTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/ObjectMapperTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.ObjectMapperTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/ObjectMapperTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind;\n\nimport java.io.*;\nimport java.util.*;\n\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.core.util.MinimalPrettyPrinter;\n\nimport com.fasterxml.jackson.databind.ObjectMapper;\nimport com.fasterxml.jackson.databind.deser.DefaultDeserializationContext;\nimport com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;\nimport com.fasterxml.jackson.databind.node.*;\nimport com.fasterxml.jackson.databind.type.TypeFactory;\n\npublic class ObjectMapperTest extends BaseMapTest\n{\n    static class Bean {\n        int value = 3;\n        \n        public void setX(int v) { value = v; }\n    }\n\n    static class EmptyBean { }\n    \n    // for [databind#206]\n    @SuppressWarnings(\"serial\")\n    static class CustomMapper extends ObjectMapper {\n        @Override\n        protected DefaultDeserializationContext createDeserializationContext(JsonParser jp,\n                DeserializationConfig cfg) {\n            return super.createDeserializationContext(jp, cfg);\n        }\n    }\n\n    @SuppressWarnings(\"serial\")\n    static class MyAnnotationIntrospector extends JacksonAnnotationIntrospector { }\n\n    // for [databind#689]\n    @SuppressWarnings(\"serial\")\n    static class FooPrettyPrinter extends MinimalPrettyPrinter {\n        public FooPrettyPrinter() {\n            super(\" /*foo*/ \");\n        }\n\n        @Override\n        public void writeArrayValueSeparator(JsonGenerator g) throws IOException\n        {\n            g.writeRaw(\" , \");\n        }\n    }\n    \n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n    \n    final static ObjectMapper MAPPER = new ObjectMapper();\n    \n    public void testProps()\n    {\n        ObjectMapper m = new ObjectMapper();\n        // should have default factory\n        assertNotNull(m.getNodeFactory());\n        JsonNodeFactory nf = JsonNodeFactory.instance;\n        m.setNodeFactory(nf);\n        assertNull(m.getInjectableValues());\n        assertSame(nf, m.getNodeFactory());\n    }\n\n    public void testSupport()\n    {\n        assertTrue(MAPPER.canSerialize(String.class));\n        assertTrue(MAPPER.canDeserialize(TypeFactory.defaultInstance().constructType(String.class)));\n    }\n\n    public void testTreeRead() throws Exception\n    {\n        String JSON = \"{ }\";\n        JsonNode n = MAPPER.readTree(JSON);\n        assertTrue(n instanceof ObjectNode);\n\n        n = MAPPER.readTree(new StringReader(JSON));\n        assertTrue(n instanceof ObjectNode);\n\n        n = MAPPER.readTree(new ByteArrayInputStream(JSON.getBytes(\"UTF-8\")));\n        assertTrue(n instanceof ObjectNode);\n    }\n\n    // Test to ensure that we can check property ordering defaults...\n    public void testConfigForPropertySorting() throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        \n        // sort-alphabetically is disabled by default:\n        assertFalse(m.isEnabled(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY));\n        SerializationConfig sc = m.getSerializationConfig();\n        assertFalse(sc.isEnabled(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY));\n        assertFalse(sc.shouldSortPropertiesAlphabetically());\n        DeserializationConfig dc = m.getDeserializationConfig();\n        assertFalse(dc.shouldSortPropertiesAlphabetically());\n\n        // but when enabled, should be visible:\n        m.enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY);\n        sc = m.getSerializationConfig();\n        assertTrue(sc.isEnabled(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY));\n        assertTrue(sc.shouldSortPropertiesAlphabetically());\n        dc = m.getDeserializationConfig();\n        // and not just via SerializationConfig, but also via DeserializationConfig\n        assertTrue(dc.isEnabled(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY));\n        assertTrue(dc.shouldSortPropertiesAlphabetically());\n    }\n\n\n    public void testJsonFactoryLinkage()\n    {\n        // first, implicit factory, giving implicit linkage\n        assertSame(MAPPER, MAPPER.getFactory().getCodec());\n\n        // and then explicit factory, which should also be implicitly linked\n        JsonFactory f = new JsonFactory();\n        ObjectMapper m = new ObjectMapper(f);\n        assertSame(f, m.getFactory());\n        assertSame(m, f.getCodec());\n    }\n    \n    /**\n     * Test for verifying working of [JACKSON-191]\n     */\n    public void testProviderConfig() throws Exception   \n    {\n        ObjectMapper m = new ObjectMapper();\n        final String JSON = \"{ \\\"x\\\" : 3 }\";\n\n        assertEquals(0, m._deserializationContext._cache.cachedDeserializersCount());\n        // and then should get one constructed for:\n        Bean bean = m.readValue(JSON, Bean.class);\n        assertNotNull(bean);\n        // Since 2.6, serializer for int also cached:\n        assertEquals(2, m._deserializationContext._cache.cachedDeserializersCount());\n        m._deserializationContext._cache.flushCachedDeserializers();\n        assertEquals(0, m._deserializationContext._cache.cachedDeserializersCount());\n\n        // 07-Nov-2014, tatu: As per [databind#604] verify that Maps also get cached\n        m = new ObjectMapper();\n        List<?> stuff = m.readValue(\"[ ]\", List.class);\n        assertNotNull(stuff);\n        // may look odd, but due to \"Untyped\" deserializer thing, we actually have\n        // 4 deserializers (int, List<?>, Map<?,?>, Object)\n        assertEquals(4, m._deserializationContext._cache.cachedDeserializersCount());\n    }\n    \n    // [Issue#28]: ObjectMapper.copy()\n    public void testCopy() throws Exception\n    {\n        ObjectMapper m = new ObjectMapper();\n        assertTrue(m.isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES));\n        m.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);\n        assertFalse(m.isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES));\n        InjectableValues inj = new InjectableValues.Std();\n        m.setInjectableValues(inj);\n        assertFalse(m.isEnabled(JsonParser.Feature.ALLOW_COMMENTS));\n        m.enable(JsonParser.Feature.ALLOW_COMMENTS);\n        assertTrue(m.isEnabled(JsonParser.Feature.ALLOW_COMMENTS));\n\n        // // First: verify that handling of features is decoupled:\n        \n        ObjectMapper m2 = m.copy();\n        assertFalse(m2.isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES));\n        m2.enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);\n        assertTrue(m2.isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES));\n        assertSame(inj, m2.getInjectableValues());\n\n        // but should NOT change the original\n        assertFalse(m.isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES));\n\n        // nor vice versa:\n        assertFalse(m.isEnabled(DeserializationFeature.UNWRAP_ROOT_VALUE));\n        assertFalse(m2.isEnabled(DeserializationFeature.UNWRAP_ROOT_VALUE));\n        m.enable(DeserializationFeature.UNWRAP_ROOT_VALUE);\n        assertTrue(m.isEnabled(DeserializationFeature.UNWRAP_ROOT_VALUE));\n        assertFalse(m2.isEnabled(DeserializationFeature.UNWRAP_ROOT_VALUE));\n\n        // // Also, underlying JsonFactory instances should be distinct\n        \n        assertNotSame(m.getFactory(), m2.getFactory());\n\n        // [Issue#122]: Need to ensure mix-ins are not shared\n        assertEquals(0, m.getSerializationConfig().mixInCount());\n        assertEquals(0, m2.getSerializationConfig().mixInCount());\n        assertEquals(0, m.getDeserializationConfig().mixInCount());\n        assertEquals(0, m2.getDeserializationConfig().mixInCount());\n\n        m.addMixIn(String.class, Integer.class);\n        assertEquals(1, m.getSerializationConfig().mixInCount());\n        assertEquals(0, m2.getSerializationConfig().mixInCount());\n        assertEquals(1, m.getDeserializationConfig().mixInCount());\n        assertEquals(0, m2.getDeserializationConfig().mixInCount());\n\n        // [Issue#913]: Ensure JsonFactory Features copied\n",
+  "compaction": {
+    "source_lines": 266,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 25.879963702411942
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 13.111528570027192
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 18.177976583211105
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 25.879963702411942
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 13.111528570027192
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 18.177976583211105
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 7.906657498195075
+      },
+      {
+        "start": 240,
+        "end": 266,
+        "score": 3.774199964158294
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8116,
+  "representation_chars": 8116,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

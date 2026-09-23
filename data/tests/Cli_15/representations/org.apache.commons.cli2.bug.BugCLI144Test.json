@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.cli2.bug.BugCLI144Test",
+  "source_file": "src/test/org/apache/commons/cli2/bug/BugCLI144Test.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.cli2.bug.BugCLI144Test\n\nSOURCE FILE:\nsrc/test/org/apache/commons/cli2/bug/BugCLI144Test.java\n\nTEST SOURCE:\n/**\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *     http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.cli2.bug;\n\nimport java.io.File;\n\nimport junit.framework.TestCase;\n\nimport org.apache.commons.cli2.CommandLine;\nimport org.apache.commons.cli2.Group;\nimport org.apache.commons.cli2.builder.ArgumentBuilder;\nimport org.apache.commons.cli2.builder.DefaultOptionBuilder;\nimport org.apache.commons.cli2.builder.GroupBuilder;\nimport org.apache.commons.cli2.commandline.Parser;\nimport org.apache.commons.cli2.option.DefaultOption;\nimport org.apache.commons.cli2.validation.FileValidator;\n\n/**\n * Test case for http://issues.apache.org/jira/browse/CLI-144 CLI 2 throws\n *\n * <pre>\n * Exception in thread &quot;main&quot; java.lang.ClassCastException: java.io.File cannot be cast to java.lang.String\n * </pre>\n *\n * when there should be no such exception\n *\n * @author David Biesack\n */\npublic class BugCLI144Test extends TestCase {\n\tpublic void testFileValidator() {\n\t\tfinal DefaultOptionBuilder obuilder = new DefaultOptionBuilder();\n        final ArgumentBuilder abuilder = new ArgumentBuilder();\n        final GroupBuilder gbuilder = new GroupBuilder();\n        DefaultOption fileNameOption = obuilder.withShortName(\"f\")\n                .withLongName(\"file-name\").withRequired(true).withDescription(\n                        \"name of an existing file\").withArgument(\n                        abuilder.withName(\"file-name\").withValidator(\n                                FileValidator.getExistingFileInstance())\n                                .create()).create();\n        Group options = gbuilder.withName(\"options\").withOption(fileNameOption)\n                .create();\n        Parser parser = new Parser();\n        parser.setHelpTrigger(\"--help\");\n        parser.setGroup(options);\n\n        final String fileName = \"src/test/org/apache/commons/cli2/bug/BugCLI144Test.java\";\n        CommandLine cl = parser\n                .parseAndHelp(new String[] { \"--file-name\", fileName });\n        assertNotNull(cl);\n        assertEquals(\"Wrong file\", new File(fileName), cl.getValue(fileNameOption));\n\t}\n}\n",
+  "compaction": {
+    "source_lines": 66,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2958,
+  "representation_chars": 2958,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

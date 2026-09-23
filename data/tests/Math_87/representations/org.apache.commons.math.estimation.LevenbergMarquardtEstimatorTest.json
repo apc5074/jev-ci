@@ -1,0 +1,126 @@
+{
+  "test_class": "org.apache.commons.math.estimation.LevenbergMarquardtEstimatorTest",
+  "source_file": "src/test/org/apache/commons/math/estimation/LevenbergMarquardtEstimatorTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math.estimation.LevenbergMarquardtEstimatorTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/math/estimation/LevenbergMarquardtEstimatorTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math.estimation;\n\nimport java.util.ArrayList;\nimport java.util.HashSet;\n\nimport junit.framework.Test;\nimport junit.framework.TestCase;\nimport junit.framework.TestSuite;\n\n/**\n * <p>Some of the unit tests are re-implementations of the MINPACK <a\n * href=\"http://www.netlib.org/minpack/ex/file17\">file17</a> and <a\n * href=\"http://www.netlib.org/minpack/ex/file22\">file22</a> test files. \n * The redistribution policy for MINPACK is available <a\n * href=\"http://www.netlib.org/minpack/disclaimer\">here</a>, for\n * convenience, it is reproduced below.</p>\n\n * <table border=\"0\" width=\"80%\" cellpadding=\"10\" align=\"center\" bgcolor=\"#E0E0E0\">\n * <tr><td>\n *    Minpack Copyright Notice (1999) University of Chicago.\n *    All rights reserved\n * </td></tr>\n * <tr><td>\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions\n * are met:\n * <ol>\n *  <li>Redistributions of source code must retain the above copyright\n *      notice, this list of conditions and the following disclaimer.</li>\n * <li>Redistributions in binary form must reproduce the above\n *     copyright notice, this list of conditions and the following\n *     disclaimer in the documentation and/or other materials provided\n *     with the distribution.</li>\n * <li>The end-user documentation included with the redistribution, if any,\n *     must include the following acknowledgment:\n *     <code>This product includes software developed by the University of\n *           Chicago, as Operator of Argonne National Laboratory.</code>\n *     Alternately, this acknowledgment may appear in the software itself,\n *     if and wherever such third-party acknowledgments normally appear.</li>\n * <li><strong>WARRANTY DISCLAIMER. THE SOFTWARE IS SUPPLIED \"AS IS\"\n *     WITHOUT WARRANTY OF ANY KIND. THE COPYRIGHT HOLDER, THE\n *     UNITED STATES, THE UNITED STATES DEPARTMENT OF ENERGY, AND\n *     THEIR EMPLOYEES: (1) DISCLAIM ANY WARRANTIES, EXPRESS OR\n *     IMPLIED, INCLUDING BUT NOT LIMITED TO ANY IMPLIED WARRANTIES\n *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE\n *     OR NON-INFRINGEMENT, (2) DO NOT ASSUME ANY LEGAL LIABILITY\n *     OR RESPONSIBILITY FOR THE ACCURACY, COMPLETENESS, OR\n *     USEFULNESS OF THE SOFTWARE, (3) DO NOT REPRESENT THAT USE OF\n *     THE SOFTWARE WOULD NOT INFRINGE PRIVATELY OWNED RIGHTS, (4)\n *     DO NOT WARRANT THAT THE SOFTWARE WILL FUNCTION\n *     UNINTERRUPTED, THAT IT IS ERROR-FREE OR THAT ANY ERRORS WILL\n *     BE CORRECTED.</strong></li>\n * <li><strong>LIMITATION OF LIABILITY. IN NO EVENT WILL THE COPYRIGHT\n *     HOLDER, THE UNITED STATES, THE UNITED STATES DEPARTMENT OF\n *     ENERGY, OR THEIR EMPLOYEES: BE LIABLE FOR ANY INDIRECT,\n *     INCIDENTAL, CONSEQUENTIAL, SPECIAL OR PUNITIVE DAMAGES OF\n *     ANY KIND OR NATURE, INCLUDING BUT NOT LIMITED TO LOSS OF\n *     PROFITS OR LOSS OF DATA, FOR ANY REASON WHATSOEVER, WHETHER\n *     SUCH LIABILITY IS ASSERTED ON THE BASIS OF CONTRACT, TORT\n *     (INCLUDING NEGLIGENCE OR STRICT LIABILITY), OR OTHERWISE,\n *     EVEN IF ANY OF SAID PARTIES HAS BEEN WARNED OF THE\n *     POSSIBILITY OF SUCH LOSS OR DAMAGES.</strong></li>\n * <ol></td></tr>\n  private static class LinearProblem implements EstimationProblem {\n\n    public LinearProblem(LinearMeasurement[] measurements) {\n      this.measurements = measurements;\n    }\n\n    public WeightedMeasurement[] getMeasurements() {\n      return measurements;\n    }\n\n    public EstimatedParameter[] getUnboundParameters() {\n      return getAllParameters();\n    }\n\n    public EstimatedParameter[] getAllParameters() {\n      HashSet<EstimatedParameter> set = new HashSet<EstimatedParameter>();\n      for (int i = 0; i < measurements.length; ++i) {\n        EstimatedParameter[] parameters = measurements[i].getParameters();\n        for (int j = 0; j < parameters.length; ++j) {\n          set.add(parameters[j]);\n        }\n      }\n      return set.toArray(new EstimatedParameter[set.size()]);\n    }\n  \n    private LinearMeasurement[] measurements;\n\n  }\n\n  private static class LinearMeasurement extends WeightedMeasurement {\n\n    public LinearMeasurement(double[] factors, EstimatedParameter[] parameters,\n                             double setPoint) {\n      super(1.0, setPoint);\n      this.factors = factors;\n      this.parameters = parameters;\n    }\n\n    @Override\n    public double getTheoreticalValue() {\n      double v = 0;\n      for (int i = 0; i < factors.length; ++i) {\n        v += factors[i] * parameters[i].getEstimate();\n      }\n      return v;\n    }\n\n    @Override\n    public double getPartial(EstimatedParameter parameter) {\n      for (int i = 0; i < parameters.length; ++i) {\n        if (parameters[i] == parameter) {\n          return factors[i];\n        }\n      }\n      return 0;\n    }\n\n    public EstimatedParameter[] getParameters() {\n      return parameters;\n    }\n\n    private double[] factors;\n    private EstimatedParameter[] parameters;\n    private static final long serialVersionUID = -3922448707008868580L;\n\n  }\n\n  private static class Circle implements EstimationProblem {\n\n    public Circle(double cx, double cy) {\n      this.cx = new EstimatedParameter(\"cx\", cx);\n      this.cy = new EstimatedParameter(\"cy\", cy);\n      points  = new ArrayList<PointModel>();\n    }\n\n    public void addPoint(double px, double py) {\n      points.add(new PointModel(px, py));\n    }\n\n    public int getM() {\n      return points.size();\n    }\n\n    public WeightedMeasurement[] getMeasurements() {\n      return points.toArray(new PointModel[points.size()]);\n    }\n\n    public EstimatedParameter[] getAllParameters() {\n      return new EstimatedParameter[] { cx, cy };\n    }\n\n    public EstimatedParameter[] getUnboundParameters() {\n      return new EstimatedParameter[] { cx, cy };\n    }\n\n    public double getPartialRadiusX() {\n      double dRdX = 0;\n      for (PointModel point : points) {\n        dRdX += point.getPartialDiX();\n      }\n      return dRdX / points.size();\n    }\n\n    public double getPartialRadiusY() {\n      double dRdY = 0;\n      for (PointModel point : points) {\n        dRdY += point.getPartialDiY();\n      }\n      return dRdY / points.size();\n    }\n\n   public double getRadius() {\n      double r = 0;\n      for (PointModel point : points) {\n        r += point.getCenterDistance();\n      }\n      return r / points.size();\n    }\n\n    public double getX() {\n      return cx.getEstimate();\n    }\n\n    public double getY() {\n      return cy.getEstimate();\n    }\n\n    private class PointModel extends WeightedMeasurement {\n\n      public PointModel(double px, double py) {\n        super(1.0, 0.0);\n        this.px = px;\n        this.py = py;\n      }\n\n      @Override\n      public double getPartial(EstimatedParameter parameter) {\n        if (parameter == cx) {\n          return getPartialDiX() - getPartialRadiusX();\n        } else if (parameter == cy) {\n",
+  "compaction": {
+    "source_lines": 850,
+    "mode": "windows",
+    "windows_total": 14,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        600,
+        680
+      ],
+      [
+        660,
+        740
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 19.64056788677451
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 10.857440390261758
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 10.881945670182292
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 19.64056788677451
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.960770338745248
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 4.719541236458001
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 8.334224331351814
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 6.872326188831087
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 3.09105817324132
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 4.598472785145013
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 4.374549019984276
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 6.398073499768975
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 6.930230873128745
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 10.857440390261758
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 10.881945670182292
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 10.232025626966113
+      },
+      {
+        "start": 780,
+        "end": 850,
+        "score": 10.373395584939235
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7897,
+  "representation_chars": 7897,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

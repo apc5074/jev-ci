@@ -1,0 +1,76 @@
+{
+  "test_class": "org.apache.commons.lang3.CharSetUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/CharSetUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.CharSetUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/CharSetUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3;\n\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertFalse;\nimport static org.junit.Assert.assertNotNull;\nimport static org.junit.Assert.assertTrue;\n\nimport java.lang.reflect.Constructor;\nimport java.lang.reflect.Modifier;\n\nimport org.junit.Test;\n\n/**\n * Unit tests {@link org.apache.commons.lang3.CharSetUtils}.\n *\n * @version $Id$\n */\npublic class CharSetUtilsTest  {\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testConstructor() {\n        assertNotNull(new CharSetUtils());\n        final Constructor<?>[] cons = CharSetUtils.class.getDeclaredConstructors();\n        assertEquals(1, cons.length);\n        assertTrue(Modifier.isPublic(cons[0].getModifiers()));\n        assertTrue(Modifier.isPublic(CharSetUtils.class.getModifiers()));\n        assertFalse(Modifier.isFinal(CharSetUtils.class.getModifiers()));\n    }\n    \n    //-----------------------------------------------------------------------\n    @Test\n    public void testSqueeze_StringString() {\n        assertEquals(null, CharSetUtils.squeeze(null, (String) null));\n        assertEquals(null, CharSetUtils.squeeze(null, \"\"));\n        \n        assertEquals(\"\", CharSetUtils.squeeze(\"\", (String) null));\n        assertEquals(\"\", CharSetUtils.squeeze(\"\", \"\"));\n        assertEquals(\"\", CharSetUtils.squeeze(\"\", \"a-e\"));\n        \n        assertEquals(\"hello\", CharSetUtils.squeeze(\"hello\", (String) null));\n        assertEquals(\"hello\", CharSetUtils.squeeze(\"hello\", \"\"));\n        assertEquals(\"hello\", CharSetUtils.squeeze(\"hello\", \"a-e\"));\n        assertEquals(\"helo\", CharSetUtils.squeeze(\"hello\", \"l-p\"));\n        assertEquals(\"heloo\", CharSetUtils.squeeze(\"helloo\", \"l\"));\n        assertEquals(\"hello\", CharSetUtils.squeeze(\"helloo\", \"^l\"));\n    }\n    \n    @Test\n    public void testSqueeze_StringStringarray() {\n        assertEquals(null, CharSetUtils.squeeze(null, (String[]) null));\n        assertEquals(null, CharSetUtils.squeeze(null, new String[0]));\n        assertEquals(null, CharSetUtils.squeeze(null, new String[] {null}));\n        assertEquals(null, CharSetUtils.squeeze(null, new String[] {\"el\"}));\n        \n        assertEquals(\"\", CharSetUtils.squeeze(\"\", (String[]) null));\n        assertEquals(\"\", CharSetUtils.squeeze(\"\", new String[0]));\n        assertEquals(\"\", CharSetUtils.squeeze(\"\", new String[] {null}));\n        assertEquals(\"\", CharSetUtils.squeeze(\"\", new String[] {\"a-e\"}));\n        \n        assertEquals(\"hello\", CharSetUtils.squeeze(\"hello\", (String[]) null));\n        assertEquals(\"hello\", CharSetUtils.squeeze(\"hello\", new String[0]));\n        assertEquals(\"hello\", CharSetUtils.squeeze(\"hello\", new String[] {null}));\n        assertEquals(\"hello\", CharSetUtils.squeeze(\"hello\", new String[] {\"a-e\"}));\n        assertTrue(CharSetUtils.containsAny(\"hello\", new String[] { \"el\" }));\n        assertFalse(CharSetUtils.containsAny(\"hello\", new String[] { \"x\" }));\n        assertTrue(CharSetUtils.containsAny(\"hello\", new String[] { \"e-i\" }));\n        assertTrue(CharSetUtils.containsAny(\"hello\", new String[] { \"a-z\" }));\n        assertFalse(CharSetUtils.containsAny(\"hello\", new String[] { \"\" }));\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testCount_StringString() {\n        assertEquals(0, CharSetUtils.count(null, (String) null));\n        assertEquals(0, CharSetUtils.count(null, \"\"));\n        \n        assertEquals(0, CharSetUtils.count(\"\", (String) null));\n        assertEquals(0, CharSetUtils.count(\"\", \"\"));\n        assertEquals(0, CharSetUtils.count(\"\", \"a-e\"));\n        \n        assertEquals(0, CharSetUtils.count(\"hello\", (String) null));\n        assertEquals(0, CharSetUtils.count(\"hello\", \"\"));\n        assertEquals(1, CharSetUtils.count(\"hello\", \"a-e\"));\n        assertEquals(3, CharSetUtils.count(\"hello\", \"l-p\"));\n    }\n    \n    @Test\n    public void testCount_StringStringarray() {\n        assertEquals(0, CharSetUtils.count(null, (String[]) null));\n        assertEquals(0, CharSetUtils.count(null, new String[0]));\n        assertEquals(0, CharSetUtils.count(null, new String[] {null}));\n        assertEquals(0, CharSetUtils.count(null, new String[] {\"a-e\"}));\n        \n        assertEquals(0, CharSetUtils.count(\"\", (String[]) null));\n        assertEquals(0, CharSetUtils.count(\"\", new String[0]));\n        assertEquals(0, CharSetUtils.count(\"\", new String[] {null}));\n        assertEquals(0, CharSetUtils.count(\"\", new String[] {\"a-e\"}));\n        \n        assertEquals(0, CharSetUtils.count(\"hello\", (String[]) null));\n        assertEquals(0, CharSetUtils.count(\"hello\", new String[0]));\n        assertEquals(0, CharSetUtils.count(\"hello\", new String[] {null}));\n        assertEquals(1, CharSetUtils.count(\"hello\", new String[] {\"a-e\"}));\n        \n        assertEquals(3, CharSetUtils.count(\"hello\", new String[] { \"el\" }));\n        assertEquals(0, CharSetUtils.count(\"hello\", new String[] { \"x\" }));\n        assertEquals(2, CharSetUtils.count(\"hello\", new String[] { \"e-i\" }));\n        assertEquals(5, CharSetUtils.count(\"hello\", new String[] { \"a-z\" }));\n        assertEquals(0, CharSetUtils.count(\"hello\", new String[] { \"\" }));\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testKeep_StringString() {\n        assertEquals(null, CharSetUtils.keep(null, (String) null));\n        assertEquals(null, CharSetUtils.keep(null, \"\"));\n        \n        assertEquals(\"\", CharSetUtils.keep(\"\", (String) null));\n        assertEquals(\"\", CharSetUtils.keep(\"\", \"\"));\n        assertEquals(\"\", CharSetUtils.keep(\"\", \"a-e\"));\n        \n        assertEquals(\"\", CharSetUtils.keep(\"hello\", (String) null));\n        assertEquals(\"\", CharSetUtils.keep(\"hello\", \"\"));\n        assertEquals(\"\", CharSetUtils.keep(\"hello\", \"xyz\"));\n        assertEquals(\"hello\", CharSetUtils.keep(\"hello\", \"a-z\"));\n        assertEquals(\"hello\", CharSetUtils.keep(\"hello\", \"oleh\"));\n        assertEquals(\"ell\", CharSetUtils.keep(\"hello\", \"el\"));\n    }\n    \n    @Test\n    public void testKeep_StringStringarray() {\n        assertEquals(null, CharSetUtils.keep(null, (String[]) null));\n        assertEquals(null, CharSetUtils.keep(null, new String[0]));\n        assertEquals(null, CharSetUtils.keep(null, new String[] {null}));\n        assertEquals(null, CharSetUtils.keep(null, new String[] {\"a-e\"}));\n        \n        assertEquals(\"\", CharSetUtils.keep(\"\", (String[]) null));\n        assertEquals(\"\", CharSetUtils.keep(\"\", new String[0]));\n        assertEquals(\"\", CharSetUtils.keep(\"\", new String[] {null}));\n        assertEquals(\"\", CharSetUtils.keep(\"\", new String[] {\"a-e\"}));\n        \n        assertEquals(\"\", CharSetUtils.keep(\"hello\", (String[]) null));\n        assertEquals(\"\", CharSetUtils.keep(\"hello\", new String[0]));\n        assertEquals(\"\", CharSetUtils.keep(\"hello\", new String[] {null}));\n        assertEquals(\"e\", CharSetUtils.keep(\"hello\", new String[] {\"a-e\"}));\n        \n        assertEquals(\"e\", CharSetUtils.keep(\"hello\", new String[] { \"a-e\" }));\n        assertEquals(\"ell\", CharSetUtils.keep(\"hello\", new String[] { \"el\" }));\n        assertEquals(\"hello\", CharSetUtils.keep(\"hello\", new String[] { \"elho\" }));\n        assertEquals(\"hello\", CharSetUtils.keep(\"hello\", new String[] { \"a-z\" }));\n        assertEquals(\"----\", CharSetUtils.keep(\"----\", new String[] { \"-\" }));\n        assertEquals(\"ll\", CharSetUtils.keep(\"hello\", new String[] { \"l\" }));\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testDelete_StringString() {\n        assertEquals(null, CharSetUtils.delete(null, (String) null));\n        assertEquals(null, CharSetUtils.delete(null, \"\"));\n        \n        assertEquals(\"\", CharSetUtils.delete(\"\", (String) null));\n        assertEquals(\"\", CharSetUtils.delete(\"\", \"\"));\n        assertEquals(\"\", CharSetUtils.delete(\"\", \"a-e\"));\n        \n        assertEquals(\"hello\", CharSetUtils.delete(\"hello\", (String) null));\n        assertEquals(\"hello\", CharSetUtils.delete(\"hello\", \"\"));\n        assertEquals(\"hllo\", CharSetUtils.delete(\"hello\", \"a-e\"));\n        assertEquals(\"he\", CharSetUtils.delete(\"hello\", \"l-p\"));\n        assertEquals(\"hello\", CharSetUtils.delete(\"hello\", \"z\"));\n    }\n    \n    @Test\n    public void testDelete_StringStringarray() {\n        assertEquals(null, CharSetUtils.delete(null, (String[]) null));\n        assertEquals(null, CharSetUtils.delete(null, new String[0]));\n        assertEquals(null, CharSetUtils.delete(null, new String[] {null}));\n        assertEquals(null, CharSetUtils.delete(null, new String[] {\"el\"}));\n        \n        assertEquals(\"\", CharSetUtils.delete(\"\", (String[]) null));\n        assertEquals(\"\", CharSetUtils.delete(\"\", new String[0]));\n        assertEquals(\"\", CharSetUtils.delete(\"\", new String[] {null}));\n        assertEquals(\"\", CharSetUtils.delete(\"\", new String[] {\"a-e\"}));\n        \n        assertEquals(\"hello\", CharSetUtils.delete(\"hello\", (String[]) null));\n        assertEquals(\"hello\", CharSetUtils.delete(\"hello\", new String[0]));\n        assertEquals(\"hello\", CharSetUtils.delete(\"hello\", new String[] {null}));\n        assertEquals(\"hello\", CharSetUtils.delete(\"hello\", new String[] {\"xyz\"}));\n\n        assertEquals(\"ho\", CharSetUtils.delete(\"hello\", new String[] { \"el\" }));\n        assertEquals(\"\", CharSetUtils.delete(\"hello\", new String[] { \"elho\" }));\n        assertEquals(\"hello\", CharSetUtils.delete(\"hello\", new String[] { \"\" }));\n        assertEquals(\"hello\", CharSetUtils.delete(\"hello\", \"\"));\n        assertEquals(\"\", CharSetUtils.delete(\"hello\", new String[] { \"a-z\" }));\n        assertEquals(\"\", CharSetUtils.delete(\"----\", new String[] { \"-\" }));\n        assertEquals(\"heo\", CharSetUtils.delete(\"hello\", new String[] { \"l\" }));\n    }\n    \n}\n",
+  "compaction": {
+    "source_lines": 254,
+    "mode": "windows",
+    "windows_total": 4,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        180,
+        254
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 20.605420014410992
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 0.25609698768233813
+      },
+      {
+        "start": 180,
+        "end": 254,
+        "score": 0.25576410929707705
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 20.605420014410992
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 0.25572673791416295
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 0.25609698768233813
+      },
+      {
+        "start": 180,
+        "end": 254,
+        "score": 0.25576410929707705
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 10789,
+  "representation_chars": 10789,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

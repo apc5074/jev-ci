@@ -1,0 +1,178 @@
+TEST CLASS:
+org.apache.commons.math.linear.FieldVectorImplTest
+
+SOURCE FILE:
+src/test/org/apache/commons/math/linear/FieldVectorImplTest.java
+
+TEST SOURCE:
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.commons.math.linear;
+
+import java.io.Serializable;
+import java.lang.reflect.Array;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
+import org.apache.commons.math.Field;
+import org.apache.commons.math.FieldElement;
+import org.apache.commons.math.TestUtils;
+import org.apache.commons.math.fraction.Fraction;
+import org.apache.commons.math.fraction.FractionField;
+
+/**
+ * Test cases for the {@link FieldVectorImpl} class.
+ *
+ * @version $Revision$ $Date$
+ */
+public class FieldVectorImplTest extends TestCase {
+
+    // 
+    protected Fraction[][] ma1 = {
+            {new Fraction(1), new Fraction(2), new Fraction(3)},
+            {new Fraction(4), new Fraction(5), new Fraction(6)},
+            {new Fraction(7), new Fraction(8), new Fraction(9)}
+    };
+    protected Fraction[] vec1 = {new Fraction(1), new Fraction(2), new Fraction(3)};
+    protected Fraction[] vec2 = {new Fraction(4), new Fraction(5), new Fraction(6)};
+    protected Fraction[] vec3 = {new Fraction(7), new Fraction(8), new Fraction(9)};
+    protected Fraction[] vec4 = { new Fraction(1), new Fraction(2), new Fraction(3),
+                                  new Fraction(4), new Fraction(5), new Fraction(6),
+                                  new Fraction(7), new Fraction(8), new Fraction(9)};
+    protected Fraction[] vec_null = {new Fraction(0), new Fraction(0), new Fraction(0)};
+    protected Fraction[] dvec1 = {new Fraction(1), new Fraction(2), new Fraction(3),
+                                  new Fraction(4), new Fraction(5), new Fraction(6),
+                                  new Fraction(7), new Fraction(8), new Fraction(9)};
+    protected Fraction[][] mat1 = {
+            {new Fraction(1), new Fraction(2), new Fraction(3)},
+            {new Fraction(4), new Fraction(5), new Fraction(6)},
+            {new Fraction(7), new Fraction(8), new Fraction(9)}
+    };
+
+    // Testclass to test the FieldVector<Fraction> interface 
+    // only with enough content to support the test
+    public static class FieldVectorTestImpl<T extends FieldElement<T>>
+        implements FieldVector<T>, Serializable {
+
+        private static final long serialVersionUID = 3970959016014158539L;
+
+        private final Field<T> field;
+
+        /** Entries of the vector. */
+        protected T[] data;
+
+        /** Build an array of elements.
+         * @param length size of the array to build
+         * @return a new array
+         */
+        @SuppressWarnings("unchecked")
+        private T[] buildArray(final int length) {
+            return (T[]) Array.newInstance(field.getZero().getClass(), length);
+        }
+
+        public FieldVectorTestImpl(T[] d) {
+            field = d[0].getField();
+            data = d.clone();
+        }
+
+        public Field<T> getField() {
+            return field;
+        }
+
+        private UnsupportedOperationException unsupported() {
+            return new UnsupportedOperationException("Not supported, unneeded for test purposes");
+        }
+
+        public FieldVector<T> copy() {
+            throw unsupported();
+        }
+
+        public FieldVector<T> add(FieldVector<T> v) throws IllegalArgumentException {
+            throw unsupported();
+        }
+
+        public FieldVector<T> add(T[] v) throws IllegalArgumentException {
+            throw unsupported();
+        }
+
+        public FieldVector<T> subtract(FieldVector<T> v) throws IllegalArgumentException {
+            throw unsupported();
+        }
+
+        public FieldVector<T> subtract(T[] v) throws IllegalArgumentException {
+            throw unsupported();
+        }
+
+        public FieldVector<T> mapAdd(T d) {
+            throw unsupported();
+        }
+
+        public FieldVector<T> mapAddToSelf(T d) {
+            throw unsupported();
+        }
+
+        public FieldVector<T> mapSubtract(T d) {
+            throw unsupported();
+        }
+
+        public FieldVector<T> mapSubtractToSelf(T d) {
+            throw unsupported();
+        }
+
+        public FieldVector<T> mapMultiply(T d) {
+            T[] out = buildArray(data.length);
+            for (int i = 0; i < data.length; i++) {
+                out[i] = data[i].multiply(d);
+            }
+            return new FieldVectorTestImpl<T>(out);
+        }
+
+        public FieldVector<T> mapMultiplyToSelf(T d) {
+            throw unsupported();
+        } catch (Exception e) {
+            fail("wrong exception caught");
+        }        
+
+        try {
+            v1.checkVectorDimensions(v4_2); 
+            fail("IllegalArgumentException expected");
+        } catch (IllegalArgumentException ex) {
+            // expected behavior
+        } catch (Exception e) {
+            fail("wrong exception caught");
+        }        
+
+    }
+
+    public void testSerial()  {
+        FieldVectorImpl<Fraction> v = new FieldVectorImpl<Fraction>(vec1);
+        assertEquals(v,TestUtils.serializeAndRecover(v));
+    }
+  
+    /** verifies that two vectors are equals */
+    protected void checkArray(String msg, Fraction[] m, Fraction[] n) {
+        if (m.length != n.length) {
+            fail("vectors have different lengths");
+        }
+        for (int i = 0; i < m.length; i++) {
+            assertEquals(msg + " " +  i + " elements differ", m[i],n[i]);
+        }
+    }
+
+}

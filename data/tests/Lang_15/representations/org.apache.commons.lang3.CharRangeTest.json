@@ -1,0 +1,91 @@
+{
+  "test_class": "org.apache.commons.lang3.CharRangeTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/CharRangeTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.CharRangeTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/CharRangeTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one\n * or more contributor license agreements.  See the NOTICE file\n * distributed with this work for additional information\n * regarding copyright ownership.  The ASF licenses this file\n * to you under the Apache License, Version 2.0 (the\n * \"License\"); you may not use this file except in compliance\n * with the License.  You may obtain a copy of the License at\n *\n * http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing,\n * software distributed under the License is distributed on an\n * \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY\n * KIND, either express or implied.  See the License for the\n * specific language governing permissions and limitations\n * under the License.\n */\npackage org.apache.commons.lang3;\n\nimport java.lang.reflect.Modifier;\nimport java.util.Iterator;\nimport java.util.NoSuchElementException;\n\nimport junit.framework.TestCase;\n\n/**\n * Unit tests {@link org.apache.commons.lang3.CharRange}.\n *\n * @version $Id$\n */\npublic class CharRangeTest extends TestCase {\n\n    public CharRangeTest(String name) {\n        super(name);\n    }\n\n    //-----------------------------------------------------------------------\n    public void testClass() {\n        // class changed to non-public in 3.0\n        assertEquals(false, Modifier.isPublic(CharRange.class.getModifiers()));\n        assertEquals(true, Modifier.isFinal(CharRange.class.getModifiers()));\n    }\n\n    //-----------------------------------------------------------------------\n    public void testConstructorAccessors_is() {\n        CharRange rangea = CharRange.is('a');\n        assertEquals('a', rangea.getStart());\n        assertEquals('a', rangea.getEnd());\n        assertEquals(false, rangea.isNegated());\n        assertEquals(\"a\", rangea.toString());\n    }\n\n    public void testConstructorAccessors_isNot() {\n        CharRange rangea = CharRange.isNot('a');\n        assertEquals('a', rangea.getStart());\n        assertEquals('a', rangea.getEnd());\n        assertEquals(true, rangea.isNegated());\n        assertEquals(\"^a\", rangea.toString());\n    }\n\n    public void testConstructorAccessors_isIn_Same() {\n        CharRange rangea = CharRange.isIn('a', 'a');\n        assertEquals('a', rangea.getStart());\n        assertEquals('a', rangea.getEnd());\n        assertEquals(false, rangea.isNegated());\n        assertEquals(\"a\", rangea.toString());\n    }\n\n    public void testConstructorAccessors_isIn_Normal() {\n        CharRange rangea = CharRange.isIn('a', 'e');\n        assertEquals('a', rangea.getStart());\n        assertEquals('e', rangea.getEnd());\n        assertEquals(false, rangea.isNegated());\n        assertEquals(\"a-e\", rangea.toString());\n    }\n\n    public void testConstructorAccessors_isIn_Reversed() {\n        CharRange rangea = CharRange.isIn('e', 'a');\n        assertEquals('a', rangea.getStart());\n\n        // negated/normal\n        assertEquals(true, notc.contains(a));\n        assertEquals(true, notc.contains(b));\n        assertEquals(false, notc.contains(c));\n        assertEquals(true, notc.contains(d));\n        assertEquals(true, notc.contains(e));\n\n        assertEquals(true, notc.contains(ab));\n        assertEquals(false, notc.contains(bc));\n        assertEquals(false, notc.contains(bd));\n        assertEquals(false, notc.contains(cd));\n        assertEquals(true, notc.contains(de));\n        assertEquals(false, notc.contains(ae));\n        assertEquals(false, notc.contains(all));\n        assertEquals(false, notc.contains(allbutfirst));\n\n        assertEquals(true, notbd.contains(a));\n        assertEquals(false, notbd.contains(b));\n        assertEquals(false, notbd.contains(c));\n        assertEquals(false, notbd.contains(d));\n        assertEquals(true, notbd.contains(e));\n\n        assertEquals(true, notcd.contains(ab));\n        assertEquals(false, notcd.contains(bc));\n        assertEquals(false, notcd.contains(bd));\n        assertEquals(false, notcd.contains(cd));\n        assertEquals(false, notcd.contains(de));\n        assertEquals(false, notcd.contains(ae));\n        assertEquals(true, notcd.contains(ef));\n        assertEquals(false, notcd.contains(all));\n        assertEquals(false, notcd.contains(allbutfirst));\n\n        // negated/negated\n        assertEquals(false, notc.contains(notb));\n        assertEquals(true, notc.contains(notc));\n        assertEquals(false, notc.contains(notd));\n\n        assertEquals(false, notc.contains(notab));\n        assertEquals(true, notc.contains(notbc));\n        assertEquals(true, notc.contains(notbd));\n        assertEquals(true, notc.contains(notcd));\n        assertEquals(false, notc.contains(notde));\n\n        assertEquals(false, notbd.contains(notb));\n        assertEquals(false, notbd.contains(notc));\n        assertEquals(false, notbd.contains(notd));\n\n        assertEquals(false, notbd.contains(notab));\n        assertEquals(false, notbd.contains(notbc));\n        assertEquals(true, notbd.contains(notbd));\n        assertEquals(false, notbd.contains(notcd));\n        assertEquals(false, notbd.contains(notde));\n        assertEquals(true, notbd.contains(notae));\n    }\n\n    public void testContainsNullArg() {\n        CharRange range = CharRange.is('a');\n        try {\n            @SuppressWarnings(\"unused\")\n            boolean contains = range.contains(null);\n        } catch(IllegalArgumentException e) {\n            assertEquals(\"The Range must not be null\", e.getMessage());\n        }\n    }\n\n    public void testIterator() {\n        CharRange a = CharRange.is('a');\n        CharRange ad = CharRange.isIn('a', 'd');\n        CharRange nota = CharRange.isNot('a');\n        CharRange emptySet = CharRange.isNotIn((char) 0, Character.MAX_VALUE);\n        CharRange notFirst = CharRange.isNotIn((char) 1, Character.MAX_VALUE);\n        CharRange notLast = CharRange.isNotIn((char) 0, (char) (Character.MAX_VALUE - 1));\n\n        Iterator<Character> aIt = a.iterator();\n        assertNotNull(aIt);\n        assertTrue(aIt.hasNext());\n        assertEquals(Character.valueOf('a'), aIt.next());\n        assertFalse(aIt.hasNext());\n\n        Iterator<Character> adIt = ad.iterator();\n        assertNotNull(adIt);\n        assertTrue(adIt.hasNext());\n        assertEquals(Character.valueOf('a'), adIt.next());\n        assertEquals(Character.valueOf('b'), adIt.next());\n        assertEquals(Character.valueOf('c'), adIt.next());\n        assertEquals(Character.valueOf('d'), adIt.next());\n        assertFalse(adIt.hasNext());\n\n        Iterator<Character> notaIt = nota.iterator();\n        assertNotNull(notaIt);\n        assertTrue(notaIt.hasNext());\n        while (notaIt.hasNext()) {\n            Character c = notaIt.next();\n            assertFalse('a' == c.charValue());\n        }\n\n        Iterator<Character> emptySetIt = emptySet.iterator();\n        assertNotNull(emptySetIt);\n        assertFalse(emptySetIt.hasNext());\n        try {\n            emptySetIt.next();\n            fail(\"Should throw NoSuchElementException\");\n        } catch (NoSuchElementException e) {\n            assertTrue(true);\n        }\n\n        Iterator<Character> notFirstIt = notFirst.iterator();\n        assertNotNull(notFirstIt);\n        assertTrue(notFirstIt.hasNext());\n        assertEquals(Character.valueOf((char) 0), notFirstIt.next());\n        assertFalse(notFirstIt.hasNext());\n        try {\n            notFirstIt.next();\n            fail(\"Should throw NoSuchElementException\");\n        } catch (NoSuchElementException e) {\n            assertTrue(true);\n        }\n\n        Iterator<Character> notLastIt = notLast.iterator();\n        assertNotNull(notLastIt);\n        assertTrue(notLastIt.hasNext());\n        assertEquals(Character.valueOf(Character.MAX_VALUE), notLastIt.next());\n        assertFalse(notLastIt.hasNext());\n        try {\n            notLastIt.next();\n            fail(\"Should throw NoSuchElementException\");\n        } catch (NoSuchElementException e) {\n            assertTrue(true);\n        }\n    }\n\n    //-----------------------------------------------------------------------\n    public void testSerialization() {\n        CharRange range = CharRange.is('a');\n        assertEquals(range, SerializationUtils.clone(range)); \n        range = CharRange.isIn('a', 'e');\n        assertEquals(range, SerializationUtils.clone(range)); \n        range = CharRange.isNotIn('a', 'e');\n        assertEquals(range, SerializationUtils.clone(range)); \n",
+  "compaction": {
+    "source_lines": 383,
+    "mode": "windows",
+    "windows_total": 7,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        240,
+        320
+      ],
+      [
+        300,
+        380
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 33.45711750094761
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 9.927298627496992
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 12.703122145193795
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 33.45711750094761
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 8.428731537563191
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 5.939997220592169
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 0.6654802765644448
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 9.927298627496992
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 12.703122145193795
+      },
+      {
+        "start": 360,
+        "end": 383,
+        "score": 5.607271362006496
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8550,
+  "representation_chars": 8550,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

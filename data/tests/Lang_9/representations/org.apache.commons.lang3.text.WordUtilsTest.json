@@ -1,0 +1,86 @@
+{
+  "test_class": "org.apache.commons.lang3.text.WordUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/text/WordUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.text.WordUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/text/WordUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3.text;\n\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertFalse;\nimport static org.junit.Assert.assertNotNull;\nimport static org.junit.Assert.assertTrue;\n\nimport java.lang.reflect.Constructor;\nimport java.lang.reflect.Modifier;\n\nimport org.junit.Test;\n\n/**\n * Unit tests for WordUtils class.\n * \n * @version $Id$\n */\npublic class WordUtilsTest {\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testConstructor() {\n        assertNotNull(new WordUtils());\n        Constructor<?>[] cons = WordUtils.class.getDeclaredConstructors();\n        assertEquals(1, cons.length);\n        assertTrue(Modifier.isPublic(cons[0].getModifiers()));\n        assertTrue(Modifier.isPublic(WordUtils.class.getModifiers()));\n        assertFalse(Modifier.isFinal(WordUtils.class.getModifiers()));\n    }\n    \n    //-----------------------------------------------------------------------\n    @Test\n    public void testWrap_StringInt() {\n        assertEquals(null, WordUtils.wrap(null, 20));\n        assertEquals(null, WordUtils.wrap(null, -1));\n        \n        assertEquals(\"\", WordUtils.wrap(\"\", 20));\n        assertEquals(\"\", WordUtils.wrap(\"\", -1));\n        \n        // normal\n        String systemNewLine = System.getProperty(\"line.separator\");\n        String input = \"Here is one line of text that is going to be wrapped after 20 columns.\";\n        String expected = \"Here is one line of\" + systemNewLine + \"text that is going\" \n            + systemNewLine + \"to be wrapped after\" + systemNewLine + \"20 columns.\";\n        assertEquals(expected, WordUtils.wrap(input, 20));\n        \n        // long word at end\n        input = \"Click here to jump to the jakarta website - http://jakarta.apache.org\";\n        expected = \"Click here to jump\" + systemNewLine + \"to the jakarta\" + systemNewLine \n            + \"website -\" + systemNewLine + \"http://jakarta.apache.org\";\n        assertEquals(expected, WordUtils.wrap(input, 20));\n        \n        // long word in middle\n        input = \"Click here, http://jakarta.apache.org, to jump to the jakarta website\";\n        expected = \"Click here,\" + systemNewLine + \"http://jakarta.apache.org,\" + systemNewLine \n            + \"to jump to the\" + systemNewLine + \"jakarta website\";\n        assertEquals(expected, WordUtils.wrap(input, 20));\n    }\n    \n    @Test\n    public void testWrap_StringIntStringBoolean() {\n        assertEquals(null, WordUtils.wrap(null, 20, \"\\n\", false));\n        assertEquals(null, WordUtils.wrap(null, 20, \"\\n\", true));\n        assertEquals(null, WordUtils.wrap(null, 20, null, true));\n        assertEquals(null, WordUtils.wrap(null, 20, null, false));\n        assertEquals(null, WordUtils.wrap(null, -1, null, true));\n        assertEquals(null, WordUtils.wrap(null, -1, null, false));\n        \n        assertEquals(\"\", WordUtils.wrap(\"\", 20, \"\\n\", false));\n        assertEquals(\"\", WordUtils.wrap(\"\", 20, \"\\n\", true));\n        assertEquals(\"\", WordUtils.wrap(\"\", 20, null, false));\n        assertEquals(\"\", WordUtils.wrap(\"\", 20, null, true));\n        assertEquals(\"\", WordUtils.wrap(\"\", -1, null, false));\n        assertEquals(\"\", WordUtils.wrap(\"\", -1, null, true));\n        \n        // normal\n        String input = \"Here is one line of text that is going to be wrapped after 20 columns.\";\n        String expected = \"Here is one line of\\ntext that is going\\nto be wrapped after\\n20 columns.\";\n        assertEquals(expected, WordUtils.wrap(input, 20, \"\\n\", false));\n        assertEquals(expected, WordUtils.wrap(input, 20, \"\\n\", true));\n\n        // unusual newline char\n        input = \"Here is one line of text that is going to be wrapped after 20 columns.\";\n        expected = \"Here is one line of<br />text that is going<br />to be wrapped after<br />20 columns.\";\n        assertEquals(expected, WordUtils.wrap(input, 20, \"<br />\", false));\n        assertEquals(expected, WordUtils.wrap(input, 20, \"<br />\", true));\n\n        // short line length\n        input = \"Here is one line\";\n        expected = \"Here\\nis one\\nline\";\n        assertEquals(expected, WordUtils.wrap(input, 6, \"\\n\", false));\n        expected = \"Here\\nis\\none\\nline\";\n        assertEquals(expected, WordUtils.wrap(input, 2, \"\\n\", false));\n        assertEquals(expected, WordUtils.wrap(input, -1, \"\\n\", false));\n\n        // system newline char\n        String systemNewLine = System.getProperty(\"line.separator\");\n        input = \"Here is one line of text that is going to be wrapped after 20 columns.\";\n        expected = \"Here is one line of\" + systemNewLine + \"text that is going\" + systemNewLine \n            + \"to be wrapped after\" + systemNewLine + \"20 columns.\";\n        assertEquals(expected, WordUtils.wrap(input, 20, null, false));\n        assertEquals(expected, WordUtils.wrap(input, 20, null, true));\n\n        // with extra spaces\n        input = \" Here:  is  one  line  of  text  that  is  going  to  be  wrapped  after  20  columns.\";\n        expected = \"Here:  is  one  line\\nof  text  that  is \\ngoing  to  be \\nwrapped  after  20 \\ncolumns.\";\n        assertEquals(expected, WordUtils.wrap(input, 20, \"\\n\", false));\n        assertEquals(expected, WordUtils.wrap(input, 20, \"\\n\", true));\n        \n        // with tab\n        input = \"Here is\\tone line of text that is going to be wrapped after 20 columns.\";\n        expected = \"Here is\\tone line of\\ntext that is going\\nto be wrapped after\\n20 columns.\";\n        assertEquals(expected, WordUtils.wrap(input, 20, \"\\n\", false));\n        assertEquals(expected, WordUtils.wrap(input, 20, \"\\n\", true));\n        \n        // with tab at wrapColumn\n        input = \"Here is one line of\\ttext that is going to be wrapped after 20 columns.\";\n        expected = \"Here is one line\\nof\\ttext that is\\ngoing to be wrapped\\nafter 20 columns.\";\n        assertEquals(expected, WordUtils.wrap(input, 20, \"\\n\", false));\n        assertEquals(expected, WordUtils.wrap(input, 20, \"\\n\", true));\n        \n        // difference because of long word\n        input = \"Click here to jump to the jakarta website - http://jakarta.apache.org\";\n        expected = \"Click here to jump\\nto the jakarta\\nwebsite -\\nhttp://jakarta.apache.org\";\n        assertEquals(expected, WordUtils.wrap(input, 20, \"\\n\", false));\n        expected = \"Click here to jump\\nto the jakarta\\nwebsite -\\nhttp://jakarta.apach\\ne.org\";\n        assertEquals(expected, WordUtils.wrap(input, 20, \"\\n\", true));\n        \n        // difference because of long word in middle\n        input = \"Click here, http://jakarta.apache.org, to jump to the jakarta website\";\n        expected = \"Click here,\\nhttp://jakarta.apache.org,\\nto jump to the\\njakarta website\";\n        assertEquals(expected, WordUtils.wrap(input, 20, \"\\n\", false));\n        expected = \"Click here,\\nhttp://jakarta.apach\\ne.org, to jump to\\nthe jakarta website\";\n        assertEquals(expected, WordUtils.wrap(input, 20, \"\\n\", true));\n//        System.err.println(expected);\n//        System.err.println(WordUtils.wrap(input, 20, \"\\n\", false));\n    }\n    \n    //-----------------------------------------------------------------------\n    @Test\n    public void testCapitalize_String() {\n        assertEquals(null, WordUtils.capitalize(null));\n        assertEquals(\"\", WordUtils.capitalize(\"\"));\n        assertEquals(\"  \", WordUtils.capitalize(\"  \"));\n        \n        assertEquals(\"I\", WordUtils.capitalize(\"I\") );\n        assertEquals(\"I\", WordUtils.capitalize(\"i\") );\n        assertEquals(\"I Am Here 123\", WordUtils.capitalize(\"i am here 123\") );\n        assertEquals(\"I Am Here 123\", WordUtils.capitalize(\"I Am Here 123\") );\n        assertEquals(\"I Am HERE 123\", WordUtils.capitalize(\"i am HERE 123\") );\n        assertEquals(\"I AM HERE 123\", WordUtils.capitalize(\"I AM HERE 123\") );\n    }\n    \n    @Test\n    public void testCapitalizeWithDelimiters_String() {\n        assertEquals(null, WordUtils.capitalize(null, null));\n        assertEquals(\"\", WordUtils.capitalize(\"\", new char[0]));\n        assertEquals(\"  \", WordUtils.capitalize(\"  \", new char[0]));\n        \n        char[] chars = new char[] { '-', '+', ' ', '@' };\n        assertEquals(\"I\", WordUtils.capitalize(\"I\", chars) );\n        assertEquals(\"I\", WordUtils.capitalize(\"i\", chars) );\n        assertEquals(\"I-Am Here+123\", WordUtils.capitalize(\"i-am here+123\", chars) );\n        assertEquals(\"I Am+Here-123\", WordUtils.capitalize(\"I Am+Here-123\", chars) );\n        assertEquals(\"I+Am-HERE 123\", WordUtils.capitalize(\"i+am-HERE 123\", chars) );\n        assertEquals(\"I-AM HERE+123\", WordUtils.capitalize(\"I-AM HERE+123\", chars) );\n        chars = new char[] {'.'};\n        assertEquals(\"I aM.Fine\", WordUtils.capitalize(\"i aM.fine\", chars) );\n        assertEquals(\"I Am.fine\", WordUtils.capitalize(\"i am.fine\", null) );\n    }\n\n    @Test\n    public void testCapitalizeFully_String() {\n        assertEquals(null, WordUtils.capitalizeFully(null));\n        assertEquals(\"\", WordUtils.capitalizeFully(\"\"));\n        assertEquals(\"  \", WordUtils.capitalizeFully(\"  \"));\n        \n        assertEquals(\"I\", WordUtils.capitalizeFully(\"I\") );\n        assertEquals(\"I\", WordUtils.capitalizeFully(\"i\") );\n        assertEquals(\"I Am Here 123\", WordUtils.capitalizeFully(\"i am here 123\") );\n        assertEquals(\"I Am Here 123\", WordUtils.capitalizeFully(\"I Am Here 123\") );\n        assertEquals(\"I Am Here 123\", WordUtils.capitalizeFully(\"i am HERE 123\") );\n        assertEquals(\"I Am Here 123\", WordUtils.capitalizeFully(\"I AM HERE 123\") );\n    }\n",
+  "compaction": {
+    "source_lines": 368,
+    "mode": "windows",
+    "windows_total": 6,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 13.554577204053253
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.622377453224127
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 4.221297242321997
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 13.554577204053253
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.622377453224127
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 4.221297242321997
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 0.5203682160253177
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 0.6904644415990597
+      },
+      {
+        "start": 300,
+        "end": 368,
+        "score": 1.5115708813933662
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 10445,
+  "representation_chars": 10445,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

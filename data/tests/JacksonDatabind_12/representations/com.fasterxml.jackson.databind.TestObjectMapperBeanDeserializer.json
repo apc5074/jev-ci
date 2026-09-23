@@ -1,0 +1,86 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.TestObjectMapperBeanDeserializer",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/TestObjectMapperBeanDeserializer.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.TestObjectMapperBeanDeserializer\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/TestObjectMapperBeanDeserializer.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind;\n\nimport java.io.*;\nimport java.net.URI;\nimport java.util.*;\n\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.databind.JsonMappingException;\nimport com.fasterxml.jackson.databind.JsonSerializable;\nimport com.fasterxml.jackson.databind.ObjectMapper;\nimport com.fasterxml.jackson.databind.SerializerProvider;\nimport com.fasterxml.jackson.databind.jsontype.TypeSerializer;\nimport com.fasterxml.jackson.test.BaseTest;\n\n/**\n * Unit tests for verifying deserialization of Beans.\n */\npublic class TestObjectMapperBeanDeserializer\n    extends BaseTest\n{\n    /*\n    /**********************************************************\n    /* Helper classes\n    /**********************************************************\n     */\n\n    final static class CtorValueBean\n        implements JsonSerializable // so we can output as simple String\n    {\n        final String _desc;\n\n        public CtorValueBean(String d) { _desc = d; }\n        public CtorValueBean(int value) { _desc = String.valueOf(value); }\n        public CtorValueBean(long value) { _desc = String.valueOf(value); }\n        public CtorValueBean(double value) { _desc = String.valueOf(value); }\n\n        @Override\n        public void serialize(JsonGenerator jgen, SerializerProvider provider)\n            throws IOException, JsonGenerationException\n        {\n            jgen.writeString(_desc);\n        }\n\n        @Override public String toString() { return _desc; }\n\n        @Override public boolean equals(Object o) {\n            if (!(o instanceof CtorValueBean)) return false;\n            CtorValueBean other = (CtorValueBean) o;\n            return _desc.equals(other._desc);\n        }\n        @Override\n        public void serializeWithType(JsonGenerator jgen,\n                SerializerProvider provider, TypeSerializer typeSer)\n                throws IOException, JsonProcessingException {\n        }\n    }\n\n    final static class FactoryValueBean\n    {\n        final String _desc;\n\n        protected FactoryValueBean(String desc, int dummy) { _desc = desc; }\n\n        public static FactoryValueBean valueOf(String v) { return new FactoryValueBean(v, 0); }\n        public static FactoryValueBean valueOf(int v) { return new FactoryValueBean(String.valueOf(v), 0); }\n        public static FactoryValueBean valueOf(long v) { return new FactoryValueBean(String.valueOf(v), 0); }\n\n        @Override public String toString() { return _desc; }\n    }\n\n    static class OtherBean {\n        SomeIncompatibleType o;\n\n        protected OtherBean(SomeIncompatibleType o) {\n            this.o = o;\n        }\n\n        static class SomeIncompatibleType { }\n    }\n\n            TestBean other = (TestBean) o;\n            return (other._x == _x)\n                && (other._y == _y)\n                && (other._desc.equals(_desc))\n                && (other._uri.equals(_uri))\n                && (other._misc.equals(_misc))\n                ;\n        }\n\n        @Override\n        public String toString()\n        {\n            StringBuilder sb = new StringBuilder();\n            sb.append(\"[TestBean \");\n            sb.append(\"x=\").append(_x);\n            sb.append(\" y=\").append(_y);\n            sb.append(\" desc=\").append(_desc);\n            sb.append(\" uri=\").append(_uri);\n            sb.append(\" misc=\").append(_misc);\n            sb.append(\"]\");\n            return sb.toString();\n        }\n    }\n\n    /**\n     * Another test bean, this one containing a typed list. Needed to ensure\n     * that generics type information is properly accessed via mutator methods.\n     * Note: List elements must be something other than what 'untyped' mapper\n     * would produce from serialization.\n     */\n    public final static class BeanWithList\n    {\n        List<CtorValueBean> _beans;\n\n        public BeanWithList() { }\n        public BeanWithList(List<CtorValueBean> beans) { _beans = beans; }\n\n        public List<CtorValueBean> getBeans() { return _beans; }\n\n        public void setBeans(List<CtorValueBean> beans) {\n            _beans = beans;\n        }\n\n        @Override\n        public int hashCode() { return (_beans == null) ? -1 : _beans.size(); }\n\n        @Override\n        public boolean equals(Object o) {\n            if (!(o instanceof BeanWithList)) return false;\n            BeanWithList other = BeanWithList.class.cast(o);\n            return _beans.equals(other._beans);\n        }\n\n        @Override\n            public String toString() {\n            StringBuilder sb = new StringBuilder();\n            sb.append(\"[Bean, list \");\n            if (_beans == null) {\n                sb.append(\"NULL\");\n            } else {\n                sb.append('(').append(_beans.size()).append('/');\n                sb.append(_beans.getClass().getName()).append(\") \");\n                boolean type = false;\n                for (CtorValueBean bean : _beans) {\n                    if (!type) {\n                        sb.append(\"(\").append(bean.getClass().getSimpleName()).append(\")\");\n                        type = true;\n                    }\n                    sb.append(bean);\n                    sb.append(' ');\n                }\n            }\n            sb.append(']');\n            return sb.toString();\n        }\n    }\n\n    /*\n    /**********************************************************\n    /* Deserialization from simple types (String, int)\n\n    public void testFromDoubleCtor() throws Exception\n    {\n        CtorValueBean result = MAPPER.readValue(\"13.5\", CtorValueBean.class);\n        assertEquals(\"13.5\", result.toString());\n\n        try {\n            OtherBean otherResult = MAPPER.readValue(\"13.5\", OtherBean.class);\n            fail(\"Expected an exception, but got result value: \"+otherResult.o);\n        } catch (JsonMappingException e) {\n            verifyException(e, \"from Floating-point number\", \"no one-double/Double-arg constructor/factory method\");\n            assertValidLocation(e.getLocation());\n        }\n    }\n\n    public void testFromStringFactory() throws Exception\n    {\n        FactoryValueBean result = MAPPER.readValue(\"\\\"abc\\\"\", FactoryValueBean.class);\n        assertEquals(\"abc\", result.toString());\n    }\n\n    public void testFromIntFactory() throws Exception\n    {\n        FactoryValueBean result = MAPPER.readValue(\"13\", FactoryValueBean.class);\n        assertEquals(\"13\", result.toString());\n    }\n\n    public void testFromLongFactory() throws Exception\n    {\n        // Must use something that is forced as Long...\n        long value = 12345678901244L;\n        FactoryValueBean result = MAPPER.readValue(\"\"+value, FactoryValueBean.class);\n        assertEquals(\"\"+value, result.toString());\n    }\n\n    /*\n    /**********************************************************\n    /* Deserialization from JSON Object\n    /**********************************************************\n     */\n\n    public void testSimpleBean() throws Exception\n    {\n        ArrayList<Object> misc = new ArrayList<Object>();\n        misc.add(\"xyz\");\n        misc.add(42);\n        misc.add(null);\n        misc.add(Boolean.TRUE);\n        TestBean bean = new TestBean(13, -900L, \"\\\"test\\\"\", new URI(\"http://foobar.com\"), misc);\n\n        // Hmmh. We probably should use serializer too... easier\n        String json = MAPPER.writeValueAsString(bean);\n\n        TestBean result = MAPPER.readValue(json, TestBean.class);\n        assertEquals(bean, result);\n    }\n\n    public void testListBean() throws Exception\n    {\n        final int COUNT = 13;\n        ArrayList<CtorValueBean> beans = new ArrayList<CtorValueBean>();\n        for (int i = 0; i < COUNT; ++i) {\n            beans.add(new CtorValueBean(i));\n        }\n        BeanWithList bean = new BeanWithList(beans);\n\n        StringWriter sw = new StringWriter();\n        MAPPER.writeValue(sw, bean);\n\n        BeanWithList result = MAPPER.readValue(sw.toString(), BeanWithList.class);\n        assertEquals(bean, result);\n    }\n\n    /**\n     * Also, let's verify that unknown fields cause an exception with default\n     * settings.\n     */\n    public void testUnknownFields() throws Exception\n    {\n        try {\n",
+  "compaction": {
+    "source_lines": 327,
+    "mode": "windows",
+    "windows_total": 6,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        240,
+        320
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 22.16819617862031
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 5.918451457155108
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 6.872629452233595
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 22.16819617862031
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.561023678610312
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 5.918451457155108
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 3.7259305342946263
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 6.872629452233595
+      },
+      {
+        "start": 300,
+        "end": 327,
+        "score": 1.6919517611054704
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8245,
+  "representation_chars": 8245,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

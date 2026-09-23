@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.type.TestTypeFactoryWithRecursiveTypes",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/type/TestTypeFactoryWithRecursiveTypes.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.type.TestTypeFactoryWithRecursiveTypes\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/type/TestTypeFactoryWithRecursiveTypes.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.type;\n\nimport java.io.IOException;\n\nimport com.fasterxml.jackson.annotation.JsonProperty;\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.type.TypeFactory;\n\n\n// https://github.com/FasterXML/jackson-databind/issues/1647\npublic class TestTypeFactoryWithRecursiveTypes extends BaseMapTest {\n\n    static interface IFace<T> {\n    }\n\n    static class Base implements IFace<Sub> {\n        @JsonProperty int base = 1;\n    }\n\n    static class Sub extends Base {\n        @JsonProperty int sub = 2;\n    }\n\n    public void testBasePropertiesIncludedWhenSerializingSubWhenSubTypeLoadedAfterBaseType() throws IOException {\n        TypeFactory tf = TypeFactory.defaultInstance();\n        tf.constructType(Base.class);\n        tf.constructType(Sub.class);\n        Sub sub = new Sub();\n        String serialized = objectMapper().writeValueAsString(sub);\n        assertEquals(\"{\\\"base\\\":1,\\\"sub\\\":2}\", serialized);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 32,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1184,
+  "representation_chars": 1184,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

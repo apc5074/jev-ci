@@ -1,0 +1,96 @@
+{
+  "test_class": "org.apache.commons.math3.complex.QuaternionTest",
+  "source_file": "src/test/java/org/apache/commons/math3/complex/QuaternionTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.complex.QuaternionTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/complex/QuaternionTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.complex;\n\nimport java.util.Random;\nimport org.apache.commons.math3.complex.Quaternion;\nimport org.apache.commons.math3.exception.DimensionMismatchException;\nimport org.apache.commons.math3.exception.ZeroException;\nimport org.apache.commons.math3.geometry.euclidean.threed.Rotation;\nimport org.apache.commons.math3.geometry.euclidean.threed.Vector3D;\nimport org.apache.commons.math3.util.FastMath;\nimport org.junit.Test;\nimport org.junit.Assert;\n\npublic class QuaternionTest {\n    /** Epsilon for double comparison. */\n    private static final double EPS = Math.ulp(1d);\n    /** Epsilon for double comparison. */\n    private static final double COMPARISON_EPS = 1e-14;\n\n    @Test\n    public final void testAccessors1() {\n        final double q0 = 2;\n        final double q1 = 5.4;\n        final double q2 = 17;\n        final double q3 = 0.0005;\n        final Quaternion q = new Quaternion(q0, q1, q2, q3);\n\n        Assert.assertEquals(q0, q.getQ0(), 0);\n        Assert.assertEquals(q1, q.getQ1(), 0);\n        Assert.assertEquals(q2, q.getQ2(), 0);\n        Assert.assertEquals(q3, q.getQ3(), 0);\n    }\n\n    @Test\n    public final void testAccessors2() {\n        final double q0 = 2;\n        final double q1 = 5.4;\n        final double q2 = 17;\n        final double q3 = 0.0005;\n        final Quaternion q = new Quaternion(q0, q1, q2, q3);\n\n        final double sP = q.getScalarPart();\n        final double[] vP = q.getVectorPart();\n\n        Assert.assertEquals(q0, sP, 0);\n        Assert.assertEquals(q1, vP[0], 0);\n        Assert.assertEquals(q2, vP[1], 0);\n        Assert.assertEquals(q3, vP[2], 0);\n    }\n\n    @Test\n    public final void testAccessors3() {\n        final double q0 = 2;\n        final double q1 = 5.4;\n        final double q2 = 17;\n        final double q3 = 0.0005;\n        final Quaternion q = new Quaternion(q0, new double[] { q1, q2, q3 });\n\n        final double sP = q.getScalarPart();\n        final double[] vP = q.getVectorPart();\n\n        Assert.assertEquals(q0, sP, 0);\n        Assert.assertEquals(q1, vP[0], 0);\n        Assert.assertEquals(q2, vP[1], 0);\n        Assert.assertEquals(q3, vP[2], 0);\n    public final void testNormalize() {\n\n        final Quaternion q = new Quaternion(2, 1, -4, -2);\n\n        final Quaternion versor = q.normalize();\n\n        Assert.assertEquals(2.0 / 5.0, versor.getQ0(), 0);\n        Assert.assertEquals(1.0 / 5.0, versor.getQ1(), 0);\n        Assert.assertEquals(-4.0 / 5.0, versor.getQ2(), 0);\n        Assert.assertEquals(-2.0 / 5.0, versor.getQ3(), 0);\n\n        Assert.assertEquals(1, versor.getNorm(), 0);\n    }\n\n    @Test(expected=ZeroException.class)\n    public final void testNormalizeFail() {\n        final Quaternion zeroQ = new Quaternion(0, 0, 0, 0);\n        zeroQ.normalize();\n    }\n\n    @Test\n    public final void testObjectEquals() {\n        final double one = 1;\n        final Quaternion q1 = new Quaternion(one, one, one, one);\n        Assert.assertTrue(q1.equals(q1));\n\n        final Quaternion q2 = new Quaternion(one, one, one, one);\n        Assert.assertTrue(q2.equals(q1));\n\n        final Quaternion q3 = new Quaternion(one, FastMath.nextUp(one), one, one);\n        Assert.assertFalse(q3.equals(q1));\n    }\n\n    @Test\n    public final void testQuaternionEquals() {\n        final double inc = 1e-5;\n        final Quaternion q1 = new Quaternion(2, 1, -4, -2);\n        final Quaternion q2 = new Quaternion(q1.getQ0() + inc, q1.getQ1(), q1.getQ2(), q1.getQ3());\n        final Quaternion q3 = new Quaternion(q1.getQ0(), q1.getQ1() + inc, q1.getQ2(), q1.getQ3());\n        final Quaternion q4 = new Quaternion(q1.getQ0(), q1.getQ1(), q1.getQ2() + inc, q1.getQ3());\n        final Quaternion q5 = new Quaternion(q1.getQ0(), q1.getQ1(), q1.getQ2(), q1.getQ3() + inc);\n\n        Assert.assertFalse(q1.equals(q2, 0.9 * inc));\n        Assert.assertFalse(q1.equals(q3, 0.9 * inc));\n        Assert.assertFalse(q1.equals(q4, 0.9 * inc));\n        Assert.assertFalse(q1.equals(q5, 0.9 * inc));\n\n        Assert.assertTrue(q1.equals(q2, 1.1 * inc));\n        Assert.assertTrue(q1.equals(q3, 1.1 * inc));\n        Assert.assertTrue(q1.equals(q4, 1.1 * inc));\n        Assert.assertTrue(q1.equals(q5, 1.1 * inc));\n    }\n\n    @Test\n    public final void testQuaternionEquals2() {\n        final Quaternion q1 = new Quaternion(1, 4, 2, 3);\n        final double gap = 1e-5;\n        final Quaternion q2 = new Quaternion(1 + gap, 4 + gap, 2 + gap, 3 + gap);\n\n        Assert.assertTrue(q1.equals(q2, 10 * gap));\n        Assert.assertFalse(q1.equals(q2, gap));\n        Assert.assertFalse(q1.equals(q2, gap / 10));\n    }\n\n    @Test\n    public final void testIsUnitQuaternion() {\n        final Random r = new Random(48);\n        final int numberOfTrials = 1000;\n        for (int i = 0; i < numberOfTrials; i++) {\n            final Quaternion q1 = new Quaternion(r.nextDouble(), r.nextDouble(), r.nextDouble(), r.nextDouble());\n            final Quaternion q2 = q1.normalize();\n            Assert.assertTrue(q2.isUnitQuaternion(COMPARISON_EPS));\n        }\n\n        final Quaternion q = new Quaternion(1, 1, 1, 1);\n        Assert.assertFalse(q.isUnitQuaternion(COMPARISON_EPS));\n    }\n\n    @Test\n    public final void testIsPureQuaternion() {\n        final Quaternion q1 = new Quaternion(0, 5, 4, 8);\n        Assert.assertTrue(q1.isPureQuaternion(EPS));\n\n        final Quaternion q2 = new Quaternion(0 - EPS, 5, 4, 8);\n        Assert.assertTrue(q2.isPureQuaternion(EPS));\n\n        final Quaternion q3 = new Quaternion(0 - 1.1 * EPS, 5, 4, 8);\n        Assert.assertFalse(q3.isPureQuaternion(EPS));\n\n        final Random r = new Random(48);\n        final double[] v = {r.nextDouble(), r.nextDouble(), r.nextDouble()};\n        final Quaternion q4 = new Quaternion(v);\n        Assert.assertTrue(q4.isPureQuaternion(0));\n\n        final Quaternion q5 = new Quaternion(0, v);\n        Assert.assertTrue(q5.isPureQuaternion(0));\n    }\n\n    @Test\n    public final void testPolarForm() {\n        final Random r = new Random(48);\n        final int numberOfTrials = 1000;\n        for (int i = 0; i < numberOfTrials; i++) {\n            final Quaternion q = new Quaternion(2 * (r.nextDouble() - 0.5), 2 * (r.nextDouble() - 0.5),\n                                                2 * (r.nextDouble() - 0.5), 2 * (r.nextDouble() - 0.5));\n            final Quaternion qP = q.getPositivePolarForm();\n\n            Assert.assertTrue(qP.isUnitQuaternion(COMPARISON_EPS));\n            Assert.assertTrue(qP.getQ0() >= 0);\n\n            final Rotation rot = new Rotation(q.getQ0(), q.getQ1(), q.getQ2(), q.getQ3(), true);\n            final Rotation rotP = new Rotation(qP.getQ0(), qP.getQ1(), qP.getQ2(), qP.getQ3(), true);\n\n            Assert.assertEquals(rot.getAngle(), rotP.getAngle(), COMPARISON_EPS);\n            Assert.assertEquals(rot.getAxis().getX(), rot.getAxis().getX(), COMPARISON_EPS);\n            Assert.assertEquals(rot.getAxis().getY(), rot.getAxis().getY(), COMPARISON_EPS);\n            Assert.assertEquals(rot.getAxis().getZ(), rot.getAxis().getZ(), COMPARISON_EPS);\n        }\n    }\n\n    @Test\n    public final void testGetInverse() {\n        final Quaternion q = new Quaternion(1.5, 4, 2, -2.5);\n\n        final Quaternion inverseQ = q.getInverse();\n        Assert.assertEquals(1.5 / 28.5, inverseQ.getQ0(), 0);\n        Assert.assertEquals(-4.0 / 28.5, inverseQ.getQ1(), 0);\n        Assert.assertEquals(-2.0 / 28.5, inverseQ.getQ2(), 0);\n        Assert.assertEquals(2.5 / 28.5, inverseQ.getQ3(), 0);\n\n        final Quaternion product = Quaternion.multiply(inverseQ, q);\n        Assert.assertEquals(1, product.getQ0(), EPS);\n        Assert.assertEquals(0, product.getQ1(), EPS);\n        Assert.assertEquals(0, product.getQ2(), EPS);\n        Assert.assertEquals(0, product.getQ3(), EPS);\n\n        final Quaternion qNul = new Quaternion(0, 0, 0, 0);\n        try {\n            final Quaternion inverseQNul = qNul.getInverse();\n            Assert.fail(\"expecting ZeroException but got : \" + inverseQNul);\n",
+  "compaction": {
+    "source_lines": 451,
+    "mode": "windows",
+    "windows_total": 8,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        300,
+        380
+      ],
+      [
+        360,
+        440
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 25.647416843917743
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 12.020354521986635
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 10.324170075370567
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 25.647416843917743
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 4.847962567848063
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 7.853907347336246
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.407959628215079
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 1.1995813956784116
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 12.020354521986635
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 10.324170075370567
+      },
+      {
+        "start": 420,
+        "end": 451,
+        "score": 3.910554438469548
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8922,
+  "representation_chars": 8922,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

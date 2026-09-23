@@ -1,0 +1,126 @@
+{
+  "test_class": "org.apache.commons.math.estimation.LevenbergMarquardtEstimatorTest",
+  "source_file": "src/test/org/apache/commons/math/estimation/LevenbergMarquardtEstimatorTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math.estimation.LevenbergMarquardtEstimatorTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/math/estimation/LevenbergMarquardtEstimatorTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math.estimation;\n\nimport java.util.ArrayList;\nimport java.util.HashMap;\nimport java.util.Iterator;\nimport java.util.Set;\n\nimport org.apache.commons.math.estimation.EstimatedParameter;\nimport org.apache.commons.math.estimation.EstimationException;\nimport org.apache.commons.math.estimation.EstimationProblem;\nimport org.apache.commons.math.estimation.LevenbergMarquardtEstimator;\nimport org.apache.commons.math.estimation.WeightedMeasurement;\n\nimport junit.framework.*;\n\n/**\n * <p>Some of the unit tests are re-implementations of the MINPACK <a\n * href=\"http://www.netlib.org/minpack/ex/file17\">file17</a> and <a\n * href=\"http://www.netlib.org/minpack/ex/file22\">file22</a> test files. \n * The redistribution policy for MINPACK is available <a\n * href=\"http://www.netlib.org/minpack/disclaimer\">here</a>, for\n * convenience, it is reproduced below.</p>\n\n * <table border=\"0\" width=\"80%\" cellpadding=\"10\" align=\"center\" bgcolor=\"#E0E0E0\">\n * <tr><td>\n *    Minpack Copyright Notice (1999) University of Chicago.\n *    All rights reserved\n * </td></tr>\n * <tr><td>\n * Redistribution and use in source and binary forms, with or without\n * modification, are permitted provided that the following conditions\n * are met:\n * <ol>\n *  <li>Redistributions of source code must retain the above copyright\n *      notice, this list of conditions and the following disclaimer.</li>\n * <li>Redistributions in binary form must reproduce the above\n *     copyright notice, this list of conditions and the following\n *     disclaimer in the documentation and/or other materials provided\n *     with the distribution.</li>\n * <li>The end-user documentation included with the redistribution, if any,\n *     must include the following acknowledgment:\n *     <code>This product includes software developed by the University of\n *           Chicago, as Operator of Argonne National Laboratory.</code>\n *     Alternately, this acknowledgment may appear in the software itself,\n *     if and wherever such third-party acknowledgments normally appear.</li>\n * <li><strong>WARRANTY DISCLAIMER. THE SOFTWARE IS SUPPLIED \"AS IS\"\n *     WITHOUT WARRANTY OF ANY KIND. THE COPYRIGHT HOLDER, THE\n *     UNITED STATES, THE UNITED STATES DEPARTMENT OF ENERGY, AND\n *     THEIR EMPLOYEES: (1) DISCLAIM ANY WARRANTIES, EXPRESS OR\n *     IMPLIED, INCLUDING BUT NOT LIMITED TO ANY IMPLIED WARRANTIES\n *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE\n *     OR NON-INFRINGEMENT, (2) DO NOT ASSUME ANY LEGAL LIABILITY\n *     OR RESPONSIBILITY FOR THE ACCURACY, COMPLETENESS, OR\n *     USEFULNESS OF THE SOFTWARE, (3) DO NOT REPRESENT THAT USE OF\n *     THE SOFTWARE WOULD NOT INFRINGE PRIVATELY OWNED RIGHTS, (4)\n *     DO NOT WARRANT THAT THE SOFTWARE WILL FUNCTION\n *     UNINTERRUPTED, THAT IT IS ERROR-FREE OR THAT ANY ERRORS WILL\n *     BE CORRECTED.</strong></li>\n * <li><strong>LIMITATION OF LIABILITY. IN NO EVENT WILL THE COPYRIGHT\n *     HOLDER, THE UNITED STATES, THE UNITED STATES DEPARTMENT OF\n *     ENERGY, OR THEIR EMPLOYEES: BE LIABLE FOR ANY INDIRECT,\n *     INCIDENTAL, CONSEQUENTIAL, SPECIAL OR PUNITIVE DAMAGES OF\n *     ANY KIND OR NATURE, INCLUDING BUT NOT LIMITED TO LOSS OF\n *     PROFITS OR LOSS OF DATA, FOR ANY REASON WHATSOEVER, WHETHER\n *     SUCH LIABILITY IS ASSERTED ON THE BASIS OF CONTRACT, TORT\n *     (INCLUDING NEGLIGENCE OR STRICT LIABILITY), OR OTHERWISE,\n *     EVEN IF ANY OF SAID PARTIES HAS BEEN WARNED OF THE\n *     POSSIBILITY OF SUCH LOSS OR DAMAGES.</strong></li>\n * <ol></td></tr>\n * </table>\n\n * @author Argonne National Laboratory. MINPACK project. March 1980 (original fortran minpack tests)\n * @author Burton S. Garbow (original fortran minpack tests)\n * @author Kenneth E. Hillstrom (original fortran minpack tests)\n * @author Jorge J. More (original fortran minpack tests)\n * @author Luc Maisonobe (non-minpack tests and minpack tests Java translation)\n */\npublic class LevenbergMarquardtEstimatorTest\n  extends TestCase {\n\n  public LevenbergMarquardtEstimatorTest(String name) {\n    super(name);\n  }\n\n  public void testTrivial() throws EstimationException {\n    LinearProblem problem =\n      new LinearProblem(new LinearMeasurement[] {\n        new LinearMeasurement(new double[] {2},\n                              new EstimatedParameter[] {\n                                 new EstimatedParameter(\"p0\", 0)\n                              }, 3.0)\n      });\n    LevenbergMarquardtEstimator estimator = new LevenbergMarquardtEstimator();\n    estimator.estimate(problem);\n    assertEquals(0, estimator.getRMS(problem), 1.0e-10);\n    try {\n        estimator.guessParametersErrors(problem);\n        fail(\"an exception should have been thrown\");\n    } catch (EstimationException ee) {\n        // expected behavior\n    } catch (Exception e) {\n        fail(\"wrong exception caught\");\n    }\n    assertEquals(1.5,\n                 problem.getUnboundParameters()[0].getEstimate(),\n                 1.0e-10);\n   }\n\n  public void testQRColumnsPermutation() throws EstimationException {\n\n    EstimatedParameter[] x = {\n       new EstimatedParameter(\"p0\", 0), new EstimatedParameter(\"p1\", 0)\n    };\n    LinearProblem problem = new LinearProblem(new LinearMeasurement[] {\n      new LinearMeasurement(new double[] { 1.0, -1.0 },\n                            new EstimatedParameter[] { x[0], x[1] },\n                            4.0),\n      new LinearMeasurement(new double[] { 2.0 },\n                            new EstimatedParameter[] { x[1] },\n                            6.0),\n      new LinearMeasurement(new double[] { 1.0, -2.0 },\n                            new EstimatedParameter[] { x[0], x[1] },\n                            1.0)\n                             double costRelativeTolerance, double parRelativeTolerance,\n                             double orthoTolerance, boolean shouldFail) {\n      try {\n        LevenbergMarquardtEstimator estimator = new LevenbergMarquardtEstimator();\n        estimator.setInitialStepBoundFactor(initialStepBoundFactor);\n        estimator.setMaxCostEval(maxCostEval);\n        estimator.setCostRelativeTolerance(costRelativeTolerance);\n        estimator.setParRelativeTolerance(parRelativeTolerance);\n        estimator.setOrthoTolerance(orthoTolerance);\n        estimator.estimate(problem);\n        assertTrue(! shouldFail);\n      } catch (EstimationException ee) {\n        assertTrue(shouldFail);\n      } catch (Exception e) {\n        fail(\"wrong exception type caught\");\n      }\n    }\n\n  public void testCircleFitting() throws EstimationException {\n      Circle circle = new Circle(98.680, 47.345);\n      circle.addPoint( 30.0,  68.0);\n      circle.addPoint( 50.0,  -6.0);\n      circle.addPoint(110.0, -20.0);\n      circle.addPoint( 35.0,  15.0);\n      circle.addPoint( 45.0,  97.0);\n      LevenbergMarquardtEstimator estimator = new LevenbergMarquardtEstimator();\n      estimator.estimate(circle);\n      assertTrue(estimator.getCostEvaluations() < 10);\n      assertTrue(estimator.getJacobianEvaluations() < 10);\n      double rms = estimator.getRMS(circle);\n      assertEquals(1.768262623567235,  Math.sqrt(circle.getM()) * rms,  1.0e-10);\n      assertEquals(69.96016176931406, circle.getRadius(), 1.0e-10);\n      assertEquals(96.07590211815305, circle.getX(),      1.0e-10);\n      assertEquals(48.13516790438953, circle.getY(),      1.0e-10);\n      double[][] cov = estimator.getCovariances(circle);\n      assertEquals(1.839, cov[0][0], 0.001);\n      assertEquals(0.731, cov[0][1], 0.001);\n      assertEquals(cov[0][1], cov[1][0], 1.0e-14);\n      assertEquals(0.786, cov[1][1], 0.001);\n      double[] errors = estimator.guessParametersErrors(circle);\n      assertEquals(1.384, errors[0], 0.001);\n      assertEquals(0.905, errors[1], 0.001);\n  \n      // add perfect measurements and check errors are reduced\n      double cx = circle.getX();\n      double cy = circle.getY();\n      double  r = circle.getRadius();\n      for (double d= 0; d < 2 * Math.PI; d += 0.01) {\n          circle.addPoint(cx + r * Math.cos(d), cy + r * Math.sin(d));\n      }\n      estimator = new LevenbergMarquardtEstimator();\n      estimator.estimate(circle);\n      cov = estimator.getCovariances(circle);\n      assertEquals(0.004, cov[0][0], 0.001);\n      assertEquals(6.40e-7, cov[0][1], 1.0e-9);\n      assertEquals(cov[0][1], cov[1][0], 1.0e-14);\n      assertEquals(0.003, cov[1][1], 0.001);\n      errors = estimator.guessParametersErrors(circle);\n      assertEquals(0.004, errors[0], 0.001);\n      assertEquals(0.004, errors[1], 0.001);\n\n  }\n\n  public void testCircleFittingBadInit() throws EstimationException {\n    Circle circle = new Circle(-12, -12);\n    double[][] points = new double[][] {\n      {-0.312967,  0.072366}, {-0.339248,  0.132965}, {-0.379780,  0.202724},\n      {-0.390426,  0.260487}, {-0.361212,  0.328325}, {-0.346039,  0.392619},\n      {-0.280579,  0.444306}, {-0.216035,  0.470009}, {-0.149127,  0.493832},\n      {-0.075133,  0.483271}, {-0.007759,  0.452680}, { 0.060071,  0.410235},\n      { 0.103037,  0.341076}, { 0.118438,  0.273884}, { 0.131293,  0.192201},\n      { 0.115869,  0.129797}, { 0.072223,  0.058396}, { 0.022884,  0.000718},\n      {-0.053355, -0.020405}, {-0.123584, -0.032451}, {-0.216248, -0.032862},\n      {-0.278592, -0.005008}, {-0.337655,  0.056658}, {-0.385899,  0.112526},\n      {-0.405517,  0.186957}, {-0.415374,  0.262071}, {-0.387482,  0.343398},\n      {-0.347322,  0.397943}, {-0.287623,  0.458425}, {-0.223502,  0.475513},\n      {-0.135352,  0.478186}, {-0.061221,  0.483371}, { 0.003711,  0.422737},\n      { 0.065054,  0.375830}, { 0.108108,  0.297099}, { 0.123882,  0.222850},\n      { 0.117729,  0.134382}, { 0.085195,  0.056820}, { 0.029800, -0.019138},\n      {-0.027520, -0.072374}, {-0.102268, -0.091555}, {-0.200299, -0.106578},\n",
+  "compaction": {
+    "source_lines": 849,
+    "mode": "windows",
+    "windows_total": 14,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        480,
+        560
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 33.36208612515252
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 16.78979937084337
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 19.654319481931687
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 33.36208612515252
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 16.78979937084337
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 8.907656813001173
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.20662050101422
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 8.81306179148615
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 3.5061997752695166
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 4.713723241004752
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 7.476968065451827
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 19.654319481931687
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 12.557039179048559
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 16.183271447642277
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 9.551565328463935
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 7.260834583355315
+      },
+      {
+        "start": 780,
+        "end": 849,
+        "score": 5.17466795875062
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 10738,
+  "representation_chars": 10738,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

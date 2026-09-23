@@ -1,0 +1,211 @@
+TEST CLASS:
+com.fasterxml.jackson.databind.creators.TestValueInstantiator
+
+SOURCE FILE:
+src/test/java/com/fasterxml/jackson/databind/creators/TestValueInstantiator.java
+
+TEST SOURCE:
+package com.fasterxml.jackson.databind.creators;
+
+import java.util.*;
+
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.annotation.JsonValueInstantiator;
+import com.fasterxml.jackson.databind.deser.*;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+
+/**
+ * Test related to [JACKSON-580] (allow specifying custom instantiators)
+ */
+public class TestValueInstantiator extends BaseMapTest
+{
+    static class MyBean
+    {
+        String _secret;
+        
+        public MyBean(String s, boolean bogus) {
+            _secret = s;
+        }
+    }
+
+    static class MysteryBean
+    {
+        Object value;
+        
+        public MysteryBean(Object v) { value = v; }
+    }
+    
+    static class CreatorBean
+    {
+        String _secret;
+
+        public String value;
+        
+        protected CreatorBean(String s) {
+            _secret = s;
+        }
+    }
+
+    static abstract class InstantiatorBase extends ValueInstantiator
+    {
+        @Override
+        public String getValueTypeDesc() {
+            return "UNKNOWN";
+        }
+
+        @Override
+        public boolean canCreateUsingDelegate() { return false; }
+    }
+    
+    static abstract class PolymorphicBeanBase { }
+    
+    static class PolymorphicBean extends PolymorphicBeanBase
+    {
+        public String name;
+    }
+    
+    @SuppressWarnings("serial")
+    static class MyList extends ArrayList<Object>
+    {
+        public MyList(boolean b) { super(); }
+    }
+
+    @SuppressWarnings("serial")
+    static class MyMap extends HashMap<String,Object>
+    {
+        public MyMap(boolean b) { super(); }
+        public MyMap(String name) {
+            super();
+            put(name, name);
+        }
+    }
+    
+    static class MyBeanInstantiator extends InstantiatorBase
+    {
+        @Override
+        public boolean canCreateUsingDefault() { return true; }
+
+        @Override
+        public MyList createUsingDefault(DeserializationContext ctxt) {
+            return new MyList(true);
+        }
+    }
+
+    static class MyDelegateListInstantiator extends ValueInstantiator
+    {
+        @Override
+        public String getValueTypeDesc() { return "xxx"; }
+        
+        @Override
+        public boolean canCreateUsingDelegate() { return true; }
+
+        @Override
+        public JavaType getDelegateType(DeserializationConfig config) {
+            return config.constructType(Object.class);
+        }
+        
+        @Override
+        public Object createUsingDelegate(DeserializationContext ctxt, Object delegate) {
+            MyList list = new MyList(true);
+            list.add(delegate);
+            return list;
+        }
+    }
+    
+    static class MyMapInstantiator extends InstantiatorBase
+    {
+        @Override
+        public String getValueTypeDesc() {
+            return MyMap.class.getName();
+        }
+        
+        @Override
+        public boolean canCreateUsingDefault() { return true; }
+
+        @Override
+        public MyMap createUsingDefault(DeserializationContext ctxt) {
+            return new MyMap(true);
+        }
+    }
+
+    static class MyDelegateMapInstantiator extends ValueInstantiator
+    {
+        @Override
+        public String getValueTypeDesc() { return "xxx"; }
+        
+        @Override
+        public boolean canCreateUsingDelegate() { return true; }
+
+        @Override
+        public JavaType getDelegateType(DeserializationConfig config) {
+            return TypeFactory.defaultInstance().constructType(Object.class);
+        }
+        
+        @Override
+        public Object createUsingDelegate(DeserializationContext ctxt, Object delegate) {
+            MyMap map = new MyMap(true);
+            map.put("value", delegate);
+            return map;
+        }
+    }
+
+    @JsonValueInstantiator(AnnotatedBeanInstantiator.class)
+    static class AnnotatedBean {
+        protected final String a;
+        protected final int b;
+        
+        public AnnotatedBean(String a, int b) {
+            this.a = a;
+            this.b = b;
+        }
+    }
+
+    static class AnnotatedBeanInstantiator extends InstantiatorBase
+    {
+        @Override
+                    @Override
+                    public boolean canCreateFromBoolean() { return true; }
+                    
+                    @Override
+                    public Object createFromBoolean(DeserializationContext ctxt, boolean value) {
+                        return new MysteryBean(Boolean.valueOf(value));
+                    }
+        }));
+        MysteryBean result = mapper.readValue("true", MysteryBean.class);
+        assertNotNull(result);
+        assertEquals(Boolean.TRUE, result.value);
+    }
+    
+    /*
+    /**********************************************************
+    /* Other tests
+    /**********************************************************
+     */
+
+    
+    /**
+     * Beyond basic features, it should be possible to even implement
+     * polymorphic handling...
+     */
+    public void testPolymorphicCreatorBean() throws Exception
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new MyModule(PolymorphicBeanBase.class, new PolymorphicBeanInstantiator()));
+        String JSON = "{\"type\":"+quote(PolymorphicBean.class.getName())+",\"name\":\"Axel\"}";
+        PolymorphicBeanBase result = mapper.readValue(JSON, PolymorphicBeanBase.class);
+        assertNotNull(result);
+        assertSame(PolymorphicBean.class, result.getClass());
+        assertEquals("Axel", ((PolymorphicBean) result).name);
+    }
+
+    public void testJackson633() throws Exception
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        AnnotatedBean bean = mapper.readValue("{}", AnnotatedBean.class);
+        assertNotNull(bean);
+        assertEquals("foo", bean.a);
+        assertEquals(3, bean.b);
+    }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.TestAutoDetect",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/TestAutoDetect.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.TestAutoDetect\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/TestAutoDetect.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.introspect.VisibilityChecker;\n\npublic class TestAutoDetect\n    extends BaseMapTest\n{\n    /*\n    /********************************************************\n    /* Helper beans\n    /********************************************************\n     */\n\n    static class PrivateBean {\n        String a;\n\n        private PrivateBean() { }\n\n        private PrivateBean(String a) { this.a = a; }\n    }\n    \n    /*\n    /********************************************************\n    /* Unit tests\n    /********************************************************\n     */\n    \n    public void testPrivateCtor() throws Exception\n    {\n        // first, default settings, with which construction works ok\n        ObjectMapper m = new ObjectMapper();\n        PrivateBean bean = m.readValue(\"\\\"abc\\\"\", PrivateBean.class);\n        assertEquals(\"abc\", bean.a);\n\n        // then by increasing visibility requirement:\n        m = new ObjectMapper();\n        // note: clumsy code, but needed for Eclipse/JDK1.5 compilation (not for 1.6)\n        VisibilityChecker<?> vc = m.getVisibilityChecker();\n        vc = vc.withCreatorVisibility(JsonAutoDetect.Visibility.PUBLIC_ONLY);\n        m.setVisibilityChecker(vc);\n        try {\n            m.readValue(\"\\\"abc\\\"\", PrivateBean.class);\n            fail(\"Expected exception for missing constructor\");\n        } catch (JsonProcessingException e) {\n            verifyException(e, \"no single-String constructor/factory\");\n        }\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 53,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1822,
+  "representation_chars": 1822,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "test_class": "org.apache.commons.lang3.CharUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/CharUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.CharUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/CharUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3;\n\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertFalse;\nimport static org.junit.Assert.assertNotNull;\nimport static org.junit.Assert.assertSame;\nimport static org.junit.Assert.assertTrue;\n\nimport java.lang.reflect.Constructor;\nimport java.lang.reflect.Modifier;\n\nimport org.junit.Test;\n\n/**\n * Unit tests {@link org.apache.commons.lang3.CharUtils}.\n *\n * @version $Id$\n */\npublic class CharUtilsTest {\n\n    private static final Character CHARACTER_A = new Character('A');\n    private static final Character CHARACTER_B = new Character('B');\n    private static final char CHAR_COPY = '\\u00a9';\n    \n    @Test\n    public void testConstructor() {\n        assertNotNull(new CharUtils());\n        Constructor<?>[] cons = CharUtils.class.getDeclaredConstructors();\n        assertEquals(1, cons.length);\n        assertTrue(Modifier.isPublic(cons[0].getModifiers()));\n        assertTrue(Modifier.isPublic(BooleanUtils.class.getModifiers()));\n        assertFalse(Modifier.isFinal(BooleanUtils.class.getModifiers()));\n    }\n    \n    @SuppressWarnings(\"deprecation\") // intentional test of deprecated method\n    @Test\n    public void testToCharacterObject_char() {\n        assertEquals(new Character('a'), CharUtils.toCharacterObject('a'));\n        assertSame(CharUtils.toCharacterObject('a'), CharUtils.toCharacterObject('a'));\n       \n        for (int i = 0; i < 128; i++) {\n            Character ch = CharUtils.toCharacterObject((char) i);\n            Character ch2 = CharUtils.toCharacterObject((char) i);\n            assertSame(ch, ch2);\n            assertEquals(i, ch.charValue());\n        }\n        for (int i = 128; i < 196; i++) {\n            Character ch = CharUtils.toCharacterObject((char) i);\n            Character ch2 = CharUtils.toCharacterObject((char) i);\n            assertEquals(ch, ch2);\n            assertTrue(ch != ch2);\n            assertEquals(i, ch.charValue());\n            assertEquals(i, ch2.charValue());\n        }\n        assertSame(CharUtils.toCharacterObject(\"a\"), CharUtils.toCharacterObject('a'));\n    }\n    \n    @Test\n    public void testToCharacterObject_String() {\n        assertEquals(null, CharUtils.toCharacterObject(null));\n        assertEquals(null, CharUtils.toCharacterObject(\"\"));\n        assertEquals(new Character('a'), CharUtils.toCharacterObject(\"a\"));\n        assertEquals(new Character('a'), CharUtils.toCharacterObject(\"abc\"));\n        assertSame(CharUtils.toCharacterObject(\"a\"), CharUtils.toCharacterObject(\"a\"));\n    }\n    \n    @Test\n    public void testToChar_Character() {\n        assertEquals('A', CharUtils.toChar(CHARACTER_A));\n        assertEquals('B', CharUtils.toChar(CHARACTER_B));\n        try {\n            CharUtils.toChar((Character) null);\n        } catch (IllegalArgumentException ex) {}\n    }\n    \n    @Test\n    public void testToChar_Character_char() {\n        assertEquals('A', CharUtils.toChar(CHARACTER_A, 'X'));\n        assertEquals('B', CharUtils.toChar(CHARACTER_B, 'X'));\n        assertEquals('X', CharUtils.toChar((Character) null, 'X'));\n    }\n    \n    @Test\n    public void testToChar_String() {\n        assertEquals('A', CharUtils.toChar(\"A\"));\n        assertEquals('B', CharUtils.toChar(\"BA\"));\n        try {\n            CharUtils.toChar((String) null);\n        } catch (IllegalArgumentException ex) {}\n        try {\n            CharUtils.toChar(\"\");\n        } catch (IllegalArgumentException ex) {}\n    }\n    \n    @Test\n    public void testToChar_String_char() {\n        assertEquals('A', CharUtils.toChar(\"A\", 'X'));\n        assertEquals('B', CharUtils.toChar(\"BA\", 'X'));\n        assertEquals('X', CharUtils.toChar(\"\", 'X'));\n        assertEquals('X', CharUtils.toChar((String) null, 'X'));\n    }\n    \n    @Test\n    public void testToIntValue_char() {\n        assertEquals(0, CharUtils.toIntValue('0'));\n        assertEquals(1, CharUtils.toIntValue('1'));\n        assertEquals(2, CharUtils.toIntValue('2'));\n        assertEquals(3, CharUtils.toIntValue('3'));\n        assertEquals(4, CharUtils.toIntValue('4'));\n        assertEquals(5, CharUtils.toIntValue('5'));\n        assertEquals(6, CharUtils.toIntValue('6'));\n        assertEquals(7, CharUtils.toIntValue('7'));\n        assertEquals(8, CharUtils.toIntValue('8'));\n        assertEquals(9, CharUtils.toIntValue('9'));\n        try {\n            CharUtils.toIntValue('a');\n        } catch (IllegalArgumentException ex) {}\n    }\n    \n    @Test\n    public void testToIntValue_char_int() {\n        assertEquals(0, CharUtils.toIntValue('0', -1));\n        assertEquals(3, CharUtils.toIntValue('3', -1));\n        assertEquals(-1, CharUtils.toIntValue('a', -1));\n    }\n    \n    @Test\n    public void testToIntValue_Character() {\n        assertEquals(0, CharUtils.toIntValue(new Character('0')));\n        assertEquals(3, CharUtils.toIntValue(new Character('3')));\n        try {\n            CharUtils.toIntValue(null);\n        } catch (IllegalArgumentException ex) {}\n        try {\n            CharUtils.toIntValue(CHARACTER_A);\n        } catch (IllegalArgumentException ex) {}\n    }\n    \n    @Test\n    public void testToIntValue_Character_int() {\n        assertEquals(0, CharUtils.toIntValue(new Character('0'), -1));\n        assertEquals(3, CharUtils.toIntValue(new Character('3'), -1));\n        assertEquals(-1, CharUtils.toIntValue(new Character('A'), -1));\n        assertEquals(-1, CharUtils.toIntValue(null, -1));\n    }\n    \n    @Test\n    public void testToString_char() {\n        assertEquals(\"a\", CharUtils.toString('a'));\n        assertSame(CharUtils.toString('a'), CharUtils.toString('a'));\n       \n        for (int i = 0; i < 128; i++) {\n            String str = CharUtils.toString((char) i);\n            String str2 = CharUtils.toString((char) i);\n            assertSame(str, str2);\n            assertEquals(1, str.length());\n            assertEquals(i, str.charAt(0));\n        }\n        for (int i = 128; i < 196; i++) {\n            String str = CharUtils.toString((char) i);\n            String str2 = CharUtils.toString((char) i);\n            assertEquals(str, str2);\n            assertTrue(str != str2);\n            assertEquals(1, str.length());\n            assertEquals(i, str.charAt(0));\n            assertEquals(1, str2.length());\n            assertEquals(i, str2.charAt(0));\n        }\n    }\n    \n    @Test\n    public void testToString_Character() {\n        assertEquals(null, CharUtils.toString(null));\n        assertEquals(\"A\", CharUtils.toString(CHARACTER_A));\n        assertSame(CharUtils.toString(CHARACTER_A), CharUtils.toString(CHARACTER_A));\n    }\n    \n    @Test\n    public void testToUnicodeEscaped_char() {\n        assertEquals(\"\\\\u0041\", CharUtils.unicodeEscaped('A'));\n       \n        for (int i = 0; i < 196; i++) {\n            String str = CharUtils.unicodeEscaped((char) i);\n            assertEquals(6, str.length());\n",
+  "compaction": {
+    "source_lines": 358,
+    "mode": "windows",
+    "windows_total": 6,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 17.543433275470733
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.556779049712919
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 8.580293218363035
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 17.543433275470733
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.556779049712919
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 8.580293218363035
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.660215439864654
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 1.3379358614349206
+      },
+      {
+        "start": 300,
+        "end": 358,
+        "score": 1.2604907559717817
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7780,
+  "representation_chars": 7780,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

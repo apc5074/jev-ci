@@ -1,0 +1,207 @@
+TEST CLASS:
+org.apache.commons.math3.distribution.MultivariateNormalMixtureModelDistributionTest
+
+SOURCE FILE:
+src/test/java/org/apache/commons/math3/distribution/MultivariateNormalMixtureModelDistributionTest.java
+
+TEST SOURCE:
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.commons.math3.distribution;
+
+import java.util.List;
+import java.util.ArrayList;
+import org.apache.commons.math3.exception.NotPositiveException;
+import org.apache.commons.math3.exception.MathArithmeticException;
+import org.apache.commons.math3.util.Pair;
+import org.junit.Assert;
+import org.junit.Test;
+
+/**
+ * Test that demonstrates the use of {@link MixtureMultivariateRealDistribution}
+ * in order to create a mixture model composed of {@link MultivariateNormalDistribution
+ * normal distributions}.
+ */
+public class MultivariateNormalMixtureModelDistributionTest {
+
+    @Test
+    public void testNonUnitWeightSum() {
+        final double[] weights = { 1, 2 };
+        final double[][] means = { { -1.5, 2.0 },
+                                   { 4.0, 8.2 } };
+        final double[][][] covariances = { { { 2.0, -1.1 },
+                                             { -1.1, 2.0 } },
+                                           { { 3.5, 1.5 },
+                                             { 1.5, 3.5 } } };
+        final MultivariateNormalMixtureModelDistribution d
+            = create(weights, means, covariances);
+
+        final List<Pair<Double, MultivariateNormalDistribution>> comp = d.getComponents();
+
+        Assert.assertEquals(1d / 3, comp.get(0).getFirst(), Math.ulp(1d));
+        Assert.assertEquals(2d / 3, comp.get(1).getFirst(), Math.ulp(1d));
+    }
+
+    @Test(expected=MathArithmeticException.class)
+    public void testWeightSumOverFlow() {
+        final double[] weights = { 0.5 * Double.MAX_VALUE, 0.51 * Double.MAX_VALUE };
+        final double[][] means = { { -1.5, 2.0 },
+                                   { 4.0, 8.2 } };
+        final double[][][] covariances = { { { 2.0, -1.1 },
+                                             { -1.1, 2.0 } },
+                                           { { 3.5, 1.5 },
+                                             { 1.5, 3.5 } } };
+        final MultivariateNormalMixtureModelDistribution d
+            = create(weights, means, covariances);
+    }
+
+    @Test(expected=NotPositiveException.class)
+    public void testPreconditionPositiveWeights() {
+        final double[] negativeWeights = { -0.5, 1.5 };
+        final double[][] means = { { -1.5, 2.0 },
+                                   { 4.0, 8.2 } };
+        final double[][][] covariances = { { { 2.0, -1.1 },
+                                             { -1.1, 2.0 } },
+                                           { { 3.5, 1.5 },
+                                             { 1.5, 3.5 } } };
+        final MultivariateNormalMixtureModelDistribution d
+            = create(negativeWeights, means, covariances);
+    }
+
+    /**
+     * Test the accuracy of the density calculation.
+     */
+    @Test
+    public void testDensities() {
+        final double[] weights = { 0.3, 0.7 };
+        final double[][] means = { { -1.5, 2.0 },
+                                   { 4.0, 8.2 } };
+        final double[][][] covariances = { { { 2.0, -1.1 },
+                                             { -1.1, 2.0 } },
+                                           { { 3.5, 1.5 },
+                                             { 1.5, 3.5 } } };
+        final MultivariateNormalMixtureModelDistribution d
+            = create(weights, means, covariances);
+
+        // Test vectors
+        final double[][] testValues = { { -1.5, 2 },
+                                        { 4, 8.2 },
+                                        { 1.5, -2 },
+                                        { 0, 0 } };
+
+        // Densities that we should get back.
+        // Calculated by assigning weights to multivariate normal distribution
+        // and summing
+        // values from dmvnorm function in R 2.15 CRAN package Mixtools v0.4.
+        // Like: .3*dmvnorm(val,mu1,sigma1)+.7*dmvnorm(val,mu2,sigma2)
+        final double[] correctDensities = { 0.02862037278930575,
+                                            0.03523044847314091,
+                                            0.000416241365629767,
+                                            0.009932042831700297 };
+
+        for (int i = 0; i < testValues.length; i++) {
+            Assert.assertEquals(correctDensities[i], d.density(testValues[i]), Math.ulp(1d));
+        }
+    }
+
+    /**
+     * Test the accuracy of sampling from the distribution.
+     */
+    @Test
+    public void testSampling() {
+        final double[] weights = { 0.3, 0.7 };
+        final double[][] means = { { -1.5, 2.0 },
+                                   { 4.0, 8.2 } };
+        final double[][][] covariances = { { { 2.0, -1.1 },
+                                             { -1.1, 2.0 } },
+                                           { { 3.5, 1.5 },
+                                             { 1.5, 3.5 } } };
+        final MultivariateNormalMixtureModelDistribution d
+            = create(weights, means, covariances);
+        d.reseedRandomGenerator(50);
+
+        final double[][] correctSamples = getCorrectSamples();
+        final int n = correctSamples.length;
+        final double[][] samples = d.sample(n);
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < samples[i].length; j++) {
+                Assert.assertEquals(correctSamples[i][j], samples[i][j], 1e-16);
+            }
+        }
+    }
+
+    /**
+     * Creates a mixture of Gaussian distributions.
+     *
+     * @param weights Weights.
+     * @param means Means.
+     * @param covariances Covariances.
+     * @return the mixture distribution.
+     */
+    private MultivariateNormalMixtureModelDistribution create(double[] weights,
+                                                              double[][] means,
+                                                              double[][][] covariances) {
+        final List<Pair<Double, MultivariateNormalDistribution>> mvns
+            = new ArrayList<Pair<Double, MultivariateNormalDistribution>>();
+
+        for (int i = 0; i < weights.length; i++) {
+            final MultivariateNormalDistribution dist
+                = new MultivariateNormalDistribution(means[i], covariances[i]);
+            mvns.add(new Pair<Double, MultivariateNormalDistribution>(weights[i], dist));
+        }
+
+        return new MultivariateNormalMixtureModelDistribution(mvns);
+    }
+
+    /**
+     * Values used in {@link #testSampling()}.
+     */
+    private double[][] getCorrectSamples() {
+        // These were sampled from the MultivariateNormalMixtureModelDistribution class
+        // with seed 50.
+        //
+        // They were then fit to a MVN mixture model in R using mixtools.
+        //
+        // The optimal parameters were:
+        // - component weights: {0.3595186, 0.6404814}
+        // - mean vectors: {-1.645879, 1.989797}, {3.474328, 7.782232}
+        // - covariance matrices:
+        //     { 1.397738 -1.167732
+        //       -1.167732 1.801782 }
+        //   and
+        //     { 3.934593 2.354787
+        //       2.354787 4.428024 }
+        //
+        // It is considered fairly close to the actual test parameters,
+        // considering that the sample size is only 100.
+        return new double[][] {
+            { 6.259990922080121, 11.972954175355897 },
+            { -2.5296544304801847, 1.0031292519854365 },
+            { 0.49037886081440396, 0.9758251727325711 },
+            { 5.022970993312015, 9.289348879616787 },
+            { -1.686183146603914, 2.007244382745706 },
+            { -1.4729253946002685, 2.762166644212484 },
+            { 4.329788143963888, 11.514016497132253 },
+            { 3.008674596114442, 4.960246550446107 },
+            { 3.342379304090846, 5.937630105198625 },
+            { 2.6993068328674754, 7.42190871572571 },
+            { -2.446569340219571, 1.9687117791378763 },
+            { 1.922417883170056, 4.917616702617099 },
+            { -1.1969741543898518, 2.4576126277884387 },
+            { 2.4216948702967196, 8.227710158117134 },
+            { 6.701424725804463, 9.098666475042428 },

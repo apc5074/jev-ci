@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.creators.CreatorPropertiesTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/creators/CreatorPropertiesTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.creators.CreatorPropertiesTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/creators/CreatorPropertiesTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.creators;\n\nimport java.beans.ConstructorProperties;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.databind.*;\n\npublic class CreatorPropertiesTest extends BaseMapTest\n{\n    static class Issue905Bean {\n        // 08-Nov-2015, tatu: Note that in real code we would most likely use same\n        //    names for properties; but here we use different name on purpose to\n        //    ensure that Jackson has no way of binding JSON properties \"x\" and \"y\"\n        //    using any other mechanism than via `@ConstructorProperties` annotation\n        public int _x, _y;\n\n        @ConstructorProperties({\"x\", \"y\"})\n        // Same as above; use differing local parameter names so that parameter name\n        // introspection can not be used as the source of property names.\n        public Issue905Bean(int a, int b) {\n            _x = a;\n            _y = b;\n        }\n    }\n\n    // for [databind#1122]\n    static class Ambiguity {\n\n        @JsonProperty(\"bar\")\n        private int foo;\n\n        protected Ambiguity() {}\n\n        @ConstructorProperties({ \"foo\" })\n        public Ambiguity(int foo) {\n            this.foo = foo;\n        }\n\n        public int getFoo() {\n            return foo;\n        }\n\n        @Override\n        public String toString() {\n            return \"Ambiguity [foo=\" + foo + \"]\";\n        }\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n\n    private final ObjectMapper MAPPER = new ObjectMapper();\n\n    // [databind#905]\n    public void testCreatorPropertiesAnnotation() throws Exception\n    {\n        Issue905Bean b = MAPPER.readValue(aposToQuotes(\"{'y':3,'x':2}\"),\n                Issue905Bean.class);\n        assertEquals(2, b._x);\n        assertEquals(3, b._y);\n    }\n\n    // [databind#1122]\n    public void testPossibleNamingConflict() throws Exception\n    {\n        String json = \"{\\\"bar\\\":3}\";\n        Ambiguity amb = MAPPER.readValue(json, Ambiguity.class);\n        assertNotNull(amb);\n        assertEquals(3, amb.getFoo());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 74,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2328,
+  "representation_chars": 2328,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

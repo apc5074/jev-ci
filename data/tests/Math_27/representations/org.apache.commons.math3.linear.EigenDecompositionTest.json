@@ -1,0 +1,111 @@
+{
+  "test_class": "org.apache.commons.math3.linear.EigenDecompositionTest",
+  "source_file": "src/test/java/org/apache/commons/math3/linear/EigenDecompositionTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.linear.EigenDecompositionTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/linear/EigenDecompositionTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math3.linear;\n\nimport java.util.Arrays;\nimport java.util.Random;\n\n\nimport org.apache.commons.math3.distribution.NormalDistribution;\nimport org.apache.commons.math3.util.FastMath;\nimport org.apache.commons.math3.util.Precision;\nimport org.junit.After;\nimport org.junit.Assert;\nimport org.junit.Before;\nimport org.junit.Test;\n\npublic class EigenDecompositionTest {\n\n    private double[] refValues;\n    private RealMatrix matrix;\n\n    @Test\n    public void testDimension1() {\n        RealMatrix matrix =\n            MatrixUtils.createRealMatrix(new double[][] { { 1.5 } });\n        EigenDecomposition ed;\n        ed = new EigenDecomposition(matrix);\n        Assert.assertEquals(1.5, ed.getRealEigenvalue(0), 1.0e-15);\n    }\n\n    @Test\n    public void testDimension2() {\n        RealMatrix matrix =\n            MatrixUtils.createRealMatrix(new double[][] {\n                    { 59.0, 12.0 },\n                    { 12.0, 66.0 }\n            });\n        EigenDecomposition ed;\n        ed = new EigenDecomposition(matrix);\n        Assert.assertEquals(75.0, ed.getRealEigenvalue(0), 1.0e-15);\n        Assert.assertEquals(50.0, ed.getRealEigenvalue(1), 1.0e-15);\n    }\n\n    @Test\n    public void testDimension3() {\n        RealMatrix matrix =\n            MatrixUtils.createRealMatrix(new double[][] {\n                                   {  39632.0, -4824.0, -16560.0 },\n                                   {  -4824.0,  8693.0,   7920.0 },\n                                   { -16560.0,  7920.0,  17300.0 }\n                               });\n        EigenDecomposition ed;\n        ed = new EigenDecomposition(matrix);\n        Assert.assertEquals(50000.0, ed.getRealEigenvalue(0), 3.0e-11);\n        Assert.assertEquals(12500.0, ed.getRealEigenvalue(1), 3.0e-11);\n        Assert.assertEquals( 3125.0, ed.getRealEigenvalue(2), 3.0e-11);\n    }\n\n    @Test\n    public void testDimension3MultipleRoot() {\n        RealMatrix matrix =\n            MatrixUtils.createRealMatrix(new double[][] {\n                    {  5,   10,   15 },\n                    { 10,   20,   30 },\n                    { 15,   30,   45 }\n    /** test eigenvalues for a big matrix. */\n    @Test\n    public void testBigMatrix() {\n        Random r = new Random(17748333525117l);\n        double[] bigValues = new double[200];\n        for (int i = 0; i < bigValues.length; ++i) {\n            bigValues[i] = 2 * r.nextDouble() - 1;\n        }\n        Arrays.sort(bigValues);\n        EigenDecomposition ed;\n        ed = new EigenDecomposition(createTestMatrix(r, bigValues));\n        double[] eigenValues = ed.getRealEigenvalues();\n        Assert.assertEquals(bigValues.length, eigenValues.length);\n        for (int i = 0; i < bigValues.length; ++i) {\n            Assert.assertEquals(bigValues[bigValues.length - i - 1], eigenValues[i], 2.0e-14);\n        }\n    }\n\n    @Test\n    public void testSymmetric() {\n        RealMatrix symmetric = MatrixUtils.createRealMatrix(new double[][] {\n                {4, 1, 1},\n                {1, 2, 3},\n                {1, 3, 6}\n        });\n\n        EigenDecomposition ed;\n        ed = new EigenDecomposition(symmetric);\n        \n        RealMatrix d = ed.getD();\n        RealMatrix v = ed.getV();\n        RealMatrix vT = ed.getVT();\n\n        double norm = v.multiply(d).multiply(vT).subtract(symmetric).getNorm();\n        Assert.assertEquals(0, norm, 6.0e-13);\n    }\n\n    @Test\n    public void testUnsymmetric() {\n        // Vandermonde matrix V(x;i,j) = x_i^{n - j} with x = (-1,-2,3,4)\n        double[][] vData = { { -1.0, 1.0, -1.0, 1.0 },\n                             { -8.0, 4.0, -2.0, 1.0 },\n                             { 27.0, 9.0,  3.0, 1.0 },\n                             { 64.0, 16.0, 4.0, 1.0 } };\n        checkUnsymmetricMatrix(MatrixUtils.createRealMatrix(vData));\n      \n        RealMatrix randMatrix = MatrixUtils.createRealMatrix(new double[][] {\n                {0,  1,     0,     0},\n                {1,  0,     2.e-7, 0},\n                {0, -2.e-7, 0,     1},\n                {0,  0,     1,     0}\n        });\n        checkUnsymmetricMatrix(randMatrix);\n\n        // from http://eigen.tuxfamily.org/dox/classEigen_1_1RealSchur.html\n        double[][] randData2 = {\n                {  0.680, -0.3300, -0.2700, -0.717, -0.687,  0.0259 },\n                { -0.211,  0.5360,  0.0268,  0.214, -0.198,  0.6780 },\n                {  0.566, -0.4440,  0.9040, -0.967, -0.740,  0.2250 },\n                {  0.597,  0.1080,  0.8320, -0.514, -0.782, -0.4080 },\n                {  0.823, -0.0452,  0.2710, -0.726,  0.998,  0.2750 },\n                { -0.605,  0.2580,  0.4350,  0.608, -0.563,  0.0486 }\n        };\n        checkUnsymmetricMatrix(MatrixUtils.createRealMatrix(randData2));\n    }\n    \n    @Test\n    public void testRandomUnsymmetricMatrix() {\n        for (int run = 0; run < 100; run++) {\n            Random r = new Random(System.currentTimeMillis());\n\n            // matrix size\n            int size = r.nextInt(20) + 4;\n\n            double[][] data = new double[size][size];\n            for (int i = 0; i < size; i++) {\n                for (int j = 0; j < size; j++) {\n                    data[i][j] = r.nextInt(100);\n                }\n            }\n            Assert.assertTrue(isIncludedValue(targetValues[i], observed, tolerance));\n        }\n    }\n\n\n    /**\n     * Returns true iff there is an entry within tolerance of value in\n     * searchArray.\n     */\n    private boolean isIncludedValue(double value, double[] searchArray,\n            double tolerance) {\n       boolean found = false;\n       int i = 0;\n       while (!found && i < searchArray.length) {\n           if (FastMath.abs(value - searchArray[i]) < tolerance) {\n               found = true;\n           }\n           i++;\n       }\n       return found;\n    }\n\n    /**\n     * Returns true iff eigenVector is a scalar multiple of one of the columns\n     * of ed.getV().  Does not try linear combinations - i.e., should only be\n     * used to find vectors in one-dimensional eigenspaces.\n     */\n    protected void checkEigenVector(double[] eigenVector,\n            EigenDecomposition ed, double tolerance) {\n        Assert.assertTrue(isIncludedColumn(eigenVector, ed.getV(), tolerance));\n    }\n\n    /**\n     * Returns true iff there is a column that is a scalar multiple of column\n     * in searchMatrix (modulo tolerance)\n     */\n    private boolean isIncludedColumn(double[] column, RealMatrix searchMatrix,\n            double tolerance) {\n        boolean found = false;\n        int i = 0;\n        while (!found && i < searchMatrix.getColumnDimension()) {\n            double multiplier = 1.0;\n            boolean matching = true;\n            int j = 0;\n            while (matching && j < searchMatrix.getRowDimension()) {\n                double colEntry = searchMatrix.getEntry(j, i);\n                // Use the first entry where both are non-zero as scalar\n                if (FastMath.abs(multiplier - 1.0) <= FastMath.ulp(1.0) && FastMath.abs(colEntry) > 1E-14\n                        && FastMath.abs(column[j]) > 1e-14) {\n                    multiplier = colEntry / column[j];\n                }\n                if (FastMath.abs(column[j] * multiplier - colEntry) > tolerance) {\n                    matching = false;\n                }\n                j++;\n            }\n            found = matching;\n            i++;\n        }\n        return found;\n    }\n\n    @Before\n    public void setUp() {\n        refValues = new double[] {\n                2.003, 2.002, 2.001, 1.001, 1.000, 0.001\n        };\n        matrix = createTestMatrix(new Random(35992629946426l), refValues);\n    }\n\n    @After\n    public void tearDown() {\n        refValues = null;\n        matrix    = null;\n    }\n\n    static RealMatrix createTestMatrix(final Random r, final double[] eigenValues) {\n        final int n = eigenValues.length;\n        final RealMatrix v = createOrthogonalMatrix(r, n);\n        final RealMatrix d = createDiagonalMatrix(eigenValues, n, n);\n",
+  "compaction": {
+    "source_lines": 676,
+    "mode": "windows",
+    "windows_total": 11,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        300,
+        380
+      ],
+      [
+        540,
+        620
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.573785692116335
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 5.703458403873174
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 7.033418246117334
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.573785692116335
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.6501079558216585
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 3.3853095568417597
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 2.108581359763707
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 1.1468453046846887
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 5.703458403873174
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 5.144152507309467
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 2.381073547343857
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 5.078156260539853
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 7.033418246117334
+      },
+      {
+        "start": 600,
+        "end": 676,
+        "score": 4.40409565143859
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8906,
+  "representation_chars": 8906,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "test_class": "org.jsoup.nodes.ElementTest",
+  "source_file": "src/test/java/org/jsoup/nodes/ElementTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.jsoup.nodes.ElementTest\n\nSOURCE FILE:\nsrc/test/java/org/jsoup/nodes/ElementTest.java\n\nTEST SOURCE:\npackage org.jsoup.nodes;\n\nimport org.jsoup.Jsoup;\nimport org.jsoup.TextUtil;\nimport org.jsoup.parser.Tag;\nimport org.jsoup.select.Elements;\nimport org.junit.Test;\n\nimport java.util.*;\n\nimport static org.junit.Assert.*;\n\n/**\n * Tests for Element (DOM stuff mostly).\n *\n * @author Jonathan Hedley\n */\npublic class ElementTest {\n    private String reference = \"<div id=div1><p>Hello</p><p>Another <b>element</b></p><div id=div2><img src=foo.png></div></div>\";\n\n    @Test public void getElementsByTagName() {\n        Document doc = Jsoup.parse(reference);\n        List<Element> divs = doc.getElementsByTag(\"div\");\n        assertEquals(2, divs.size());\n        assertEquals(\"div1\", divs.get(0).id());\n        assertEquals(\"div2\", divs.get(1).id());\n\n        List<Element> ps = doc.getElementsByTag(\"p\");\n        assertEquals(2, ps.size());\n        assertEquals(\"Hello\", ((TextNode) ps.get(0).childNode(0)).getWholeText());\n        assertEquals(\"Another \", ((TextNode) ps.get(1).childNode(0)).getWholeText());\n        List<Element> ps2 = doc.getElementsByTag(\"P\");\n        assertEquals(ps, ps2);\n\n        List<Element> imgs = doc.getElementsByTag(\"img\");\n        assertEquals(\"foo.png\", imgs.get(0).attr(\"src\"));\n\n        List<Element> empty = doc.getElementsByTag(\"wtf\");\n        assertEquals(0, empty.size());\n    }\n    \n    @Test public void getNamespacedElementsByTag() {\n        Document doc = Jsoup.parse(\"<div><abc:def id=1>Hello</abc:def></div>\");\n        Elements els = doc.getElementsByTag(\"abc:def\");\n        assertEquals(1, els.size());\n        assertEquals(\"1\", els.first().id());\n        assertEquals(\"abc:def\", els.first().tagName());\n    }\n\n    @Test public void testGetElementById() {\n        Document doc = Jsoup.parse(reference);\n        Element div = doc.getElementById(\"div1\");\n        assertEquals(\"div1\", div.id());\n        assertNull(doc.getElementById(\"none\"));\n\n        Document doc2 = Jsoup.parse(\"<div id=1><div id=2><p>Hello <span id=2>world!</span></p></div></div>\");\n        Element div2 = doc2.getElementById(\"2\");\n        assertEquals(\"div\", div2.tagName()); // not the span\n        Element span = div2.child(0).getElementById(\"2\"); // called from <p> context should be span\n        assertEquals(\"span\", span.tagName());\n    }\n    \n    @Test public void testGetText() {\n        Document doc = Jsoup.parse(reference);\n        assertEquals(\"Hello Another element\", doc.text());\n        assertEquals(\"Another element\", doc.getElementsByTag(\"p\").get(1).text());\n    }\n\n    @Test public void testGetChildText() {\n        Document doc = Jsoup.parse(\"<p>Hello <b>there</b> now\");\n        Element p = doc.select(\"p\").first();\n        assertEquals(\"Hello there now\", p.text());\n        assertEquals(\"Hello now\", p.ownText());\n    }\n\n    @Test public void testNormalisesText() {\n        String h = \"<p>Hello<p>There.</p> \\n <p>Here <b>is</b> \\n s<b>om</b>e text.\";\n        Document doc = Jsoup.parse(h);\n        String text = doc.text();\n        assertEquals(\"Hello There. Here is some text.\", text);\n\n        assertTrue(div.hasText());\n        assertTrue(ps.first().hasText());\n        assertFalse(ps.last().hasText());\n    }\n\n    @Test public void dataset() {\n        Document doc = Jsoup.parse(\"<div id=1 data-name=jsoup class=new data-package=jar>Hello</div><p id=2>Hello</p>\");\n        Element div = doc.select(\"div\").first();\n        Map<String, String> dataset = div.dataset();\n        Attributes attributes = div.attributes();\n\n        // size, get, set, add, remove\n        assertEquals(2, dataset.size());\n        assertEquals(\"jsoup\", dataset.get(\"name\"));\n        assertEquals(\"jar\", dataset.get(\"package\"));\n\n        dataset.put(\"name\", \"jsoup updated\");\n        dataset.put(\"language\", \"java\");\n        dataset.remove(\"package\");\n\n        assertEquals(2, dataset.size());\n        assertEquals(4, attributes.size());\n        assertEquals(\"jsoup updated\", attributes.get(\"data-name\"));\n        assertEquals(\"jsoup updated\", dataset.get(\"name\"));\n        assertEquals(\"java\", attributes.get(\"data-language\"));\n        assertEquals(\"java\", dataset.get(\"language\"));\n\n        attributes.put(\"data-food\", \"bacon\");\n        assertEquals(3, dataset.size());\n        assertEquals(\"bacon\", dataset.get(\"food\"));\n\n        attributes.put(\"data-\", \"empty\");\n        assertEquals(null, dataset.get(\"\")); // data- is not a data attribute\n\n        Element p = doc.select(\"p\").first();\n        assertEquals(0, p.dataset().size());\n\n    }\n\n    @Test public void parentlessToString() {\n        Document doc = Jsoup.parse(\"<img src='foo'>\");\n        Element img = doc.select(\"img\").first();\n        assertEquals(\"<img src=\\\"foo\\\">\", img.toString());\n\n        img.remove(); // lost its parent\n        assertEquals(\"<img src=\\\"foo\\\">\", img.toString());\n    }\n\n    @Test public void testClone() {\n        Document doc = Jsoup.parse(\"<div><p>One<p><span>Two</div>\");\n\n        Element p = doc.select(\"p\").get(1);\n        Element clone = p.clone();\n\n        assertNull(clone.parent()); // should be orphaned\n        assertEquals(0, clone.siblingIndex);\n        assertEquals(1, p.siblingIndex);\n        assertNotNull(p.parent());\n\n        clone.append(\"<span>Three\");\n        assertEquals(\"<p><span>Two</span><span>Three</span></p>\", TextUtil.stripNewlines(clone.outerHtml()));\n        assertEquals(\"<div><p>One</p><p><span>Two</span></p></div>\", TextUtil.stripNewlines(doc.body().html())); // not modified\n\n        doc.body().appendChild(clone); // adopt\n        assertNotNull(clone.parent());\n        assertEquals(\"<div><p>One</p><p><span>Two</span></p></div><p><span>Two</span><span>Three</span></p>\", TextUtil.stripNewlines(doc.body().html()));\n    }\n\n    @Test public void testClonesClassnames() {\n        Document doc = Jsoup.parse(\"<div class='one two'></div>\");\n        Element div = doc.select(\"div\").first();\n        Set<String> classes = div.classNames();\n        assertEquals(2, classes.size());\n        assertTrue(classes.contains(\"one\"));\n        assertTrue(classes.contains(\"two\"));\n\n        Element copy = div.clone();\n        Set<String> copyClasses = copy.classNames();\n        assertEquals(2, copyClasses.size());\n        assertTrue(copyClasses.contains(\"one\"));\n        assertTrue(copyClasses.contains(\"two\"));\n        copyClasses.add(\"three\");\n        copyClasses.remove(\"one\");\n\n        assertTrue(classes.contains(\"one\"));\n        assertFalse(classes.contains(\"three\"));\n        assertFalse(copyClasses.contains(\"one\"));\n        assertTrue(copyClasses.contains(\"three\"));\n\n        assertEquals(\"\", div.html());\n        assertEquals(\"\", copy.html());\n    }\n\n    @Test public void testTagNameSet() {\n        Document doc = Jsoup.parse(\"<div><i>Hello</i>\");\n        doc.select(\"i\").first().tagName(\"em\");\n        assertEquals(0, doc.select(\"i\").size());\n        assertEquals(1, doc.select(\"em\").size());\n        assertEquals(\"<em>Hello</em>\", doc.select(\"div\").first().html());\n    }\n\n    @Test public void testHtmlContainsOuter() {\n        Document doc = Jsoup.parse(\"<title>Check</title> <div>Hello there</div>\");\n        doc.outputSettings().indentAmount(0);\n        assertTrue(doc.html().contains(doc.select(\"title\").outerHtml()));\n        assertTrue(doc.html().contains(doc.select(\"div\").outerHtml()));\n    }\n\n    @Test public void testGetTextNodes() {\n        Document doc = Jsoup.parse(\"<p>One <span>Two</span> Three <br> Four</p>\");\n        List<TextNode> textNodes = doc.select(\"p\").first().textNodes();\n\n        assertEquals(3, textNodes.size());\n        assertEquals(\"One \", textNodes.get(0).text());\n        assertEquals(\" Three \", textNodes.get(1).text());\n        assertEquals(\" Four\", textNodes.get(2).text());\n\n        assertEquals(0, doc.select(\"br\").first().textNodes().size());\n    }\n\n    @Test public void testManipulateTextNodes() {\n        Document doc = Jsoup.parse(\"<p>One <span>Two</span> Three <br> Four</p>\");\n        Element p = doc.select(\"p\").first();\n        List<TextNode> textNodes = p.textNodes();\n\n        textNodes.get(1).text(\" three-more \");\n        textNodes.get(2).splitText(3).text(\"-ur\");\n\n        assertEquals(\"One Two three-more Fo-ur\", p.text());\n        assertEquals(\"One three-more Fo-ur\", p.ownText());\n        assertEquals(4, p.textNodes().size()); // grew because of split\n    }\n\n    @Test public void testGetDataNodes() {\n        Document doc = Jsoup.parse(\"<script>One Two</script> <style>Three Four</style> <p>Fix Six</p>\");\n        Element script = doc.select(\"script\").first();\n        Element style = doc.select(\"style\").first();\n        Element p = doc.select(\"p\").first();\n\n",
+  "compaction": {
+    "source_lines": 894,
+    "mode": "windows",
+    "windows_total": 15,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        480,
+        560
+      ],
+      [
+        540,
+        620
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 13.465763757457326
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 12.717999995943384
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 6.183322236569089
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 13.465763757457326
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 4.477854279855176
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 1.69706785317236
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 5.650529278476639
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.3336527288836795
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 4.357932885642635
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 0.06829516066986212
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 2.1437463004586497
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 12.717999995943384
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 6.183322236569089
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 2.043625635252374
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 0.7293325281166517
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 0.05423630084041502
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 5.368711546652918
+      },
+      {
+        "start": 840,
+        "end": 894,
+        "score": 5.472894784393148
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8671,
+  "representation_chars": 8671,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

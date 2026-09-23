@@ -1,0 +1,227 @@
+TEST CLASS:
+org.apache.commons.lang3.CharRangeTest
+
+SOURCE FILE:
+src/test/java/org/apache/commons/lang3/CharRangeTest.java
+
+TEST SOURCE:
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.apache.commons.lang3;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.lang.reflect.Modifier;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import org.junit.Test;
+
+/**
+ * Unit tests {@link org.apache.commons.lang3.CharRange}.
+ *
+ * @version $Id$
+ */
+public class CharRangeTest  {
+
+    //-----------------------------------------------------------------------
+    @Test
+    public void testClass() {
+        // class changed to non-public in 3.0
+        assertFalse(Modifier.isPublic(CharRange.class.getModifiers()));
+        assertTrue(Modifier.isFinal(CharRange.class.getModifiers()));
+    }
+
+    //-----------------------------------------------------------------------
+    @Test
+    public void testConstructorAccessors_is() {
+        CharRange rangea = CharRange.is('a');
+        assertEquals('a', rangea.getStart());
+        assertEquals('a', rangea.getEnd());
+        assertFalse(rangea.isNegated());
+        assertEquals("a", rangea.toString());
+    }
+
+    @Test
+    public void testConstructorAccessors_isNot() {
+        CharRange rangea = CharRange.isNot('a');
+        assertEquals('a', rangea.getStart());
+        assertEquals('a', rangea.getEnd());
+        assertTrue(rangea.isNegated());
+        assertEquals("^a", rangea.toString());
+    }
+
+    @Test
+    public void testConstructorAccessors_isIn_Same() {
+        CharRange rangea = CharRange.isIn('a', 'a');
+        assertEquals('a', rangea.getStart());
+        assertEquals('a', rangea.getEnd());
+        assertFalse(rangea.isNegated());
+        assertEquals("a", rangea.toString());
+    }
+
+    @Test
+    public void testConstructorAccessors_isIn_Normal() {
+        CharRange rangea = CharRange.isIn('a', 'e');
+        assertEquals('a', rangea.getStart());
+        assertEquals('e', rangea.getEnd());
+        assertFalse(rangea.isNegated());
+        assertEquals("a-e", rangea.toString());
+    }
+
+    @Test
+    public void testConstructorAccessors_isIn_Reversed() {
+        CharRange rangea = CharRange.isIn('e', 'a');
+        assertEquals('a', rangea.getStart());
+        assertEquals('e', rangea.getEnd());
+        assertFalse(rangea.isNegated());
+        assertEquals("a-e", rangea.toString());
+    }
+
+    @Test
+    public void testConstructorAccessors_isNotIn_Same() {
+        CharRange rangea = CharRange.isNotIn('a', 'a');
+        assertEquals('a', rangea.getStart());
+        assertEquals('a', rangea.getEnd());
+        assertTrue(rangea.isNegated());
+        assertEquals("^a", rangea.toString());
+    }
+
+    @Test
+    public void testConstructorAccessors_isNotIn_Normal() {
+        CharRange rangea = CharRange.isNotIn('a', 'e');
+        assertEquals('a', rangea.getStart());
+        assertEquals('e', rangea.getEnd());
+        assertTrue(rangea.isNegated());
+        assertEquals("^a-e", rangea.toString());
+    }
+
+    @Test
+    public void testConstructorAccessors_isNotIn_Reversed() {
+        CharRange rangea = CharRange.isNotIn('e', 'a');
+        assertEquals('a', rangea.getStart());
+        assertEquals('e', rangea.getEnd());
+        assertTrue(rangea.isNegated());
+        assertEquals("^a-e", rangea.toString());
+    }
+
+    //-----------------------------------------------------------------------
+    @Test
+    public void testEquals_Object() {
+        CharRange rangea = CharRange.is('a');
+        CharRange rangeae = CharRange.isIn('a', 'e');
+        CharRange rangenotbf = CharRange.isIn('b', 'f');
+
+        assertFalse(rangea.equals(null));
+
+        assertTrue(rangea.equals(rangea));
+        assertTrue(rangea.equals(CharRange.is('a')));
+        assertTrue(rangeae.equals(rangeae));
+        assertTrue(rangeae.equals(CharRange.isIn('a', 'e')));
+        assertTrue(rangenotbf.equals(rangenotbf));
+        assertTrue(rangenotbf.equals(CharRange.isIn('b', 'f')));
+
+        assertFalse(rangea.equals(rangeae));
+        assertFalse(rangea.equals(rangenotbf));
+        assertFalse(rangeae.equals(rangea));
+        assertFalse(rangeae.equals(rangenotbf));
+        assertFalse(notbd.contains(notc));
+        assertFalse(notbd.contains(notd));
+
+        assertFalse(notbd.contains(notab));
+        assertFalse(notbd.contains(notbc));
+        assertTrue(notbd.contains(notbd));
+        assertFalse(notbd.contains(notcd));
+        assertFalse(notbd.contains(notde));
+        assertTrue(notbd.contains(notae));
+    }
+
+    @Test
+    public void testContainsNullArg() {
+        CharRange range = CharRange.is('a');
+        try {
+            @SuppressWarnings("unused")
+            boolean contains = range.contains(null);
+        } catch(IllegalArgumentException e) {
+            assertEquals("The Range must not be null", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testIterator() {
+        CharRange a = CharRange.is('a');
+        CharRange ad = CharRange.isIn('a', 'd');
+        CharRange nota = CharRange.isNot('a');
+        CharRange emptySet = CharRange.isNotIn((char) 0, Character.MAX_VALUE);
+        CharRange notFirst = CharRange.isNotIn((char) 1, Character.MAX_VALUE);
+        CharRange notLast = CharRange.isNotIn((char) 0, (char) (Character.MAX_VALUE - 1));
+
+        Iterator<Character> aIt = a.iterator();
+        assertNotNull(aIt);
+        assertTrue(aIt.hasNext());
+        assertEquals(Character.valueOf('a'), aIt.next());
+        assertFalse(aIt.hasNext());
+
+        Iterator<Character> adIt = ad.iterator();
+        assertNotNull(adIt);
+        assertTrue(adIt.hasNext());
+        assertEquals(Character.valueOf('a'), adIt.next());
+        assertEquals(Character.valueOf('b'), adIt.next());
+        assertEquals(Character.valueOf('c'), adIt.next());
+        assertEquals(Character.valueOf('d'), adIt.next());
+        assertFalse(adIt.hasNext());
+
+        Iterator<Character> notaIt = nota.iterator();
+        assertNotNull(notaIt);
+        assertTrue(notaIt.hasNext());
+        while (notaIt.hasNext()) {
+            Character c = notaIt.next();
+            assertFalse('a' == c.charValue());
+        }
+
+        Iterator<Character> emptySetIt = emptySet.iterator();
+        assertNotNull(emptySetIt);
+        assertFalse(emptySetIt.hasNext());
+        try {
+            emptySetIt.next();
+            fail("Should throw NoSuchElementException");
+        } catch (NoSuchElementException e) {
+            assertTrue(true);
+        }
+
+        Iterator<Character> notFirstIt = notFirst.iterator();
+        assertNotNull(notFirstIt);
+        assertTrue(notFirstIt.hasNext());
+        assertEquals(Character.valueOf((char) 0), notFirstIt.next());
+        assertFalse(notFirstIt.hasNext());
+        try {
+            notFirstIt.next();
+            fail("Should throw NoSuchElementException");
+        } catch (NoSuchElementException e) {
+            assertTrue(true);
+        }
+
+        Iterator<Character> notLastIt = notLast.iterator();
+        assertNotNull(notLastIt);
+        assertTrue(notLastIt.hasNext());
+        assertEquals(Character.valueOf(Character.MAX_VALUE), notLastIt.next());

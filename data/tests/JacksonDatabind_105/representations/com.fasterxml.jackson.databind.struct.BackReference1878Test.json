@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.struct.BackReference1878Test",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/struct/BackReference1878Test.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.struct.BackReference1878Test\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/struct/BackReference1878Test.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.struct;\n\nimport com.fasterxml.jackson.annotation.JsonBackReference;\nimport com.fasterxml.jackson.annotation.JsonManagedReference;\n\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.ObjectMapper;\n\n/**\n * @author Reda.Housni-Alaoui\n */\npublic class BackReference1878Test extends BaseMapTest\n{\n    static class Child {\n        @JsonBackReference\n        public Parent b;\n    }\n\n    static class Parent {\n        @JsonManagedReference\n        public Child a;\n    }\n\n    private final ObjectMapper MAPPER = new ObjectMapper();\n\n    public void testChildDeserialization() throws Exception {\n        Child child = MAPPER.readValue(\"{\\\"b\\\": {}}\", Child.class);\n        assertNotNull(child.b);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 30,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 950,
+  "representation_chars": 950,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

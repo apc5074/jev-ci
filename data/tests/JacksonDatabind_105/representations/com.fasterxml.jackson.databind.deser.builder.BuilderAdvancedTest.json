@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.builder.BuilderAdvancedTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/builder/BuilderAdvancedTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.builder.BuilderAdvancedTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/builder/BuilderAdvancedTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser.builder;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\n\npublic class BuilderAdvancedTest extends BaseMapTest\n{\n    @JsonDeserialize(builder=InjectableBuilderXY.class)\n    static class InjectableXY\n    {\n        final int _x, _y;\n        final String _stuff;\n\n        protected InjectableXY(int x, int y, String stuff) {\n            _x = x+1;\n            _y = y+1;\n            _stuff = stuff;\n        }\n    }\n\n    static class InjectableBuilderXY\n    {\n        public int x, y;\n\n        @JacksonInject\n        protected String stuff;\n        \n        public InjectableBuilderXY withX(int x0) {\n              this.x = x0;\n              return this;\n        }\n\n        public InjectableBuilderXY withY(int y0) {\n              this.y = y0;\n              return this;\n        }\n\n        public InjectableXY build() {\n              return new InjectableXY(x, y, stuff);\n        }\n    }\n\n    /*\n    /**********************************************************\n    /* Unit tests\n    /**********************************************************\n     */\n    \n    public void testWithInjectable() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.setInjectableValues(new InjectableValues.Std()\n            .addValue(String.class, \"stuffValue\")\n            );\n        InjectableXY bean = mapper.readValue(aposToQuotes(\"{'y':3,'x':7}\"),\n                InjectableXY.class);\n        assertEquals(8, bean._x);\n        assertEquals(4, bean._y);\n        assertEquals(\"stuffValue\", bean._stuff);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 63,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1862,
+  "representation_chars": 1862,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

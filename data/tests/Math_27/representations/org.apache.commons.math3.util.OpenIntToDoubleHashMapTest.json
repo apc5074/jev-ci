@@ -1,0 +1,86 @@
+{
+  "test_class": "org.apache.commons.math3.util.OpenIntToDoubleHashMapTest",
+  "source_file": "src/test/java/org/apache/commons/math3/util/OpenIntToDoubleHashMapTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.util.OpenIntToDoubleHashMapTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/util/OpenIntToDoubleHashMapTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.util;\n\nimport java.util.ConcurrentModificationException;\nimport java.util.HashMap;\nimport java.util.HashSet;\nimport java.util.Map;\nimport java.util.NoSuchElementException;\nimport java.util.Random;\nimport java.util.Set;\n\nimport org.junit.Assert;\nimport org.junit.Before;\nimport org.junit.Test;\n\n\n/**\n * Test cases for the {@link OpenIntToDoubleHashMap}.\n */\npublic class OpenIntToDoubleHashMapTest {\n\n    private Map<Integer, Double> javaMap = new HashMap<Integer, Double>();\n\n    @Before\n    public void setUp() throws Exception {\n        javaMap.put(50, 100.0);\n        javaMap.put(75, 75.0);\n        javaMap.put(25, 500.0);\n        javaMap.put(Integer.MAX_VALUE, Double.MAX_VALUE);\n        javaMap.put(0, -1.0);\n        javaMap.put(1, 0.0);\n        javaMap.put(33, -0.1);\n        javaMap.put(23234234, -242343.0);\n        javaMap.put(23321, Double.MIN_VALUE);\n        javaMap.put(-4444, 332.0);\n        javaMap.put(-1, -2323.0);\n        javaMap.put(Integer.MIN_VALUE, 44.0);\n\n        /* Add a few more to cause the table to rehash */\n        javaMap.putAll(generate());\n\n    }\n\n    private Map<Integer, Double> generate() {\n        Map<Integer, Double> map = new HashMap<Integer, Double>();\n        Random r = new Random();\n        for (int i = 0; i < 2000; ++i)\n            map.put(r.nextInt(), r.nextDouble());\n        return map;\n    }\n\n    private OpenIntToDoubleHashMap createFromJavaMap() {\n        OpenIntToDoubleHashMap map = new OpenIntToDoubleHashMap();\n        for (Map.Entry<Integer, Double> mapEntry : javaMap.entrySet()) {\n            map.put(mapEntry.getKey(), mapEntry.getValue());\n        }\n        return map;\n    }\n\n    @Test\n    public void testPutAndGetWith0ExpectedSize() {\n        OpenIntToDoubleHashMap map = new OpenIntToDoubleHashMap(0);\n        assertPutAndGet(map);\n    }\n\n\n    @Test\n    public void testRemoveFromEmpty() {\n        OpenIntToDoubleHashMap map = new OpenIntToDoubleHashMap();\n        Assert.assertTrue(Double.isNaN(map.remove(50)));\n    }\n\n    @Test\n    public void testRemoveAbsent() {\n        Map<Integer, Double> generated = generateAbsent();\n\n        OpenIntToDoubleHashMap map = createFromJavaMap();\n        int mapSize = map.size();\n\n        for (Map.Entry<Integer, Double> mapEntry : generated.entrySet()) {\n            map.remove(mapEntry.getKey());\n            Assert.assertEquals(mapSize, map.size());\n            Assert.assertTrue(Double.isNaN(map.get(mapEntry.getKey())));\n        }\n    }\n\n    /**\n     * Returns a map with at least 100 elements where each element is absent from javaMap.\n     */\n    private Map<Integer, Double> generateAbsent() {\n        Map<Integer, Double> generated = new HashMap<Integer, Double>();\n        do {\n            generated.putAll(generate());\n            for (Integer key : javaMap.keySet())\n                generated.remove(key);\n        } while (generated.size() < 100);\n        return generated;\n    }\n\n    @Test\n    public void testCopy() {\n        OpenIntToDoubleHashMap copy =\n            new OpenIntToDoubleHashMap(createFromJavaMap());\n        Assert.assertEquals(javaMap.size(), copy.size());\n\n        for (Map.Entry<Integer, Double> mapEntry : javaMap.entrySet())\n            Assert.assertTrue(Precision.equals(mapEntry.getValue(), copy.get(mapEntry.getKey()), 1));\n    }\n\n    @Test\n    public void testContainsKey() {\n        OpenIntToDoubleHashMap map = createFromJavaMap();\n        for (Map.Entry<Integer, Double> mapEntry : javaMap.entrySet()) {\n            Assert.assertTrue(map.containsKey(mapEntry.getKey()));\n        }\n        for (Map.Entry<Integer, Double> mapEntry : generateAbsent().entrySet()) {\n            Assert.assertFalse(map.containsKey(mapEntry.getKey()));\n        }\n        for (Map.Entry<Integer, Double> mapEntry : javaMap.entrySet()) {\n            int key = mapEntry.getKey();\n            Assert.assertTrue(map.containsKey(key));\n            map.remove(key);\n            Assert.assertFalse(map.containsKey(key));\n        }\n    }\n\n    @Test\n    public void testIterator() {\n        OpenIntToDoubleHashMap map = createFromJavaMap();\n        OpenIntToDoubleHashMap.Iterator iterator = map.iterator();\n        for (int i = 0; i < map.size(); ++i) {\n            Assert.assertTrue(iterator.hasNext());\n            iterator.advance();\n            int key = iterator.key();\n            Assert.assertTrue(map.containsKey(key));\n            Assert.assertEquals(javaMap.get(key), map.get(key), 0);\n            Assert.assertEquals(javaMap.get(key), iterator.value(), 0);\n            Assert.assertTrue(javaMap.containsKey(key));\n        }\n        Assert.assertFalse(iterator.hasNext());\n        try {\n            iterator.advance();\n            Assert.fail(\"an exception should have been thrown\");\n        } catch (NoSuchElementException nsee) {\n            // expected\n        }\n    }\n\n    @Test\n    public void testConcurrentModification() {\n        OpenIntToDoubleHashMap map = createFromJavaMap();\n        OpenIntToDoubleHashMap.Iterator iterator = map.iterator();\n        map.put(3, 3);\n        try {\n            iterator.advance();\n            Assert.fail(\"an exception should have been thrown\");\n        } catch (ConcurrentModificationException cme) {\n            // expected\n        }\n    }\n\n    /**\n     * Regression test for a bug in findInsertionIndex where the hashing in the second probing\n     * loop was inconsistent with the first causing duplicate keys after the right sequence\n     * of puts and removes.\n     */\n    @Test\n    public void testPutKeysWithCollisions() {\n        OpenIntToDoubleHashMap map = new OpenIntToDoubleHashMap();\n        int key1 = -1996012590;\n        double value1 = 1.0;\n        map.put(key1, value1);\n        int key2 = 835099822;\n        map.put(key2, value1);\n        int key3 = 1008859686;\n        map.put(key3, value1);\n        Assert.assertTrue(Precision.equals(value1, map.get(key3), 1));\n        Assert.assertEquals(3, map.size());\n\n        map.remove(key2);\n        double value2 = 2.0;\n        map.put(key3, value2);\n        Assert.assertTrue(Precision.equals(value2, map.get(key3), 1));\n        Assert.assertEquals(2, map.size());\n    }\n\n    /**\n     * Similar to testPutKeysWithCollisions() but exercises the codepaths in a slightly\n     * different manner.\n     */\n    @Test\n    public void testPutKeysWithCollision2() {\n        OpenIntToDoubleHashMap map = new OpenIntToDoubleHashMap();\n        int key1 = 837989881;\n        double value1 = 1.0;\n        map.put(key1, value1);\n        int key2 = 476463321;\n        map.put(key2, value1);\n        Assert.assertEquals(2, map.size());\n        Assert.assertTrue(Precision.equals(value1, map.get(key2), 1));\n\n        map.remove(key1);\n        double value2 = 2.0;\n        map.put(key2, value2);\n        Assert.assertEquals(1, map.size());\n",
+  "compaction": {
+    "source_lines": 324,
+    "mode": "windows",
+    "windows_total": 6,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        180,
+        260
+      ],
+      [
+        240,
+        320
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 14.805235676453078
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 3.2356645771133294
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 2.344458606864992
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 14.805235676453078
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.2218351718791154
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 1.1630421929204084
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 3.2356645771133294
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 2.344458606864992
+      },
+      {
+        "start": 300,
+        "end": 324,
+        "score": 1.3091917578789967
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7763,
+  "representation_chars": 7763,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

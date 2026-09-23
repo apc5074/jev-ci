@@ -1,0 +1,91 @@
+{
+  "test_class": "org.apache.commons.lang3.StringEscapeUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/StringEscapeUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.StringEscapeUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/StringEscapeUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3;\n\nimport java.io.IOException;\nimport java.io.StringWriter;\nimport java.lang.reflect.Constructor;\nimport java.lang.reflect.Modifier;\n\nimport junit.framework.TestCase;\n\n/**\n * Unit tests for {@link StringEscapeUtils}.\n *\n * @author <a href=\"mailto:alex@purpletech.com\">Alexander Day Chaffee</a>\n * @version $Id$\n */\npublic class StringEscapeUtilsTest extends TestCase {\n    private final static String FOO = \"foo\";\n\n    public StringEscapeUtilsTest(String name) {\n        super(name);\n    }\n\n    //-----------------------------------------------------------------------\n    public void testConstructor() {\n        assertNotNull(new StringEscapeUtils());\n        Constructor<?>[] cons = StringEscapeUtils.class.getDeclaredConstructors();\n        assertEquals(1, cons.length);\n        assertEquals(true, Modifier.isPublic(cons[0].getModifiers()));\n        assertEquals(true, Modifier.isPublic(StringEscapeUtils.class.getModifiers()));\n        assertEquals(false, Modifier.isFinal(StringEscapeUtils.class.getModifiers()));\n    }\n    \n    //-----------------------------------------------------------------------\n    public void testEscapeJava() throws IOException {\n        assertEquals(null, StringEscapeUtils.escapeJava(null));\n        try {\n            StringEscapeUtils.ESCAPE_JAVA.translate(null, null);\n            fail();\n        } catch (IOException ex) {\n            fail();\n        } catch (IllegalArgumentException ex) {\n        }\n        try {\n            StringEscapeUtils.ESCAPE_JAVA.translate(\"\", null);\n            fail();\n        } catch (IOException ex) {\n            fail();\n        } catch (IllegalArgumentException ex) {\n        }\n        \n        assertEscapeJava(\"empty string\", \"\", \"\");\n        assertEscapeJava(FOO, FOO);\n        assertEscapeJava(\"tab\", \"\\\\t\", \"\\t\");\n        assertEscapeJava(\"backslash\", \"\\\\\\\\\", \"\\\\\");\n        assertEscapeJava(\"single quote should not be escaped\", \"'\", \"'\");\n        assertEscapeJava(\"\\\\\\\\\\\\b\\\\t\\\\r\", \"\\\\\\b\\t\\r\");\n        assertEscapeJava(\"\\\\u1234\", \"\\u1234\");\n        assertEscapeJava(\"\\\\u0234\", \"\\u0234\");\n        assertEscapeJava(\"\\\\u00EF\", \"\\u00ef\");\n        assertEscapeJava(\"\\\\u0001\", \"\\u0001\");\n        assertEscapeJava(\"Should use capitalized unicode hex\", \"\\\\uABCD\", \"\\uabcd\");\n\n        assertEscapeJava(\"He didn't say, \\\\\\\"stop!\\\\\\\"\",\n                \"He didn't say, \\\"stop!\\\"\");\n        assertEscapeJava(\"non-breaking space\", \"This space is non-breaking:\" + \"\\\\u00A0\",\n                \"This space is non-breaking:\\u00a0\");\n        assertEscapeJava(\"\\\\uABCD\\\\u1234\\\\u012C\",\n                \"\\uABCD\\u1234\\u012C\");\n    }\n\n    /**\n     * https://issues.apache.org/jira/browse/LANG-421\n     */\n    public void testEscapeJavaWithSlash() {\n        final String input = \"String with a slash (/) in it\";\n\n        final String expected = input;\n        final String actual = StringEscapeUtils.escapeJava(input);\n\n        /**\n         * In 2.4 StringEscapeUtils.escapeJava(String) escapes '/' characters, which are not a valid character to escape\n         * in a Java string.\n         */\n        assertEquals(expected, actual);\n    }\n    \n    private void assertEscapeJava(String escaped, String original) throws IOException {\n        assertEscapeJava(null, escaped, original);\n    }\n\n    private void assertEscapeJava(String message, String expected, String original) throws IOException {\n        String converted = StringEscapeUtils.escapeJava(original);\n        message = \"escapeJava(String) failed\" + (message == null ? \"\" : (\": \" + message));\n        assertEquals(message, expected, converted);\n\n        StringWriter writer = new StringWriter();\n        StringEscapeUtils.ESCAPE_JAVA.translate(original, writer);\n        assertEquals(expected, writer.toString());\n    }\n\n    public void testUnescapeJava() throws IOException {\n        assertEquals(null, StringEscapeUtils.unescapeJava(null));\n        try {\n            StringEscapeUtils.UNESCAPE_JAVA.translate(null, null);\n            fail();\n        } catch (IOException ex) {\n            fail();\n        } catch (IllegalArgumentException ex) {\n        }\n        try {\n            StringEscapeUtils.UNESCAPE_JAVA.translate(\"\", null);\n            fail();\n        } catch (IOException ex) {\n            fail();\n        } catch (IllegalArgumentException ex) {\n        }\n        try {\n            StringEscapeUtils.unescapeJava(\"\\\\u02-3\");\n            fail();\n        } catch (RuntimeException ex) {\n        }\n        \n        assertUnescapeJava(\"\", \"\");\n        assertUnescapeJava(\"test\", \"test\");\n        try {\n            StringEscapeUtils.ESCAPE_ECMASCRIPT.translate(\"\", null);\n            fail();\n        } catch (IOException ex) {\n            fail();\n        } catch (IllegalArgumentException ex) {\n        }\n        \n        assertEquals(\"He didn\\\\'t say, \\\\\\\"stop!\\\\\\\"\", StringEscapeUtils.escapeEcmaScript(\"He didn't say, \\\"stop!\\\"\"));\n        assertEquals(\"document.getElementById(\\\\\\\"test\\\\\\\").value = \\\\'<script>alert(\\\\'aaa\\\\');<\\\\/script>\\\\';\", \n                StringEscapeUtils.escapeEcmaScript(\"document.getElementById(\\\"test\\\").value = '<script>alert('aaa');</script>';\"));\n    }\n\n\n    // HTML and XML\n    //--------------------------------------------------------------\n\n    String[][] htmlEscapes = {\n        {\"no escaping\", \"plain text\", \"plain text\"},\n        {\"no escaping\", \"plain text\", \"plain text\"},\n        {\"empty string\", \"\", \"\"},\n        {\"null\", null, null},\n        {\"ampersand\", \"bread &amp; butter\", \"bread & butter\"},\n        {\"quotes\", \"&quot;bread&quot; &amp; butter\", \"\\\"bread\\\" & butter\"},\n        {\"final character only\", \"greater than &gt;\", \"greater than >\"},\n        {\"first character only\", \"&lt; less than\", \"< less than\"},\n        {\"apostrophe\", \"Huntington's chorea\", \"Huntington's chorea\"},\n        {\"languages\", \"English,Fran&ccedil;ais,\\u65E5\\u672C\\u8A9E (nihongo)\", \"English,Fran\\u00E7ais,\\u65E5\\u672C\\u8A9E (nihongo)\"},\n        {\"8-bit ascii shouldn't number-escape\", \"\\u0080\\u009F\", \"\\u0080\\u009F\"},\n    };\n\n    public void testEscapeHtml() {\n        for (int i = 0; i < htmlEscapes.length; ++i) {\n            String message = htmlEscapes[i][0];\n            String expected = htmlEscapes[i][1];\n            String original = htmlEscapes[i][2];\n            assertEquals(message, expected, StringEscapeUtils.escapeHtml4(original));\n            StringWriter sw = new StringWriter();\n            try {\n                StringEscapeUtils.ESCAPE_HTML4.translate(original, sw);\n            } catch (IOException e) {\n            }\n            String actual = original == null ? null : sw.toString();\n            assertEquals(message, expected, actual);\n        }\n    }\n\n    public void testUnescapeHtml4() {\n        for (int i = 0; i < htmlEscapes.length; ++i) {\n            String message = htmlEscapes[i][0];\n            String expected = htmlEscapes[i][2];\n            String original = htmlEscapes[i][1];\n            assertEquals(message, expected, StringEscapeUtils.unescapeHtml4(original));\n            \n            StringWriter sw = new StringWriter();\n            try {\n                StringEscapeUtils.UNESCAPE_HTML4.translate(original, sw);\n            } catch (IOException e) {\n            }\n            String actual = original == null ? null : sw.toString();\n            assertEquals(message, expected, actual);\n        }\n        // \\u00E7 is a cedilla (c with wiggle under)\n        // note that the test string must be 7-bit-clean (unicode escaped) or else it will compile incorrectly\n        // on some locales        \n        assertEquals(\"funny chars pass through OK\", \"Fran\\u00E7ais\", StringEscapeUtils.unescapeHtml4(\"Fran\\u00E7ais\"));\n        \n        assertEquals(\"Hello&;World\", StringEscapeUtils.unescapeHtml4(\"Hello&;World\"));\n        assertEquals(\"Hello&#;World\", StringEscapeUtils.unescapeHtml4(\"Hello&#;World\"));\n        assertEquals(\"Hello&# ;World\", StringEscapeUtils.unescapeHtml4(\"Hello&# ;World\"));\n        assertEquals(\"Hello&##;World\", StringEscapeUtils.unescapeHtml4(\"Hello&##;World\"));\n    }\n\n    public void testUnescapeHexCharsHtml() {\n        // Simple easy to grok test \n        assertEquals(\"hex number unescape\", \"\\u0080\\u009F\", StringEscapeUtils.unescapeHtml4(\"&#x80;&#x9F;\"));\n        assertEquals(\"hex number unescape\", \"\\u0080\\u009F\", StringEscapeUtils.unescapeHtml4(\"&#X80;&#X9F;\"));\n        // Test all Character values:\n        for (char i = Character.MIN_VALUE; i < Character.MAX_VALUE; i++) {\n            Character c1 = new Character(i);\n",
+  "compaction": {
+    "source_lines": 427,
+    "mode": "windows",
+    "windows_total": 7,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 9.183519612435376
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.797877628435279
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 5.340008687638907
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 9.183519612435376
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.797877628435279
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 1.7003960366448527
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 5.340008687638907
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.808960433305282
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 1.0828880231834395
+      },
+      {
+        "start": 360,
+        "end": 427,
+        "score": 3.2634484730294053
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9433,
+  "representation_chars": 9433,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

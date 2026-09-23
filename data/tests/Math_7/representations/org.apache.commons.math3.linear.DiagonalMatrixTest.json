@@ -1,0 +1,86 @@
+{
+  "test_class": "org.apache.commons.math3.linear.DiagonalMatrixTest",
+  "source_file": "src/test/java/org/apache/commons/math3/linear/DiagonalMatrixTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.linear.DiagonalMatrixTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/linear/DiagonalMatrixTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.linear;\n\nimport org.apache.commons.math3.TestUtils;\nimport org.apache.commons.math3.exception.DimensionMismatchException;\nimport org.apache.commons.math3.exception.NullArgumentException;\nimport org.apache.commons.math3.exception.NumberIsTooLargeException;\nimport org.apache.commons.math3.exception.OutOfRangeException;\nimport org.apache.commons.math3.util.Precision;\nimport org.junit.Assert;\nimport org.junit.Test;\n\n/**\n * Test cases for the {@link DiagonalMatrix} class.\n */\npublic class DiagonalMatrixTest {\n    @Test\n    public void testConstructor1() {\n        final int dim = 3;\n        final DiagonalMatrix m = new DiagonalMatrix(dim);\n        Assert.assertEquals(dim, m.getRowDimension());\n        Assert.assertEquals(dim, m.getColumnDimension());\n    }\n\n    @Test\n    public void testConstructor2() {\n        final double[] d = { -1.2, 3.4, 5 };\n        final DiagonalMatrix m = new DiagonalMatrix(d);\n        for (int i = 0; i < m.getRowDimension(); i++) {\n            for (int j = 0; j < m.getRowDimension(); j++) {\n                if (i == j) {\n                    Assert.assertEquals(d[i], m.getEntry(i, j), 0d);\n                } else {\n                    Assert.assertEquals(0d, m.getEntry(i, j), 0d);\n                }\n            }\n        }\n\n        // Check that the underlying was copied.\n        d[0] = 0;\n        Assert.assertFalse(d[0] == m.getEntry(0, 0));\n    }\n\n    @Test\n    public void testConstructor3() {\n        final double[] d = { -1.2, 3.4, 5 };\n        final DiagonalMatrix m = new DiagonalMatrix(d, false);\n        for (int i = 0; i < m.getRowDimension(); i++) {\n            for (int j = 0; j < m.getRowDimension(); j++) {\n                if (i == j) {\n                    Assert.assertEquals(d[i], m.getEntry(i, j), 0d);\n                } else {\n                    Assert.assertEquals(0d, m.getEntry(i, j), 0d);\n                }\n            }\n        }\n\n        // Check that the underlying is referenced.\n        d[0] = 0;\n        Assert.assertTrue(d[0] == m.getEntry(0, 0));\n\n    }\n\n    @Test(expected=DimensionMismatchException.class)\n    public void testCreateError() {\n        final double[] d = { -1.2, 3.4, 5 };\n        final DiagonalMatrix m = new DiagonalMatrix(d, false);\n        m.createMatrix(5, 3);\n    }\n\n    @Test\n    public void testCreate() {\n        final double[] d = { -1.2, 3.4, 5 };\n        final DiagonalMatrix m = new DiagonalMatrix(d, false);\n        final RealMatrix p = m.createMatrix(5, 5);\n        Assert.assertTrue(p instanceof DiagonalMatrix);\n        Assert.assertEquals(5, p.getRowDimension());\n        Assert.assertEquals(5, p.getColumnDimension());\n    }\n\n    @Test\n    public void testCopy() {\n        final double[] d = { -1.2, 3.4, 5 };\n        final DiagonalMatrix m = new DiagonalMatrix(d, false);\n        final DiagonalMatrix p = (DiagonalMatrix) m.copy();\n        for (int i = 0; i < m.getRowDimension(); ++i) {\n            Assert.assertEquals(m.getEntry(i, i), p.getEntry(i, i), 1.0e-20);\n        }\n    }\n\n    @Test\n    public void testGetData() {\n        final double[] data = { -1.2, 3.4, 5 };\n        final int dim = 3;\n        final DiagonalMatrix m = new DiagonalMatrix(dim);\n        for (int i = 0; i < dim; i++) {\n            m.setEntry(i, i, data[i]);\n        }\n\n        final double[][] out = m.getData();\n        Assert.assertEquals(dim, out.length);\n        for (int i = 0; i < m.getRowDimension(); i++) {\n            Assert.assertEquals(dim, out[i].length);\n            for (int j = 0; j < m.getRowDimension(); j++) {\n                if (i == j) {\n                    Assert.assertEquals(data[i], out[i][j], 0d);\n                } else {\n                    Assert.assertEquals(0d, out[i][j], 0d);\n                }\n            }\n        }        \n    }\n\n    @Test\n    public void testAdd() {\n        final double[] data1 = { -1.2, 3.4, 5 };\n        final DiagonalMatrix m1 = new DiagonalMatrix(data1);\n \n        final double[] data2 = { 10.1, 2.3, 45 };\n        final DiagonalMatrix m2 = new DiagonalMatrix(data2);\n\n        final DiagonalMatrix result = m1.add(m2);\n        Assert.assertEquals(m1.getRowDimension(), result.getRowDimension());\n        for (int i = 0; i < result.getRowDimension(); i++) {\n            for (int j = 0; j < result.getRowDimension(); j++) {\n                if (i == j) {\n                    Assert.assertEquals(data1[i] + data2[i], result.getEntry(i, j), 0d);\n                } else {\n                    Assert.assertEquals(0d, result.getEntry(i, j), 0d);\n                }\n            }\n        }\n    }\n\n    @Test\n    public void testSubtract() {\n        final double[] data1 = { -1.2, 3.4, 5 };\n        final DiagonalMatrix m1 = new DiagonalMatrix(data1);\n \n        final double[] data2 = { 10.1, 2.3, 45 };\n        final DiagonalMatrix m2 = new DiagonalMatrix(data2);\n\n        final DiagonalMatrix result = m1.subtract(m2);\n        Assert.assertEquals(m1.getRowDimension(), result.getRowDimension());\n        for (int i = 0; i < result.getRowDimension(); i++) {\n            for (int j = 0; j < result.getRowDimension(); j++) {\n                if (i == j) {\n                    Assert.assertEquals(data1[i] - data2[i], result.getEntry(i, j), 0d);\n                } else {\n                    Assert.assertEquals(0d, result.getEntry(i, j), 0d);\n                }\n            }\n        }\n    }\n\n    @Test\n    public void testAddToEntry() {\n        final double[] data = { -1.2, 3.4, 5 };\n        final DiagonalMatrix m = new DiagonalMatrix(data);\n\n        for (int i = 0; i < m.getRowDimension(); i++) {\n            m.addToEntry(i, i, i);\n            Assert.assertEquals(data[i] + i, m.getEntry(i, i), 0d);\n        }\n    }\n\n    @Test\n    public void testMultiplyEntry() {\n        final double[] data = { -1.2, 3.4, 5 };\n        final DiagonalMatrix m = new DiagonalMatrix(data);\n\n        for (int i = 0; i < m.getRowDimension(); i++) {\n            m.multiplyEntry(i, i, i);\n            Assert.assertEquals(data[i] * i, m.getEntry(i, i), 0d);\n        }\n    }\n\n    @Test\n    public void testMultiply1() {\n        final double[] data1 = { -1.2, 3.4, 5 };\n        final DiagonalMatrix m1 = new DiagonalMatrix(data1);\n        final double[] data2 = { 10.1, 2.3, 45 };\n        final DiagonalMatrix m2 = new DiagonalMatrix(data2);\n\n        final DiagonalMatrix result = (DiagonalMatrix) m1.multiply((RealMatrix) m2);\n",
+  "compaction": {
+    "source_lines": 329,
+    "mode": "windows",
+    "windows_total": 6,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 22.65674745906721
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 9.79190251746305
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 4.147704453093394
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 22.65674745906721
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 9.79190251746305
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 4.147704453093394
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 2.411714733574952
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 3.4368184531810866
+      },
+      {
+        "start": 300,
+        "end": 329,
+        "score": 2.833277726183318
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7331,
+  "representation_chars": 7331,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

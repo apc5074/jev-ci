@@ -1,0 +1,76 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.interop.TestExternalizable",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/interop/TestExternalizable.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.interop.TestExternalizable\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/interop/TestExternalizable.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.interop;\n\nimport java.io.*;\n\nimport com.fasterxml.jackson.databind.*;\n\n/**\n * Simple test to ensure that we can make POJOs use Jackson\n * for JDK serialization, via {@link Externalizable}\n * \n * @since 2.1\n */\npublic class TestExternalizable extends BaseMapTest\n{\n    /* Not pretty, but needed to make ObjectMapper accessible from\n     * static context (alternatively could use ThreadLocal).\n     */\n    static class MapperHolder {\n        private final ObjectMapper mapper = new ObjectMapper();\n        private final static MapperHolder instance = new MapperHolder();\n        public static ObjectMapper mapper() { return instance.mapper; }\n    }\n\n    /**\n     * Helper class we need to adapt {@link ObjectOutput} as\n     * {@link OutputStream}\n     */\n    final static class ExternalizableInput extends InputStream\n    {\n        private final ObjectInput in;\n\n        public ExternalizableInput(ObjectInput in) {\n            this.in = in;\n        }\n\n        @Override\n        public int available() throws IOException {\n            return in.available();\n        }\n        \n        @Override\n        public void close() throws IOException {\n            in.close();\n        }\n        \n        @Override\n        public boolean  markSupported() {\n            return false;\n        }\n\n        @Override\n        public int read() throws IOException {\n            return in.read();\n        }\n\n        @Override\n        public int read(byte[] buffer) throws IOException {\n            return in.read(buffer);\n        }\n\n        @Override\n        public int read(byte[] buffer, int offset, int len) throws IOException {\n            return in.read(buffer, offset, len);\n        }\n        \n        @Override\n        public long skip(long n) throws IOException {\n            return in.skip(n);\n        }\n    }        \n\n    /**\n     * Helper class we need to adapt {@link ObjectOutput} as\n     * {@link OutputStream}\n     */\n    final static class ExternalizableOutput extends OutputStream\n    {\n        private final ObjectOutput out;\n\n        public ExternalizableOutput(ObjectOutput out) {\n            this.out = out;\n        }\n        \n        @Override\n        public void flush() throws IOException {\n            out.flush();\n        }\n\n        @Override\n        public void close() throws IOException {\n            out.close();\n        }\n        \n        @Override\n        public void write(int ch) throws IOException {\n            out.write(ch);\n        }\n\n        @Override\n        public void write(byte[] data) throws IOException {\n            out.write(data);\n        }\n        \n        @Override\n        public void write(byte[] data, int offset, int len) throws IOException {\n            out.write(data, offset, len);\n        }\n    }\n    \n//    @com.fasterxml.jackson.annotation.JsonFormat(shape=com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY)\n    @SuppressWarnings(\"resource\")\n    static class MyPojo implements Externalizable\n    {\n        public int id;\n        public String name;\n        public int[] values;\n\n        public MyPojo() { } // for deserialization\n        public MyPojo(int id, String name, int[] values)\n        {\n            this.id = id;\n            this.name = name;\n            this.values = values;\n        }\n\n        @Override\n        public void readExternal(ObjectInput in) throws IOException\n        {\n//            MapperHolder.mapper().readValue(\n            MapperHolder.mapper().readerForUpdating(this).readValue(new ExternalizableInput(in));\n        }\n\n        @Override\n        public void writeExternal(ObjectOutput oo) throws IOException\n        {\n            MapperHolder.mapper().writeValue(new ExternalizableOutput(oo), this);\n        }\n\n        @Override\n        public boolean equals(Object o)\n        {\n            if (o == this) return true;\n            if (o == null) return false;\n            if (o.getClass() != getClass()) return false;\n            \n            MyPojo other = (MyPojo) o;\n            \n            if (other.id != id) return false;\n            if (!other.name.equals(name)) return false;\n            \n            if (other.values.length != values.length) return false;\n            for (int i = 0, end = values.length; i < end; ++i) {\n                if (values[i] != other.values[i]) return false;\n            }\n            return true;\n        }\n    }\n\n    /*\n    /**********************************************************\n    /* Actual tests\n    /**********************************************************\n     */\n\n    // Comparison, using JDK native\n    static class MyPojoNative implements Serializable\n    {\n        private static final long serialVersionUID = 1L;\n\n        public int id;\n        public String name;\n        public int[] values;\n\n        public MyPojoNative(int id, String name, int[] values)\n        {\n            this.id = id;\n            this.name = name;\n            this.values = values;\n        }\n    }\n    \n    @SuppressWarnings(\"unused\")\n    public void testSerializeAsExternalizable() throws Exception\n    {\n        ByteArrayOutputStream bytes = new ByteArrayOutputStream();\n        ObjectOutputStream obs = new ObjectOutputStream(bytes);\n        final MyPojo input = new MyPojo(13, \"Foobar\", new int[] { 1, 2, 3 } );\n        obs.writeObject(input);\n        obs.close();\n        byte[] ser = bytes.toByteArray();\n\n        // Ok: just verify it contains stuff it should\n        byte[] json = MapperHolder.mapper().writeValueAsBytes(input);\n\n        int ix = indexOf(ser, json);\n        if (ix < 0) {\n            fail(\"Serialization (\"+ser.length+\") does NOT contain JSON (of \"+json.length+\")\");\n        }\n        \n        // Sanity check:\n",
+  "compaction": {
+    "source_lines": 246,
+    "mode": "windows",
+    "windows_total": 4,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 12.565998498387954
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.771896399327277
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 8.482902497543641
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 12.565998498387954
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.771896399327277
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 8.482902497543641
+      },
+      {
+        "start": 180,
+        "end": 246,
+        "score": 3.0906696625099235
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 5858,
+  "representation_chars": 5858,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

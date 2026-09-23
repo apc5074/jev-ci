@@ -1,0 +1,136 @@
+{
+  "test_class": "org.apache.commons.lang3.ValidateTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/ValidateTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.ValidateTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/ValidateTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one\n * or more contributor license agreements.  See the NOTICE file\n * distributed with this work for additional information\n * regarding copyright ownership.  The ASF licenses this file\n * to you under the Apache License, Version 2.0 (the\n * \"License\"); you may not use this file except in compliance\n * with the License.  You may obtain a copy of the License at\n *\n * http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing,\n * software distributed under the License is distributed on an\n * \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY\n * KIND, either express or implied.  See the License for the\n * specific language governing permissions and limitations\n * under the License.\n */\npackage org.apache.commons.lang3;\n\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertFalse;\nimport static org.junit.Assert.assertNotNull;\nimport static org.junit.Assert.assertSame;\nimport static org.junit.Assert.assertTrue;\nimport static org.junit.Assert.fail;\n\nimport java.lang.reflect.Constructor;\nimport java.lang.reflect.Modifier;\nimport java.util.AbstractList;\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.Collection;\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\n\nimport org.junit.Test;\n\n/**\n * Unit tests {@link org.apache.commons.lang3.Validate}.\n *\n * @version $Id$\n */\npublic class ValidateTest  {\n    \n    //-----------------------------------------------------------------------\n    @Test\n    public void testIsTrue1() {\n        Validate.isTrue(true);\n        try {\n            Validate.isTrue(false);\n            fail(\"Expecting IllegalArgumentException\");\n        } catch (final IllegalArgumentException ex) {\n            assertEquals(\"The validated expression is false\", ex.getMessage());\n        }\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testIsTrue2() {\n        Validate.isTrue(true, \"MSG\");\n        try {\n            Validate.isTrue(false, \"MSG\");\n            fail(\"Expecting IllegalArgumentException\");\n        } catch (final IllegalArgumentException ex) {\n            assertEquals(\"MSG\", ex.getMessage());\n        }\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testIsTrue3() {\n        Validate.isTrue(true, \"MSG\", 6);\n        try {\n            Validate.isTrue(false, \"MSG\", 6);\n            fail(\"Expecting IllegalArgumentException\");\n        } catch (final IllegalArgumentException ex) {\n            assertEquals(\"MSG\", ex.getMessage());\n        }\n        final String string = \" \\n \\t abc \\r \\n \";\n\n        //when\n        Validate.notBlank(string);\n\n        //then should not throw\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testNotBlankMsgNotBlankStringShouldNotThrow() {\n        //given\n        final String string = \"abc\";\n\n        //when\n        Validate.notBlank(string, \"Message\");\n\n        //then should not throw\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testNotBlankMsgNotBlankStringWithWhitespacesShouldNotThrow() {\n        //given\n        final String string = \"  abc   \";\n\n        //when\n        Validate.notBlank(string, \"Message\");\n\n        //then should not throw\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testNotBlankMsgNotBlankStringWithNewlinesShouldNotThrow() {\n        //given\n        final String string = \" \\n \\t abc \\r \\n \";\n\n        //when\n        Validate.notBlank(string, \"Message\");\n\n        //then should not throw\n    }\n\n    //-----------------------------------------------------------------------\n    @Test\n    public void testNotBlankReturnValues1() {\n        final String str = \"Hi\";\n        final String test = Validate.notBlank(str);\n        assertSame(str, test);\n    }\n\n    @Test\n    public void testNotBlankReturnValues2() {\n        final String str = \"Hi\";\n        final String test = Validate.notBlank(str, \"Message\");\n        assertSame(str, test);\n    }\n\n    //-----------------------------------------------------------------------\n    //-----------------------------------------------------------------------\n    @Test\n    public void testNoNullElementsArray1() {\n        String[] array = new String[] {\"a\", \"b\"};\n        Validate.noNullElements(array);\n        try {\n            Validate.noNullElements((Object[]) null);\n            fail(\"Expecting NullPointerException\");\n        } catch (final NullPointerException ex) {\n            assertEquals(\"The validated object is null\", ex.getMessage());\n        }\n        array[1] = null;\n        try {\n            Validate.noNullElements(array);\n            fail(\"Expecting IllegalArgumentException\");\n        } catch (final IllegalArgumentException ex) {\n            assertEquals(\"The validated array contains null element at index: 1\", ex.getMessage());\n        }\n        \n        array = new String[] {\"a\", \"b\"};\n            Validate.inclusiveBetween(0, 5, 6);\n            fail(\"Expecting IllegalArgumentException\");\n        } catch (final IllegalArgumentException e) {\n            assertEquals(\"The value 6 is not in the specified inclusive range of 0 to 5\", e.getMessage());\n        }\n    }\n    \n    @Test\n    public void testInclusiveBetween_withMessage()\n    {\n        Validate.inclusiveBetween(\"a\", \"c\", \"b\", \"Error\");\n        Validate.inclusiveBetween(0, 2, 1, \"Error\");\n        Validate.inclusiveBetween(0, 2, 2, \"Error\");\n        try {\n            Validate.inclusiveBetween(0, 5, 6, \"Error\");\n            fail(\"Expecting IllegalArgumentException\");\n        } catch (final IllegalArgumentException e) {\n            assertEquals(\"Error\", e.getMessage());\n        }\n    }\n    \n    @Test\n    public void testExclusiveBetween()\n    {\n        Validate.exclusiveBetween(\"a\", \"c\", \"b\");\n        Validate.exclusiveBetween(0, 2, 1);\n        try {\n            Validate.exclusiveBetween(0, 5, 6);\n            fail(\"Expecting IllegalArgumentException\");\n        } catch (final IllegalArgumentException e) {\n            assertEquals(\"The value 6 is not in the specified exclusive range of 0 to 5\", e.getMessage());\n        }\n        try {\n            Validate.exclusiveBetween(0, 5, 5);\n            fail(\"Expecting IllegalArgumentException\");\n        } catch (final IllegalArgumentException e) {\n            assertEquals(\"The value 5 is not in the specified exclusive range of 0 to 5\", e.getMessage());\n        }\n    }\n    \n    @Test\n    public void testExclusiveBetween_withMessage()\n    {\n        Validate.exclusiveBetween(\"a\", \"c\", \"b\", \"Error\");\n        Validate.exclusiveBetween(0, 2, 1, \"Error\");\n        try {\n            Validate.exclusiveBetween(0, 5, 6, \"Error\");\n            fail(\"Expecting IllegalArgumentException\");\n        } catch (final IllegalArgumentException e) {\n            assertEquals(\"Error\", e.getMessage());\n        }\n        try {\n            Validate.exclusiveBetween(0, 5, 5, \"Error\");\n            fail(\"Expecting IllegalArgumentException\");\n        } catch (final IllegalArgumentException e) {\n            assertEquals(\"Error\", e.getMessage());\n        }\n    }\n\n    @Test\n    public void testIsInstanceOf() {\n        Validate.isInstanceOf(String.class, \"hi\");\n        Validate.isInstanceOf(Integer.class, 1);\n    }\n    \n    @Test\n    public void testIsInstanceOfExceptionMessage() {\n        try {\n            Validate.isInstanceOf(List.class, \"hi\");\n            fail(\"Expecting IllegalArgumentException\");\n        } catch(final IllegalArgumentException e) {\n            assertEquals(\"Expected type: java.util.List, actual: java.lang.String\", e.getMessage());\n        }\n    }\n    \n    @Test\n    public void testIsInstanceOf_withMessage() {\n        Validate.isInstanceOf(String.class, \"hi\", \"Error\");\n        Validate.isInstanceOf(Integer.class, 1, \"Error\");\n        try {\n",
+  "compaction": {
+    "source_lines": 956,
+    "mode": "windows",
+    "windows_total": 16,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        480,
+        560
+      ],
+      [
+        840,
+        920
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 26.789815339787246
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 7.908043425813677
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 9.591543386546252
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 26.789815339787246
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 1.9079506673849067
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 1.8957565472327012
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 2.869034479035007
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 3.7542609602424015
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 4.141134875250242
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 3.3686656885843322
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 3.0064303727970967
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 7.908043425813677
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 0.6995180810074133
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 1.6091590569609227
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 1.851598028682425
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 1.990328941929637
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 7.545578767459379
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 9.591543386546252
+      },
+      {
+        "start": 900,
+        "end": 956,
+        "score": 3.4283958418487877
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8174,
+  "representation_chars": 8174,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

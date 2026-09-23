@@ -1,0 +1,36 @@
+{
+  "qualified_id": "Cli-1",
+  "example_id": "Cli_1",
+  "direction": "fixed_to_buggy",
+  "patch_truncated": false,
+  "original_patch_chars": 3691,
+  "representation_chars": 3691,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...PATCH TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "modified_files": [
+    "src/java/org/apache/commons/cli/CommandLine.java"
+  ],
+  "modified_classes": [
+    "org.apache.commons.cli.CommandLine"
+  ],
+  "file_resolutions": [
+    {
+      "fqcn": "org.apache.commons.cli.CommandLine",
+      "outer_class": "org.apache.commons.cli.CommandLine",
+      "path": "src/java/org/apache/commons/cli/CommandLine.java",
+      "existence": "both",
+      "diff_empty": false
+    }
+  ],
+  "dir_src_classes": {
+    "fixed": "src/java",
+    "buggy": "src/java"
+  },
+  "artifacts": {
+    "regression_patch": "data/patches/Cli_1/regression_patch.diff",
+    "representation": "data/patches/Cli_1/representation.txt",
+    "raw_classes_modified": "data/bugs/Cli_1/raw/classes.modified"
+  },
+  "extracted_at": "2026-09-22T23:45:19+00:00"
+}

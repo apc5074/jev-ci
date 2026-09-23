@@ -1,0 +1,56 @@
+# Local secrets and environment (never commit)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.id_rsa
+.id_ed25519
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Always-local regenerable API / embedding caches (keep directory placeholder)
+cache/*
+!cache/.gitkeep
+
+# Accidental host-side Defects4J trees (canonical install is in the image)
+/defects4j/
+project_repos/
+
+# Temporary working trees outside the tracked data layout
+/work/
+/tmp-checkouts/
+
+Plans/
+docs/
+
+*.log
+
+# Regenerable Defects4J working trees (Phase 3+)
+data/bugs/**/checkouts/
+
+# Keep trackable on purpose (do not blanket-ignore these):
+#   data/manifest.json
+#   EXPERIMENT.md
+#   experiment.yaml
+#   results/          (environment.json, metrics, figures — commit deliberately)
+#   data/bugs|patches|tests|candidates when intentionally recorded
+#   docs/ and Plans/ (project documentation)

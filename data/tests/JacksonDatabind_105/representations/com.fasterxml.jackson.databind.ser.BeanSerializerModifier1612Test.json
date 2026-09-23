@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.ser.BeanSerializerModifier1612Test",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/ser/BeanSerializerModifier1612Test.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.ser.BeanSerializerModifier1612Test\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/ser/BeanSerializerModifier1612Test.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.ser;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.JsonPropertyOrder;\n\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.exc.InvalidDefinitionException;\nimport com.fasterxml.jackson.databind.module.SimpleModule;\nimport com.fasterxml.jackson.databind.ser.BeanPropertyWriter;\nimport com.fasterxml.jackson.databind.ser.BeanSerializerBuilder;\nimport com.fasterxml.jackson.databind.ser.BeanSerializerModifier;\n\npublic class BeanSerializerModifier1612Test extends BaseMapTest\n{\n    @JsonPropertyOrder({ \"a\", \"b\", \"c\" })\n    static class Bean1612 {\n        public Integer a;\n        public Integer b;\n        public Double c;\n\n        public Bean1612(Integer a, Integer b, Double c) {\n            this.a = a;\n            this.b = b;\n            this.c = c;\n        }\n    }\n\n    static class Modifier1612 extends BeanSerializerModifier {\n        @Override\n        public BeanSerializerBuilder updateBuilder(SerializationConfig config, BeanDescription beanDesc,\n                BeanSerializerBuilder builder) {\n            List<BeanPropertyWriter> filtered = new ArrayList<BeanPropertyWriter>(2);\n            List<BeanPropertyWriter> properties = builder.getProperties();\n            //Make the filtered properties list bigger\n            builder.setFilteredProperties(new BeanPropertyWriter[] {properties.get(0), properties.get(1), properties.get(2)});\n\n            //The props will be shorter\n            filtered.add(properties.get(1));\n            filtered.add(properties.get(2));\n            builder.setProperties(filtered);\n            return builder;\n        }\n    }\n\n    /*\n    /**********************************************************\n    /* Construction and setter methods\n    /**********************************************************\n     */\n\n    public void testIssue1612() throws Exception\n    {\n        SimpleModule mod = new SimpleModule();\n        mod.setSerializerModifier(new Modifier1612());\n        ObjectMapper objectMapper = new ObjectMapper()\n                .registerModule(mod);\n        try {\n            objectMapper.writeValueAsString(new Bean1612(0, 1, 2d));\n            fail(\"Should not pass\");\n        } catch (InvalidDefinitionException e) {\n            verifyException(e, \"Failed to construct BeanSerializer\");\n            verifyException(e, Bean1612.class.getName());\n        }\n    }\n}\n",
+  "compaction": {
+    "source_lines": 66,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2589,
+  "representation_chars": 2589,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

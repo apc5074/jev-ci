@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.introspect.PropertyMetadataTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/introspect/PropertyMetadataTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.introspect.PropertyMetadataTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/introspect/PropertyMetadataTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.introspect;\n\nimport com.fasterxml.jackson.annotation.Nulls;\nimport com.fasterxml.jackson.databind.*;\n\npublic class PropertyMetadataTest extends BaseMapTest\n{\n    public void testPropertyName()\n    {\n        PropertyName name = PropertyName.NO_NAME;\n        \n        assertFalse(name.hasSimpleName());\n        assertFalse(name.hasNamespace());\n        assertSame(name, name.internSimpleName());\n        assertSame(name, name.withSimpleName(null));\n        assertSame(name, name.withSimpleName(\"\"));\n        assertSame(name, name.withNamespace(null));\n        assertEquals(\"\", name.toString());\n        assertTrue(name.isEmpty());\n        assertFalse(name.hasSimpleName(\"foo\"));\n        // just to trigger it, ensure to exception\n        name.hashCode();\n\n        PropertyName newName = name.withNamespace(\"\");\n        assertNotSame(name, newName);\n        assertTrue(name.equals(name));\n        assertFalse(name.equals(newName));\n        assertFalse(newName.equals(name));\n\n        name = name.withSimpleName(\"foo\");\n        assertEquals(\"foo\", name.toString());\n        assertTrue(name.hasSimpleName(\"foo\"));\n        assertFalse(name.isEmpty());\n        newName = name.withNamespace(\"ns\");\n        assertEquals(\"{ns}foo\", newName.toString());\n        assertFalse(newName.equals(name));\n        assertFalse(name.equals(newName));\n\n        // just to trigger it, ensure to exception\n        name.hashCode();\n    }\n\n    public void testPropertyMetadata()\n    {\n        PropertyMetadata md = PropertyMetadata.STD_OPTIONAL;\n        assertNull(md.getValueNulls());\n        assertNull(md.getContentNulls());\n        assertNull(md.getDefaultValue());\n        assertEquals(Boolean.FALSE, md.getRequired());\n\n        md = md.withNulls(Nulls.AS_EMPTY,\n                Nulls.FAIL);\n        assertEquals(Nulls.AS_EMPTY, md.getValueNulls());\n        assertEquals(Nulls.FAIL, md.getContentNulls());\n\n        assertFalse(md.hasDefaultValue());\n        assertSame(md, md.withDefaultValue(null));\n        assertSame(md, md.withDefaultValue(\"\"));\n        md = md.withDefaultValue(\"foo\");\n        assertEquals(\"foo\", md.getDefaultValue());\n        assertTrue(md.hasDefaultValue());\n        assertSame(md, md.withDefaultValue(\"foo\"));\n        md = md.withDefaultValue(null);\n        assertFalse(md.hasDefaultValue());\n        assertNull(md.getDefaultValue());\n\n        md = md.withRequired(null);\n        assertNull(md.getRequired());\n        assertFalse(md.isRequired());\n        md = md.withRequired(Boolean.TRUE);\n        assertTrue(md.isRequired());\n        assertSame(md, md.withRequired(Boolean.TRUE));\n        md = md.withRequired(null);\n        assertNull(md.getRequired());\n        assertFalse(md.isRequired());\n \n        assertFalse(md.hasIndex());\n        md = md.withIndex(Integer.valueOf(3));\n        assertTrue(md.hasIndex());\n        assertEquals(Integer.valueOf(3), md.getIndex());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 82,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3109,
+  "representation_chars": 3109,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

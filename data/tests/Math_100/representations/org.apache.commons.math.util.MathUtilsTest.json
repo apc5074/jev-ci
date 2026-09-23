@@ -1,0 +1,126 @@
+{
+  "test_class": "org.apache.commons.math.util.MathUtilsTest",
+  "source_file": "src/test/org/apache/commons/math/util/MathUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math.util.MathUtilsTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/math/util/MathUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements. See the NOTICE file distributed with this\n * work for additional information regarding copyright ownership. The ASF\n * licenses this file to You under the Apache License, Version 2.0 (the\n * \"License\"); you may not use this file except in compliance with the License.\n * You may obtain a copy of the License at\n * http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law\n * or agreed to in writing, software distributed under the License is\n * distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY\n * KIND, either express or implied. See the License for the specific language\n * governing permissions and limitations under the License.\n */\npackage org.apache.commons.math.util;\n\nimport java.math.BigDecimal;\n\nimport junit.framework.Test;\nimport junit.framework.TestCase;\nimport junit.framework.TestSuite;\n\nimport org.apache.commons.math.TestUtils;\n\n/**\n * Test cases for the MathUtils class.\n * @version $Revision$ $Date: 2007-08-16 15:36:33 -0500 (Thu, 16 Aug\n *          2007) $\n */\npublic final class MathUtilsTest extends TestCase {\n\n    public MathUtilsTest(String name) {\n        super(name);\n    }\n\n    public static Test suite() {\n        TestSuite suite = new TestSuite(MathUtilsTest.class);\n        suite.setName(\"MathUtils Tests\");\n        return suite;\n    }\n\n    /**\n     * Exact recursive implementation to test against\n     */\n    private long binomialCoefficient(int n, int k) {\n        if ((n == k) || (k == 0)) {\n            return 1;\n        }\n        if ((k == 1) || (k == n - 1)) {\n            return n;\n        }\n        return binomialCoefficient(n - 1, k - 1) + binomialCoefficient(n - 1, k);\n    }\n\n    /**\n     * Exact direct multiplication implementation to test against\n     */\n    private long factorial(int n) {\n        long result = 1;\n        for (int i = 2; i <= n; i++) {\n            result *= i;\n        }\n        return result;\n    }\n\n    /** Verify that b(0,0) = 1 */\n    public void test0Choose0() {\n        assertEquals(MathUtils.binomialCoefficientDouble(0, 0), 1d, 0);\n        assertEquals(MathUtils.binomialCoefficientLog(0, 0), 0d, 0);\n        assertEquals(MathUtils.binomialCoefficient(0, 0), 1);\n    }\n\n    public void testAddAndCheck() {\n        int big = Integer.MAX_VALUE;\n        int bigNeg = Integer.MIN_VALUE;\n        assertEquals(big, MathUtils.addAndCheck(big, 0));\n        try {\n            MathUtils.addAndCheck(big, 1);\n            fail(\"Expecting ArithmeticException\");\n        } catch (ArithmeticException ex) {\n        }\n\n    public void testCosh() {\n        double x = 3.0;\n        double expected = 10.06766;\n        assertEquals(expected, MathUtils.cosh(x), 1.0e-5);\n    }\n\n    public void testCoshNaN() {\n        assertTrue(Double.isNaN(MathUtils.cosh(Double.NaN)));\n    }\n\n    public void testEquals() {\n        double[] testArray = {\n            Double.NaN,\n            Double.POSITIVE_INFINITY,\n            Double.NEGATIVE_INFINITY,\n            1d,\n            0d };\n        for (int i = 0; i < testArray.length; i++) {\n            for (int j = 0; j < testArray.length; j++) {\n                if (i == j) {\n                    assertTrue(MathUtils.equals(testArray[i], testArray[j]));\n                    assertTrue(MathUtils.equals(testArray[j], testArray[i]));\n                } else {\n                    assertTrue(!MathUtils.equals(testArray[i], testArray[j]));\n                    assertTrue(!MathUtils.equals(testArray[j], testArray[i]));\n                }\n            }\n        }\n    }\n\n    public void testArrayEquals() {\n        assertFalse(MathUtils.equals(new double[] { 1d }, null));\n        assertFalse(MathUtils.equals(null, new double[] { 1d }));\n        assertTrue(MathUtils.equals((double[]) null, (double[]) null));\n\n        assertFalse(MathUtils.equals(new double[] { 1d }, new double[0]));\n        assertTrue(MathUtils.equals(new double[] { 1d }, new double[] { 1d }));\n        assertTrue(MathUtils.equals(new double[] {\n                                      Double.NaN, Double.POSITIVE_INFINITY,\n                                      Double.NEGATIVE_INFINITY, 1d, 0d\n                                    }, new double[] {\n                                      Double.NaN, Double.POSITIVE_INFINITY,\n                                      Double.NEGATIVE_INFINITY, 1d, 0d\n                                    }));\n        assertFalse(MathUtils.equals(new double[] { Double.POSITIVE_INFINITY },\n                                     new double[] { Double.NEGATIVE_INFINITY }));\n        assertFalse(MathUtils.equals(new double[] { 1d },\n                                     new double[] { MathUtils.nextAfter(1d, 2d) }));\n\n    }\n\n    public void testFactorial() {\n        for (int i = 1; i < 10; i++) {\n            assertEquals(i + \"! \", factorial(i), MathUtils.factorial(i));\n            assertEquals(i + \"! \", (double)factorial(i), MathUtils.factorialDouble(i), Double.MIN_VALUE);\n            assertEquals(i + \"! \", Math.log((double)factorial(i)), MathUtils.factorialLog(i), 10E-12);\n        }\n        assertEquals(\"0\", 1, MathUtils.factorial(0));\n        assertEquals(\"0\", 1.0d, MathUtils.factorialDouble(0), 1E-14);\n        assertEquals(\"0\", 0.0d, MathUtils.factorialLog(0), 1E-14);\n    }\n\n    public void testFactorialFail() {\n        try {\n            MathUtils.factorial(-1);\n            fail(\"expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException ex) {\n            ;\n        }\n        try {\n            MathUtils.factorialDouble(-1);\n            fail(\"expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException ex) {\n            ;\n        }\n        try {\n            MathUtils.factorialLog(-1);\n            fail(\"expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException ex) {\n            0d,\n            1E-14,\n            (1 + 1E-14),\n            Double.MIN_VALUE,\n            Double.MAX_VALUE };\n        for (int i = 0; i < testArray.length; i++) {\n            for (int j = 0; j < testArray.length; j++) {\n                if (i == j) {\n                    assertEquals(MathUtils.hash(testArray[i]), MathUtils.hash(testArray[j]));\n                    assertEquals(MathUtils.hash(testArray[j]), MathUtils.hash(testArray[i]));\n                } else {\n                    assertTrue(MathUtils.hash(testArray[i]) != MathUtils.hash(testArray[j]));\n                    assertTrue(MathUtils.hash(testArray[j]) != MathUtils.hash(testArray[i]));\n                }\n            }\n        }\n    }\n\n    public void testArrayHash() {\n        assertEquals(0, MathUtils.hash((double[]) null));\n        assertEquals(MathUtils.hash(new double[] {\n                                      Double.NaN, Double.POSITIVE_INFINITY,\n                                      Double.NEGATIVE_INFINITY, 1d, 0d\n                                    }),\n                     MathUtils.hash(new double[] {\n                                      Double.NaN, Double.POSITIVE_INFINITY,\n                                      Double.NEGATIVE_INFINITY, 1d, 0d\n                                    }));\n        assertFalse(MathUtils.hash(new double[] { 1d }) ==\n                    MathUtils.hash(new double[] { MathUtils.nextAfter(1d, 2d) }));\n        assertFalse(MathUtils.hash(new double[] { 1d }) ==\n                    MathUtils.hash(new double[] { 1d, 1d }));\n    }\n\n    public void testIndicatorByte() {\n        assertEquals((byte)1, MathUtils.indicator((byte)2));\n        assertEquals((byte)1, MathUtils.indicator((byte)0));\n        assertEquals((byte)(-1), MathUtils.indicator((byte)(-2)));\n    }\n\n    public void testIndicatorDouble() {\n        double delta = 0.0;\n        assertEquals(1.0, MathUtils.indicator(2.0), delta);\n        assertEquals(1.0, MathUtils.indicator(0.0), delta);\n        assertEquals(-1.0, MathUtils.indicator(-2.0), delta);\n    }\n\n    public void testIndicatorFloat() {\n        float delta = 0.0F;\n        assertEquals(1.0F, MathUtils.indicator(2.0F), delta);\n        assertEquals(1.0F, MathUtils.indicator(0.0F), delta);\n        assertEquals(-1.0F, MathUtils.indicator(-2.0F), delta);\n    }\n\n    public void testIndicatorInt() {\n        assertEquals((int)1, MathUtils.indicator((int)(2)));\n        assertEquals((int)1, MathUtils.indicator((int)(0)));\n        assertEquals((int)(-1), MathUtils.indicator((int)(-2)));\n    }\n\n    public void testIndicatorLong() {\n        assertEquals(1L, MathUtils.indicator(2L));\n        assertEquals(1L, MathUtils.indicator(0L));\n        assertEquals(-1L, MathUtils.indicator(-2L));\n    }\n\n    public void testIndicatorShort() {\n        assertEquals((short)1, MathUtils.indicator((short)2));\n        assertEquals((short)1, MathUtils.indicator((short)0));\n        assertEquals((short)(-1), MathUtils.indicator((short)(-2)));\n    }\n\n    public void testLcm() {\n        int a = 30;\n        int b = 50;\n        int c = 77;\n\n        assertEquals(0, MathUtils.lcm(0, b));\n        assertEquals(0, MathUtils.lcm(a, 0));\n        assertEquals(b, MathUtils.lcm(1, b));\n",
+  "compaction": {
+    "source_lines": 828,
+    "mode": "windows",
+    "windows_total": 14,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        180,
+        260
+      ],
+      [
+        300,
+        380
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 29.779835840981953
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 11.240615287048893
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 9.529938588040835
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 29.779835840981953
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 8.59213618785791
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 7.458197998524024
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 11.240615287048893
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 7.12464593637171
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 9.529938588040835
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 5.7931776001718385
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 1.4862535880883634
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 3.0522302449238277
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 1.5052943129143346
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 1.9749432627368249
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 1.471900952300659
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 5.6509369075710945
+      },
+      {
+        "start": 780,
+        "end": 828,
+        "score": 8.522214570187437
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9224,
+  "representation_chars": 9224,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

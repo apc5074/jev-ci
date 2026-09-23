@@ -1,0 +1,207 @@
+TEST CLASS:
+org.apache.commons.math3.linear.ArrayFieldVectorTest
+
+SOURCE FILE:
+src/test/java/org/apache/commons/math3/linear/ArrayFieldVectorTest.java
+
+TEST SOURCE:
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.commons.math3.linear;
+
+import java.io.Serializable;
+import java.lang.reflect.Array;
+
+import org.apache.commons.math3.Field;
+import org.apache.commons.math3.FieldElement;
+import org.apache.commons.math3.TestUtils;
+import org.apache.commons.math3.exception.MathIllegalArgumentException;
+import org.apache.commons.math3.exception.OutOfRangeException;
+import org.apache.commons.math3.fraction.Fraction;
+import org.apache.commons.math3.fraction.FractionField;
+import org.junit.Assert;
+import org.junit.Test;
+
+/**
+ * Test cases for the {@link ArrayFieldVector} class.
+ *
+ * @version $Id$
+ */
+public class ArrayFieldVectorTest {
+
+    //
+    protected Fraction[][] ma1 = {
+            {new Fraction(1), new Fraction(2), new Fraction(3)},
+            {new Fraction(4), new Fraction(5), new Fraction(6)},
+            {new Fraction(7), new Fraction(8), new Fraction(9)}
+    };
+    protected Fraction[] vec1 = {new Fraction(1), new Fraction(2), new Fraction(3)};
+    protected Fraction[] vec2 = {new Fraction(4), new Fraction(5), new Fraction(6)};
+    protected Fraction[] vec3 = {new Fraction(7), new Fraction(8), new Fraction(9)};
+    protected Fraction[] vec4 = { new Fraction(1), new Fraction(2), new Fraction(3),
+                                  new Fraction(4), new Fraction(5), new Fraction(6),
+                                  new Fraction(7), new Fraction(8), new Fraction(9)};
+    protected Fraction[] vec_null = {new Fraction(0), new Fraction(0), new Fraction(0)};
+    protected Fraction[] dvec1 = {new Fraction(1), new Fraction(2), new Fraction(3),
+                                  new Fraction(4), new Fraction(5), new Fraction(6),
+                                  new Fraction(7), new Fraction(8), new Fraction(9)};
+    protected Fraction[][] mat1 = {
+            {new Fraction(1), new Fraction(2), new Fraction(3)},
+            {new Fraction(4), new Fraction(5), new Fraction(6)},
+            {new Fraction(7), new Fraction(8), new Fraction(9)}
+    };
+
+    // Testclass to test the FieldVector<Fraction> interface
+    // only with enough content to support the test
+    public static class FieldVectorTestImpl<T extends FieldElement<T>>
+        implements FieldVector<T>, Serializable {
+
+        private static final long serialVersionUID = 3970959016014158539L;
+
+        private final Field<T> field;
+
+        /** Entries of the vector. */
+        protected T[] data;
+
+        /** Build an array of elements.
+         * @param length size of the array to build
+         * @return a new array
+         */
+        @SuppressWarnings("unchecked") // field is of type T
+        private T[] buildArray(final int length) {
+            return (T[]) Array.newInstance(field.getRuntimeClass(), length);
+        }
+
+        FieldMatrix<Fraction> m_outerProduct_2 = v1.outerProduct(v2_t);
+        Assert.assertEquals("compare val ",new Fraction(4), m_outerProduct_2.getEntry(0,0));
+
+        ArrayFieldVector<Fraction> v_projection = v1.projection(v2);
+        Fraction[] result_projection = {new Fraction(128, 77), new Fraction(160, 77), new Fraction(192, 77)};
+        checkArray("compare vect", v_projection.getData(), result_projection);
+
+        FieldVector<Fraction> v_projection_2 = v1.projection(v2_t);
+        Fraction[] result_projection_2 = {new Fraction(128, 77), new Fraction(160, 77), new Fraction(192, 77)};
+        checkArray("compare vect", v_projection_2.getData(), result_projection_2);
+
+    }
+
+    @Test
+    public void testMisc() {
+        ArrayFieldVector<Fraction> v1 = new ArrayFieldVector<Fraction>(vec1);
+        ArrayFieldVector<Fraction> v4 = new ArrayFieldVector<Fraction>(vec4);
+        FieldVector<Fraction> v4_2 = new ArrayFieldVector<Fraction>(vec4);
+
+        String out1 = v1.toString();
+        Assert.assertTrue("some output ",  out1.length()!=0);
+        /*
+         Fraction[] dout1 = v1.copyOut();
+        Assert.assertEquals(3, dout1.length);
+        assertNotSame("testData not same object ", v1.getDataRef(), dout1);
+         */
+        try {
+            v1.checkVectorDimensions(2);
+            Assert.fail("MathIllegalArgumentException expected");
+        } catch (MathIllegalArgumentException ex) {
+            // expected behavior
+        }
+
+       try {
+            v1.checkVectorDimensions(v4);
+            Assert.fail("MathIllegalArgumentException expected");
+        } catch (MathIllegalArgumentException ex) {
+            // expected behavior
+        }
+
+        try {
+            v1.checkVectorDimensions(v4_2);
+            Assert.fail("MathIllegalArgumentException expected");
+        } catch (MathIllegalArgumentException ex) {
+            // expected behavior
+        }
+
+    }
+
+    @Test
+    public void testSerial()  {
+        ArrayFieldVector<Fraction> v = new ArrayFieldVector<Fraction>(vec1);
+        Assert.assertEquals(v,TestUtils.serializeAndRecover(v));
+    }
+
+    @Test
+    public void testZeroVectors() {
+
+        // when the field is not specified, array cannot be empty
+        try {
+            new ArrayFieldVector<Fraction>(new Fraction[0]);
+            Assert.fail("MathIllegalArgumentException expected");
+        } catch (MathIllegalArgumentException ex) {
+            // expected behavior
+        }
+        try {
+            new ArrayFieldVector<Fraction>(new Fraction[0], true);
+            Assert.fail("MathIllegalArgumentException expected");
+        } catch (MathIllegalArgumentException ex) {
+            // expected behavior
+        }
+        try {
+            new ArrayFieldVector<Fraction>(new Fraction[0], false);
+            Assert.fail("MathIllegalArgumentException expected");
+        } catch (MathIllegalArgumentException ex) {
+            // expected behavior
+        }
+
+        // when the field is specified, array can be empty
+        Assert.assertEquals(0, new ArrayFieldVector<Fraction>(FractionField.getInstance(), new Fraction[0]).getDimension());
+        Assert.assertEquals(0, new ArrayFieldVector<Fraction>(FractionField.getInstance(), new Fraction[0], true).getDimension());
+        Assert.assertEquals(0, new ArrayFieldVector<Fraction>(FractionField.getInstance(), new Fraction[0], false).getDimension());
+
+    }
+
+    @Test
+    public void testOuterProduct() {
+        final ArrayFieldVector<Fraction> u
+            = new ArrayFieldVector<Fraction>(FractionField.getInstance(),
+                                             new Fraction[] {new Fraction(1),
+                                                             new Fraction(2),
+                                                             new Fraction(-3)});
+        final ArrayFieldVector<Fraction> v
+            = new ArrayFieldVector<Fraction>(FractionField.getInstance(),
+                                             new Fraction[] {new Fraction(4),
+                                                             new Fraction(-2)});
+
+        final FieldMatrix<Fraction> uv = u.outerProduct(v);
+
+        final double tol = Math.ulp(1d);
+        Assert.assertEquals(new Fraction(4).doubleValue(), uv.getEntry(0, 0).doubleValue(), tol);
+        Assert.assertEquals(new Fraction(-2).doubleValue(), uv.getEntry(0, 1).doubleValue(), tol);
+        Assert.assertEquals(new Fraction(8).doubleValue(), uv.getEntry(1, 0).doubleValue(), tol);
+        Assert.assertEquals(new Fraction(-4).doubleValue(), uv.getEntry(1, 1).doubleValue(), tol);
+        Assert.assertEquals(new Fraction(-12).doubleValue(), uv.getEntry(2, 0).doubleValue(), tol);
+        Assert.assertEquals(new Fraction(6).doubleValue(), uv.getEntry(2, 1).doubleValue(), tol);
+    }
+
+    /** verifies that two vectors are equals */
+    protected void checkArray(String msg, Fraction[] m, Fraction[] n) {
+        if (m.length != n.length) {
+            Assert.fail("vectors have different lengths");
+        }
+        for (int i = 0; i < m.length; i++) {
+            Assert.assertEquals(msg + " " +  i + " elements differ", m[i],n[i]);
+        }
+    }
+
+}

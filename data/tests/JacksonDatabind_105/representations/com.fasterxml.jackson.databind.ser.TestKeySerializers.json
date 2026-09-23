@@ -1,0 +1,76 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.ser.TestKeySerializers",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/ser/TestKeySerializers.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.ser.TestKeySerializers\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/ser/TestKeySerializers.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.ser;\n\nimport java.io.IOException;\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.core.JsonGenerator;\nimport com.fasterxml.jackson.core.type.TypeReference;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonSerialize;\nimport com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder;\nimport com.fasterxml.jackson.databind.module.SimpleModule;\n\npublic class TestKeySerializers extends BaseMapTest\n{\n    public static class KarlSerializer extends JsonSerializer<String>\n    {\n        @Override\n        public void serialize(String value, JsonGenerator gen, SerializerProvider provider) throws IOException {\n            gen.writeFieldName(\"Karl\");\n        }\n    }\n\n    public static class NullKeySerializer extends JsonSerializer<Object>\n    {\n        private String _null;\n        public NullKeySerializer(String s) { _null = s; }\n        @Override\n        public void serialize(Object value, JsonGenerator gen, SerializerProvider provider) throws IOException {\n            gen.writeFieldName(_null);\n        }\n    }\n\n    public static class NullValueSerializer extends JsonSerializer<Object>\n    {\n        private String _null;\n        public NullValueSerializer(String s) { _null = s; }\n        @Override\n        public void serialize(Object value, JsonGenerator gen, SerializerProvider provider) throws IOException {\n            gen.writeString(_null);\n        }\n    }\n    \n    public static class NotKarlBean\n    {\n        public Map<String,Integer> map = new HashMap<String,Integer>();\n        {\n            map.put(\"Not Karl\", 1);\n        }\n    }\n\n    public static class KarlBean\n    {\n        @JsonSerialize(keyUsing = KarlSerializer.class)\n        public Map<String,Integer> map = new HashMap<String,Integer>();\n        {\n            map.put(\"Not Karl\", 1);\n        }\n    }\n\n    enum ABC {\n        A, B, C\n    }\n\n    enum AbcLC {\n        A, B, C;\n\n        @JsonValue\n        public String toLC() {\n            return name().toLowerCase();\n        }\n    }\n    \n    static class ABCKeySerializer extends JsonSerializer<ABC> {\n        @Override\n        public void serialize(ABC value, JsonGenerator gen,\n                SerializerProvider provider) throws IOException {\n            gen.writeFieldName(\"xxx\"+value);\n        }\n    }\n        }\n\n        @JsonValue\n        public String asString() {\n            return value;\n        }\n    }\n\n    /*\n    /**********************************************************\n    /* Unit tests\n    /**********************************************************\n     */\n\n    private final ObjectMapper MAPPER = new ObjectMapper();\n    \n    public void testNotKarl() throws IOException {\n        final String serialized = MAPPER.writeValueAsString(new NotKarlBean());\n        assertEquals(\"{\\\"map\\\":{\\\"Not Karl\\\":1}}\", serialized);\n    }\n\n    public void testKarl() throws IOException {\n        final String serialized = MAPPER.writeValueAsString(new KarlBean());\n        assertEquals(\"{\\\"map\\\":{\\\"Karl\\\":1}}\", serialized);\n    }\n\n    // [databind#75]: caching of KeySerializers\n    public void testBoth() throws IOException\n    {\n        // Let's NOT use shared one, to ensure caching starts from clean slate\n        final ObjectMapper mapper = new ObjectMapper();\n        final String value1 = mapper.writeValueAsString(new NotKarlBean());\n        assertEquals(\"{\\\"map\\\":{\\\"Not Karl\\\":1}}\", value1);\n        final String value2 = mapper.writeValueAsString(new KarlBean());\n        assertEquals(\"{\\\"map\\\":{\\\"Karl\\\":1}}\", value2);\n    }\n\n    // Test custom key serializer for enum\n    public void testCustomForEnum() throws IOException\n    {\n        // cannot use shared mapper as we are registering a module\n        final ObjectMapper mapper = new ObjectMapper();\n        SimpleModule mod = new SimpleModule(\"test\");\n        mod.addKeySerializer(ABC.class, new ABCKeySerializer());\n        mapper.registerModule(mod);\n\n        String json = mapper.writeValueAsString(new ABCMapWrapper());\n        assertEquals(\"{\\\"stuff\\\":{\\\"xxxB\\\":\\\"bar\\\"}}\", json);\n    }\n\n    public void testCustomNullSerializers() throws IOException\n    {\n        final ObjectMapper mapper = new ObjectMapper();\n        mapper.getSerializerProvider().setNullKeySerializer(new NullKeySerializer(\"NULL-KEY\"));\n        mapper.getSerializerProvider().setNullValueSerializer(new NullValueSerializer(\"NULL\"));\n        Map<String,Integer> input = new HashMap<>();\n        input.put(null, 3);\n        String json = mapper.writeValueAsString(input);\n        assertEquals(\"{\\\"NULL-KEY\\\":3}\", json);\n        json = mapper.writeValueAsString(new Object[] { 1, null, true });\n        assertEquals(\"[1,\\\"NULL\\\",true]\", json);\n    }\n    \n    public void testCustomEnumInnerMapKey() throws Exception {\n        Map<Outer, Object> outerMap = new HashMap<Outer, Object>();\n        Map<ABC, Map<String, String>> map = new EnumMap<ABC, Map<String, String>>(ABC.class);\n        Map<String, String> innerMap = new HashMap<String, String>();\n        innerMap.put(\"one\", \"1\");\n        map.put(ABC.A, innerMap);\n        outerMap.put(Outer.inner, map);\n        final ObjectMapper mapper = new ObjectMapper();\n        SimpleModule mod = new SimpleModule(\"test\");\n        mod.setMixInAnnotation(ABC.class, ABCMixin.class);\n        mod.addKeySerializer(ABC.class, new ABCKeySerializer());\n        mapper.registerModule(mod);\n\n        JsonNode tree = mapper.convertValue(outerMap, JsonNode.class);\n\n        JsonNode innerNode = tree.get(\"inner\");\n        String key = innerNode.fieldNames().next();\n        assertEquals(\"xxxA\", key);\n    }\n\n    // [databind#838]\n    public void testUnWrappedMapWithDefaultType() throws Exception{\n        final ObjectMapper mapper = new ObjectMapper();\n        SimpleModule mod = new SimpleModule(\"test\");\n        mod.addKeySerializer(ABC.class, new ABCKeySerializer());\n        mapper.registerModule(mod);\n\n        TypeResolverBuilder<?> typer = new ObjectMapper.DefaultTypeResolverBuilder(ObjectMapper.DefaultTyping.NON_FINAL);\n        typer = typer.init(JsonTypeInfo.Id.NAME, null);\n        typer = typer.inclusion(JsonTypeInfo.As.PROPERTY);\n        //typer = typer.typeProperty(TYPE_FIELD);\n        typer = typer.typeIdVisibility(true);\n        mapper.setDefaultTyping(typer);\n\n        Map<ABC,String> stuff = new HashMap<ABC,String>();\n        stuff.put(ABC.B, \"bar\");\n        String json = mapper.writerFor(new TypeReference<Map<ABC, String>>() {})\n                .writeValueAsString(stuff);\n        assertEquals(\"{\\\"@type\\\":\\\"HashMap\\\",\\\"xxxB\\\":\\\"bar\\\"}\", json);\n    }\n\n    // [databind#838]\n    @SuppressWarnings(\"deprecation\")\n    public void testUnWrappedMapWithKeySerializer() throws Exception{\n        SimpleModule mod = new SimpleModule(\"test\");\n        mod.addKeySerializer(ABC.class, new ABCKeySerializer());\n        final ObjectMapper mapper = new ObjectMapper()\n            .registerModule(mod)\n            .enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT)\n            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)\n            .disable(SerializationFeature.WRITE_NULL_MAP_VALUES)\n            .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)\n            ;\n\n        Map<ABC,BAR<?>> stuff = new HashMap<ABC,BAR<?>>();\n        stuff.put(ABC.B, new BAR<String>(\"bar\"));\n        String json = mapper.writerFor(new TypeReference<Map<ABC,BAR<?>>>() {})\n                .writeValueAsString(stuff);\n        assertEquals(\"{\\\"xxxB\\\":\\\"bar\\\"}\", json);\n    }\n\n    // [databind#943]\n    public void testDynamicMapKeys() throws Exception\n    {\n        Map<Object,Integer> stuff = new LinkedHashMap<Object,Integer>();\n        stuff.put(AbcLC.B, Integer.valueOf(3));\n        stuff.put(new UCString(\"foo\"), Integer.valueOf(4));\n        String json = MAPPER.writeValueAsString(stuff);\n        assertEquals(aposToQuotes(\"{'b':3,'FOO':4}\"), json);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 254,
+    "mode": "windows",
+    "windows_total": 4,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        180,
+        254
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 14.113098462547711
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 6.363122666587663
+      },
+      {
+        "start": 180,
+        "end": 254,
+        "score": 6.701943912260074
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 14.113098462547711
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.895200103216366
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 6.363122666587663
+      },
+      {
+        "start": 180,
+        "end": 254,
+        "score": 6.701943912260074
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8094,
+  "representation_chars": 8094,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

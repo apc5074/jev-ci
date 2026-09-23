@@ -1,0 +1,91 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.TestEnumDeserialization",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/TestEnumDeserialization.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.TestEnumDeserialization\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/TestEnumDeserialization.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser;\n\nimport java.io.IOException;\nimport java.util.EnumMap;\nimport java.util.EnumSet;\nimport java.util.Map;\nimport java.util.concurrent.TimeUnit;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.core.type.TypeReference;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\nimport com.fasterxml.jackson.databind.deser.std.StdDeserializer;\nimport com.fasterxml.jackson.databind.module.SimpleModule;\n\n@SuppressWarnings(\"serial\")\npublic class TestEnumDeserialization\n    extends BaseMapTest\n{\n    enum TestEnum { JACKSON, RULES, OK; }\n\n    /**\n     * Alternative version that annotates which deserializer to use\n     */\n    @JsonDeserialize(using=DummyDeserializer.class)\n    enum AnnotatedTestEnum {\n        JACKSON, RULES, OK;\n    }\n\n    public static class DummyDeserializer extends StdDeserializer<Object>\n    {\n        public DummyDeserializer() { super(Object.class); }\n        @Override\n        public Object deserialize(JsonParser jp, DeserializationContext ctxt)\n        {\n            return AnnotatedTestEnum.OK;\n        }\n    }\n\n    public static class LcEnumDeserializer extends StdDeserializer<TestEnum>\n    {\n        public LcEnumDeserializer() { super(TestEnum.class); }\n        @Override\n        public TestEnum deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException\n        {\n            return TestEnum.valueOf(jp.getText().toUpperCase());\n        }\n    }\n    \n    protected enum EnumWithCreator {\n        A, B;\n\n        @JsonCreator\n        public static EnumWithCreator fromEnum(String str) {\n            if (\"enumA\".equals(str)) return A;\n            if (\"enumB\".equals(str)) return B;\n            return null;\n        }\n    }\n    \n    protected enum LowerCaseEnum {\n        A, B, C;\n        private LowerCaseEnum() { }\n        @Override\n        public String toString() { return name().toLowerCase(); }\n    }\n\n    // for [JACKSON-749]\n    protected enum EnumWithJsonValue {\n        A(\"foo\"), B(\"bar\");\n        private final String name;\n        private EnumWithJsonValue(String n) {\n            name = n;\n        }\n        @JsonValue\n        @Override\n        public String toString() { return name; }\n    }\n    \n    // [JACKSON-810]\n    static class ClassWithEnumMapKey {\n    \t@JsonProperty Map<TestEnum, String> map;\n    }\n\n    // [JACKSON-834]\n    protected enum TestEnumFor834\n    {\n        ENUM_A(1), ENUM_B(2), ENUM_C(3);\n        \n        private final int id;\n        \n        private TestEnumFor834(int id) {\n            this.id = id;\n        }\n        \n        @JsonCreator public static TestEnumFor834 fromId(int id) {\n            for (TestEnumFor834 e: values()) {\n                if (e.id == id) return e;\n            }\n            return null;\n        }\n    }\n\n    // [Issue#324]: exception from creator method\n    protected enum TestEnum324\n    {\n        A, B;\n        \n        @JsonCreator public static TestEnum324 creator(String arg) {\n            throw new RuntimeException(\"Foobar!\");\n        }\n    }\n    \n    /*\n    /**********************************************************\n    /* Tests\n    /**********************************************************\n     */\n\n    protected final ObjectMapper MAPPER = new ObjectMapper();\n    \n\n    public void testSimple() throws Exception\n    {\n        // First \"good\" case with Strings\n        String JSON = \"\\\"OK\\\" \\\"RULES\\\"  null\";\n        // multiple main-level mappings, need explicit parser:\n        JsonParser jp = MAPPER.getFactory().createParser(JSON);\n\n        assertEquals(TestEnum.OK, MAPPER.readValue(jp, TestEnum.class));\n        assertEquals(TestEnum.RULES, MAPPER.readValue(jp, TestEnum.class));\n\n        /* should be ok; nulls are typeless; handled by mapper, not by\n         * deserializer\n         */\n        assertNull(MAPPER.readValue(jp, TestEnum.class));\n\n        // and no more content beyond that...\n        assertFalse(jp.hasCurrentToken());\n\n        /* Then alternative with index (0 means first entry)\n         */\n        assertEquals(TestEnum.JACKSON, MAPPER.readValue(\" 0 \", TestEnum.class));\n\n        /* Then error case: unrecognized value\n         */\n        try {\n            /*Object result =*/ MAPPER.readValue(\"\\\"NO-SUCH-VALUE\\\"\", TestEnum.class);\n            fail(\"Expected an exception for bogus enum value...\");\n        } catch (JsonMappingException jex) {\n            verifyException(jex, \"value not one of declared\");\n        }\n        jp.close();\n    }\n\n    /**\n     * Enums are considered complex if they have code (and hence sub-classes)... an\n     * example is TimeUnit\n     */\n    public void testComplexEnum() throws Exception\n    {\n        String json = MAPPER.writeValueAsString(TimeUnit.SECONDS);\n        assertEquals(quote(\"SECONDS\"), json);\n        TimeUnit result = MAPPER.readValue(json, TimeUnit.class);\n        assertSame(TimeUnit.SECONDS, result);\n    }\n    \n    /**\n     * Testing to see that annotation override works\n     */\n    public void testAnnotated() throws Exception\n    {\n        AnnotatedTestEnum e = MAPPER.readValue(\"\\\"JACKSON\\\"\", AnnotatedTestEnum.class);\n        /* dummy deser always returns value OK, independent of input;\n         * only works if annotation is used\n         */\n        assertEquals(AnnotatedTestEnum.OK, e);\n    }\n\n    public void testEnumMaps() throws Exception\n    {\n        EnumMap<TestEnum,String> value = MAPPER.readValue(\"{\\\"OK\\\":\\\"value\\\"}\",\n                new TypeReference<EnumMap<TestEnum,String>>() { });\n        assertEquals(\"value\", value.get(TestEnum.OK));\n    }\n    \n    // Test [JACKSON-214]\n    public void testSubclassedEnums() throws Exception\n    {\n        EnumWithSubClass value = MAPPER.readValue(\"\\\"A\\\"\", EnumWithSubClass.class);\n        assertEquals(EnumWithSubClass.A, value);\n    }\n\n    // [JACKSON-193]\n    public void testCreatorEnums() throws Exception\n    {\n        EnumWithCreator value = MAPPER.readValue(\"\\\"enumA\\\"\", EnumWithCreator.class);\n        assertEquals(EnumWithCreator.A, value);\n",
+  "compaction": {
+    "source_lines": 403,
+    "mode": "windows",
+    "windows_total": 7,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 27.1898313148934
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 8.164572601996694
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 14.606558599573264
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 27.1898313148934
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 8.164572601996694
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 14.606558599573264
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 5.6218255256132705
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 6.233924849118006
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 5.840743154487198
+      },
+      {
+        "start": 360,
+        "end": 403,
+        "score": 3.404977631592696
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 6249,
+  "representation_chars": 6249,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

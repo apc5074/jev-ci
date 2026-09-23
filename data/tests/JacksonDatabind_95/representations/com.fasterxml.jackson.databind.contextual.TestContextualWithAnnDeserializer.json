@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.contextual.TestContextualWithAnnDeserializer",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/contextual/TestContextualWithAnnDeserializer.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.contextual.TestContextualWithAnnDeserializer\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/contextual/TestContextualWithAnnDeserializer.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.contextual;\n\nimport java.io.IOException;\nimport java.lang.annotation.ElementType;\nimport java.lang.annotation.Retention;\nimport java.lang.annotation.RetentionPolicy;\nimport java.lang.annotation.Target;\n\nimport com.fasterxml.jackson.annotation.JacksonAnnotation;\nimport com.fasterxml.jackson.core.JsonParser;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\nimport com.fasterxml.jackson.databind.deser.ContextualDeserializer;\n\npublic class TestContextualWithAnnDeserializer extends BaseMapTest\n{\n    @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE})\n    @Retention(RetentionPolicy.RUNTIME)\n    @JacksonAnnotation\n    public @interface Name {\n        public String value();\n    }\n    \n    static class StringValue {\n        protected String value;\n        \n        public StringValue(String v) { value = v; }\n    }\n\n    static class AnnotatedContextualClassBean\n    {\n        @Name(\"xyz\")\n        @JsonDeserialize(using=AnnotatedContextualDeserializer.class)\n        public StringValue value;\n    }\n    \n    static class AnnotatedContextualDeserializer\n        extends JsonDeserializer<StringValue>\n        implements ContextualDeserializer\n    {\n        protected final String _fieldName;\n        \n        public AnnotatedContextualDeserializer() { this(\"\"); }\n        public AnnotatedContextualDeserializer(String fieldName) {\n            _fieldName = fieldName;\n        }\n\n        @Override\n        public StringValue deserialize(JsonParser p, DeserializationContext ctxt) throws IOException\n        {\n            return new StringValue(\"\"+_fieldName+\"=\"+p.getText());\n        }\n\n        @Override\n        public JsonDeserializer<?> createContextual(DeserializationContext ctxt,\n                BeanProperty property)\n            throws JsonMappingException\n        {\n            Name ann = property.getAnnotation(Name.class);\n            if (ann == null) {\n                ann = property.getContextAnnotation(Name.class);\n            }\n            String propertyName = (ann == null) ?  \"UNKNOWN\" : ann.value();\n            return new AnnotatedContextualDeserializer(propertyName);\n        }\n    }\n\n    // ensure that direct associations also work\n    public void testAnnotatedContextual() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        AnnotatedContextualClassBean bean = mapper.readValue(\n                \"{\\\"value\\\":\\\"a\\\"}\",\n              AnnotatedContextualClassBean.class);\n        assertNotNull(bean);\n        assertEquals(\"xyz=a\", bean.value.value);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 78,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2829,
+  "representation_chars": 2829,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

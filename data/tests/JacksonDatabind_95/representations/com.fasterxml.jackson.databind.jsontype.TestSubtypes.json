@@ -1,0 +1,86 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.jsontype.TestSubtypes",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/jsontype/TestSubtypes.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.jsontype.TestSubtypes\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/jsontype/TestSubtypes.java\n\nTEST SOURCE:\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        SimpleModule module = new SimpleModule();\n        module.registerSubtypes(SubB.class, SubC.class, SubD.class);\n        mapper.registerModule(module);\n        String json = mapper.writeValueAsString(new PropertyBean(new SubC()));\n        PropertyBean result = mapper.readValue(json, PropertyBean.class);\n        assertSame(SubC.class, result.value.getClass());\n    }\n    \n    public void testSerialization() throws Exception\n    {\n        // serialization can detect type name ok without anything extra:\n        SubB bean = new SubB();\n        assertEquals(\"{\\\"@type\\\":\\\"TypeB\\\",\\\"b\\\":1}\", MAPPER.writeValueAsString(bean));\n\n        // but we can override type name here too\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.registerSubtypes(new NamedType(SubB.class, \"typeB\"));\n        assertEquals(\"{\\\"@type\\\":\\\"typeB\\\",\\\"b\\\":1}\", mapper.writeValueAsString(bean));\n\n        // and default name ought to be simple class name; with context\n        assertEquals(\"{\\\"@type\\\":\\\"TestSubtypes$SubD\\\",\\\"d\\\":0}\", mapper.writeValueAsString(new SubD()));  \n    }\n\n    public void testDeserializationNonNamed() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.registerSubtypes(SubC.class);\n\n        // default name should be unqualified class name\n        SuperType bean = mapper.readValue(\"{\\\"@type\\\":\\\"TestSubtypes$SubC\\\", \\\"c\\\":1}\", SuperType.class);\n        assertSame(SubC.class, bean.getClass());\n        assertEquals(1, ((SubC) bean).c);\n    }\n\n    public void testDeserializatioNamed() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.registerSubtypes(SubB.class);\n        mapper.registerSubtypes(new NamedType(SubD.class, \"TypeD\"));\n\n        SuperType bean = mapper.readValue(\"{\\\"@type\\\":\\\"TypeB\\\", \\\"b\\\":13}\", SuperType.class);\n        assertSame(SubB.class, bean.getClass());\n        assertEquals(13, ((SubB) bean).b);\n\n        // but we can also explicitly register name too\n        bean = mapper.readValue(\"{\\\"@type\\\":\\\"TypeD\\\", \\\"d\\\":-4}\", SuperType.class);\n        assertSame(SubD.class, bean.getClass());\n        assertEquals(-4, ((SubD) bean).d);\n    }\n\n    // Trying to reproduce [JACKSON-366]\n    public void testEmptyBean() throws Exception\n    {\n        // First, with annotations\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, true);\n        String json = mapper.writeValueAsString(new EmptyBean());\n        assertEquals(\"{\\\"@type\\\":\\\"TestSubtypes$EmptyBean\\\"}\", json);\n\n        mapper = new ObjectMapper();\n        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);\n        json = mapper.writeValueAsString(new EmptyBean());\n        assertEquals(\"{\\\"@type\\\":\\\"TestSubtypes$EmptyBean\\\"}\", json);\n\n        // and then with defaults\n        mapper = new ObjectMapper();\n        mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);\n        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);\n        json = mapper.writeValueAsString(new EmptyNonFinal());\n        assertEquals(\"[\\\"com.fasterxml.jackson.databind.jsontype.TestSubtypes$EmptyNonFinal\\\",{}]\", json);\n    }\n\n    public void testDefaultImpl() throws Exception\n    {\n        // first, test with no type information\n        SuperTypeWithDefault bean = MAPPER.readValue(\"{\\\"a\\\":13}\", SuperTypeWithDefault.class);\n        assertEquals(DefaultImpl.class, bean.getClass());\n        assertEquals(13, ((DefaultImpl) bean).a);\n\n        // and then with unmapped info\n        bean = MAPPER.readValue(\"{\\\"a\\\":14,\\\"#type\\\":\\\"foobar\\\"}\", SuperTypeWithDefault.class);\n        assertEquals(DefaultImpl.class, bean.getClass());\n        assertEquals(14, ((DefaultImpl) bean).a);\n\n        bean = MAPPER.readValue(\"{\\\"#type\\\":\\\"foobar\\\",\\\"a\\\":15}\", SuperTypeWithDefault.class);\n        assertEquals(DefaultImpl.class, bean.getClass());\n        assertEquals(15, ((DefaultImpl) bean).a);\n\n        bean = MAPPER.readValue(\"{\\\"#type\\\":\\\"foobar\\\"}\", SuperTypeWithDefault.class);\n        assertEquals(DefaultImpl.class, bean.getClass());\n        assertEquals(0, ((DefaultImpl) bean).a);\n    }\n\n    // [JACKSON-505]: ok to also default to mapping there might be for base type\n    public void testDefaultImplViaModule() throws Exception\n    {\n        final String JSON = \"{\\\"a\\\":123}\";\n        \n        // first: without registration etc, epic fail:\n        try {\n            MAPPER.readValue(JSON, SuperTypeWithoutDefault.class);\n            fail(\"Expected an exception\");\n        } catch (JsonMappingException e) {\n            verifyException(e, \"missing property\");\n        }\n\n        // but then succeed when we register default impl\n        ObjectMapper mapper = new ObjectMapper();\n        SimpleModule module = new SimpleModule(\"test\", Version.unknownVersion());\n        module.addAbstractTypeMapping(SuperTypeWithoutDefault.class, DefaultImpl505.class);\n        mapper.registerModule(module);\n        SuperTypeWithoutDefault bean = mapper.readValue(JSON, SuperTypeWithoutDefault.class);\n        assertNotNull(bean);\n        assertEquals(DefaultImpl505.class, bean.getClass());\n        assertEquals(123, ((DefaultImpl505) bean).a);\n\n        bean = mapper.readValue(\"{\\\"#type\\\":\\\"foobar\\\"}\", SuperTypeWithoutDefault.class);\n        assertEquals(DefaultImpl505.class, bean.getClass());\n        assertEquals(0, ((DefaultImpl505) bean).a);\n    \n    }\n\n    public void testErrorMessage() throws Exception {\n        ObjectMapper mapper = new ObjectMapper();\n        try {\n            mapper.readValue(\"{ \\\"type\\\": \\\"z\\\"}\", BaseX.class);\n            fail(\"Should have failed\");\n        } catch (JsonMappingException e) {\n            verifyException(e, \"known type ids =\");\n        }\n    }\n\n    public void testViaAtomic() throws Exception {\n        AtomicWrapper input = new AtomicWrapper(3);\n        String json = MAPPER.writeValueAsString(input);\n\n        AtomicWrapper output = MAPPER.readValue(json, AtomicWrapper.class);\n        assertNotNull(output);\n        assertEquals(ImplX.class, output.value.getClass());\n        assertEquals(3, ((ImplX) output.value).x);\n    }\n\n    // Test to verify that base/impl restriction is applied to polymorphic handling\n    // even if class name is used as the id\n    public void testSubclassLimits() throws Exception\n    {\n        try {\n            MAPPER.readValue(aposToQuotes(\"{'value':['\"\n                    +TheBomb.class.getName()+\"',{'a':13}] }\"), DateWrapper.class);\n            fail(\"Should not pass\");\n        } catch (JsonMappingException e) {\n            verifyException(e, \"not subtype of\");\n            verifyException(e, TheBomb.class.getName());\n        }\n    }\n\n    // [databind#1125]: properties from base class too\n\n    public void testIssue1125NonDefault() throws Exception\n    {\n        String json = MAPPER.writeValueAsString(new Issue1125Wrapper(new Impl1125(1, 2, 3)));\n        \n        Issue1125Wrapper result = MAPPER.readValue(json, Issue1125Wrapper.class);\n        assertNotNull(result.value);\n        assertEquals(Impl1125.class, result.value.getClass());\n        Impl1125 impl = (Impl1125) result.value;\n        assertEquals(1, impl.a);\n        assertEquals(2, impl.b);\n        assertEquals(3, impl.c);\n    }\n\n    public void testIssue1125WithDefault() throws Exception\n    {\n        Issue1125Wrapper result = MAPPER.readValue(aposToQuotes(\"{'value':{'a':3,'def':9,'b':5}}\"),\n        \t\tIssue1125Wrapper.class);\n        assertNotNull(result.value);\n        assertEquals(Default1125.class, result.value.getClass());\n        Default1125 impl = (Default1125) result.value;\n        assertEquals(3, impl.a);\n        assertEquals(5, impl.b);\n        assertEquals(9, impl.def);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 365,
+    "mode": "windows",
+    "windows_total": 6,
+    "windows_selected": [
+      [
+        180,
+        260
+      ],
+      [
+        240,
+        320
+      ],
+      [
+        300,
+        365
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 180,
+        "end": 260,
+        "score": 12.657739429767954
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 15.041659894897803
+      },
+      {
+        "start": 300,
+        "end": 365,
+        "score": 21.04608420573925
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 12.308169924323632
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 6.492180587637543
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 8.983160438296846
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 12.657739429767954
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 15.041659894897803
+      },
+      {
+        "start": 300,
+        "end": 365,
+        "score": 21.04608420573925
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7926,
+  "representation_chars": 7926,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

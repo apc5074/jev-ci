@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.filter.NullConversionsPojoTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/filter/NullConversionsPojoTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.filter.NullConversionsPojoTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/filter/NullConversionsPojoTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser.filter;\n\nimport com.fasterxml.jackson.annotation.JsonSetter;\nimport com.fasterxml.jackson.annotation.Nulls;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.exc.InvalidNullException;\n\n// for [databind#1402]; configurable null handling, for values themselves\npublic class NullConversionsPojoTest extends BaseMapTest\n{\n    static class NullFail {\n        public String nullsOk = \"a\";\n\n        @JsonSetter(nulls=Nulls.FAIL)\n        public String noNulls = \"b\";\n    }\n\n    static class NullAsEmpty {\n        public String nullsOk = \"a\";\n\n        @JsonSetter(nulls=Nulls.AS_EMPTY)\n        public String nullAsEmpty = \"b\";\n    }\n\n    static class NullsForString {\n        /*\n        String n = \"foo\";\n\n        public void setName(String name) {\n            n = name;\n        }\n        */\n\n        String n = \"foo\";\n\n        public void setName(String n0) { n = n0; }\n        public String getName() { return n; }\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n\n    private final ObjectMapper MAPPER = newObjectMapper();\n\n    public void testFailOnNull() throws Exception\n    {\n        // first, ok if assigning non-null to not-nullable, null for nullable\n        NullFail result = MAPPER.readValue(aposToQuotes(\"{'noNulls':'foo', 'nullsOk':null}\"),\n                NullFail.class);\n        assertEquals(\"foo\", result.noNulls);\n        assertNull(result.nullsOk);\n\n        // and then see that nulls are not ok for non-nullable\n        try {\n            result = MAPPER.readValue(aposToQuotes(\"{'noNulls':null}\"),\n                    NullFail.class);\n            fail(\"Should not pass\");\n        } catch (InvalidNullException e) {\n            verifyException(e, \"property \\\"noNulls\\\"\");\n        }\n    }\n\n    public void testFailOnNullWithDefaults() throws Exception\n    {\n        // also: config overrides by type should work\n        String json = aposToQuotes(\"{'name':null}\");\n        NullsForString def = MAPPER.readValue(json, NullsForString.class);\n        assertNull(def.getName());\n        \n        ObjectMapper mapper = newObjectMapper();\n        mapper.configOverride(String.class)\n            .setSetterInfo(JsonSetter.Value.forValueNulls(Nulls.FAIL));\n        try {\n            mapper.readValue(json, NullsForString.class);\n            fail(\"Should not pass\");\n        } catch (InvalidNullException e) {\n            verifyException(e, \"property \\\"name\\\"\");\n        }\n    }\n\n    public void testNullsToEmptyScalar() throws Exception\n    {\n        NullAsEmpty result = MAPPER.readValue(aposToQuotes(\"{'nullAsEmpty':'foo', 'nullsOk':null}\"),\n                NullAsEmpty.class);\n        assertEquals(\"foo\", result.nullAsEmpty);\n        assertNull(result.nullsOk);\n\n        // and then see that nulls are not ok for non-nullable\n        result = MAPPER.readValue(aposToQuotes(\"{'nullAsEmpty':null}\"),\n                NullAsEmpty.class);\n        assertEquals(\"\", result.nullAsEmpty);\n\n        // also: config overrides by type should work\n        String json = aposToQuotes(\"{'name':null}\");\n        NullsForString def = MAPPER.readValue(json, NullsForString.class);\n        assertNull(def.getName());\n\n        ObjectMapper mapper = newObjectMapper();\n        mapper.configOverride(String.class)\n            .setSetterInfo(JsonSetter.Value.forValueNulls(Nulls.AS_EMPTY));\n        NullsForString named = mapper.readValue(json, NullsForString.class);\n        assertEquals(\"\", named.getName());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 107,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3791,
+  "representation_chars": 3791,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

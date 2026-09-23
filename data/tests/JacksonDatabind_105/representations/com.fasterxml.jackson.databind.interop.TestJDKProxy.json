@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.interop.TestJDKProxy",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/interop/TestJDKProxy.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.interop.TestJDKProxy\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/interop/TestJDKProxy.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.interop;\n\nimport java.lang.reflect.*;\n\nimport com.fasterxml.jackson.databind.*;\n\n// mostly for [Issue#57]\npublic class TestJDKProxy extends BaseMapTest\n{\n    final ObjectMapper MAPPER = new ObjectMapper();\n\n    public interface IPlanet {\n        String getName();\n        String setName(String s);\n    }\n\n    // bit silly example; usually wouldn't implement interface (no need to proxy if it did)\n    static class Planet implements IPlanet {\n        private String name;\n\n        public Planet() { }\n        public Planet(String s) { name = s; }\n        \n        @Override\n        public String getName(){return name;}\n        @Override\n        public String setName(String iName) {name = iName;\n            return name;\n        }\n    }    \n    \n    /*\n    /********************************************************\n    /* Test methods\n    /********************************************************\n     */\n    \n    public void testSimple() throws Exception\n    {\n        IPlanet input = getProxy(IPlanet.class, new Planet(\"Foo\"));\n        String json = MAPPER.writeValueAsString(input);\n        assertEquals(\"{\\\"name\\\":\\\"Foo\\\"}\", json);\n        \n        // and just for good measure\n        Planet output = MAPPER.readValue(json, Planet.class);\n        assertEquals(\"Foo\", output.getName());\n    }\n\n    /*\n    /********************************************************\n    /* Helper methods\n    /********************************************************\n     */\n\n    public static <T> T getProxy(Class<T> type, Object obj) {\n        class ProxyUtil implements InvocationHandler {\n            Object _obj;\n            public ProxyUtil(Object o) {\n                _obj = o;\n            }\n            @Override\n            public Object invoke(Object proxy, Method m, Object[] args) throws Throwable {\n                Object result = null;\n                result = m.invoke(_obj, args);\n                return result;\n            }\n        }\n        @SuppressWarnings(\"unchecked\")\n        T proxy = (T) Proxy.newProxyInstance(type.getClassLoader(), new Class[] { type },\n                new ProxyUtil(obj));\n        return proxy;\n    }\n}\n",
+  "compaction": {
+    "source_lines": 73,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2334,
+  "representation_chars": 2334,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

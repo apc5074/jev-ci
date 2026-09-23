@@ -1,0 +1,86 @@
+{
+  "test_class": "org.apache.commons.math3.ode.nonstiff.HighamHall54IntegratorTest",
+  "source_file": "src/test/java/org/apache/commons/math3/ode/nonstiff/HighamHall54IntegratorTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.ode.nonstiff.HighamHall54IntegratorTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/ode/nonstiff/HighamHall54IntegratorTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math3.ode.nonstiff;\n\n\nimport org.apache.commons.math3.exception.DimensionMismatchException;\nimport org.apache.commons.math3.exception.MathIllegalNumberException;\nimport org.apache.commons.math3.exception.NumberIsTooSmallException;\nimport org.apache.commons.math3.exception.TooManyEvaluationsException;\nimport org.apache.commons.math3.exception.util.LocalizedFormats;\nimport org.apache.commons.math3.ode.FirstOrderDifferentialEquations;\nimport org.apache.commons.math3.ode.FirstOrderIntegrator;\nimport org.apache.commons.math3.ode.TestProblem1;\nimport org.apache.commons.math3.ode.TestProblem3;\nimport org.apache.commons.math3.ode.TestProblem4;\nimport org.apache.commons.math3.ode.TestProblem5;\nimport org.apache.commons.math3.ode.TestProblemHandler;\nimport org.apache.commons.math3.ode.events.EventHandler;\nimport org.apache.commons.math3.util.FastMath;\nimport org.junit.Assert;\nimport org.junit.Test;\n\npublic class HighamHall54IntegratorTest {\n\n  @Test\n  public void testWrongDerivative() {\n      HighamHall54Integrator integrator =\n          new HighamHall54Integrator(0.0, 1.0, 1.0e-10, 1.0e-10);\n      FirstOrderDifferentialEquations equations =\n          new FirstOrderDifferentialEquations() {\n            public void computeDerivatives(double t, double[] y, double[] dot) {\n            if (t < -0.5) {\n                throw new LocalException(t);\n            } else {\n                throw new RuntimeException(\"oops\");\n           }\n          }\n          public int getDimension() {\n              return 1;\n          }\n      };\n\n      try  {\n        integrator.integrate(equations, -1.0, new double[1], 0.0, new double[1]);\n        Assert.fail(\"an exception should have been thrown\");\n      } catch(LocalException de) {\n        // expected behavior\n      }\n\n      try  {\n        integrator.integrate(equations, 0.0, new double[1], 1.0, new double[1]);\n        Assert.fail(\"an exception should have been thrown\");\n      } catch(RuntimeException de) {\n        // expected behavior\n      }\n\n  }\n\n  @Test(expected=NumberIsTooSmallException.class)\n  public void testMinStep() {\n\n      TestProblem1 pb = new TestProblem1();\n      double minStep = 0.1 * (pb.getFinalTime() - pb.getInitialTime());\n      double maxStep = pb.getFinalTime() - pb.getInitialTime();\n      double[] vecAbsoluteTolerance = { 1.0e-15, 1.0e-16 };\n      double[] vecRelativeTolerance = { 1.0e-15, 1.0e-16 };\n\n      FirstOrderIntegrator integ = new HighamHall54Integrator(minStep, maxStep,\n                                                              vecAbsoluteTolerance,\n                                                              vecRelativeTolerance);\n      TestProblemHandler handler = new TestProblemHandler(pb, integ);\n      integ.addStepHandler(handler);\n      integ.integrate(pb,\n                      pb.getInitialTime(), pb.getInitialState(),\n                      pb.getFinalTime(), new double[pb.getDimension()]);\n      Assert.fail(\"an exception should have been thrown\");\n\n  }\n\n  @Test\n  public void testIncreasingTolerance()\n    {\n\n    int previousCalls = Integer.MAX_VALUE;\n    for (int i = -12; i < -2; ++i) {\n      TestProblem1 pb = new TestProblem1();\n      double minStep = 0;\n      double maxStep = pb.getFinalTime() - pb.getInitialTime();\n      double scalAbsoluteTolerance = FastMath.pow(10.0, i);\n      double scalRelativeTolerance = 0.01 * scalAbsoluteTolerance;\n\n      FirstOrderIntegrator integ = new HighamHall54Integrator(minStep, maxStep,\n                                                              scalAbsoluteTolerance,\n                                                              scalRelativeTolerance);\n      TestProblemHandler handler = new TestProblemHandler(pb, integ);\n      integ.addStepHandler(handler);\n      integ.integrate(pb,\n                      pb.getInitialTime(), pb.getInitialState(),\n                      pb.getFinalTime(), new double[pb.getDimension()]);\n\n      // the 1.3 factor is only valid for this test\n      // and has been obtained from trial and error\n      // there is no general relation between local and global errors\n      Assert.assertTrue(handler.getMaximalValueError() < (1.3 * scalAbsoluteTolerance));\n      Assert.assertEquals(0, handler.getMaximalTimeError(), 1.0e-12);\n\n      int calls = pb.getCalls();\n      Assert.assertEquals(integ.getEvaluations(), calls);\n      Assert.assertTrue(calls <= previousCalls);\n      previousCalls = calls;\n\n    }\n\n  }\n\n  @Test\n  public void testBackward()\n      {\n\n      TestProblem5 pb = new TestProblem5();\n      double minStep = 0;\n      double maxStep = pb.getFinalTime() - pb.getInitialTime();\n      double scalAbsoluteTolerance = 1.0e-8;\n      double scalRelativeTolerance = 0.01 * scalAbsoluteTolerance;\n\n    Assert.assertTrue(handler.getMaximalValueError() < 1.0e-7);\n    Assert.assertEquals(0, handler.getMaximalTimeError(), convergence);\n    Assert.assertEquals(12.0, handler.getLastTime(), convergence);\n    integ.clearEventHandlers();\n    Assert.assertEquals(0, integ.getEventHandlers().size());\n\n  }\n\n  @Test(expected=LocalException.class)\n  public void testEventsErrors() {\n\n      final TestProblem1 pb = new TestProblem1();\n      double minStep = 0;\n      double maxStep = pb.getFinalTime() - pb.getInitialTime();\n      double scalAbsoluteTolerance = 1.0e-8;\n      double scalRelativeTolerance = 0.01 * scalAbsoluteTolerance;\n\n      FirstOrderIntegrator integ =\n          new HighamHall54Integrator(minStep, maxStep,\n                                     scalAbsoluteTolerance, scalRelativeTolerance);\n      TestProblemHandler handler = new TestProblemHandler(pb, integ);\n      integ.addStepHandler(handler);\n\n      integ.addEventHandler(new EventHandler() {\n        public void init(double t0, double[] y0, double t) {\n        }\n        public Action eventOccurred(double t, double[] y, boolean increasing) {\n          return Action.CONTINUE;\n        }\n        public double g(double t, double[] y) {\n          double middle = (pb.getInitialTime() + pb.getFinalTime()) / 2;\n          double offset = t - middle;\n          if (offset > 0) {\n            throw new LocalException(t);\n          }\n          return offset;\n        }\n        public void resetState(double t, double[] y) {\n        }\n      }, Double.POSITIVE_INFINITY, 1.0e-8 * maxStep, 1000);\n\n      integ.integrate(pb,\n                      pb.getInitialTime(), pb.getInitialState(),\n                      pb.getFinalTime(), new double[pb.getDimension()]);\n\n  }\n\n  private static class LocalException extends MathIllegalNumberException {\n    private static final long serialVersionUID = 3041292643919807960L;\n    protected LocalException(Number wrong) {\n        super(LocalizedFormats.SIMPLE_MESSAGE, wrong);\n    }\n  }\n\n  @Test\n  public void testEventsNoConvergence() {\n\n    final TestProblem1 pb = new TestProblem1();\n    double minStep = 0;\n    double maxStep = pb.getFinalTime() - pb.getInitialTime();\n    double scalAbsoluteTolerance = 1.0e-8;\n    double scalRelativeTolerance = 0.01 * scalAbsoluteTolerance;\n\n    FirstOrderIntegrator integ =\n        new HighamHall54Integrator(minStep, maxStep,\n                                   scalAbsoluteTolerance, scalRelativeTolerance);\n    TestProblemHandler handler = new TestProblemHandler(pb, integ);\n    integ.addStepHandler(handler);\n\n    integ.addEventHandler(new EventHandler() {\n      public void init(double t0, double[] y0, double t) {\n      }\n      public Action eventOccurred(double t, double[] y, boolean increasing) {\n        return Action.CONTINUE;\n      }\n      public double g(double t, double[] y) {\n        double middle = (pb.getInitialTime() + pb.getFinalTime()) / 2;\n        double offset = t - middle;\n        return (offset > 0) ? (offset + 0.5) : (offset - 0.5);\n      }\n",
+  "compaction": {
+    "source_lines": 356,
+    "mode": "windows",
+    "windows_total": 6,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        180,
+        260
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.615144521777243
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 1.9527168078803405
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 2.0453315467218465
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 18.615144521777243
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 1.9527168078803405
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 0.9108907817223675
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 2.0453315467218465
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 1.2944254127217716
+      },
+      {
+        "start": 300,
+        "end": 356,
+        "score": 0.7454624449896368
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8722,
+  "representation_chars": 8722,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

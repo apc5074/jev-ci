@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.struct.UnwrappedWithView1559Test",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/struct/UnwrappedWithView1559Test.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.struct.UnwrappedWithView1559Test\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/struct/UnwrappedWithView1559Test.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.struct;\n\nimport com.fasterxml.jackson.annotation.JsonInclude;\nimport com.fasterxml.jackson.annotation.JsonUnwrapped;\nimport com.fasterxml.jackson.databind.*;\n\npublic class UnwrappedWithView1559Test extends BaseMapTest\n{\n    @JsonInclude(JsonInclude.Include.NON_EMPTY)\n    static final class Health {\n        @JsonUnwrapped(prefix=\"xxx.\")\n        public Status status;\n    }\n\n    // NOTE: `final` is required to trigger [databind#1559]\n    static final class Status {\n        public String code;\n    }\n\n    /*\n    /**********************************************************\n    /* Tests methods\n    /**********************************************************\n     */\n\n    // for [databind#1559]\n    public void testCanSerializeSimpleWithDefaultView() throws Exception {\n        String json = new ObjectMapper().configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false)\n                .writeValueAsString(new Health());\n        assertEquals(aposToQuotes(\"{}\"), json);\n        // and just in case this, although won't matter wrt output\n        json = new ObjectMapper().configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true)\n                .writeValueAsString(new Health());\n        assertEquals(aposToQuotes(\"{}\"), json);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 36,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 1452,
+  "representation_chars": 1452,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

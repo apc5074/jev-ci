@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.module.TestAbstractTypes",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/module/TestAbstractTypes.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.module.TestAbstractTypes\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/module/TestAbstractTypes.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.module;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.core.Version;\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.ObjectMapper;\nimport com.fasterxml.jackson.databind.module.SimpleModule;\n\npublic class TestAbstractTypes extends BaseMapTest\n{\n    static class MyString implements CharSequence\n    {\n        protected String value;\n        \n        public MyString(String s) { value = s; }\n\n        @Override\n        public char charAt(int index) {\n            return value.charAt(index);\n        }\n\n        @Override\n        public int length() {\n            return value.length();\n        }\n\n        @Override\n        public CharSequence subSequence(int arg0, int arg1) { return this; }\n    }\n\n    public interface Abstract {\n        public int getValue();\n    }\n\n    public static class AbstractImpl implements Abstract {\n        @Override\n        public int getValue() { return 3; }\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n\n    public void testCollectionDefaulting() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        SimpleModule mod = new SimpleModule(\"test\", Version.unknownVersion());\n        // let's ensure we get hierarchic mapping\n        mod.addAbstractTypeMapping(Collection.class, List.class);\n        mod.addAbstractTypeMapping(List.class, LinkedList.class);\n        mapper.registerModule(mod);\n        Collection<?> result = mapper.readValue(\"[]\", Collection.class);\n        assertEquals(LinkedList.class, result.getClass());\n    }\n\n    public void testMapDefaultingBasic() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        SimpleModule mod = new SimpleModule(\"test\", Version.unknownVersion());\n        // default is HashMap, so:\n        mod.addAbstractTypeMapping(Map.class, TreeMap.class);\n        mapper.registerModule(mod);\n        Map<?,?> result = mapper.readValue(\"{}\", Map.class);\n        assertEquals(TreeMap.class, result.getClass());\n    }\n\n    // [databind#700]\n    public void testDefaultingRecursive() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        SimpleModule mod = new SimpleModule(\"test\", Version.unknownVersion());\n\n        // defaults: LinkedHashMap, ArrayList\n        mod.addAbstractTypeMapping(Map.class, TreeMap.class);\n        mod.addAbstractTypeMapping(List.class, LinkedList.class);\n\n        mapper.registerModule(mod);\n        Object result;\n\n        result = mapper.readValue(\"[ {} ]\", Object.class);\n        assertEquals(LinkedList.class, result.getClass());\n        Object v = ((List<?>) result).get(0);\n        assertNotNull(v);\n        assertEquals(TreeMap.class, v.getClass());\n\n        result = mapper.readValue(\"{ \\\"x\\\": [ 3 ] }\", Object.class);\n        assertEquals(TreeMap.class, result.getClass());\n        Map<?,?> map = (Map<?,?>) result;\n        assertEquals(1, map.size());\n        v = map.get(\"x\");\n        assertNotNull(v);\n        assertEquals(LinkedList.class, v.getClass());\n        assertEquals(1, ((List<?>) v).size());\n    }\n\n    public void testInterfaceDefaulting() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        SimpleModule mod = new SimpleModule(\"test\", Version.unknownVersion());\n        // let's ensure we get hierarchic mapping\n        mod.addAbstractTypeMapping(CharSequence.class, MyString.class);\n        mapper.registerModule(mod);\n        Object result = mapper.readValue(quote(\"abc\"), CharSequence.class);\n        assertEquals(MyString.class, result.getClass());\n        assertEquals(\"abc\", ((MyString) result).value);\n\n        // and ditto for POJOs\n        mod = new SimpleModule();\n        mod.addAbstractTypeMapping(Abstract.class, AbstractImpl.class);\n        mapper = new ObjectMapper()\n                .registerModule(mod);\n        Abstract a = mapper.readValue(\"{}\", Abstract.class);\n        assertNotNull(a);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 118,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 4221,
+  "representation_chars": 4221,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

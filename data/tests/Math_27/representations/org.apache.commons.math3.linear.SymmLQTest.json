@@ -1,0 +1,116 @@
+{
+  "test_class": "org.apache.commons.math3.linear.SymmLQTest",
+  "source_file": "src/test/java/org/apache/commons/math3/linear/SymmLQTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.linear.SymmLQTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/linear/SymmLQTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.linear;\n\nimport java.util.Arrays;\n\nimport org.apache.commons.math3.exception.DimensionMismatchException;\nimport org.apache.commons.math3.util.FastMath;\nimport org.apache.commons.math3.util.IterationEvent;\nimport org.apache.commons.math3.util.IterationListener;\nimport org.junit.Assert;\nimport org.junit.Test;\n\npublic class SymmLQTest {\n\n    public void saundersTest(final int n, final boolean goodb,\n                             final boolean precon, final double shift,\n                             final double pertbn) {\n        final RealLinearOperator a = new RealLinearOperator() {\n\n            @Override\n            public RealVector operate(final RealVector x) {\n                if (x.getDimension() != n) {\n                    throw new DimensionMismatchException(x.getDimension(), n);\n                }\n                final double[] y = new double[n];\n                for (int i = 0; i < n; i++) {\n                    y[i] = (i + 1) * 1.1 / n * x.getEntry(i);\n                }\n                return new ArrayRealVector(y, false);\n            }\n\n            @Override\n            public int getRowDimension() {\n                return n;\n            }\n\n            @Override\n            public int getColumnDimension() {\n                return n;\n            }\n        };\n        final double shiftm = shift;\n        final double pertm = FastMath.abs(pertbn);\n        final RealLinearOperator minv;\n        if (precon) {\n            minv = new RealLinearOperator() {\n                @Override\n                public int getRowDimension() {\n                    return n;\n                }\n\n                @Override\n                public int getColumnDimension() {\n                    return n;\n                }\n\n                @Override\n                public RealVector operate(final RealVector x) {\n                    if (x.getDimension() != n) {\n                        throw new DimensionMismatchException(x.getDimension(),\n                                                             n);\n                    }\n                    final double[] y = new double[n];\n                    for (int i = 0; i < n; i++) {\n                        double d = (i + 1) * 1.1 / n;\n            for (int i = 0; i < n; i++) {\n                final double actual = x.getEntry(i);\n                final double expected = ainv.getEntry(i, j);\n                final double delta = 1E-6 * Math.abs(expected);\n                final String msg = String.format(\"coefficient (%d, %d)\", i, j);\n                Assert.assertEquals(msg, expected, actual, delta);\n            }\n        }\n    }\n\n    @Test\n    public void testPreconditionedSolution2() {\n        final int n = 100;\n        final int maxIterations = 100000;\n        final Array2DRowRealMatrix a = new Array2DRowRealMatrix(n, n);\n        double daux = 1.;\n        for (int i = 0; i < n; i++) {\n            a.setEntry(i, i, daux);\n            daux *= 1.2;\n            for (int j = i + 1; j < n; j++) {\n                if (i == j) {\n                } else {\n                    final double value = 1.0;\n                    a.setEntry(i, j, value);\n                    a.setEntry(j, i, value);\n                }\n            }\n        }\n        final RealLinearOperator m = JacobiPreconditioner.create(a);\n        final PreconditionedIterativeLinearSolver prec;\n        final IterativeLinearSolver unprec;\n        prec = new SymmLQ(maxIterations, 1E-15, true);\n        unprec = new SymmLQ(maxIterations, 1E-15, true);\n        final RealVector b = new ArrayRealVector(n);\n        final String pattern = \"preconditioned SymmLQ (%d iterations) should\"\n                               + \" have been faster than unpreconditioned (%d iterations)\";\n        String msg;\n        for (int j = 0; j < 1; j++) {\n            b.set(0.);\n            b.setEntry(j, 1.);\n            final RealVector px = prec.solve(a, m, b);\n            final RealVector x = unprec.solve(a, b);\n            final int np = prec.getIterationManager().getIterations();\n            final int nup = unprec.getIterationManager().getIterations();\n            msg = String.format(pattern, np, nup);\n            for (int i = 0; i < n; i++) {\n                msg = String.format(\"row %d, column %d\", i, j);\n                final double expected = x.getEntry(i);\n                final double actual = px.getEntry(i);\n                final double delta = 5E-5 * Math.abs(expected);\n                Assert.assertEquals(msg, expected, actual, delta);\n            }\n        }\n    }\n\n    @Test\n    public void testEventManagement() {\n        final int n = 5;\n        final int maxIterations = 100;\n        final RealLinearOperator a = new HilbertMatrix(n);\n        final IterativeLinearSolver solver;\n        /*\n         * count[0] = number of calls to initializationPerformed\n         * count[1] = number of calls to iterationStarted\n         * count[2] = number of calls to iterationPerformed\n         * count[3] = number of calls to terminationPerformed\n         */\n        final int[] count = new int[] {0, 0, 0, 0};\n        final RealVector xFromListener = new ArrayRealVector(n);\n        final IterationListener listener = new IterationListener() {\n\n            public void initializationPerformed(final IterationEvent e) {\n                ++count[0];\n            }\n\n            public void iterationPerformed(final IterationEvent e) {\n                ++count[2];\n                Assert.assertEquals(\"iteration performed\",\n                                    count[2],\n                                    e.getIterations() - 1);\n    }\n\n    @Test(expected = NonSelfAdjointOperatorException.class)\n    public void testNonSelfAdjointOperator() {\n        final RealLinearOperator a;\n        a = new Array2DRowRealMatrix(new double[][] {\n            {1., 2., 3.},\n            {2., 4., 5.},\n            {2.999, 5., 6.}\n        });\n        final RealVector b;\n        b = new ArrayRealVector(new double[] {1., 1., 1.});\n        new SymmLQ(100, 1., true).solve(a, b);\n    }\n\n    @Test(expected = NonSelfAdjointOperatorException.class)\n    public void testNonSelfAdjointPreconditioner() {\n        final RealLinearOperator a = new Array2DRowRealMatrix(new double[][] {\n            {1., 2., 3.},\n            {2., 4., 5.},\n            {3., 5., 6.}\n        });\n        final Array2DRowRealMatrix mMat;\n        mMat = new Array2DRowRealMatrix(new double[][] {\n            {1., 0., 1.},\n            {0., 1., 0.},\n            {0., 0., 1.}\n        });\n        final DecompositionSolver mSolver;\n        mSolver = new LUDecomposition(mMat).getSolver();\n        final RealLinearOperator minv = new RealLinearOperator() {\n\n            @Override\n            public RealVector operate(final RealVector x) {\n                return mSolver.solve(x);\n            }\n\n            @Override\n            public int getRowDimension() {\n                return mMat.getRowDimension();\n            }\n\n            @Override\n            public int getColumnDimension() {\n                return mMat.getColumnDimension();\n            }\n        };\n        final RealVector b = new ArrayRealVector(new double[] {\n            1., 1., 1.\n        });\n        new SymmLQ(100, 1., true).solve(a, minv, b);\n    }\n\n    @Test\n    public void testUnpreconditionedNormOfResidual() {\n        final int n = 5;\n        final int maxIterations = 100;\n        final RealLinearOperator a = new HilbertMatrix(n);\n        final IterativeLinearSolver solver;\n        final IterationListener listener = new IterationListener() {\n\n            private void doTestNormOfResidual(final IterationEvent e) {\n                final IterativeLinearSolverEvent evt;\n                evt = (IterativeLinearSolverEvent) e;\n                final RealVector x = evt.getSolution();\n                final RealVector b = evt.getRightHandSideVector();\n                final RealVector r = b.subtract(a.operate(x));\n                final double rnorm = r.getNorm();\n                Assert.assertEquals(\"iteration performed (residual)\",\n                    rnorm, evt.getNormOfResidual(),\n                    FastMath.max(1E-5 * rnorm, 1E-10));\n            }\n\n            public void initializationPerformed(final IterationEvent e) {\n                doTestNormOfResidual(e);\n            }\n\n            public void iterationPerformed(final IterationEvent e) {\n                doTestNormOfResidual(e);\n            }\n",
+  "compaction": {
+    "source_lines": 688,
+    "mode": "windows",
+    "windows_total": 12,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        420,
+        500
+      ],
+      [
+        540,
+        620
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 26.798610571026554
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 4.738361771476456
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 2.8433998083674497
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 26.798610571026554
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.0493574686708143
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 0.09174296767967699
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 0.9377801793716097
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 1.3587798321250213
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 1.9642525536625004
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 2.784935743574564
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 4.738361771476456
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 2.576794017050692
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 2.8433998083674497
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 0.8693752369184765
+      },
+      {
+        "start": 660,
+        "end": 688,
+        "score": 0.08334512010741606
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9322,
+  "representation_chars": 9322,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

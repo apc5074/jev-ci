@@ -1,0 +1,81 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.NullHandlingTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/NullHandlingTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.NullHandlingTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/NullHandlingTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser;\n\nimport java.io.IOException;\nimport java.util.Arrays;\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\n\nimport com.fasterxml.jackson.annotation.JsonAnySetter;\nimport com.fasterxml.jackson.annotation.JsonSubTypes;\nimport com.fasterxml.jackson.annotation.JsonSubTypes.Type;\nimport com.fasterxml.jackson.annotation.JsonTypeInfo;\nimport com.fasterxml.jackson.core.*;\nimport com.fasterxml.jackson.databind.*;\nimport com.fasterxml.jackson.databind.deser.JDKScalarsTest.PrimitivesBean;\nimport com.fasterxml.jackson.databind.module.SimpleModule;\n\npublic class NullHandlingTest extends BaseMapTest\n{\n    static class FunnyNullDeserializer extends JsonDeserializer<String>\n    {\n        @Override\n        public String deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {\n            return \"text\";\n        }\n\n        @Override\n        public String getNullValue(DeserializationContext ctxt) { return \"funny\"; }\n    }\n\n    static class AnySetter{\n\n        private Map<String,String> any = new HashMap<String,String>();\n\n        @JsonAnySetter\n        public void setAny(String name, String value){\n            this.any.put(name,value);\n        }\n\n        public Map<String,String> getAny(){\n            return this.any;\n        }\n    }\n    \n    // [databind#1601]\n    static class RootData {\n        public String name;\n        public String type;\n        @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXTERNAL_PROPERTY,\n                property = \"type\")\n        @JsonSubTypes({\n                @Type(value = TypeA.class, name = \"TypeA\"),\n                @Type(value = TypeB.class, name = \"TypeB\")})\n        public Proxy proxy;\n\n        public RootData() {}\n\n        public RootData(String name, String type, Proxy proxy) {\n            this.name = name;\n            this.type = type;\n            this.proxy = proxy;\n        }\n    }\n    static interface Proxy { }\n\n    static class TypeA implements Proxy {\n        public String aValue;\n        public TypeA() {}\n        public TypeA(String a) {\n            this.aValue = a;\n        }\n    }\n\n    static class TypeB implements Proxy {\n        public String bValue;\n        public TypeB() {}\n        public TypeB(String b) {\n            this.bValue = b;\n        }\n    }\n            verifyException(e, \"Can not map JSON null into type char\");\n        }\n        try {\n            reader.readValue(\"{\\\"shortValue\\\":null}\");\n            fail(\"Expected failure for short + null\");\n        } catch (JsonMappingException e) {\n            verifyException(e, \"Can not map JSON null into type short\");\n        }\n        try {\n            reader.readValue(\"{\\\"intValue\\\":null}\");\n            fail(\"Expected failure for int + null\");\n        } catch (JsonMappingException e) {\n            verifyException(e, \"Can not map JSON null into type int\");\n        }\n        try {\n            reader.readValue(\"{\\\"longValue\\\":null}\");\n            fail(\"Expected failure for long + null\");\n        } catch (JsonMappingException e) {\n            verifyException(e, \"Can not map JSON null into type long\");\n        }\n\n        // float/double\n        try {\n            reader.readValue(\"{\\\"floatValue\\\":null}\");\n            fail(\"Expected failure for float + null\");\n        } catch (JsonMappingException e) {\n            verifyException(e, \"Can not map JSON null into type float\");\n        }\n        try {\n            reader.readValue(\"{\\\"doubleValue\\\":null}\");\n            fail(\"Expected failure for double + null\");\n        } catch (JsonMappingException e) {\n            verifyException(e, \"Can not map JSON null into type double\");\n        }\n    }\n    \n    // [databind#407]\n    public void testListOfNulls() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        SimpleModule module = new SimpleModule(\"test\", Version.unknownVersion());\n        module.addDeserializer(String.class, new FunnyNullDeserializer());\n        mapper.registerModule(module);\n\n        List<String> list = Arrays.asList(\"funny\");\n        JavaType type = mapper.getTypeFactory().constructCollectionType(List.class, String.class);\n\n        // should get non-default null directly:\n        List<?> deser = mapper.readValue(\"[null]\", type);\n        assertNotNull(deser);\n        assertEquals(1, deser.size());\n        assertEquals(list.get(0), deser.get(0));\n\n        // as well as via ObjectReader\n        ObjectReader reader = mapper.readerFor(type);\n        deser = reader.readValue(\"[null]\");\n        assertNotNull(deser);\n        assertEquals(1, deser.size());\n        assertEquals(list.get(0), deser.get(0));\n    }\n\n    // Test for [#407]\n    public void testMapOfNulls() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        SimpleModule module = new SimpleModule(\"test\", Version.unknownVersion());\n        module.addDeserializer(String.class, new FunnyNullDeserializer());\n        mapper.registerModule(module);\n\n        JavaType type = mapper.getTypeFactory().constructMapType(Map.class, String.class, String.class);\n        // should get non-default null directly:\n        Map<?,?> deser = mapper.readValue(\"{\\\"key\\\":null}\", type);\n        assertNotNull(deser);\n        assertEquals(1, deser.size());\n        assertEquals(\"funny\", deser.get(\"key\"));\n\n        // as well as via ObjectReader\n        ObjectReader reader = mapper.readerFor(type);\n        deser = reader.readValue(\"{\\\"key\\\":null}\");\n        assertNotNull(deser);\n        assertEquals(1, deser.size());\n        assertEquals(\"funny\", deser.get(\"key\"));\n    }\n\n    // [databind#1601]\n    public void testPolymorphicDataNull() throws Exception\n    {\n        String typeA =\n                \"{\\\"name\\\":\\\"TypeAData\\\", \\\"type\\\":\\\"TypeA\\\", \\\"proxy\\\":{\\\"aValue\\\":\\\"This works!\\\"}}\";\n        RootData typeAData = MAPPER.readValue(typeA, RootData.class);\n        assertEquals(\"No value for aValue!?\", \"This works!\", ((TypeA) typeAData.proxy).aValue);\n        String typeB =\n                \"{\\\"name\\\":\\\"TypeBData\\\", \\\"type\\\":\\\"TypeB\\\", \\\"proxy\\\":{\\\"bValue\\\":\\\"This works too!\\\"}}\";\n        RootData typeBData = MAPPER.readValue(typeB, RootData.class);\n        assertEquals(\"No value for bValue!?\", \"This works too!\", ((TypeB) typeBData.proxy).bValue);\n        String typeBNull =\n                \"{\\\"name\\\":\\\"TypeBData\\\", \\\"type\\\":\\\"TypeB\\\", \\\"proxy\\\": null}\";\n        RootData typeBNullData = MAPPER.readValue(typeBNull, RootData.class);\n        assertNull(\"Proxy should be null!\", typeBNullData.proxy);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 281,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        180,
+        260
+      ],
+      [
+        240,
+        281
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 22.503144171009584
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 14.710148312819287
+      },
+      {
+        "start": 240,
+        "end": 281,
+        "score": 11.210957309177836
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 22.503144171009584
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.951935366385856
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 9.568823328454858
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 14.710148312819287
+      },
+      {
+        "start": 240,
+        "end": 281,
+        "score": 11.210957309177836
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 6695,
+  "representation_chars": 6695,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

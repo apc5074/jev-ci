@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.math.distribution.CauchyDistributionTest",
+  "source_file": "src/test/org/apache/commons/math/distribution/CauchyDistributionTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math.distribution.CauchyDistributionTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/math/distribution/CauchyDistributionTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math.distribution;\n\n/**\n * Test cases for CauchyDistribution.\n * Extends ContinuousDistributionAbstractTest.  See class javadoc for\n * ContinuousDistributionAbstractTest for details.\n * \n * @version $Revision$ $Date$\n */\npublic class CauchyDistributionTest extends ContinuousDistributionAbstractTest  {\n    \n    /**\n     * Constructor for CauchyDistributionTest.\n     * @param arg0\n     */\n    public CauchyDistributionTest(String arg0) {\n        super(arg0);\n    }\n    \n    //-------------- Implementations for abstract methods -----------------------\n    \n    /** Creates the default continuous distribution instance to use in tests. */\n    @Override\n    public ContinuousDistribution makeDistribution() {\n        return new CauchyDistributionImpl(1.2, 2.1);\n    }   \n    \n    /** Creates the default cumulative probability distribution test input values */\n    @Override\n    public double[] makeCumulativeTestPoints() {\n        // quantiles computed using Mathematica \n        return new double[] {-667.2485619d, -65.6230835d, -25.48302995d,\n                -12.05887818d, -5.263135428d, 7.663135428d, 14.45887818d,\n                27.88302995d, 68.0230835d, 669.6485619d};\n    }\n    \n    /** Creates the default cumulative probability density test expected values */\n    @Override\n    public double[] makeCumulativeTestValues() {\n        return new double[] {0.001d, 0.01d, 0.025d, 0.05d, 0.1d, 0.900d, 0.950d,\n                0.975d, 0.990d, 0.999d};\n    }\n    \n    //---------------------------- Additional test cases -------------------------\n    \n    public void testInverseCumulativeProbabilityExtremes() throws Exception {\n        setInverseCumulativeTestPoints(new double[] {0.0, 1.0});\n        setInverseCumulativeTestValues(\n                new double[] {Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY});\n        verifyInverseCumulativeProbabilities();\n    }\n    \n    public void testMedian() {\n        CauchyDistribution distribution = (CauchyDistribution) getDistribution();\n        double expected = Math.random();\n        distribution.setMedian(expected);\n        assertEquals(expected, distribution.getMedian(), 0.0);\n    }\n    \n    public void testScale() {\n        CauchyDistribution distribution = (CauchyDistribution) getDistribution();\n        double expected = Math.random();\n        distribution.setScale(expected);\n        assertEquals(expected, distribution.getScale(), 0.0);\n    }\n    \n    public void testSetScale() {\n        CauchyDistribution distribution = (CauchyDistribution) getDistribution();\n        try {\n            distribution.setScale(0.0);\n            fail(\"Can not have 0.0 scale.\");\n        } catch (IllegalArgumentException ex) {\n            // success\n        }\n        \n        try {\n            distribution.setScale(-1.0);\n            fail(\"Can not have negative scale.\");\n        } catch (IllegalArgumentException ex) {\n            // success\n        }\n    }\n\n    public void testSampling() {} // Fails in super class\n}\n",
+  "compaction": {
+    "source_lines": 102,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3980,
+  "representation_chars": 3980,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,151 @@
+{
+  "test_class": "org.apache.commons.lang3.builder.ToStringBuilderTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/builder/ToStringBuilderTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.builder.ToStringBuilderTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/builder/ToStringBuilderTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3.builder;\n\nimport static org.junit.Assert.*;\n\nimport java.util.ArrayList;\nimport java.util.HashMap;\nimport java.util.List;\n\nimport org.junit.Test;\n\nimport org.apache.commons.lang3.SystemUtils;\n\n/**\n * Unit tests for {@link org.apache.commons.lang3.builder.ToStringBuilder}.\n *\n * @version $Id$\n */\npublic class ToStringBuilderTest {\n\n    private final Integer base = Integer.valueOf(5);\n    private final String baseStr = base.getClass().getName() + \"@\" + Integer.toHexString(System.identityHashCode(base));\n\n    //-----------------------------------------------------------------------\n\n    @Test\n    public void testConstructorEx1() {\n        assertEquals(\"<null>\", new ToStringBuilder(null).toString());\n    }\n\n    @Test\n    public void testConstructorEx2() {\n        assertEquals(\"<null>\", new ToStringBuilder(null, null).toString());\n        new ToStringBuilder(this.base, null).toString();\n    }\n\n    @Test\n    public void testConstructorEx3() {\n        assertEquals(\"<null>\", new ToStringBuilder(null, null, null).toString());\n        new ToStringBuilder(this.base, null, null);\n        new ToStringBuilder(this.base, ToStringStyle.DEFAULT_STYLE, null);\n    }\n\n    @Test\n    public void testGetSetDefault() {\n        try {\n            ToStringBuilder.setDefaultStyle(ToStringStyle.NO_FIELD_NAMES_STYLE);\n            assertSame(ToStringStyle.NO_FIELD_NAMES_STYLE, ToStringBuilder.getDefaultStyle());\n        } finally {\n            // reset for other tests\n            ToStringBuilder.setDefaultStyle(ToStringStyle.DEFAULT_STYLE);\n        }\n    }\n\n    @Test\n    public void testSetDefaultEx() {\n        try {\n            ToStringBuilder.setDefaultStyle(null);\n\n        } catch (IllegalArgumentException ex) {\n            return;\n        }\n        fail();\n    }\n\n    @Test\n    public void testBlank() {\n        assertEquals(baseStr + \"[]\", new ToStringBuilder(base).toString());\n    }\n\n    /**\n     * Test wrapper for int primitive.\n     */\n    @Test\n    public void testReflectionInteger() {\n        assertEquals(baseStr + \"[value=5]\", ToStringBuilder.reflectionToString(base));\n    }\n\n    /**\n     * Test wrapper for char primitive.\n     */\n    @Test\n    public void testReflectionCharacter() {\n        Character c = new Character('A');\n        assertEquals(this.toBaseString(c) + \"[value=A]\", ToStringBuilder.reflectionToString(c));\n    }\n\n    /**\n     * Test wrapper for char boolean.\n     */\n    @Test\n    public void testReflectionBoolean() {\n        Boolean b;\n        b = Boolean.TRUE;\n        assertEquals(this.toBaseString(b) + \"[value=true]\", ToStringBuilder.reflectionToString(b));\n        b = Boolean.FALSE;\n        assertEquals(this.toBaseString(b) + \"[value=false]\", ToStringBuilder.reflectionToString(b));\n    }\n\n    /**\n     * Create the same toString() as Object.toString().\n     * @param o the object to create the string for.\n     * @return a String in the Object.toString format.\n     */\n    private String toBaseString(Object o) {\n        return o.getClass().getName() + \"@\" + Integer.toHexString(System.identityHashCode(o));\n    }\n\n    // Reflection Array tests\n\n    //\n    // Note on the following line of code repeated in the reflection array tests.\n    //\n    // assertReflectionArray(\"<null>\", array);\n    //\n    // The expected value is not baseStr + \"[<null>]\" since array==null and is typed as Object.\n    // The null array does not carry array type information.\n    // If we added a primitive array type constructor and pile of associated methods,\n    // then type declaring type information could be carried forward. IMHO, null is null.\n    //\n    // Gary Gregory - 2003-03-12 - ggregory@seagullsw.com\n    //\n\n    public void assertReflectionArray(String expected, Object actual) {\n        if (actual == null) {\n     *  may be <code>null</code>\n     * @param reflectUpToClass  the superclass to reflect up to (inclusive),\n     *  may be <code>null</code>\n     * @return the String result\n     * @throws IllegalArgumentException if the Object is <code>null</code>\n     */\n    public <T> String toStringWithStatics(T object, ToStringStyle style, Class<? super T> reflectUpToClass) {\n        return ReflectionToStringBuilder.toString(object, style, false, true, reflectUpToClass);\n    }\n\n    /**\n     * Tests ReflectionToStringBuilder setUpToClass().\n     */\n    @Test\n    public void test_setUpToClass_valid() {\n        Integer val = Integer.valueOf(5);\n        ReflectionToStringBuilder test = new ReflectionToStringBuilder(val);\n        test.setUpToClass(Number.class);\n    }\n\n    /**\n     * Tests ReflectionToStringBuilder setUpToClass().\n     */\n    @Test\n    public void test_setUpToClass_invalid() {\n        Integer val = Integer.valueOf(5);\n        ReflectionToStringBuilder test = new ReflectionToStringBuilder(val);\n        try {\n            test.setUpToClass(String.class);\n            fail();\n        } catch (IllegalArgumentException ex) {\n            // expected\n        }\n    }\n\n    /**\n     * Tests ReflectionToStringBuilder.toString() for statics.\n     */\n    class ReflectionStaticFieldsFixture {\n        static final String staticString = \"staticString\";\n        static final int staticInt = 12345;\n        static final transient String staticTransientString = \"staticTransientString\";\n        static final transient int staticTransientInt = 54321;\n        String instanceString = \"instanceString\";\n        int instanceInt = 67890;\n        transient String transientString = \"transientString\";\n        transient int transientInt = 98765;\n    }\n\n    /**\n     * Test fixture for ReflectionToStringBuilder.toString() for statics.\n     */\n    class SimpleReflectionStaticFieldsFixture {\n        static final String staticString = \"staticString\";\n        static final int staticInt = 12345;\n    }\n\n    /**\n     * Test fixture for ReflectionToStringBuilder.toString() for statics.\n     */\n    class InheritedReflectionStaticFieldsFixture extends SimpleReflectionStaticFieldsFixture {\n        static final String staticString2 = \"staticString2\";\n        static final int staticInt2 = 67890;\n    }\n\n    @Test\n    public void testReflectionNull() {\n        assertEquals(\"<null>\", ReflectionToStringBuilder.toString(null));\n    }\n\n    /**\n     * Points out failure to print anything from appendToString methods using MULTI_LINE_STYLE.\n     * See issue LANG-372.\n     */\n    class MultiLineTestObject {\n        Integer i = Integer.valueOf(31337);\n        @Override\n        public String toString() {\n            return new ToStringBuilder(this).append(\"testInt\", i).toString();\n        }\n",
+  "compaction": {
+    "source_lines": 1111,
+    "mode": "windows",
+    "windows_total": 19,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        1020,
+        1100
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 53.53617842580811
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 24.84589020038094
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 26.089865557893084
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 53.53617842580811
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 24.84589020038094
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 16.02026800376284
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 0.16873684421295812
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 0.1691058734891837
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 12.50298131620225
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 4.038510757621347
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 3.7551990583643953
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 14.672302705131834
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 15.826089255964078
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 11.459297712648436
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 8.289785307256368
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 0.1819902567214258
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 0.18173561570949348
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 0.18146553098281204
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 2.5984036408792908
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 23.467236891756688
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 26.089865557893084
+      },
+      {
+        "start": 1080,
+        "end": 1111,
+        "score": 7.330734280874082
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 7530,
+  "representation_chars": 7530,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

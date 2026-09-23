@@ -1,0 +1,106 @@
+{
+  "test_class": "org.apache.commons.math3.ode.JacobianMatricesTest",
+  "source_file": "src/test/java/org/apache/commons/math3/ode/JacobianMatricesTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.ode.JacobianMatricesTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/ode/JacobianMatricesTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math3.ode;\n\nimport org.apache.commons.math3.ode.nonstiff.DormandPrince54Integrator;\nimport org.apache.commons.math3.stat.descriptive.SummaryStatistics;\nimport org.apache.commons.math3.util.FastMath;\nimport org.junit.Assert;\nimport org.junit.Test;\n\npublic class JacobianMatricesTest {\n\n    @Test\n    public void testLowAccuracyExternalDifferentiation() {\n        // this test does not really test FirstOrderIntegratorWithJacobians,\n        // it only shows that WITHOUT this class, attempting to recover\n        // the jacobians from external differentiation on simple integration\n        // results with low accuracy gives very poor results. In fact,\n        // the curves dy/dp = g(b) when b varies from 2.88 to 3.08 are\n        // essentially noise.\n        // This test is taken from Hairer, Norsett and Wanner book\n        // Solving Ordinary Differential Equations I (Nonstiff problems),\n        // the curves dy/dp = g(b) are in figure 6.5\n        FirstOrderIntegrator integ =\n            new DormandPrince54Integrator(1.0e-8, 100.0, new double[] { 1.0e-4, 1.0e-4 }, new double[] { 1.0e-4, 1.0e-4 });\n        double hP = 1.0e-12;\n        SummaryStatistics residualsP0 = new SummaryStatistics();\n        SummaryStatistics residualsP1 = new SummaryStatistics();\n        for (double b = 2.88; b < 3.08; b += 0.001) {\n            Brusselator brusselator = new Brusselator(b);\n            double[] y = { 1.3, b };\n            integ.integrate(brusselator, 0, y, 20.0, y);\n            double[] yP = { 1.3, b + hP };\n            integ.integrate(brusselator, 0, yP, 20.0, yP);\n            residualsP0.addValue((yP[0] - y[0]) / hP - brusselator.dYdP0());\n            residualsP1.addValue((yP[1] - y[1]) / hP - brusselator.dYdP1());\n        }\n        Assert.assertTrue((residualsP0.getMax() - residualsP0.getMin()) > 500);\n        Assert.assertTrue(residualsP0.getStandardDeviation() > 30);\n        Assert.assertTrue((residualsP1.getMax() - residualsP1.getMin()) > 700);\n        Assert.assertTrue(residualsP1.getStandardDeviation() > 40);\n    }\n\n    @Test\n    public void testHighAccuracyExternalDifferentiation() {\n        FirstOrderIntegrator integ =\n            new DormandPrince54Integrator(1.0e-8, 100.0, new double[] { 1.0e-10, 1.0e-10 }, new double[] { 1.0e-10, 1.0e-10 });\n        double hP = 1.0e-12;\n        SummaryStatistics residualsP0 = new SummaryStatistics();\n        SummaryStatistics residualsP1 = new SummaryStatistics();\n        for (double b = 2.88; b < 3.08; b += 0.001) {\n            ParamBrusselator brusselator = new ParamBrusselator(b);\n            double[] y = { 1.3, b };\n            integ.integrate(brusselator, 0, y, 20.0, y);\n            double[] yP = { 1.3, b + hP };\n            brusselator.setParameter(\"b\", b + hP);\n            integ.integrate(brusselator, 0, yP, 20.0, yP);\n            residualsP0.addValue((yP[0] - y[0]) / hP - brusselator.dYdP0());\n            residualsP1.addValue((yP[1] - y[1]) / hP - brusselator.dYdP1());\n        }\n        Assert.assertTrue((residualsP0.getMax() - residualsP0.getMin()) > 0.02);\n        Assert.assertTrue((residualsP0.getMax() - residualsP0.getMin()) < 0.03);\n        Assert.assertTrue(residualsP0.getStandardDeviation() > 0.003);\n        Assert.assertTrue(residualsP0.getStandardDeviation() < 0.004);\n        Assert.assertTrue((residualsP1.getMax() - residualsP1.getMin()) > 0.04);\n            return new double[] {\n                -oSin * dx0 - oCos * dy0,\n                 oCos * dx0 - oSin * dy0\n            };\n        }\n\n        public double[][] exactDyDy0Dot(double t) {\n            double oCos = omega * FastMath.cos(omega * t);\n            double oSin = omega * FastMath.sin(omega * t);\n            return new double[][] {\n                { -oSin, -oCos },\n                {  oCos, -oSin }\n            };\n        }\n\n        public double[][] exactDyDpDot(double t) {\n            double cos  = FastMath.cos(omega * t);\n            double sin  = FastMath.sin(omega * t);\n            double oCos = omega * cos;\n            double oSin = omega * sin;\n            double dx0  = y0[0] - cx;\n            double dy0  = y0[1] - cy;\n            return new double[][] {\n                {  oSin, oCos, -sin * dx0 - cos * dy0 - t * ( oCos * dx0 - oSin * dy0) },\n                { -oCos, oSin,  cos * dx0 - sin * dy0 + t * (-oSin * dx0 - oCos * dy0) }\n            };\n        }\n\n    }\n\n    /** ODE representing a point moving on a circle with provided center and angular rate. */\n    private static class ParameterizedCircle extends AbstractParameterizable\n        implements FirstOrderDifferentialEquations, ParameterJacobianProvider, ParameterizedODE {\n\n        public static final String CX = \"cx\";\n        public static final String CY = \"cy\";\n        public static final String OMEGA = \"omega\";\n\n        private final double[] y0;\n        private double cx;\n        private double cy;\n        private double omega;\n\n        public ParameterizedCircle(double[] y0, double cx, double cy, double omega) {\n            super(CX,CY,OMEGA);\n            this.y0    = y0.clone();\n            this.cx    = cx;\n            this.cy    = cy;\n            this.omega = omega;\n        }\n\n        public int getDimension() {\n            return 2;\n        }\n\n        public void computeDerivatives(double t, double[] y, double[] yDot) {\n            yDot[0] = omega * (cy - y[1]);\n            yDot[1] = omega * (y[0] - cx);\n        }\n\n        public void computeParameterJacobian(double t, double[] y, double[] yDot,\n                                             String paramName, double[] dFdP)\n            throws IllegalArgumentException {\n            if (paramName.equals(CX)) {\n                dFdP[0] = 0;\n                dFdP[1] = -omega;\n            } else {\n                throw new IllegalArgumentException();\n            }\n        }\n\n        public double getParameter(final String name)\n            throws IllegalArgumentException {\n            if (name.equals(CY)) {\n                return cy;\n            } else if (name.equals(OMEGA)) {\n                return omega;\n            } else {\n                throw new IllegalArgumentException();\n            }\n        }\n\n        public void setParameter(final String name, final double value)\n            throws IllegalArgumentException {\n            if (name.equals(CY)) {\n                cy = value;\n            } else if (name.equals(OMEGA)) {\n                omega = value;\n            } else {\n                throw new IllegalArgumentException();\n            }\n        }\n\n        public double[] exactY(double t) {\n            double cos = FastMath.cos(omega * t);\n            double sin = FastMath.sin(omega * t);\n            double dx0 = y0[0] - cx;\n            double dy0 = y0[1] - cy;\n            return new double[] {\n                cx + cos * dx0 - sin * dy0,\n                cy + sin * dx0 + cos * dy0\n            };\n        }\n\n        public double[][] exactDyDy0(double t) {\n            double cos = FastMath.cos(omega * t);\n            double sin = FastMath.sin(omega * t);\n            return new double[][] {\n                { cos, -sin },\n                { sin,  cos }\n            };\n        }\n\n        public double[] exactDyDcx(double t) {\n            double cos = FastMath.cos(omega * t);\n            double sin = FastMath.sin(omega * t);\n            return new double[] {1 - cos, -sin};\n        }\n\n        public double[] exactDyDcy(double t) {\n            double cos = FastMath.cos(omega * t);\n            double sin = FastMath.sin(omega * t);\n            return new double[] {sin, 1 - cos};\n        }\n\n        public double[] exactDyDom(double t) {\n            double cos = FastMath.cos(omega * t);\n            double sin = FastMath.sin(omega * t);\n            double dx0 = y0[0] - cx;\n            double dy0 = y0[1] - cy;\n            return new double[] { -t * (sin * dx0 + cos * dy0) , t * (cos * dx0 - sin * dy0) };\n        }\n\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 616,
+    "mode": "windows",
+    "windows_total": 10,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        480,
+        560
+      ],
+      [
+        540,
+        616
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 28.163710996523392
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 11.610310684063668
+      },
+      {
+        "start": 540,
+        "end": 616,
+        "score": 13.153441258972046
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 28.163710996523392
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 4.75847631990398
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 6.177546042089802
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.350484653322854
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.715239391050003
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 6.533782549173793
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 6.407325200442266
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 2.121648887845666
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 11.610310684063668
+      },
+      {
+        "start": 540,
+        "end": 616,
+        "score": 13.153441258972046
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8864,
+  "representation_chars": 8864,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

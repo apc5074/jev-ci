@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.seq.SequenceWriterTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/seq/SequenceWriterTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.seq.SequenceWriterTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/seq/SequenceWriterTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.seq;\n\nimport java.io.StringWriter;\n\nimport com.fasterxml.jackson.annotation.JsonTypeInfo;\nimport com.fasterxml.jackson.annotation.JsonTypeName;\nimport com.fasterxml.jackson.databind.*;\n\npublic class SequenceWriterTest extends BaseMapTest\n{\n    static class Bean {\n        public int a;\n\n        public Bean(int value) { a = value; }\n        \n        @Override\n        public boolean equals(Object o) {\n            if (o == null || o.getClass() != getClass()) return false;\n            Bean other = (Bean) o;\n            return other.a == this.a;\n        }\n        @Override public int hashCode() { return a; }\n    }\n\n    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = \"type\")\n    static class PolyBase {\n    }\n\n    @JsonTypeName(\"A\")\n    static class ImplA extends PolyBase {\n        public int value;\n        \n        public ImplA(int v) { value = v; }\n    }\n\n    @JsonTypeName(\"B\")\n    static class ImplB extends PolyBase {\n        public int b;\n        \n        public ImplB(int v) { b = v; }\n    }\n    \n    /*\n    /**********************************************************\n    /* Test methods, simple writes\n    /**********************************************************\n     */\n\n    private final ObjectMapper MAPPER = new ObjectMapper();\n    private final ObjectWriter WRITER = MAPPER.writer()\n            .withRootValueSeparator(\"\\n\");\n\n    public void testSimpleNonArray() throws Exception\n    {\n        StringWriter strw = new StringWriter();\n        SequenceWriter w = WRITER\n                .writeValues(strw);\n        w.write(new Bean(13))\n        .write(new Bean(-6))\n        .writeAll(new Bean[] { new Bean(3), new Bean(1) });\n        w.close();\n        assertEquals(aposToQuotes(\"{'a':13}\\n{'a':-6}\\n{'a':3}\\n{'a':1}\"),\n                strw.toString());\n    }\n\n    public void testSimpleArray() throws Exception\n    {\n        StringWriter strw = new StringWriter();\n        SequenceWriter w = WRITER.writeValuesAsArray(strw);\n        w.write(new Bean(1))\n        .write(new Bean(2))\n        .writeAll(new Bean[] { new Bean(-7), new Bean(2) });\n        w.close();\n        assertEquals(aposToQuotes(\"[{'a':1},{'a':2},{'a':-7},{'a':2}]\"),\n                strw.toString());\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods, polymorphic writes\n    /**********************************************************\n     */\n\n    @SuppressWarnings(\"resource\")\n    public void testPolymorphicNonArrayWithoutType() throws Exception\n    {\n        StringWriter strw = new StringWriter();\n        SequenceWriter w = WRITER\n                .writeValues(strw);\n        w.write(new ImplA(3))\n            .write(new ImplA(4))\n            .close();\n        assertEquals(aposToQuotes(\"{'type':'A','value':3}\\n{'type':'A','value':4}\"),\n                strw.toString());\n    }\n\n    @SuppressWarnings(\"resource\")\n    public void testPolymorphicArrayWithoutType() throws Exception\n    {\n        StringWriter strw = new StringWriter();\n        SequenceWriter w = WRITER\n                .writeValuesAsArray(strw);\n        w.write(new ImplA(-1))\n            .write(new ImplA(6))\n            .close();\n        assertEquals(aposToQuotes(\"[{'type':'A','value':-1},{'type':'A','value':6}]\"),\n                strw.toString());\n    }\n\n    @SuppressWarnings(\"resource\")\n    public void testPolymorphicArrayWithType() throws Exception\n    {\n        StringWriter strw = new StringWriter();\n        SequenceWriter w = WRITER\n                .forType(PolyBase.class)\n                .writeValuesAsArray(strw);\n        w.write(new ImplA(-1))\n            .write(new ImplB(3))\n            .write(new ImplA(7))\n            .close();\n        assertEquals(aposToQuotes(\"[{'type':'A','value':-1},{'type':'B','b':3},{'type':'A','value':7}]\"),\n                strw.toString());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 124,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 4048,
+  "representation_chars": 4048,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,55 @@
+# Build context exclusions for jev-ci.
+# The Dockerfile only COPY-selects pin/install/requirements files; these rules
+# keep secrets and large generated trees out of the daemon context entirely.
+
+.git
+.gitignore
+.gitattributes
+
+# Local secrets and env files (Phase 1 builds must not need these)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*credentials*
+*secrets*
+**/id_rsa
+**/id_ed25519
+
+# Regenerable / durable host artifacts (live on the bind mount, not in the image)
+cache/
+results/
+data/bugs/
+data/patches/
+data/tests/
+data/candidates/
+
+# Accidental host Defects4J checkouts (image installs to /opt/defects4j)
+/defects4j/
+project_repos/
+**/major/
+
+# Python / tooling noise
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Local agent / IDE state
+.cursor/
+.vscode/
+*.code-workspace
+
+# Plans are not build inputs
+Plans/

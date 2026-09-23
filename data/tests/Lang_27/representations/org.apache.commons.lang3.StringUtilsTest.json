@@ -1,0 +1,211 @@
+{
+  "test_class": "org.apache.commons.lang3.StringUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/StringUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.StringUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/StringUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3;\n\nimport java.lang.reflect.Constructor;\nimport java.lang.reflect.Modifier;\nimport java.nio.CharBuffer;\nimport java.util.Arrays;\nimport java.util.Collections;\nimport java.util.Iterator;\nimport java.util.Locale;\n\nimport junit.framework.TestCase;\n\nimport org.apache.commons.lang3.text.WordUtils;\n\n/**\n * Unit tests {@link org.apache.commons.lang3.StringUtils}.\n *\n * @author Apache Software Foundation\n * @author Daniel L. Rall\n * @author <a href=\"mailto:ridesmet@users.sourceforge.net\">Ringo De Smet</a>\n * @author <a href=\"mailto:fredrik@westermarck.com>Fredrik Westermarck</a>\n * @author Holger Krauth\n * @author <a href=\"hps@intermeta.de\">Henning P. Schmiedehausen</a>\n * @author Phil Steitz\n * @author Gary D. Gregory\n * @author Scott Johnson\n * @author Al Chou\n * @version $Id$\n */\npublic class StringUtilsTest extends TestCase {\n    \n    static final String WHITESPACE;\n    static final String NON_WHITESPACE;\n    static final String TRIMMABLE;\n    static final String NON_TRIMMABLE;\n    static {\n        String ws = \"\";\n        String nws = \"\";\n        String tr = \"\";\n        String ntr = \"\";\n        for (int i = 0; i < Character.MAX_VALUE; i++) {\n            if (Character.isWhitespace((char) i)) {\n                ws += String.valueOf((char) i);\n                if (i > 32) {\n                    ntr += String.valueOf((char) i);\n                }\n            } else if (i < 40) {\n                nws += String.valueOf((char) i);\n            }\n        }\n        for (int i = 0; i <= 32; i++) {\n            tr += String.valueOf((char) i);\n        }\n        WHITESPACE = ws;\n        NON_WHITESPACE = nws;\n        TRIMMABLE = tr;\n        NON_TRIMMABLE = ntr;\n    }\n\n    private static final String[] ARRAY_LIST = { \"foo\", \"bar\", \"baz\" };\n    private static final String[] EMPTY_ARRAY_LIST = {};\n    private static final String[] NULL_ARRAY_LIST = {null};\n    private static final String[] MIXED_ARRAY_LIST = {null, \"\", \"foo\"};\n    private static final Object[] MIXED_TYPE_LIST = {new String(\"foo\"), new Long(2)};\n        \n        final String str = \"a\" + separator + \"b\" + separator + separator + noMatch + \"c\";\n        String[] res;\n        // (str, sepStr)\n        res = StringUtils.splitPreserveAllTokens(str, sepStr);\n        assertEquals(msg, 4, res.length);\n        assertEquals(msg, \"a\", res[0]);\n        assertEquals(msg, \"b\", res[1]);\n        assertEquals(msg, \"\", res[2]);\n        assertEquals(msg, noMatch + \"c\", res[3]);\n        \n        final String str2 = separator + \"a\" + separator;\n        res = StringUtils.splitPreserveAllTokens(str2, sepStr);\n        assertEquals(msg, 3, res.length);\n        assertEquals(msg, \"\", res[0]);\n        assertEquals(msg, \"a\", res[1]);\n        assertEquals(msg, \"\", res[2]);\n\n        res = StringUtils.splitPreserveAllTokens(str, sepStr, -1);\n        assertEquals(msg, 4, res.length);\n        assertEquals(msg, \"a\", res[0]);\n        assertEquals(msg, \"b\", res[1]);\n        assertEquals(msg, \"\", res[2]);\n        assertEquals(msg, noMatch + \"c\", res[3]);\n        \n        res = StringUtils.splitPreserveAllTokens(str, sepStr, 0);\n        assertEquals(msg, 4, res.length);\n        assertEquals(msg, \"a\", res[0]);\n        assertEquals(msg, \"b\", res[1]);\n        assertEquals(msg, \"\", res[2]);\n        assertEquals(msg, noMatch + \"c\", res[3]);\n        \n        res = StringUtils.splitPreserveAllTokens(str, sepStr, 1);\n        assertEquals(msg, 1, res.length);\n        assertEquals(msg, str, res[0]);\n        \n        res = StringUtils.splitPreserveAllTokens(str, sepStr, 2);\n        assertEquals(msg, 2, res.length);\n        assertEquals(msg, \"a\", res[0]);\n        assertEquals(msg, str.substring(2), res[1]);\n    }\n\n    public void testSplitByCharacterType() {\n        assertNull(StringUtils.splitByCharacterType(null));\n        assertEquals(0, StringUtils.splitByCharacterType(\"\").length);\n        \n        assertTrue(ArrayUtils.isEquals(new String[] { \"ab\", \" \", \"de\", \" \",\n        \"fg\" }, StringUtils.splitByCharacterType(\"ab de fg\")));\n        \n        assertTrue(ArrayUtils.isEquals(new String[] { \"ab\", \"   \", \"de\", \" \",\n        \"fg\" }, StringUtils.splitByCharacterType(\"ab   de fg\")));\n        \n        assertTrue(ArrayUtils.isEquals(new String[] { \"ab\", \":\", \"cd\", \":\",\n        \"ef\" }, StringUtils.splitByCharacterType(\"ab:cd:ef\")));\n        \n        assertTrue(ArrayUtils.isEquals(new String[] { \"number\", \"5\" },\n                StringUtils.splitByCharacterType(\"number5\")));\n        \n        assertTrue(ArrayUtils.isEquals(new String[] { \"foo\", \"B\", \"ar\" },\n                StringUtils.splitByCharacterType(\"fooBar\")));\n        \n        assertTrue(ArrayUtils.isEquals(new String[] { \"foo\", \"200\", \"B\", \"ar\" },\n                StringUtils.splitByCharacterType(\"foo200Bar\")));\n        \n        assertTrue(ArrayUtils.isEquals(new String[] { \"ASFR\", \"ules\" },\n                StringUtils.splitByCharacterType(\"ASFRules\")));\n    }\n    \n    public void testSplitByCharacterTypeCamelCase() {\n        assertNull(StringUtils.splitByCharacterTypeCamelCase(null));\n        assertEquals(0, StringUtils.splitByCharacterTypeCamelCase(\"\").length);\n\n        assertTrue(ArrayUtils.isEquals(new String[] { \"ab\", \" \", \"de\", \" \",\n                \"fg\" }, StringUtils.splitByCharacterTypeCamelCase(\"ab de fg\")));\n\n        assertTrue(ArrayUtils.isEquals(new String[] { \"ab\", \"   \", \"de\", \" \",\n                \"fg\" }, StringUtils.splitByCharacterTypeCamelCase(\"ab   de fg\")));\n\n        assertTrue(ArrayUtils.isEquals(new String[] { \"ab\", \":\", \"cd\", \":\",\n                \"ef\" }, StringUtils.splitByCharacterTypeCamelCase(\"ab:cd:ef\")));\n        assertEquals( \"abc\", StringUtils.abbreviateMiddle(\"abc\", \".\", 3) );\n        assertEquals( \"ab.f\", StringUtils.abbreviateMiddle(\"abcdef\", \".\", 4) );\n\n        // JIRA issue (LANG-405) example (slightly different than actual expected result)\n        assertEquals( \n            \"A very long text with un...f the text is complete.\",\n            StringUtils.abbreviateMiddle(\n                \"A very long text with unimportant stuff in the middle but interesting start and \" +\n                \"end to see if the text is complete.\", \"...\", 50) );\n\n        // Test a much longer text :)\n        String longText = \"Start text\" + StringUtils.repeat(\"x\", 10000) + \"Close text\";\n        assertEquals( \n            \"Start text->Close text\",\n            StringUtils.abbreviateMiddle( longText, \"->\", 22 ) );\n\n        // Test negative length\n        assertEquals(\"abc\", StringUtils.abbreviateMiddle(\"abc\", \".\", -1));\n\n        // Test boundaries\n        // Fails to change anything as method ensures first and last char are kept\n        assertEquals(\"abc\", StringUtils.abbreviateMiddle(\"abc\", \".\", 1));\n        assertEquals(\"abc\", StringUtils.abbreviateMiddle(\"abc\", \".\", 2));\n\n        // Test length of n=1\n        assertEquals(\"a\", StringUtils.abbreviateMiddle(\"a\", \".\", 1));\n\n        // Test smallest length that can lead to success\n        assertEquals(\"a.d\", StringUtils.abbreviateMiddle(\"abcd\", \".\", 3));\n\n        // More from LANG-405\n        assertEquals(\"a..f\", StringUtils.abbreviateMiddle(\"abcdef\", \"..\", 4));\n        assertEquals(\"ab.ef\", StringUtils.abbreviateMiddle(\"abcdef\", \".\", 5));\n    }\n\n    //-----------------------------------------------------------------------\n    public void testDifference_StringString() {\n        assertEquals(null, StringUtils.difference(null, null));\n        assertEquals(\"\", StringUtils.difference(\"\", \"\"));\n        assertEquals(\"abc\", StringUtils.difference(\"\", \"abc\"));\n        assertEquals(\"\", StringUtils.difference(\"abc\", \"\"));\n        assertEquals(\"i am a robot\", StringUtils.difference(null, \"i am a robot\"));\n        assertEquals(\"i am a machine\", StringUtils.difference(\"i am a machine\", null));\n        assertEquals(\"robot\", StringUtils.difference(\"i am a machine\", \"i am a robot\"));\n        assertEquals(\"\", StringUtils.difference(\"abc\", \"abc\"));\n        assertEquals(\"you are a robot\", StringUtils.difference(\"i am a robot\", \"you are a robot\"));\n    }\n\n    public void testDifferenceAt_StringString() {\n        assertEquals(-1, StringUtils.indexOfDifference(null, null));\n        assertEquals(0, StringUtils.indexOfDifference(null, \"i am a robot\"));\n        assertEquals(-1, StringUtils.indexOfDifference(\"\", \"\"));\n        assertEquals(0, StringUtils.indexOfDifference(\"\", \"abc\"));\n        assertEquals(0, StringUtils.indexOfDifference(\"abc\", \"\"));\n        assertEquals(0, StringUtils.indexOfDifference(\"i am a machine\", null));\n        assertEquals(7, StringUtils.indexOfDifference(\"i am a machine\", \"i am a robot\"));\n        assertEquals(-1, StringUtils.indexOfDifference(\"foo\", \"foo\"));\n        assertEquals(0, StringUtils.indexOfDifference(\"i am a robot\", \"you are a robot\"));\n        //System.out.println(\"indexOfDiff: \" + StringUtils.indexOfDifference(\"i am a robot\", \"not machine\"));\n    }\n\n    //-----------------------------------------------------------------------\n    public void testGetLevenshteinDistance_StringString() {\n        assertEquals(0, StringUtils.getLevenshteinDistance(\"\", \"\") );\n        assertEquals(1, StringUtils.getLevenshteinDistance(\"\", \"a\") );\n        assertEquals(7, StringUtils.getLevenshteinDistance(\"aaapppp\", \"\") );\n        assertEquals(1, StringUtils.getLevenshteinDistance(\"frog\", \"fog\") );\n        assertEquals(3, StringUtils.getLevenshteinDistance(\"fly\", \"ant\") );\n        assertEquals(7, StringUtils.getLevenshteinDistance(\"elephant\", \"hippo\") );\n        assertEquals(7, StringUtils.getLevenshteinDistance(\"hippo\", \"elephant\") );\n        assertEquals(8, StringUtils.getLevenshteinDistance(\"hippo\", \"zzzzzzzz\") );\n        assertEquals(8, StringUtils.getLevenshteinDistance(\"zzzzzzzz\", \"hippo\") );\n        assertEquals(1, StringUtils.getLevenshteinDistance(\"hello\", \"hallo\") );\n        try {\n            @SuppressWarnings(\"unused\")\n            int d = StringUtils.getLevenshteinDistance(\"a\", null);\n            fail(\"expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException ex) {\n            // empty\n        }\n",
+  "compaction": {
+    "source_lines": 1858,
+    "mode": "windows",
+    "windows_total": 31,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        840,
+        920
+      ],
+      [
+        1560,
+        1640
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 38.101813425601605
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 12.231488007911482
+      },
+      {
+        "start": 1560,
+        "end": 1640,
+        "score": 11.014212347445806
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 38.101813425601605
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 10.130601121656735
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 1.1139964297911944
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 1.466104318411356
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 2.6190066648719346
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 3.1296690039455166
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 5.726042107411088
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 1.7794418144009052
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 4.259403813810977
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 3.180078562151297
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 3.1787088879094414
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 3.0023610899650333
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 0.9791410273937361
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 3.0835576046422273
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 12.231488007911482
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 9.524679948036958
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 2.9336834208513887
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 3.1272619925428775
+      },
+      {
+        "start": 1080,
+        "end": 1160,
+        "score": 4.777224623728399
+      },
+      {
+        "start": 1140,
+        "end": 1220,
+        "score": 2.9838100979349282
+      },
+      {
+        "start": 1200,
+        "end": 1280,
+        "score": 0.4713974332914361
+      },
+      {
+        "start": 1260,
+        "end": 1340,
+        "score": 3.590699083208946
+      },
+      {
+        "start": 1320,
+        "end": 1400,
+        "score": 2.258468190073431
+      },
+      {
+        "start": 1380,
+        "end": 1460,
+        "score": 5.0083347198935835
+      },
+      {
+        "start": 1440,
+        "end": 1520,
+        "score": 10.265217546998569
+      },
+      {
+        "start": 1500,
+        "end": 1580,
+        "score": 9.99723257251297
+      },
+      {
+        "start": 1560,
+        "end": 1640,
+        "score": 11.014212347445806
+      },
+      {
+        "start": 1620,
+        "end": 1700,
+        "score": 8.490299130748399
+      },
+      {
+        "start": 1680,
+        "end": 1760,
+        "score": 0.037849841745820706
+      },
+      {
+        "start": 1740,
+        "end": 1820,
+        "score": 1.3298038139805208
+      },
+      {
+        "start": 1800,
+        "end": 1858,
+        "score": 1.4826809992139924
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 10977,
+  "representation_chars": 10977,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

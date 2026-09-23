@@ -1,0 +1,81 @@
+{
+  "test_class": "org.apache.commons.math3.stat.regression.GLSMultipleLinearRegressionTest",
+  "source_file": "src/test/java/org/apache/commons/math3/stat/regression/GLSMultipleLinearRegressionTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.stat.regression.GLSMultipleLinearRegressionTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/stat/regression/GLSMultipleLinearRegressionTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.stat.regression;\n\nimport org.junit.Assert;\nimport org.junit.Before;\nimport org.junit.Test;\nimport org.apache.commons.math3.TestUtils;\nimport org.apache.commons.math3.linear.MatrixUtils;\nimport org.apache.commons.math3.linear.RealMatrix;\nimport org.apache.commons.math3.linear.RealVector;\nimport org.apache.commons.math3.random.CorrelatedRandomVectorGenerator;\nimport org.apache.commons.math3.random.JDKRandomGenerator;\nimport org.apache.commons.math3.random.GaussianRandomGenerator;\nimport org.apache.commons.math3.random.RandomGenerator;\nimport org.apache.commons.math3.stat.correlation.Covariance;\nimport org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;\n\npublic class GLSMultipleLinearRegressionTest extends MultipleLinearRegressionAbstractTest {\n\n    private double[] y;\n    private double[][] x;\n    private double[][] omega;\n    private double[] longley = new double[] {\n            60323,83.0,234289,2356,1590,107608,1947,\n            61122,88.5,259426,2325,1456,108632,1948,\n            60171,88.2,258054,3682,1616,109773,1949,\n            61187,89.5,284599,3351,1650,110929,1950,\n            63221,96.2,328975,2099,3099,112075,1951,\n            63639,98.1,346999,1932,3594,113270,1952,\n            64989,99.0,365385,1870,3547,115094,1953,\n            63761,100.0,363112,3578,3350,116219,1954,\n            66019,101.2,397469,2904,3048,117388,1955,\n            67857,104.6,419180,2822,2857,118734,1956,\n            68169,108.4,442769,2936,2798,120445,1957,\n            66513,110.8,444546,4681,2637,121950,1958,\n            68655,112.6,482704,3813,2552,123366,1959,\n            69564,114.2,502601,3931,2514,125368,1960,\n            69331,115.7,518173,4806,2572,127852,1961,\n            70551,116.9,554894,4007,2827,130081,1962\n        };\n\n    @Before\n    @Override\n    public void setUp(){\n        y = new double[]{11.0, 12.0, 13.0, 14.0, 15.0, 16.0};\n        x = new double[6][];\n        x[0] = new double[]{0, 0, 0, 0, 0};\n        x[1] = new double[]{2.0, 0, 0, 0, 0};\n        x[2] = new double[]{0, 3.0, 0, 0, 0};\n        x[3] = new double[]{0, 0, 4.0, 0, 0};\n        x[4] = new double[]{0, 0, 0, 5.0, 0};\n        x[5] = new double[]{0, 0, 0, 0, 6.0};\n        omega = new double[6][];\n        omega[0] = new double[]{1.0, 0, 0, 0, 0, 0};\n        omega[1] = new double[]{0, 2.0, 0, 0, 0, 0};\n        omega[2] = new double[]{0, 0, 3.0, 0, 0, 0};\n        omega[3] = new double[]{0, 0, 0, 4.0, 0, 0};\n        omega[4] = new double[]{0, 0, 0, 0, 5.0, 0};\n        omega[5] = new double[]{0, 0, 0, 0, 0, 6.0};\n        super.setUp();\n    }\n\n    @Test(expected=IllegalArgumentException.class)\n    public void cannotAddXSampleData() {\n        createRegression().newSampleData(new double[]{}, null, null);\n    }\n\n    @Test(expected=IllegalArgumentException.class)\n    public void cannotAddNullYSampleData() {\n        createRegression().newSampleData(null, new double[][]{}, null);\n    }\n\n    @Test(expected=IllegalArgumentException.class)\n    public void cannotAddSampleDataWithSizeMismatch() {\n        double[] y = new double[]{1.0, 2.0};\n        double[][] x = new double[1][];\n        x[0] = new double[]{1.0, 0};\n        createRegression().newSampleData(y, x, null);\n    }\n\n    @Test(expected=IllegalArgumentException.class)\n    public void cannotAddNullCovarianceData() {\n        createRegression().newSampleData(new double[]{}, new double[][]{}, null);\n    }\n\n    @Test(expected=IllegalArgumentException.class)\n    public void notEnoughData() {\n        double[]   reducedY = new double[y.length - 1];\n        double[][] reducedX = new double[x.length - 1][];\n        double[][] reducedO = new double[omega.length - 1][];\n        System.arraycopy(y,     0, reducedY, 0, reducedY.length);\n        System.arraycopy(x,     0, reducedX, 0, reducedX.length);\n        System.arraycopy(omega, 0, reducedO, 0, reducedO.length);\n        createRegression().newSampleData(reducedY, reducedX, reducedO);\n    }\n\n    @Test(expected=IllegalArgumentException.class)\n    public void cannotAddCovarianceDataWithSampleSizeMismatch() {\n        double[] y = new double[]{1.0, 2.0};\n        double[][] x = new double[2][];\n        x[0] = new double[]{1.0, 0};\n        x[1] = new double[]{0, 1.0};\n        double[][] omega = new double[1][];\n        omega[0] = new double[]{1.0, 0};\n        createRegression().newSampleData(y, x, omega);\n    }\n\n    @Test(expected=IllegalArgumentException.class)\n    public void cannotAddCovarianceDataThatIsNotSquare() {\n        double[] y = new double[]{1.0, 2.0};\n        double[][] x = new double[2][];\n        x[0] = new double[]{1.0, 0};\n        x[1] = new double[]{0, 1.0};\n        double[][] omega = new double[3][];\n        omega[0] = new double[]{1.0, 0};\n        omega[1] = new double[]{0, 1.0};\n        omega[2] = new double[]{0, 2.0};\n        createRegression().newSampleData(y, x, omega);\n    }\n\n    @Override\n    protected GLSMultipleLinearRegression createRegression() {\n        GLSMultipleLinearRegression regression = new GLSMultipleLinearRegression();\n        regression.newSampleData(y, x, omega);\n        return regression;\n    }\n\n    @Override\n    protected int getNumberOfRegressors() {\n        return x[0].length + 1;\n    }\n\n    @Override\n    protected int getSampleSize() {\n        return y.length;\n    }\n\n    /**\n     * test calculateYVariance\n     */\n    @Test\n    public void testYVariance() {\n\n        // assumes: y = new double[]{11.0, 12.0, 13.0, 14.0, 15.0, 16.0};\n\n        GLSMultipleLinearRegression model = new GLSMultipleLinearRegression();\n        model.newSampleData(y, x, omega);\n        TestUtils.assertEquals(model.calculateYVariance(), 3.5, 0);\n    }\n    \n    /**\n     * Verifies that setting X, Y and covariance separately has the same effect as newSample(X,Y,cov).\n     */\n    @Test\n    public void testNewSample2() {\n        double[] y = new double[] {1, 2, 3, 4}; \n        double[][] x = new double[][] {\n          {19, 22, 33},\n          {20, 30, 40},\n          {25, 35, 45},\n          {27, 37, 47}   \n        };\n        double[][] covariance = MatrixUtils.createRealIdentityMatrix(4).scalarMultiply(2).getData();\n        GLSMultipleLinearRegression regression = new GLSMultipleLinearRegression();\n        regression.newSampleData(y, x, covariance);\n        RealMatrix combinedX = regression.getX().copy();\n        RealVector combinedY = regression.getY().copy();\n        RealMatrix combinedCovInv = regression.getOmegaInverse();\n        regression.newXSampleData(x);\n        regression.newYSampleData(y);\n        Assert.assertEquals(combinedX, regression.getX());\n        Assert.assertEquals(combinedY, regression.getY());\n        Assert.assertEquals(combinedCovInv, regression.getOmegaInverse());\n    }\n    \n    /**\n     * Verifies that GLS with identity covariance matrix gives the same results\n     * as OLS.\n     */\n    @Test\n    public void testGLSOLSConsistency() {      \n        RealMatrix identityCov = MatrixUtils.createRealIdentityMatrix(16);\n        GLSMultipleLinearRegression glsModel = new GLSMultipleLinearRegression();\n        OLSMultipleLinearRegression olsModel = new OLSMultipleLinearRegression();\n        glsModel.newSampleData(longley, 16, 6);\n",
+  "compaction": {
+    "source_lines": 297,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 17.616614354656218
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 4.265297387759101
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 5.275136200228589
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 17.616614354656218
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 4.265297387759101
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 5.275136200228589
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 2.9518525974845398
+      },
+      {
+        "start": 240,
+        "end": 297,
+        "score": 0.19730636138302254
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8182,
+  "representation_chars": 8182,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

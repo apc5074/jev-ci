@@ -1,0 +1,86 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.struct.TestParentChildReferences",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/struct/TestParentChildReferences.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.struct.TestParentChildReferences\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/struct/TestParentChildReferences.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.struct;\n\nimport java.util.*;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.annotation.JsonTypeInfo.Id;\n\nimport com.fasterxml.jackson.databind.*;\n\npublic class TestParentChildReferences\n    extends BaseMapTest\n{\n    /*\n    /**********************************************************\n    /* Test classes\n    /**********************************************************\n     */\n\n    /**\n     * First, a simple 'tree': just parent/child linkage\n     */\n    static class SimpleTreeNode\n    {\n        public String name;\n        \n        // Reference back to parent; reference, ignored during ser,\n        // re-constructed during deser\n        @JsonBackReference\n        public SimpleTreeNode parent;\n\n        // Reference that is serialized normally during ser, back\n        // reference within pointed-to instance assigned to point to\n        // referring bean (\"this\")\n        @JsonManagedReference\n        public SimpleTreeNode child;\n\n        public SimpleTreeNode() { this(null); }\n        public SimpleTreeNode(String n) { name = n; }\n    }\n\n    static class SimpleTreeNode2\n    {\n        public String name;\n        protected SimpleTreeNode2 parent;\n        protected SimpleTreeNode2 child;\n\n        public SimpleTreeNode2() { this(null); }\n        public SimpleTreeNode2(String n) { name = n; }\n\n        @JsonBackReference\n        public SimpleTreeNode2 getParent() { return parent; }\n        public void setParent(SimpleTreeNode2 p) { parent = p; }\n\n        @JsonManagedReference\n        public SimpleTreeNode2 getChild() { return child; }\n        public void setChild(SimpleTreeNode2 c) { child = c; }\n    }\n    \n    /**\n     * Then nodes with two separate linkages; parent/child\n     * and prev/next-sibling\n     */\n    static class FullTreeNode\n    {\n        public String name;\n\n        // parent-child links\n        @JsonBackReference(\"parent\")\n        public FullTreeNode parent;\n        @JsonManagedReference(\"parent\")\n        public FullTreeNode firstChild;\n\n        // sibling-links\n        @JsonManagedReference(\"sibling\")\n        public FullTreeNode next;\n        @JsonBackReference(\"sibling\")\n        protected FullTreeNode prev;\n        \n        public FullTreeNode() { this(null); }\n        public FullTreeNode(String name) {\n        public NodeForList() { this(null); }\n        public NodeForList(String n) { name = n; }\n    }\n    \n    static class NodeMap\n    {\n        @JsonManagedReference\n        public Map<String,NodeForMap> nodes;\n    }\n\n    static class NodeForMap\n    {\n        public String name;\n        \n        @JsonBackReference\n        public NodeMap parent;\n\n        public NodeForMap() { this(null); }\n        public NodeForMap(String n) { name = n; }\n    }\n\n    public static class Parent {\n        @JsonManagedReference\n        protected final List<Child> children = new ArrayList<Child>();\n\n        public List<Child> getChildren() { return children; }\n\n        public void addChild(Child child) { children.add(child); child.setParent(this); }\n    }\n\n    public static class Child {\n        protected Parent parent;\n        protected final String value; // So that the bean is not empty of properties\n\n        public Child(@JsonProperty(\"value\") String value) { this.value = value; }\n\n        public String getValue() { return value; }\n\n        @JsonBackReference\n        public Parent getParent() { return parent; }\n\n        public void setParent(Parent parent) { this.parent = parent; }\n    }\n\n    @JsonTypeInfo(use=Id.NAME)\n    @JsonSubTypes({@JsonSubTypes.Type(ConcreteNode.class)})\n    static abstract class AbstractNode\n    {\n        public String id;\n        \n        @JsonManagedReference public AbstractNode next;\n        @JsonBackReference public AbstractNode prev;\n    }\n\n    @JsonTypeName(\"concrete\")\n    static class ConcreteNode extends AbstractNode {\n        public ConcreteNode() { }\n        public ConcreteNode(String id) { this.id = id; }\n    }\n    \n    // [JACKSON-708]\n    static class Model708 { }\n    \n    static class Advertisement708 extends Model708 {\n        public String title;\n        @JsonManagedReference public List<Photo708> photos;\n    }\n\n    static class Photo708 extends Model708 {\n        public int id;\n        @JsonBackReference public Advertisement708 advertisement;\n    }\n    \n    /*\n    /**********************************************************\n    /* Unit tests\n    /**********************************************************\n     */\n\n    private final ObjectMapper MAPPER = objectMapper();\n    public void testMapOfRefs() throws Exception\n    {\n        NodeMap root = new NodeMap();\n        NodeForMap node1 = new NodeForMap(\"a\");\n        NodeForMap node2 = new NodeForMap(\"b\");\n        Map<String,NodeForMap> nodes = new HashMap<String, NodeForMap>();\n        nodes.put(\"a1\", node1);\n        nodes.put(\"b2\", node2);\n        root.nodes = nodes;\n        String json = MAPPER.writeValueAsString(root);\n        \n        NodeMap result = MAPPER.readValue(json, NodeMap.class);\n        Map<String,NodeForMap> kids = result.nodes;\n        assertNotNull(kids);\n        assertEquals(2, kids.size());\n        assertNotNull(kids.get(\"a1\"));\n        assertNotNull(kids.get(\"b2\"));\n        assertEquals(\"a\", kids.get(\"a1\").name);\n        assertEquals(\"b\", kids.get(\"b2\").name);\n        assertSame(result, kids.get(\"a1\").parent);\n        assertSame(result, kids.get(\"b2\").parent);\n    }\n\n    // for [JACKSON-368]\n    public void testAbstract368() throws Exception\n    {\n        AbstractNode parent = new ConcreteNode(\"p\");\n        AbstractNode child = new ConcreteNode(\"c\");\n        parent.next = child;\n        child.prev = parent;\n\n        // serialization ought to be ok\n        String json = MAPPER.writeValueAsString(parent);\n\n        AbstractNode root = MAPPER.readValue(json, AbstractNode.class);\n\n        assertEquals(ConcreteNode.class, root.getClass());\n        assertEquals(\"p\", root.id);\n        assertNull(root.prev);\n        AbstractNode leaf = root.next;\n        assertNotNull(leaf);\n        assertEquals(\"c\", leaf.id);\n        assertSame(root, leaf.prev);\n    }\n    \n    public void testIssue693() throws Exception\n    {\n        Parent parent = new Parent();\n        parent.addChild(new Child(\"foo\"));\n        parent.addChild(new Child(\"bar\"));\n        byte[] bytes = MAPPER.writeValueAsBytes(parent);\n        Parent value = MAPPER.readValue(bytes, Parent.class); \n        for (Child child : value.children) {\n            assertEquals(value, child.getParent());\n        }\n    }\n\n    public void testIssue708() throws Exception\n    {\n        Advertisement708 ad = MAPPER.readValue(\"{\\\"title\\\":\\\"Hroch\\\",\\\"photos\\\":[{\\\"id\\\":3}]}\", Advertisement708.class);      \n        assertNotNull(ad);\n    }   \n}\n",
+  "compaction": {
+    "source_lines": 363,
+    "mode": "windows",
+    "windows_total": 6,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        120,
+        200
+      ],
+      [
+        300,
+        363
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 26.81046105915415
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 21.48314348273771
+      },
+      {
+        "start": 300,
+        "end": 363,
+        "score": 8.29638385182675
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 26.81046105915415
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 4.464338880526386
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 21.48314348273771
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 5.6892445015612365
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 7.772548279216846
+      },
+      {
+        "start": 300,
+        "end": 363,
+        "score": 8.29638385182675
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 6939,
+  "representation_chars": 6939,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.math3.stat.descriptive.summary.SumLogTest",
+  "source_file": "src/test/java/org/apache/commons/math3/stat/descriptive/summary/SumLogTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.stat.descriptive.summary.SumLogTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/stat/descriptive/summary/SumLogTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.stat.descriptive.summary;\n\nimport org.apache.commons.math3.stat.descriptive.StorelessUnivariateStatistic;\nimport org.apache.commons.math3.stat.descriptive.StorelessUnivariateStatisticAbstractTest;\nimport org.apache.commons.math3.stat.descriptive.UnivariateStatistic;\nimport org.junit.Assert;\nimport org.junit.Test;\n\n/**\n * Test cases for the {@link UnivariateStatistic} class.\n * @version $Id$\n */\npublic class SumLogTest extends StorelessUnivariateStatisticAbstractTest{\n\n    protected SumOfLogs stat;\n\n    /**\n     * {@inheritDoc}\n     */\n    @Override\n    public UnivariateStatistic getUnivariateStatistic() {\n        return new SumOfLogs();\n    }\n\n    /**\n     * {@inheritDoc}\n     */\n    @Override\n    public double expectedValue() {\n        return this.sumLog;\n    }\n\n    @Test\n    public void testSpecialValues() {\n        SumOfLogs sum = new SumOfLogs();\n        // empty\n        Assert.assertEquals(0, sum.getResult(), 0);\n\n        // finite data\n        sum.increment(1d);\n        Assert.assertFalse(Double.isNaN(sum.getResult()));\n\n        // add negative infinity\n        sum.increment(0d);\n        Assert.assertEquals(Double.NEGATIVE_INFINITY, sum.getResult(), 0);\n\n        // add positive infinity -- should make NaN\n        sum.increment(Double.POSITIVE_INFINITY);\n        Assert.assertTrue(Double.isNaN(sum.getResult()));\n\n        // clear\n        sum.clear();\n        Assert.assertEquals(0, sum.getResult(), 0);\n\n        // positive infinity by itself\n        sum.increment(Double.POSITIVE_INFINITY);\n        Assert.assertEquals(Double.POSITIVE_INFINITY, sum.getResult(), 0);\n\n        // negative value -- should make NaN\n        sum.increment(-2d);\n        Assert.assertTrue(Double.isNaN(sum.getResult()));\n    }\n    \n    @Override\n    protected void checkClearValue(StorelessUnivariateStatistic statistic){\n        Assert.assertEquals(0, statistic.getResult(), 0);\n    }\n    \n\n}\n",
+  "compaction": {
+    "source_lines": 86,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2915,
+  "representation_chars": 2915,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

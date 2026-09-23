@@ -1,0 +1,207 @@
+TEST CLASS:
+org.apache.commons.lang3.ArrayUtilsRemoveTest
+
+SOURCE FILE:
+src/test/java/org/apache/commons/lang3/ArrayUtilsRemoveTest.java
+
+TEST SOURCE:
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.commons.lang3;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.Arrays;
+
+import org.junit.Test;
+
+/**
+ * Tests ArrayUtils remove and removeElement methods.
+ * 
+ * @version $Id$
+ */
+public class ArrayUtilsRemoveTest {
+
+    @Test
+    public void testRemoveObjectArray() {
+        Object[] array;
+        array = ArrayUtils.remove(new Object[] {"a"}, 0);
+        assertTrue(Arrays.equals(ArrayUtils.EMPTY_OBJECT_ARRAY, array));
+        assertEquals(Object.class, array.getClass().getComponentType());
+        array = ArrayUtils.remove(new Object[] {"a", "b"}, 0);
+        assertTrue(Arrays.equals(new Object[] {"b"}, array));
+        assertEquals(Object.class, array.getClass().getComponentType());
+        array = ArrayUtils.remove(new Object[] {"a", "b"}, 1);
+        assertTrue(Arrays.equals(new Object[] {"a"}, array));
+        assertEquals(Object.class, array.getClass().getComponentType());
+        array = ArrayUtils.remove(new Object[] {"a", "b", "c"}, 1);
+        assertTrue(Arrays.equals(new Object[] {"a", "c"}, array));
+        assertEquals(Object.class, array.getClass().getComponentType());
+        try {
+            ArrayUtils.remove(new Object[] {"a", "b"}, -1);
+            fail("IndexOutOfBoundsException expected");
+        } catch (IndexOutOfBoundsException e) {}
+        try {
+            ArrayUtils.remove(new Object[] {"a", "b"}, 2);
+            fail("IndexOutOfBoundsException expected");
+        } catch (IndexOutOfBoundsException e) {}
+        try {
+            ArrayUtils.remove((Object[]) null, 0);
+            fail("IndexOutOfBoundsException expected");
+        } catch (IndexOutOfBoundsException e) {}
+    }
+
+    @Test
+    public void testRemoveNumberArray(){
+        Number[] inarray = {Integer.valueOf(1),Long.valueOf(2),Byte.valueOf((byte) 3)};
+        assertEquals(3, inarray.length);
+        Number[] outarray;
+        outarray = ArrayUtils.remove(inarray, 1);
+        assertEquals(2, outarray.length);
+        assertEquals(Number.class, outarray.getClass().getComponentType());
+        outarray = ArrayUtils.remove(outarray, 1);
+        assertEquals(1, outarray.length);
+        assertEquals(Number.class, outarray.getClass().getComponentType());
+        outarray = ArrayUtils.remove(outarray, 0);
+        assertEquals(0, outarray.length);
+        assertEquals(Number.class, outarray.getClass().getComponentType());
+    }
+
+    @Test
+    public void testRemoveBooleanArray() {
+        boolean[] array;
+        array = ArrayUtils.remove(new boolean[] {true}, 0);
+        assertTrue(Arrays.equals(ArrayUtils.EMPTY_BOOLEAN_ARRAY, array));
+        assertEquals(Boolean.TYPE, array.getClass().getComponentType());
+        array = ArrayUtils.remove(new boolean[] {true, false}, 0);
+        assertTrue(Arrays.equals(new boolean[] {false}, array));
+        assertEquals(Boolean.TYPE, array.getClass().getComponentType());
+        array = ArrayUtils.remove(new boolean[] {true, false}, 1);
+        assertTrue(Arrays.equals(new boolean[] {true}, array));
+        assertEquals(Boolean.TYPE, array.getClass().getComponentType());
+        array = ArrayUtils.remove(new boolean[] {true, false, true}, 1);
+        assertTrue(Arrays.equals(new boolean[] {true, true}, array));
+        assertEquals(Boolean.TYPE, array.getClass().getComponentType());
+        try {
+            ArrayUtils.remove(new boolean[] {true, false}, -1);
+            fail("IndexOutOfBoundsException expected");
+        } catch (IndexOutOfBoundsException e) {}
+        try {
+            ArrayUtils.remove(new boolean[] {true, false}, 2);
+            fail("IndexOutOfBoundsException expected");
+        } catch (IndexOutOfBoundsException e) {}
+        try {
+            ArrayUtils.remove((boolean[]) null, 0);
+            fail("IndexOutOfBoundsException expected");
+        } catch (IndexOutOfBoundsException e) {}
+    }
+    
+    @Test
+    public void testRemoveByteArray() {
+        byte[] array;
+        array = ArrayUtils.remove(new byte[] {1}, 0);
+        assertTrue(Arrays.equals(ArrayUtils.EMPTY_BYTE_ARRAY, array));
+        assertEquals(Byte.TYPE, array.getClass().getComponentType());
+        array = ArrayUtils.remove(new byte[] {1, 2}, 0);
+        assertTrue(Arrays.equals(new byte[] {2}, array));
+        assertEquals(Byte.TYPE, array.getClass().getComponentType());
+        array = ArrayUtils.remove(new byte[] {1, 2}, 1);
+        assertTrue(Arrays.equals(new byte[] {1}, array));
+        assertEquals(Byte.TYPE, array.getClass().getComponentType());
+        array = ArrayUtils.remove(new byte[] {1, 2, 1}, 1);
+        assertTrue(Arrays.equals(new byte[] {1, 1}, array));
+        assertEquals(Byte.TYPE, array.getClass().getComponentType());
+        try {
+            ArrayUtils.remove(new byte[] {1, 2}, -1);
+            fail("IndexOutOfBoundsException expected");
+        } catch (IndexOutOfBoundsException e) {}
+        try {
+            ArrayUtils.remove(new byte[] {1, 2}, 2);
+            fail("IndexOutOfBoundsException expected");
+        } catch (IndexOutOfBoundsException e) {}
+        try {
+            ArrayUtils.remove((byte[]) null, 0);
+            fail("IndexOutOfBoundsException expected");
+        } catch (IndexOutOfBoundsException e) {}
+    }
+    
+    @Test
+    public void testRemoveCharArray() {
+        char[] array;
+        array = ArrayUtils.remove(new char[] {'a'}, 0);
+        assertTrue(Arrays.equals(ArrayUtils.EMPTY_CHAR_ARRAY, array));
+        assertEquals(Character.TYPE, array.getClass().getComponentType());
+        array = ArrayUtils.remove(new char[] {'a', 'b'}, 0);
+        assertTrue(Arrays.equals(new char[] {'b'}, array));
+        assertEquals(Character.TYPE, array.getClass().getComponentType());
+        array = ArrayUtils.remove(new char[] {'a', 'b'}, 1);
+        assertTrue(Arrays.equals(new char[] {'a'}, array));
+        assertEquals(Character.TYPE, array.getClass().getComponentType());
+        array = ArrayUtils.remove(new char[] {'a', 'b', 'c'}, 1);
+        assertTrue(Arrays.equals(new char[] {'a', 'c'}, array));
+        assertEquals(Character.TYPE, array.getClass().getComponentType());
+        try {
+            ArrayUtils.remove(new char[] {'a', 'b'}, -1);
+            fail("IndexOutOfBoundsException expected");
+        } catch (IndexOutOfBoundsException e) {}
+        try {
+            ArrayUtils.remove(new char[] {'a', 'b'}, 2);
+            fail("IndexOutOfBoundsException expected");
+        } catch (IndexOutOfBoundsException e) {}
+        try {
+            ArrayUtils.remove((char[]) null, 0);
+            fail("IndexOutOfBoundsException expected");
+        } catch (IndexOutOfBoundsException e) {}
+    }
+    
+    @Test
+    public void testRemoveDoubleArray() {
+        double[] array;
+        array = ArrayUtils.remove(new double[] {1}, 0);
+        assertTrue(Arrays.equals(ArrayUtils.EMPTY_DOUBLE_ARRAY, array));
+        assertEquals(Double.TYPE, array.getClass().getComponentType());
+        array = ArrayUtils.remove(new double[] {1, 2}, 0);
+        assertTrue(Arrays.equals(new double[] {2}, array));
+        assertEquals(Double.TYPE, array.getClass().getComponentType());
+        array = ArrayUtils.remove(new double[] {1, 2}, 1);
+        assertTrue(Arrays.equals(new double[] {1}, array));
+        assertEquals(Double.TYPE, array.getClass().getComponentType());
+        array = ArrayUtils.remove(new double[] {1, 2, 1}, 1);
+        assertTrue(Arrays.equals(new double[] {1, 1}, array));
+        assertEquals(Double.TYPE, array.getClass().getComponentType());
+        try {
+            ArrayUtils.remove(new double[] {1, 2}, -1);
+            fail("IndexOutOfBoundsException expected");
+        } catch (IndexOutOfBoundsException e) {}
+        try {
+            ArrayUtils.remove(new double[] {1, 2}, 2);
+            fail("IndexOutOfBoundsException expected");
+        } catch (IndexOutOfBoundsException e) {}
+        try {
+            ArrayUtils.remove((double[]) null, 0);
+            fail("IndexOutOfBoundsException expected");
+        } catch (IndexOutOfBoundsException e) {}
+    }
+    
+    @Test
+    public void testRemoveFloatArray() {
+        float[] array;
+        array = ArrayUtils.remove(new float[] {1}, 0);

@@ -1,0 +1,227 @@
+TEST CLASS:
+org.apache.commons.math.complex.ComplexUtilsTest
+
+SOURCE FILE:
+src/test/org/apache/commons/math/complex/ComplexUtilsTest.java
+
+TEST SOURCE:
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.commons.math.complex;
+
+import org.apache.commons.math.TestUtils;
+
+import junit.framework.TestCase;
+
+/**
+ * @version $Revision$ $Date$
+ */
+public class ComplexUtilsTest extends TestCase {
+    
+    private double inf = Double.POSITIVE_INFINITY;
+    private double negInf = Double.NEGATIVE_INFINITY;
+    private double nan = Double.NaN;
+    private double pi = Math.PI;
+    
+    private Complex oneInf = new Complex(1, inf);
+    private Complex oneNegInf = new Complex(1, negInf);
+    private Complex infOne = new Complex(inf, 1);
+    private Complex negInfOne = new Complex(negInf, 1);
+    private Complex negInfInf = new Complex(negInf, inf);
+    private Complex infNegInf = new Complex(inf, negInf);
+    private Complex infInf = new Complex(inf, inf);
+    private Complex negInfNegInf = new Complex(negInf, negInf);
+    private Complex infNaN = new Complex(inf, nan);
+    private Complex negInfNaN = new Complex(negInf, nan);
+    private Complex nanInf = new Complex(nan, inf);
+    private Complex nanNegInf = new Complex(nan, negInf);
+    private Complex zeroNaN = new Complex(0, nan);
+    private Complex nanZero = new Complex(nan, 0);
+    private Complex infZero = new Complex(inf, 0);
+    private Complex zeroInf = new Complex(0, inf);
+    private Complex negInfZero = new Complex(negInf, 0);
+
+    /** @deprecated to be removed in 2.0 */
+    public void testAcos() {
+        Complex z = new Complex(3, 4);
+        Complex expected = new Complex(0.936812, -2.30551);
+        TestUtils.assertEquals(expected, ComplexUtils.acos(z), 1.0e-5);
+        TestUtils.assertEquals(new Complex(Math.acos(0), 0), 
+                ComplexUtils.acos(Complex.ZERO), 1.0e-12);
+    }
+
+    /** @deprecated to be removed in 2.0 */
+    public void testAcosInf() {
+        TestUtils.assertSame(Complex.NaN, ComplexUtils.acos(oneInf));
+        TestUtils.assertSame(Complex.NaN, ComplexUtils.acos(oneNegInf));
+        TestUtils.assertSame(Complex.NaN, ComplexUtils.acos(infOne));
+        TestUtils.assertSame(Complex.NaN, ComplexUtils.acos(negInfOne));
+        TestUtils.assertSame(Complex.NaN, ComplexUtils.acos(infInf));
+        TestUtils.assertSame(Complex.NaN, ComplexUtils.acos(infNegInf));
+        TestUtils.assertSame(Complex.NaN, ComplexUtils.acos(negInfInf));
+        TestUtils.assertSame(Complex.NaN, ComplexUtils.acos(negInfNegInf));
+    }
+
+    /** @deprecated to be removed in 2.0 */
+    public void testAcosNaN() {
+        assertTrue(ComplexUtils.acos(Complex.NaN).isNaN());
+    }
+
+    /** @deprecated to be removed in 2.0 */
+    public void testAcosNull() {
+        try {
+            fail("Expecting NullPointerException");
+        } catch (NullPointerException ex) {
+            // expected
+        }
+    }
+
+    /** @deprecated to be removed in 2.0 */
+    public void testSinh() {
+        Complex z = new Complex(3, 4);
+        Complex expected = new Complex(-6.54812, -7.61923);
+        TestUtils.assertEquals(expected, ComplexUtils.sinh(z), 1.0e-5);
+    }
+
+    /** @deprecated to be removed in 2.0 */
+    public void testSinhNaN() {
+        assertTrue(ComplexUtils.sinh(Complex.NaN).isNaN());
+    }
+
+    /** @deprecated to be removed in 2.0 */
+    public void testSinhInf() {
+        TestUtils.assertSame(Complex.NaN, ComplexUtils.sinh(oneInf));
+        TestUtils.assertSame(Complex.NaN, ComplexUtils.sinh(oneNegInf));
+        TestUtils.assertSame(infInf, ComplexUtils.sinh(infOne));
+        TestUtils.assertSame(negInfInf, ComplexUtils.sinh(negInfOne));
+        TestUtils.assertSame(Complex.NaN, ComplexUtils.sinh(infInf));
+        TestUtils.assertSame(Complex.NaN, ComplexUtils.sinh(infNegInf));
+        TestUtils.assertSame(Complex.NaN, ComplexUtils.sinh(negInfInf));
+        TestUtils.assertSame(Complex.NaN, ComplexUtils.sinh(negInfNegInf));
+    }
+
+    /** @deprecated to be removed in 2.0 */
+    public void testsinhNull() {
+        try {
+            ComplexUtils.sinh(null); 
+            fail("Expecting NullPointerException");
+        } catch (NullPointerException ex) {
+            // expected
+        }
+    }
+
+    /** @deprecated to be removed in 2.0 */
+    public void testSqrtRealPositive() {
+        Complex z = new Complex(3, 4);
+        Complex expected = new Complex(2, 1);
+        TestUtils.assertEquals(expected, ComplexUtils.sqrt(z), 1.0e-5);
+    }
+
+    /** @deprecated to be removed in 2.0 */
+    public void testSqrtRealZero() {
+        Complex z = new Complex(0.0, 4);
+        Complex expected = new Complex(1.41421, 1.41421);
+        TestUtils.assertEquals(expected, ComplexUtils.sqrt(z), 1.0e-5);
+    }
+
+    /** @deprecated to be removed in 2.0 */
+    public void testSqrtRealNegative() {
+        Complex z = new Complex(-3.0, 4);
+        Complex expected = new Complex(1, 2);
+        TestUtils.assertEquals(expected, ComplexUtils.sqrt(z), 1.0e-5);
+    }
+
+    /** @deprecated to be removed in 2.0 */
+    public void testSqrtImaginaryZero() {
+        Complex z = new Complex(-3.0, 0.0);
+        Complex expected = new Complex(0.0, 1.73205);
+        TestUtils.assertEquals(expected, ComplexUtils.sqrt(z), 1.0e-5);
+    }
+
+    /** @deprecated to be removed in 2.0 */
+    public void testSqrtImaginaryNegative() {
+        Complex z = new Complex(-3.0, -4.0);
+        Complex expected = new Complex(1.0, -2.0);
+        TestUtils.assertEquals(expected, ComplexUtils.sqrt(z), 1.0e-5);
+    }
+
+    /** @deprecated to be removed in 2.0 */
+    public void testSqrtPolar() {
+        double r = 1;
+        for (int i = 0; i < 5; i++) {
+            r += i;
+            double theta = 0;
+            for (int j =0; j < 11; j++) {
+                theta += pi /12;
+                Complex z = ComplexUtils.polar2Complex(r, theta);
+                Complex sqrtz = ComplexUtils.polar2Complex(Math.sqrt(r), theta / 2);
+                TestUtils.assertEquals(sqrtz, ComplexUtils.sqrt(z), 10e-12);
+            }
+        }       
+    }
+
+    /** @deprecated to be removed in 2.0 */
+    public void testSqrtNaN() {
+        assertTrue(ComplexUtils.sqrt(Complex.NaN).isNaN());
+    }
+
+    /** @deprecated to be removed in 2.0 */
+    public void testSqrtInf() {
+        TestUtils.assertSame(infNaN, ComplexUtils.sqrt(oneInf));
+        TestUtils.assertSame(infNaN, ComplexUtils.sqrt(oneNegInf));
+        TestUtils.assertSame(infZero, ComplexUtils.sqrt(infOne));
+        TestUtils.assertSame(zeroInf, ComplexUtils.sqrt(negInfOne));
+        TestUtils.assertSame(infNaN, ComplexUtils.sqrt(infInf));
+        TestUtils.assertSame(infNaN, ComplexUtils.sqrt(infNegInf));
+        TestUtils.assertSame(nanInf, ComplexUtils.sqrt(negInfInf));
+        TestUtils.assertSame(nanNegInf, ComplexUtils.sqrt(negInfNegInf));
+    }
+
+    /** @deprecated to be removed in 2.0 */
+    public void testSqrtNull() {
+        try {
+            ComplexUtils.sqrt(null); 
+            fail("Expecting NullPointerException");
+        } catch (NullPointerException ex) {
+            // expected
+        }
+    }
+
+    /** @deprecated to be removed in 2.0 */
+    public void testSqrt1z() {
+        Complex z = new Complex(3, 4);
+        Complex expected = new Complex(4.08033, -2.94094);
+        TestUtils.assertEquals(expected, ComplexUtils.sqrt1z(z), 1.0e-5);
+    }
+
+    /** @deprecated to be removed in 2.0 */
+    public void testSqrt1zNaN() {
+        assertTrue(ComplexUtils.sqrt1z(Complex.NaN).isNaN());
+    }
+
+    /** @deprecated to be removed in 2.0 */
+    public void testSqrt1zNull() {
+        try {
+            ComplexUtils.sqrt1z(null); 
+            fail("Expecting NullPointerException");
+        } catch (NullPointerException ex) {
+            // expected
+        }
+    }
+
+    /** @deprecated to be removed in 2.0 */

@@ -1,0 +1,111 @@
+{
+  "test_class": "org.apache.commons.cli2.option.ArgumentTest",
+  "source_file": "src/test/org/apache/commons/cli2/option/ArgumentTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.cli2.option.ArgumentTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/cli2/option/ArgumentTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *     http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.cli2.option;\n\nimport java.text.ParseException;\n\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.Collections;\nimport java.util.HashSet;\nimport java.util.Iterator;\nimport java.util.List;\nimport java.util.ListIterator;\nimport java.util.Set;\n\nimport org.apache.commons.cli2.Argument;\nimport org.apache.commons.cli2.DisplaySetting;\nimport org.apache.commons.cli2.HelpLine;\nimport org.apache.commons.cli2.Option;\nimport org.apache.commons.cli2.OptionException;\nimport org.apache.commons.cli2.WriteableCommandLine;\nimport org.apache.commons.cli2.builder.ArgumentBuilder;\nimport org.apache.commons.cli2.builder.GroupBuilder;\nimport org.apache.commons.cli2.commandline.WriteableCommandLineImpl;\nimport org.apache.commons.cli2.resource.ResourceConstants;\nimport org.apache.commons.cli2.resource.ResourceHelper;\nimport org.apache.commons.cli2.validation.DateValidator;\nimport org.apache.commons.cli2.validation.DateValidatorTest;\n\n/**\n * @author Rob Oxspring\n */\npublic class ArgumentTest\n    extends ArgumentTestCase {\n    private ResourceHelper resources = ResourceHelper.getResourceHelper();\n\n    public static Argument buildUsernameArgument() {\n        return new ArgumentImpl(\"username\", \"The user to connect as\", 1, 1, '\\0', '\\0', null,\n                                ArgumentImpl.DEFAULT_CONSUME_REMAINING, null, 0);\n    }\n\n    public static Argument buildHostArgument() {\n        return new ArgumentImpl(\"host\", \"The host name\", 2, 3, '\\0', ',', null, null, null, 0);\n    }\n\n    public static Argument buildPathArgument() {\n        return new ArgumentImpl(\"path\", \"The place to look for files\", 1, Integer.MAX_VALUE, '=',\n                                ';', null, ArgumentImpl.DEFAULT_CONSUME_REMAINING, null, 0);\n    }\n\n    public static Argument buildDateLimitArgument() {\n        return new ArgumentImpl(\"limit\", \"the last acceptable date\", 0, 1, '=', '\\0',\n                                new DateValidator(DateValidatorTest.YYYY_MM_DD), null, null, 0);\n    }\n\n    public static Argument buildTargetsArgument() {\n        return new ArgumentImpl(\"target\", \"The targets ant should build\", 0, Integer.MAX_VALUE,\n                                '\\0', ',', null, null, null, 0);\n    }\n\n    public static Argument buildSizeArgument() {\n        List defaults = new ArrayList();\n        defaults.add(\"10\");\n\n        return new ArgumentImpl(\"size\", \"The number of units\", 1, 1, '\\0', '\\0', null,\n                                ArgumentImpl.DEFAULT_CONSUME_REMAINING, defaults, 0);\n    }\n\n    public static Argument buildBoundsArgument() {\n        List defaults = new ArrayList();\n        defaults.add(\"5\");\n        defaults.add(\"10\");\n\n        return new ArgumentImpl(\"size\", \"The number of units\", 2, 2, '\\0', '\\0', null,\n                                ArgumentImpl.DEFAULT_CONSUME_REMAINING, defaults, 0);\n    }\n\n    public void testNew() {\n        try {\n            new ArgumentImpl(\"limit\", \"the last acceptable date\", 10, 5, '=', '\\0',\n                             new DateValidator(DateValidatorTest.YYYY_MM_DD), null, null, 0);\n        } catch (IllegalArgumentException e) {\n            assertEquals(resources.getMessage(\"Argument.minimum.exceeds.maximum\"), e.getMessage());\n        }\n\n        {\n            ArgumentImpl arg =\n                new ArgumentImpl(null, \"the last acceptable date\", 5, 5, '=', '\\0',\n                                 new DateValidator(DateValidatorTest.YYYY_MM_DD), null, null, 0);\n            assertEquals(\"wrong arg name\", \"arg\", arg.getPreferredName());\n        }\n\n        {\n            List defaults = new ArrayList();\n\n            try {\n                new ArgumentImpl(null, \"the last acceptable date\", 1, 1, '=', '\\0',\n                                 new DateValidator(DateValidatorTest.YYYY_MM_DD), null, defaults, 0);\n            } catch (IllegalArgumentException exp) {\n                assertEquals(resources.getMessage(\"Argument.too.few.defaults\"), exp.getMessage());\n            }\n        }\n\n        try {\n            List defaults = new ArrayList();\n            defaults.add(\"1\");\n            defaults.add(\"2\");\n\n            new ArgumentImpl(null, \"the last acceptable date\", 1, 1, '=', '\\0',\n                             new DateValidator(DateValidatorTest.YYYY_MM_DD), null, defaults, 0);\n        } catch (IllegalArgumentException exp) {\n            assertEquals(resources.getMessage(\"Argument.too.many.defaults\"), exp.getMessage());\n        }\n    }\n\n    /*\n     * (non-Javadoc)\n     *\n     * @see org.apache.commons.cli2.ArgumentTestCase#testProcessValues()\n     */\n    public void testProcessValues()\n        throws OptionException {\n        final Argument option = buildUsernameArgument();\n        final List args = list(\"rob\");\n        final WriteableCommandLine commandLine = commandLine(option, args);\n        final ListIterator iterator = args.listIterator();\n    //        values.add(\"10\");\n    //        assertEquals(values, commandLine.getValues(bounds));\n    //    }\n    public void testProcess_InterrogatedDefaultValue()\n        throws OptionException {\n        final Option size = buildSizeArgument();\n        final List args = list();\n        final WriteableCommandLine commandLine = commandLine(size, args);\n        final ListIterator iterator = args.listIterator();\n\n        size.process(commandLine, iterator);\n\n        assertEquals(new Integer(20), commandLine.getValue(size, new Integer(20)));\n    }\n\n    public void testTooFewDefaults() {\n        List defaults = new ArrayList();\n        defaults.add(\"5\");\n\n        try {\n            new ArgumentImpl(\"size\", \"The number of units\", 2, 2, '\\0', '\\0', null,\n                             ArgumentImpl.DEFAULT_CONSUME_REMAINING, defaults, 0);\n        } catch (IllegalArgumentException exp) {\n            assertEquals(\"wrong exception message\",\n                         ResourceHelper.getResourceHelper().getMessage(ResourceConstants.ARGUMENT_TOO_FEW_DEFAULTS),\n                         exp.getMessage());\n        }\n    }\n\n    public void testTooManyDefaults() {\n        List defaults = new ArrayList();\n        defaults.add(\"5\");\n        defaults.add(\"10\");\n        defaults.add(\"15\");\n\n        try {\n            new ArgumentImpl(\"size\", \"The number of units\", 2, 2, '\\0', '\\0', null,\n                             ArgumentImpl.DEFAULT_CONSUME_REMAINING, defaults, 0);\n        } catch (IllegalArgumentException exp) {\n            assertEquals(\"wrong exception message\",\n                         ResourceHelper.getResourceHelper().getMessage(ResourceConstants.ARGUMENT_TOO_MANY_DEFAULTS),\n                         exp.getMessage());\n        }\n    }\n\n    public void testProcess_InterrogatedDefaultValues()\n        throws OptionException {\n        final Option bounds = buildBoundsArgument();\n        final List args = list();\n        final WriteableCommandLine commandLine = commandLine(bounds, args);\n        final ListIterator iterator = args.listIterator();\n\n        bounds.process(commandLine, iterator);\n\n        // test with values\n        List values = new ArrayList();\n        values.add(\"50\");\n        values.add(\"100\");\n        assertEquals(values, commandLine.getValues(bounds, values));\n\n        // test without values\n        assertEquals(Collections.EMPTY_LIST, commandLine.getValues(bounds, null));\n    }\n\n    public void testProcess_StripBoundaryQuotes()\n        throws OptionException {\n        final Option bounds = buildBoundsArgument();\n        final List args = list();\n        final WriteableCommandLine commandLine = commandLine(bounds, args);\n        final ListIterator iterator = args.listIterator();\n\n        bounds.process(commandLine, iterator);\n\n        List values = new ArrayList();\n        values.add(\"50\\\"\");\n        values.add(\"\\\"100\");\n        assertEquals(values, commandLine.getValues(bounds, values));\n    }\n\n    public void testSourceDestArgument() {\n",
+  "compaction": {
+    "source_lines": 646,
+    "mode": "windows",
+    "windows_total": 11,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        540,
+        620
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 37.56263470631515
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 17.546519529144096
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 12.109827936582976
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 37.56263470631515
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 17.546519529144096
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 5.450895150375151
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.047773458652815
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 6.593454154366681
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 6.155044148339211
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 6.119124949983825
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 7.021525069926824
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 8.152356920236404
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 12.109827936582976
+      },
+      {
+        "start": 600,
+        "end": 646,
+        "score": 9.163150816640627
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8793,
+  "representation_chars": 8793,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

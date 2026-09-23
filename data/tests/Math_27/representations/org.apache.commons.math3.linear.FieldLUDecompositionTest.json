@@ -1,0 +1,81 @@
+{
+  "test_class": "org.apache.commons.math3.linear.FieldLUDecompositionTest",
+  "source_file": "src/test/java/org/apache/commons/math3/linear/FieldLUDecompositionTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.linear.FieldLUDecompositionTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/linear/FieldLUDecompositionTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math3.linear;\n\nimport org.junit.Test;\nimport org.junit.Assert;\n\nimport org.apache.commons.math3.TestUtils;\nimport org.apache.commons.math3.fraction.Fraction;\nimport org.apache.commons.math3.fraction.FractionField;\n\npublic class FieldLUDecompositionTest {\n    private Fraction[][] testData = {\n            { new Fraction(1), new Fraction(2), new Fraction(3)},\n            { new Fraction(2), new Fraction(5), new Fraction(3)},\n            { new Fraction(1), new Fraction(0), new Fraction(8)}\n    };\n    private Fraction[][] testDataMinus = {\n            { new Fraction(-1), new Fraction(-2), new Fraction(-3)},\n            { new Fraction(-2), new Fraction(-5), new Fraction(-3)},\n            { new Fraction(-1),  new Fraction(0), new Fraction(-8)}\n    };\n    private Fraction[][] luData = {\n            { new Fraction(2), new Fraction(3), new Fraction(3) },\n            { new Fraction(2), new Fraction(3), new Fraction(7) },\n            { new Fraction(6), new Fraction(6), new Fraction(8) }\n    };\n\n    // singular matrices\n    private Fraction[][] singular = {\n            { new Fraction(2), new Fraction(3) },\n            { new Fraction(2), new Fraction(3) }\n    };\n    private Fraction[][] bigSingular = {\n            { new Fraction(1), new Fraction(2),   new Fraction(3),    new Fraction(4) },\n            { new Fraction(2), new Fraction(5),   new Fraction(3),    new Fraction(4) },\n            { new Fraction(7), new Fraction(3), new Fraction(256), new Fraction(1930) },\n            { new Fraction(3), new Fraction(7),   new Fraction(6),    new Fraction(8) }\n    }; // 4th row = 1st + 2nd\n\n    /** test dimensions */\n    @Test\n    public void testDimensions() {\n        FieldMatrix<Fraction> matrix =\n            new Array2DRowFieldMatrix<Fraction>(FractionField.getInstance(), testData);\n        FieldLUDecomposition<Fraction> LU = new FieldLUDecomposition<Fraction>(matrix);\n        Assert.assertEquals(testData.length, LU.getL().getRowDimension());\n        Assert.assertEquals(testData.length, LU.getL().getColumnDimension());\n        Assert.assertEquals(testData.length, LU.getU().getRowDimension());\n        Assert.assertEquals(testData.length, LU.getU().getColumnDimension());\n        Assert.assertEquals(testData.length, LU.getP().getRowDimension());\n        Assert.assertEquals(testData.length, LU.getP().getColumnDimension());\n\n    }\n\n    /** test non-square matrix */\n    @Test\n    public void testNonSquare() {\n        try {\n            // we don't use FractionField.getInstance() for testing purposes\n            new FieldLUDecomposition<Fraction>(new Array2DRowFieldMatrix<Fraction>(new Fraction[][] {\n                    { Fraction.ZERO, Fraction.ZERO },\n                    { Fraction.ZERO, Fraction.ZERO },\n                    { Fraction.ZERO, Fraction.ZERO }\n            }));\n            Assert.fail(\"Expected NonSquareMatrixException\");\n        } catch (NonSquareMatrixException ime) {\n            // expected behavior\n        }\n    }\n\n    /** test PA = LU */\n    @Test\n    public void testPAEqualLU() {\n        FieldMatrix<Fraction> matrix = new Array2DRowFieldMatrix<Fraction>(FractionField.getInstance(), testData);\n        FieldLUDecomposition<Fraction> lu = new FieldLUDecomposition<Fraction>(matrix);\n        FieldMatrix<Fraction> l = lu.getL();\n        FieldMatrix<Fraction> u = lu.getU();\n        FieldMatrix<Fraction> p = lu.getP();\n        TestUtils.assertEquals(p.multiply(matrix), l.multiply(u));\n\n        matrix = new Array2DRowFieldMatrix<Fraction>(FractionField.getInstance(), testDataMinus);\n        lu = new FieldLUDecomposition<Fraction>(matrix);\n        l = lu.getL();\n        u = lu.getU();\n        p = lu.getP();\n        TestUtils.assertEquals(p.multiply(matrix), l.multiply(u));\n\n        matrix = new Array2DRowFieldMatrix<Fraction>(FractionField.getInstance(), 17, 17);\n        for (int i = 0; i < matrix.getRowDimension(); ++i) {\n            matrix.setEntry(i, i, Fraction.ONE);\n        }\n        lu = new FieldLUDecomposition<Fraction>(matrix);\n        l = lu.getL();\n        u = lu.getU();\n        p = lu.getP();\n        TestUtils.assertEquals(p.multiply(matrix), l.multiply(u));\n\n        matrix = new Array2DRowFieldMatrix<Fraction>(FractionField.getInstance(), singular);\n        lu = new FieldLUDecomposition<Fraction>(matrix);\n        Assert.assertFalse(lu.getSolver().isNonSingular());\n        Assert.assertNull(lu.getL());\n        Assert.assertNull(lu.getU());\n        Assert.assertNull(lu.getP());\n\n        matrix = new Array2DRowFieldMatrix<Fraction>(FractionField.getInstance(), bigSingular);\n        lu = new FieldLUDecomposition<Fraction>(matrix);\n        Assert.assertFalse(lu.getSolver().isNonSingular());\n        Assert.assertNull(lu.getL());\n        Assert.assertNull(lu.getU());\n        Assert.assertNull(lu.getP());\n\n    }\n\n    /** test that L is lower triangular with unit diagonal */\n    @Test\n    public void testLLowerTriangular() {\n        FieldMatrix<Fraction> matrix = new Array2DRowFieldMatrix<Fraction>(FractionField.getInstance(), testData);\n        FieldMatrix<Fraction> l = new FieldLUDecomposition<Fraction>(matrix).getL();\n        for (int i = 0; i < l.getRowDimension(); i++) {\n            Assert.assertEquals(Fraction.ONE, l.getEntry(i, i));\n            for (int j = i + 1; j < l.getColumnDimension(); j++) {\n                Assert.assertEquals(Fraction.ZERO, l.getEntry(i, j));\n            }\n        }\n                { new Fraction(0), new Fraction(0), new Fraction(1) }\n        });\n        int[] pivotRef = { 0, 1, 2 };\n\n        // check values against known references\n        FieldMatrix<Fraction> l = lu.getL();\n        TestUtils.assertEquals(lRef, l);\n        FieldMatrix<Fraction> u = lu.getU();\n        TestUtils.assertEquals(uRef, u);\n        FieldMatrix<Fraction> p = lu.getP();\n        TestUtils.assertEquals(pRef, p);\n        int[] pivot = lu.getPivot();\n        for (int i = 0; i < pivotRef.length; ++i) {\n            Assert.assertEquals(pivotRef[i], pivot[i]);\n        }\n\n        // check the same cached instance is returned the second time\n        Assert.assertTrue(l == lu.getL());\n        Assert.assertTrue(u == lu.getU());\n        Assert.assertTrue(p == lu.getP());\n\n    }\n\n    /** test matrices values */\n    @Test\n    public void testMatricesValues2() {\n       FieldLUDecomposition<Fraction> lu =\n            new FieldLUDecomposition<Fraction>(new Array2DRowFieldMatrix<Fraction>(FractionField.getInstance(), luData));\n        FieldMatrix<Fraction> lRef = new Array2DRowFieldMatrix<Fraction>(FractionField.getInstance(), new Fraction[][] {\n                { new Fraction(1), new Fraction(0), new Fraction(0) },\n                { new Fraction(3), new Fraction(1), new Fraction(0) },\n                { new Fraction(1), new Fraction(0), new Fraction(1) }\n        });\n        FieldMatrix<Fraction> uRef = new Array2DRowFieldMatrix<Fraction>(FractionField.getInstance(), new Fraction[][] {\n                { new Fraction(2), new Fraction(3), new Fraction(3)    },\n                { new Fraction(0), new Fraction(-3), new Fraction(-1)  },\n                { new Fraction(0), new Fraction(0), new Fraction(4) }\n        });\n        FieldMatrix<Fraction> pRef = new Array2DRowFieldMatrix<Fraction>(FractionField.getInstance(), new Fraction[][] {\n                { new Fraction(1), new Fraction(0), new Fraction(0) },\n                { new Fraction(0), new Fraction(0), new Fraction(1) },\n                { new Fraction(0), new Fraction(1), new Fraction(0) }\n        });\n        int[] pivotRef = { 0, 2, 1 };\n\n        // check values against known references\n        FieldMatrix<Fraction> l = lu.getL();\n        TestUtils.assertEquals(lRef, l);\n        FieldMatrix<Fraction> u = lu.getU();\n        TestUtils.assertEquals(uRef, u);\n        FieldMatrix<Fraction> p = lu.getP();\n        TestUtils.assertEquals(pRef, p);\n        int[] pivot = lu.getPivot();\n        for (int i = 0; i < pivotRef.length; ++i) {\n            Assert.assertEquals(pivotRef[i], pivot[i]);\n        }\n\n        // check the same cached instance is returned the second time\n        Assert.assertTrue(l == lu.getL());\n        Assert.assertTrue(u == lu.getU());\n        Assert.assertTrue(p == lu.getP());\n    }\n}\n",
+  "compaction": {
+    "source_lines": 303,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        240,
+        303
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 13.330023052097587
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.062767268419276
+      },
+      {
+        "start": 240,
+        "end": 303,
+        "score": 1.3304003445455526
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 13.330023052097587
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 2.062767268419276
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 1.2754353868839752
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 1.1005235224696672
+      },
+      {
+        "start": 240,
+        "end": 303,
+        "score": 1.3304003445455526
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9175,
+  "representation_chars": 9175,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

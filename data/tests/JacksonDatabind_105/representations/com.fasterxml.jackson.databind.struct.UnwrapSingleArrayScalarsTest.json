@@ -1,0 +1,91 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.struct.UnwrapSingleArrayScalarsTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/struct/UnwrapSingleArrayScalarsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.struct.UnwrapSingleArrayScalarsTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/struct/UnwrapSingleArrayScalarsTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.struct;\n\nimport java.io.IOException;\nimport java.io.StringReader;\nimport java.math.BigDecimal;\nimport java.math.BigInteger;\nimport java.net.URI;\nimport java.util.UUID;\n\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.DeserializationFeature;\nimport com.fasterxml.jackson.databind.ObjectMapper;\nimport com.fasterxml.jackson.databind.ObjectReader;\nimport com.fasterxml.jackson.databind.exc.MismatchedInputException;\n\npublic class UnwrapSingleArrayScalarsTest extends BaseMapTest\n{\n    static class BooleanBean {\n        boolean _v;\n        void setV(boolean v) { _v = v; }\n    }\n\n    private final ObjectMapper MAPPER = new ObjectMapper();\n\n    private final ObjectReader NO_UNWRAPPING_READER = MAPPER.reader();\n    private final ObjectReader UNWRAPPING_READER = MAPPER.reader()\n            .with(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);\n\n    /*\n    /**********************************************************\n    /* Tests for boolean\n    /**********************************************************\n     */\n    \n    public void testBooleanPrimitiveArrayUnwrap() throws Exception\n    {\n        // [databind#381]\n        final ObjectMapper mapper = new ObjectMapper();\n        mapper.enable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);\n        BooleanBean result = mapper.readValue(new StringReader(\"{\\\"v\\\":[true]}\"), BooleanBean.class);\n        assertTrue(result._v);\n\n        _verifyMultiValueArrayFail(\"[{\\\"v\\\":[true,true]}]\", BooleanBean.class);\n\n        result = mapper.readValue(\"{\\\"v\\\":[null]}\", BooleanBean.class);\n        assertNotNull(result);\n        assertFalse(result._v);\n        \n        result = mapper.readValue(\"[{\\\"v\\\":[null]}]\", BooleanBean.class);\n        assertNotNull(result);\n        assertFalse(result._v);\n        \n        boolean[] array = mapper.readValue(new StringReader(\"[ [ null ] ]\"), boolean[].class);\n        assertNotNull(array);\n        assertEquals(1, array.length);\n        assertFalse(array[0]);\n    }\n\n    /*\n    /**********************************************************\n    /* Single-element as array tests, numbers\n    /**********************************************************\n     */\n    \n    // [databind#381]\n    public void testSingleElementScalarArrays() throws Exception {\n        final int intTest = 932832;\n        final double doubleTest = 32.3234;\n        final long longTest = 2374237428374293423L;\n        final short shortTest = (short) intTest;\n        final float floatTest = 84.3743f;\n        final byte byteTest = (byte) 43;\n        final char charTest = 'c';\n\n        final ObjectMapper mapper = new ObjectMapper();\n        mapper.enable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);\n\n        final int intValue = mapper.readValue(asArray(intTest), Integer.TYPE);\n        assertEquals(intTest, intValue);\n        final Integer integerWrapperValue = mapper.readValue(asArray(Integer.valueOf(intTest)), Integer.class);\n    }\n\n    public void testBigInteger() throws Exception\n    {\n        final ObjectMapper mapper = objectMapper();\n        mapper.disable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);\n        \n        BigInteger value = new BigInteger(\"-1234567890123456789012345567809\");\n        BigInteger result = mapper.readValue(value.toString(), BigInteger.class);\n        assertEquals(value, result);\n\n        try {\n            mapper.readValue(\"[\" + value.toString() + \"]\", BigInteger.class);\n            fail(\"Exception was not thrown when attempting to read a single value array of BigInteger when UNWRAP_SINGLE_VALUE_ARRAYS feature is disabled\");\n        } catch (MismatchedInputException exp) {\n            verifyException(exp, \"Cannot deserialize\");\n            verifyException(exp, \"out of START_ARRAY\");\n        }\n        \n        mapper.enable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);\n        result = mapper.readValue(\"[\" + value.toString() + \"]\", BigInteger.class);\n        assertEquals(value, result);\n        \n        try {\n            mapper.readValue(\"[\" + value.toString() + \",\" + value.toString() + \"]\", BigInteger.class);\n            fail(\"Exception was not thrown when attempting to read a multi-value array of BigInteger when UNWRAP_SINGLE_VALUE_ARRAYS feature is enabled\");\n        } catch (MismatchedInputException exp) {\n            verifyException(exp, \"Attempted to unwrap\");\n        }        \n    }\n\n    public void testClassAsArray() throws Exception\n    {\n        Class<?> result = MAPPER\n                    .readerFor(Class.class)\n                    .with(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS)\n                    .readValue(quote(String.class.getName()));\n        assertEquals(String.class, result);\n\n        try {\n            MAPPER.readerFor(Class.class)\n                .without(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS)\n                .readValue(\"[\" + quote(String.class.getName()) + \"]\");\n            fail(\"Did not throw exception when UNWRAP_SINGLE_VALUE_ARRAYS feature was disabled and attempted to read a Class array containing one element\");\n        } catch (MismatchedInputException e) {\n            verifyException(e, \"out of START_ARRAY token\");\n        }\n\n        _verifyMultiValueArrayFail(\"[\" + quote(Object.class.getName()) + \",\" + quote(Object.class.getName()) +\"]\",\n                Class.class);\n        result = MAPPER.readerFor(Class.class)\n                .with(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS)\n                .readValue(\"[\" + quote(String.class.getName()) + \"]\");\n        assertEquals(String.class, result);\n    }\n\n    public void testURIAsArray() throws Exception\n    {\n        final ObjectReader reader = MAPPER.readerFor(URI.class);\n        final URI value = new URI(\"http://foo.com\");\n        try {\n            reader.without(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS)\n                .readValue(\"[\\\"\"+value.toString()+\"\\\"]\");\n            fail(\"Did not throw exception for single value array when UNWRAP_SINGLE_VALUE_ARRAYS is disabled\");\n        } catch (MismatchedInputException e) {\n            verifyException(e, \"out of START_ARRAY token\");\n        }\n        \n        _verifyMultiValueArrayFail(\"[\\\"\"+value.toString()+\"\\\",\\\"\"+value.toString()+\"\\\"]\", URI.class);\n    }\n\n    public void testUUIDAsArray() throws Exception\n    {\n        final ObjectReader reader = MAPPER.readerFor(UUID.class);\n        final String uuidStr = \"76e6d183-5f68-4afa-b94a-922c1fdb83f8\";\n        UUID uuid = UUID.fromString(uuidStr);\n        try {\n            NO_UNWRAPPING_READER.forType(UUID.class)\n                .readValue(\"[\" + quote(uuidStr) + \"]\");\n            fail(\"Exception was not thrown when UNWRAP_SINGLE_VALUE_ARRAYS is disabled and attempted to read a single value array as a single element\");\n        } catch (MismatchedInputException e) {\n            verifyException(e, \"out of START_ARRAY token\");\n        }\n        assertEquals(uuid,\n                reader.with(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS)\n                    .readValue(\"[\" + quote(uuidStr) + \"]\"));\n        _verifyMultiValueArrayFail(\"[\" + quote(uuidStr) + \",\" + quote(uuidStr) + \"]\", UUID.class);\n    }\n\n    /*\n    /**********************************************************\n    /* Helper methods\n    /**********************************************************\n     */\n\n    private void _verifyMultiValueArrayFail(String input, Class<?> type) throws IOException {\n        try {\n            UNWRAPPING_READER.forType(type).readValue(input);\n            fail(\"Single value array didn't throw an exception when DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS is disabled\");\n        } catch (MismatchedInputException e) {\n            verifyException(e, \"Attempted to unwrap\");\n        }\n    }\n\n    private static String asArray(Object value) {\n        return \"[\"+value+\"]\";\n    }\n}\n",
+  "compaction": {
+    "source_lines": 408,
+    "mode": "windows",
+    "windows_total": 7,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        300,
+        380
+      ],
+      [
+        360,
+        408
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 25.078209563106736
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 13.764683665010239
+      },
+      {
+        "start": 360,
+        "end": 408,
+        "score": 8.726163700639127
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 25.078209563106736
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.811360863606458
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 1.9880751828115608
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 5.421720946753846
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 1.0852196120591224
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 13.764683665010239
+      },
+      {
+        "start": 360,
+        "end": 408,
+        "score": 8.726163700639127
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8045,
+  "representation_chars": 8045,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

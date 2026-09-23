@@ -1,0 +1,59 @@
+{
+  "qualified_id": "Lang-15",
+  "example_id": "Lang_15",
+  "project": "Lang",
+  "bug_id": "15",
+  "split": "development",
+  "status": "ok",
+  "reused": false,
+  "checked_at": "2026-09-22T23:47:26+00:00",
+  "defects4j_version": "3.0.1",
+  "defects4j_commit": "6d54320e0db5a357f9ab38a8e4d2e5aead7e1c09",
+  "d4j_home": "D4J_HOME",
+  "fixed": {
+    "version_id": "15f",
+    "role": "base",
+    "work_dir": "data/bugs/Lang_15/checkouts/fixed",
+    "defects4j_config": {
+      "pid": "Lang",
+      "vid": "15f"
+    },
+    "command": [
+      "defects4j",
+      "checkout",
+      "-p",
+      "Lang",
+      "-v",
+      "15f",
+      "-w",
+      "data/bugs/Lang_15/checkouts/fixed"
+    ],
+    "exit_status": 0
+  },
+  "buggy": {
+    "version_id": "15b",
+    "role": "proposed_change",
+    "work_dir": "data/bugs/Lang_15/checkouts/buggy",
+    "defects4j_config": {
+      "pid": "Lang",
+      "vid": "15b"
+    },
+    "command": [
+      "defects4j",
+      "checkout",
+      "-p",
+      "Lang",
+      "-v",
+      "15b",
+      "-w",
+      "data/bugs/Lang_15/checkouts/buggy"
+    ],
+    "exit_status": 0
+  },
+  "logs": {
+    "fixed_stdout_tail": "",
+    "fixed_stderr_tail": "Checking out c71d0f03 to /workspace/data/bugs/Lang_15/checkouts/fixed...... OK\nInit local repository...................................................... OK\nTag post-fix revision...................................................... OK\nApply patch................................................................ OK\nApply patch................................................................ OK\nApply patch................................................................ OK\nRun post-checkout hook..................................................... OK\nExcluding broken/flaky tests............................................... OK\nExcluding broken/flaky tests............................................... OK\nExcluding broken/flaky tests............................................... OK\nBacking up build file: /workspace/data/bugs/Lang_15/checkouts/fixed/default OK\nInitialize fixed program version........................................... OK\nApply patch................................................................ OK\nInitialize buggy program version........................................... OK\nDiff c71d0f03:e6a1d017..................................................... OK\nApply patch................................................................ OK\nTag pre-fix revision....................................................... OK\nCheck out program version: Lang-15f........................................ OK\n",
+    "buggy_stdout_tail": "",
+    "buggy_stderr_tail": "Checking out c71d0f03 to /workspace/data/bugs/Lang_15/checkouts/buggy...... OK\nInit local repository...................................................... OK\nTag post-fix revision...................................................... OK\nApply patch................................................................ OK\nApply patch................................................................ OK\nApply patch................................................................ OK\nRun post-checkout hook..................................................... OK\nExcluding broken/flaky tests............................................... OK\nExcluding broken/flaky tests............................................... OK\nExcluding broken/flaky tests............................................... OK\nBacking up build file: /workspace/data/bugs/Lang_15/checkouts/buggy/default OK\nInitialize fixed program version........................................... OK\nApply patch................................................................ OK\nInitialize buggy program version........................................... OK\nDiff c71d0f03:e6a1d017..................................................... OK\nApply patch................................................................ OK\nTag pre-fix revision....................................................... OK\nCheck out program version: Lang-15b........................................ OK\n"
+  }
+}

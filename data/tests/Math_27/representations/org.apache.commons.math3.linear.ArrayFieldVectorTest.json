@@ -1,0 +1,111 @@
+{
+  "test_class": "org.apache.commons.math3.linear.ArrayFieldVectorTest",
+  "source_file": "src/test/java/org/apache/commons/math3/linear/ArrayFieldVectorTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.linear.ArrayFieldVectorTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/linear/ArrayFieldVectorTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.linear;\n\nimport java.io.Serializable;\nimport java.lang.reflect.Array;\n\nimport org.apache.commons.math3.Field;\nimport org.apache.commons.math3.FieldElement;\nimport org.apache.commons.math3.TestUtils;\nimport org.apache.commons.math3.exception.MathIllegalArgumentException;\nimport org.apache.commons.math3.exception.OutOfRangeException;\nimport org.apache.commons.math3.fraction.Fraction;\nimport org.apache.commons.math3.fraction.FractionField;\nimport org.junit.Assert;\nimport org.junit.Test;\n\n/**\n * Test cases for the {@link ArrayFieldVector} class.\n *\n * @version $Id$\n */\npublic class ArrayFieldVectorTest {\n\n    //\n    protected Fraction[][] ma1 = {\n            {new Fraction(1), new Fraction(2), new Fraction(3)},\n            {new Fraction(4), new Fraction(5), new Fraction(6)},\n            {new Fraction(7), new Fraction(8), new Fraction(9)}\n    };\n    protected Fraction[] vec1 = {new Fraction(1), new Fraction(2), new Fraction(3)};\n    protected Fraction[] vec2 = {new Fraction(4), new Fraction(5), new Fraction(6)};\n    protected Fraction[] vec3 = {new Fraction(7), new Fraction(8), new Fraction(9)};\n    protected Fraction[] vec4 = { new Fraction(1), new Fraction(2), new Fraction(3),\n                                  new Fraction(4), new Fraction(5), new Fraction(6),\n                                  new Fraction(7), new Fraction(8), new Fraction(9)};\n    protected Fraction[] vec_null = {new Fraction(0), new Fraction(0), new Fraction(0)};\n    protected Fraction[] dvec1 = {new Fraction(1), new Fraction(2), new Fraction(3),\n                                  new Fraction(4), new Fraction(5), new Fraction(6),\n                                  new Fraction(7), new Fraction(8), new Fraction(9)};\n    protected Fraction[][] mat1 = {\n            {new Fraction(1), new Fraction(2), new Fraction(3)},\n            {new Fraction(4), new Fraction(5), new Fraction(6)},\n            {new Fraction(7), new Fraction(8), new Fraction(9)}\n    };\n\n    // Testclass to test the FieldVector<Fraction> interface\n    // only with enough content to support the test\n    public static class FieldVectorTestImpl<T extends FieldElement<T>>\n        implements FieldVector<T>, Serializable {\n\n        private static final long serialVersionUID = 3970959016014158539L;\n\n        private final Field<T> field;\n\n        /** Entries of the vector. */\n        protected T[] data;\n\n        /** Build an array of elements.\n         * @param length size of the array to build\n         * @return a new array\n         */\n        @SuppressWarnings(\"unchecked\") // field is of type T\n        private T[] buildArray(final int length) {\n            return (T[]) Array.newInstance(field.getRuntimeClass(), length);\n        }\n            for (int i = 0; i < data.length; i++) {\n                dot = dot.add(data[i].multiply(v.getEntry(i)));\n            }\n            return dot;\n        }\n\n        public T dotProduct(T[] v) {\n            T dot = field.getZero();\n            for (int i = 0; i < data.length; i++) {\n                dot = dot.add(data[i].multiply(v[i]));\n            }\n            return dot;\n        }\n\n        public FieldVector<T> projection(FieldVector<T> v) {\n            throw unsupported();\n        }\n\n        public FieldVector<T> projection(T[] v) {\n            throw unsupported();\n        }\n\n        public FieldMatrix<T> outerProduct(FieldVector<T> v) {\n            throw unsupported();\n        }\n\n        public FieldMatrix<T> outerProduct(T[] v) {\n            throw unsupported();\n        }\n\n        public T getEntry(int index) {\n            return data[index];\n        }\n\n        public int getDimension() {\n            return data.length;\n        }\n\n        public FieldVector<T> append(FieldVector<T> v) {\n            throw unsupported();\n        }\n\n        public FieldVector<T> append(T d) {\n            throw unsupported();\n        }\n\n        public FieldVector<T> append(T[] a) {\n            throw unsupported();\n        }\n\n        public FieldVector<T> getSubVector(int index, int n) {\n            throw unsupported();\n        }\n\n        public void setEntry(int index, T value) {\n            throw unsupported();\n        }\n\n        public void setSubVector(int index, FieldVector<T> v) {\n            throw unsupported();\n        }\n\n        public void setSubVector(int index, T[] v) {\n            throw unsupported();\n        }\n\n        public void set(T value) {\n            throw unsupported();\n        }\n\n        public T[] toArray() {\n            throw unsupported();\n        }\n\n    }\n\n    @Test\n    public void testConstructors() {\n\n        ArrayFieldVector<Fraction> v0 = new ArrayFieldVector<Fraction>(FractionField.getInstance());\n        try {\n            new ArrayFieldVector<Fraction>(new Fraction[0]);\n            Assert.fail(\"MathIllegalArgumentException expected\");\n        } catch (MathIllegalArgumentException ex) {\n            // expected behavior\n        }\n        try {\n            new ArrayFieldVector<Fraction>(new Fraction[0], true);\n            Assert.fail(\"MathIllegalArgumentException expected\");\n        } catch (MathIllegalArgumentException ex) {\n            // expected behavior\n        }\n        try {\n            new ArrayFieldVector<Fraction>(new Fraction[0], false);\n            Assert.fail(\"MathIllegalArgumentException expected\");\n        } catch (MathIllegalArgumentException ex) {\n            // expected behavior\n        }\n\n        // when the field is specified, array can be empty\n        Assert.assertEquals(0, new ArrayFieldVector<Fraction>(FractionField.getInstance(), new Fraction[0]).getDimension());\n        Assert.assertEquals(0, new ArrayFieldVector<Fraction>(FractionField.getInstance(), new Fraction[0], true).getDimension());\n        Assert.assertEquals(0, new ArrayFieldVector<Fraction>(FractionField.getInstance(), new Fraction[0], false).getDimension());\n\n    }\n\n    @Test\n    public void testOuterProduct() {\n        final ArrayFieldVector<Fraction> u\n            = new ArrayFieldVector<Fraction>(FractionField.getInstance(),\n                                             new Fraction[] {new Fraction(1),\n                                                             new Fraction(2),\n                                                             new Fraction(-3)});\n        final ArrayFieldVector<Fraction> v\n            = new ArrayFieldVector<Fraction>(FractionField.getInstance(),\n                                             new Fraction[] {new Fraction(4),\n                                                             new Fraction(-2)});\n\n        final FieldMatrix<Fraction> uv = u.outerProduct(v);\n\n        final double tol = Math.ulp(1d);\n        Assert.assertEquals(new Fraction(4).doubleValue(), uv.getEntry(0, 0).doubleValue(), tol);\n        Assert.assertEquals(new Fraction(-2).doubleValue(), uv.getEntry(0, 1).doubleValue(), tol);\n        Assert.assertEquals(new Fraction(8).doubleValue(), uv.getEntry(1, 0).doubleValue(), tol);\n        Assert.assertEquals(new Fraction(-4).doubleValue(), uv.getEntry(1, 1).doubleValue(), tol);\n        Assert.assertEquals(new Fraction(-12).doubleValue(), uv.getEntry(2, 0).doubleValue(), tol);\n        Assert.assertEquals(new Fraction(6).doubleValue(), uv.getEntry(2, 1).doubleValue(), tol);\n    }\n\n    /** verifies that two vectors are equals */\n    protected void checkArray(String msg, Fraction[] m, Fraction[] n) {\n        if (m.length != n.length) {\n            Assert.fail(\"vectors have different lengths\");\n        }\n        for (int i = 0; i < m.length; i++) {\n            Assert.assertEquals(msg + \" \" +  i + \" elements differ\", m[i],n[i]);\n        }\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 660,
+    "mode": "windows",
+    "windows_total": 11,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        180,
+        260
+      ],
+      [
+        600,
+        660
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 26.232182315795008
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 5.8233985367490195
+      },
+      {
+        "start": 600,
+        "end": 660,
+        "score": 8.903105695412265
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 26.232182315795008
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.657135166864241
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 3.814788180812439
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 5.8233985367490195
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 4.367354684157517
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 0.3577419082125739
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 0.3615578478833201
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 2.0238996783155896
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 2.0061216048933175
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 1.8124800028468906
+      },
+      {
+        "start": 600,
+        "end": 660,
+        "score": 8.903105695412265
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8578,
+  "representation_chars": 8578,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

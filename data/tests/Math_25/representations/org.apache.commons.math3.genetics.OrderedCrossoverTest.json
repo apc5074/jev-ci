@@ -1,0 +1,25 @@
+{
+  "test_class": "org.apache.commons.math3.genetics.OrderedCrossoverTest",
+  "source_file": "src/test/java/org/apache/commons/math3/genetics/OrderedCrossoverTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.genetics.OrderedCrossoverTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/genetics/OrderedCrossoverTest.java\n\nTEST SOURCE:\npackage org.apache.commons.math3.genetics;\n\nimport java.util.Arrays;\nimport java.util.HashSet;\nimport java.util.Set;\n\nimport org.apache.commons.math3.exception.DimensionMismatchException;\nimport org.apache.commons.math3.exception.MathIllegalArgumentException;\nimport org.junit.Assert;\nimport org.junit.Test;\n\npublic class OrderedCrossoverTest {\n\n    @Test\n    public void testCrossover() {\n        final Integer[] p1 = new Integer[] { 8, 4, 7, 3, 6, 2, 5, 1, 9, 0 };\n        final Integer[] p2 = new Integer[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };\n        final DummyListChromosome p1c = new DummyListChromosome(p1);\n        final DummyListChromosome p2c = new DummyListChromosome(p2);\n        \n        final CrossoverPolicy cp = new OrderedCrossover<Integer>();\n\n        for (int i = 0; i < 20; i++) {\n            final Set<Integer> parentSet1 = new HashSet<Integer>(Arrays.asList(p1));\n            final Set<Integer> parentSet2 = new HashSet<Integer>(Arrays.asList(p2));\n            \n            final ChromosomePair pair = cp.crossover(p1c, p2c);\n\n            final Integer[] c1 = ((DummyListChromosome) pair.getFirst()).getRepresentation().toArray(new Integer[p1.length]);\n            final Integer[] c2 = ((DummyListChromosome) pair.getSecond()).getRepresentation().toArray(new Integer[p2.length]);\n\n            Assert.assertNotSame(p1c, pair.getFirst());\n            Assert.assertNotSame(p2c, pair.getSecond());\n            \n            // make sure that the children have exactly the same elements as their parents\n            for (int j = 0; j < c1.length; j++) {\n                Assert.assertTrue(parentSet1.contains(c1[j]));\n                parentSet1.remove(c1[j]);\n                Assert.assertTrue(parentSet2.contains(c2[j]));\n                parentSet2.remove(c2[j]);\n            }\n        }\n    }\n\n    @Test(expected = DimensionMismatchException.class)\n    public void testCrossoverDimensionMismatchException() {\n        final Integer[] p1 = new Integer[] { 1, 0, 1, 0, 0, 1, 0, 1, 1 };\n        final Integer[] p2 = new Integer[] { 0, 1, 1, 0, 1 };\n\n        final BinaryChromosome p1c = new DummyBinaryChromosome(p1);\n        final BinaryChromosome p2c = new DummyBinaryChromosome(p2);\n\n        final CrossoverPolicy cp = new OrderedCrossover<Integer>();\n        cp.crossover(p1c, p2c);\n    }\n\n    @Test(expected = MathIllegalArgumentException.class)\n    public void testCrossoverInvalidFixedLengthChromosomeFirst() {\n        final Integer[] p1 = new Integer[] { 1, 0, 1, 0, 0, 1, 0, 1, 1 };\n        final BinaryChromosome p1c = new DummyBinaryChromosome(p1);\n        final Chromosome p2c = new Chromosome() {\n            public double fitness() {\n                // Not important\n                return 0;\n            }\n        };\n\n        final CrossoverPolicy cp = new OrderedCrossover<Integer>();\n        cp.crossover(p1c, p2c);\n    }\n\n    @Test(expected = MathIllegalArgumentException.class)\n    public void testCrossoverInvalidFixedLengthChromosomeSecond() {\n        final Integer[] p1 = new Integer[] { 1, 0, 1, 0, 0, 1, 0, 1, 1 };\n        final BinaryChromosome p2c = new DummyBinaryChromosome(p1);\n        final Chromosome p1c = new Chromosome() {\n            public double fitness() {\n                // Not important\n                return 0;\n            }\n        };\n\n        final CrossoverPolicy cp = new OrderedCrossover<Integer>();\n        cp.crossover(p1c, p2c);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 86,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3568,
+  "representation_chars": 3568,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

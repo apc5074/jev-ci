@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.TestGeneratorUsingMapper",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/TestGeneratorUsingMapper.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.TestGeneratorUsingMapper\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/TestGeneratorUsingMapper.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind;\n\nimport java.io.IOException;\nimport java.io.StringWriter;\n\nimport com.fasterxml.jackson.core.JsonFactory;\nimport com.fasterxml.jackson.core.JsonGenerator;\nimport com.fasterxml.jackson.core.SerializableString;\nimport com.fasterxml.jackson.core.io.CharacterEscapes;\n\npublic class TestGeneratorUsingMapper extends BaseMapTest\n{\n    final static class Pojo\n    {\n        public int getX() { return 4; }\n    }\n\n    /*\n    /**********************************************************\n    /* Tests for data binding integration\n    /**********************************************************\n     */\n\n    public void testPojoWriting()\n        throws IOException\n    {\n        JsonFactory jf = new MappingJsonFactory();\n        StringWriter sw = new StringWriter();\n        JsonGenerator gen = jf.createGenerator(sw);\n        gen.writeObject(new Pojo());\n        gen.close();\n        // trimming needed if main-level object has leading space\n        String act = sw.toString().trim();\n        assertEquals(\"{\\\"x\\\":4}\", act);\n    }\n\n    public void testPojoWritingFailing()\n        throws IOException\n    {\n        // regular factory can't do it, without a call to setCodec()\n        JsonFactory jf = new JsonFactory();\n        try {\n            StringWriter sw = new StringWriter();\n            JsonGenerator gen = jf.createGenerator(sw);\n            gen.writeObject(new Pojo());\n            gen.close();\n            fail(\"Expected an exception: got sw '\"+sw.toString()+\"'\");\n        } catch (IllegalStateException e) {\n            verifyException(e, \"No ObjectCodec defined\");\n        }\n    }\n\n    public void testIssue820() throws IOException\n    {\n        StringBuffer sb = new StringBuffer();\n        while (sb.length() <= 5000) {\n            sb.append(\"Yet another line of text...\\n\");\n        }\n        String sampleText = sb.toString();\n        assertTrue(\n                \"Sanity check so I don't mess up the sample text later.\",\n                sampleText.contains(\"\\n\"));\n\n        final ObjectMapper mapper = new ObjectMapper();\n        final CharacterEscapes defaultCharacterEscapes = new CharacterEscapes() {\n            private static final long serialVersionUID = 1L;\n\n            @Override\n            public int[] getEscapeCodesForAscii() {\n                return standardAsciiEscapesForJSON();\n            }\n\n            @Override\n            public SerializableString getEscapeSequence(final int ch) {\n                return null;\n            }\n        };\n\n        mapper.getFactory().setCharacterEscapes(defaultCharacterEscapes);\n        String jacksonJson = mapper.writeValueAsString(sampleText);\n        boolean hasLFs = jacksonJson.indexOf('\\n') > 0;\n        assertFalse(\"Should NOT contain linefeeds, should have been escaped\", hasLFs);\n    }    \n}\n",
+  "compaction": {
+    "source_lines": 84,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2973,
+  "representation_chars": 2973,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,201 @@
+{
+  "test_class": "org.apache.commons.lang3.StringUtilsTest",
+  "source_file": "src/test/java/org/apache/commons/lang3/StringUtilsTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.lang3.StringUtilsTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/lang3/StringUtilsTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n * \n *      http://www.apache.org/licenses/LICENSE-2.0\n * \n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.lang3;\n\nimport java.lang.reflect.Constructor;\nimport java.lang.reflect.Modifier;\nimport java.util.Arrays;\nimport java.util.Collections;\nimport java.util.Iterator;\nimport java.util.Locale;\n\nimport org.apache.commons.lang3.text.WordUtils;\n\nimport junit.framework.TestCase;\n\n/**\n * Unit tests {@link org.apache.commons.lang3.StringUtils}.\n *\n * @author Apache Software Foundation\n * @author Daniel L. Rall\n * @author <a href=\"mailto:ridesmet@users.sourceforge.net\">Ringo De Smet</a>\n * @author <a href=\"mailto:fredrik@westermarck.com>Fredrik Westermarck</a>\n * @author Holger Krauth\n * @author <a href=\"hps@intermeta.de\">Henning P. Schmiedehausen</a>\n * @author Phil Steitz\n * @author Gary D. Gregory\n * @author Scott Johnson\n * @author Al Chou\n * @version $Id$\n */\npublic class StringUtilsTest extends TestCase {\n    \n    static final String WHITESPACE;\n    static final String NON_WHITESPACE;\n    static final String TRIMMABLE;\n    static final String NON_TRIMMABLE;\n    static {\n        String ws = \"\";\n        String nws = \"\";\n        String tr = \"\";\n        String ntr = \"\";\n        for (int i = 0; i < Character.MAX_VALUE; i++) {\n            if (Character.isWhitespace((char) i)) {\n                ws += String.valueOf((char) i);\n                if (i > 32) {\n                    ntr += String.valueOf((char) i);\n                }\n            } else if (i < 40) {\n                nws += String.valueOf((char) i);\n            }\n        }\n        for (int i = 0; i <= 32; i++) {\n            tr += String.valueOf((char) i);\n        }\n        WHITESPACE = ws;\n        NON_WHITESPACE = nws;\n        TRIMMABLE = tr;\n        NON_TRIMMABLE = ntr;\n    }\n\n    private static final String[] ARRAY_LIST = { \"foo\", \"bar\", \"baz\" };\n    private static final String[] EMPTY_ARRAY_LIST = {};\n    private static final String[] NULL_ARRAY_LIST = {null};\n    private static final String[] MIXED_ARRAY_LIST = {null, \"\", \"foo\"};\n    private static final Object[] MIXED_TYPE_LIST = {new String(\"foo\"), new Long(2)};\n\n    private static final String SEPARATOR = \",\";\n    private static final char   SEPARATOR_CHAR = ';';\n\n    private static final String TEXT_LIST = \"foo,bar,baz\";\n    private static final String TEXT_LIST_CHAR = \"foo;bar;baz\";\n    private static final String TEXT_LIST_NOSEP = \"foobarbaz\";\n\n    private static final String FOO_UNCAP = \"foo\";\n    private static final String FOO_CAP = \"Foo\";\n\n    private static final String SENTENCE_UNCAP = \"foo bar baz\";\n    private static final String SENTENCE_CAP = \"Foo Bar Baz\";\n\n    public StringUtilsTest(String name) {\n        super(name);\n    }\n\n    //-----------------------------------------------------------------------\n    public void testConstructor() {\n        assertNotNull(new StringUtils());\n        Constructor<?>[] cons = StringUtils.class.getDeclaredConstructors();\n        assertEquals(1, cons.length);\n        assertEquals(true, Modifier.isPublic(cons[0].getModifiers()));\n        assertEquals(true, Modifier.isPublic(StringUtils.class.getModifiers()));\n        assertEquals(false, Modifier.isFinal(StringUtils.class.getModifiers()));\n    }\n    \n    //-----------------------------------------------------------------------\n    public void testCaseFunctions() {\n        assertEquals(null, StringUtils.upperCase(null));\n        assertEquals(null, StringUtils.upperCase(null, Locale.ENGLISH));\n        assertEquals(null, StringUtils.lowerCase(null));\n        assertEquals(null, StringUtils.lowerCase(null, Locale.ENGLISH));\n        assertEquals(null, StringUtils.capitalize(null));\n        assertEquals(null, StringUtils.uncapitalize(null));\n\n        assertEquals(\"capitalize(empty-string) failed\",\n                     \"\", StringUtils.capitalize(\"\") );\n        assertEquals(\"capitalize(single-char-string) failed\",\n                     \"X\", StringUtils.capitalize(\"x\") );\n        assertEquals(\"uncapitalize(String) failed\",\n                     FOO_UNCAP, StringUtils.uncapitalize(FOO_CAP) );\n        assertEquals(\"uncapitalize(empty-string) failed\",\n                     \"\", StringUtils.uncapitalize(\"\") );\n        assertEquals(\"uncapitalize(single-char-string) failed\",\n                     \"x\", StringUtils.uncapitalize(\"X\") );\n                     \n        // reflection type of tests: Sentences.\n        assertEquals(\"uncapitalize(capitalize(String)) failed\",\n                     SENTENCE_UNCAP, StringUtils.uncapitalize(StringUtils.capitalize(SENTENCE_UNCAP)) );\n        assertEquals(\"capitalize(uncapitalize(String)) failed\",\n                     SENTENCE_CAP, StringUtils.capitalize(StringUtils.uncapitalize(SENTENCE_CAP)) );\n\n        // reflection type of tests: One word.\n        assertEquals(\"uncapitalize(capitalize(String)) failed\",\n                     FOO_UNCAP, StringUtils.uncapitalize(StringUtils.capitalize(FOO_UNCAP)) );\n        assertEquals(\"capitalize(uncapitalize(String)) failed\",\n                     FOO_CAP, StringUtils.capitalize(StringUtils.uncapitalize(FOO_CAP)) );\n\n        assertEquals(\"upperCase(String) failed\",\n        assertEquals(\"abc\", StringUtils.defaultString(\"abc\", \"NULL\"));\n    }\n\n    public void testDefaultIfEmpty_StringString() {\n        assertEquals(\"NULL\", StringUtils.defaultIfEmpty(null, \"NULL\"));\n        assertEquals(\"NULL\", StringUtils.defaultIfEmpty(\"\", \"NULL\"));\n        assertEquals(\"abc\", StringUtils.defaultIfEmpty(\"abc\", \"NULL\"));\n        assertNull(StringUtils.defaultIfEmpty(\"\", null));\n    }\n\n    //-----------------------------------------------------------------------\n    public void testAbbreviate_StringInt() {\n        assertEquals(null, StringUtils.abbreviate(null, 10));\n        assertEquals(\"\", StringUtils.abbreviate(\"\", 10));\n        assertEquals(\"short\", StringUtils.abbreviate(\"short\", 10));\n        assertEquals(\"Now is ...\", StringUtils.abbreviate(\"Now is the time for all good men to come to the aid of their party.\", 10));\n\n        String raspberry = \"raspberry peach\";\n        assertEquals(\"raspberry p...\", StringUtils.abbreviate(raspberry, 14));\n        assertEquals(\"raspberry peach\", StringUtils.abbreviate(\"raspberry peach\", 15));\n        assertEquals(\"raspberry peach\", StringUtils.abbreviate(\"raspberry peach\", 16));\n        assertEquals(\"abc...\", StringUtils.abbreviate(\"abcdefg\", 6));\n        assertEquals(\"abcdefg\", StringUtils.abbreviate(\"abcdefg\", 7));\n        assertEquals(\"abcdefg\", StringUtils.abbreviate(\"abcdefg\", 8));\n        assertEquals(\"a...\", StringUtils.abbreviate(\"abcdefg\", 4));\n        assertEquals(\"\", StringUtils.abbreviate(\"\", 4));\n        \n        try {\n            @SuppressWarnings(\"unused\")\n            String res = StringUtils.abbreviate(\"abc\", 3);\n            fail(\"StringUtils.abbreviate expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException ex) {\n                // empty\n        }              \n    }\n    \n    public void testAbbreviate_StringIntInt() {\n        assertEquals(null, StringUtils.abbreviate(null, 10, 12));\n        assertEquals(\"\", StringUtils.abbreviate(\"\", 0, 10));\n        assertEquals(\"\", StringUtils.abbreviate(\"\", 2, 10));\n        \n        try {\n            @SuppressWarnings(\"unused\")\n            String res = StringUtils.abbreviate(\"abcdefghij\", 0, 3);\n            fail(\"StringUtils.abbreviate expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException ex) {\n                // empty\n        }      \n        try {\n            @SuppressWarnings(\"unused\")\n            String res = StringUtils.abbreviate(\"abcdefghij\", 5, 6);\n            fail(\"StringUtils.abbreviate expecting IllegalArgumentException\");\n        } catch (IllegalArgumentException ex) {\n                // empty\n        }      \n        \n\n        String raspberry = \"raspberry peach\";\n        assertEquals(\"raspberry peach\", StringUtils.abbreviate(raspberry, 11, 15));\n\n        assertEquals(null, StringUtils.abbreviate(null, 7, 14));\n        assertAbbreviateWithOffset(\"abcdefg...\", -1, 10);\n        assertAbbreviateWithOffset(\"abcdefg...\", 0, 10);\n        assertAbbreviateWithOffset(\"abcdefg...\", 1, 10);\n        assertAbbreviateWithOffset(\"abcdefg...\", 2, 10);\n        assertAbbreviateWithOffset(\"abcdefg...\", 3, 10);\n        assertAbbreviateWithOffset(\"abcdefg...\", 4, 10);\n        assertAbbreviateWithOffset(\"...fghi...\", 5, 10);\n        assertAbbreviateWithOffset(\"...ghij...\", 6, 10);\n        assertAbbreviateWithOffset(\"...hijk...\", 7, 10);\n        assertAbbreviateWithOffset(\"...ijklmno\", 8, 10);\n        assertAbbreviateWithOffset(\"...ijklmno\", 9, 10);\n        assertAbbreviateWithOffset(\"...ijklmno\", 10, 10);\n        assertAbbreviateWithOffset(\"...ijklmno\", 10, 10);\n        assertAbbreviateWithOffset(\"...ijklmno\", 11, 10);\n        assertAbbreviateWithOffset(\"...ijklmno\", 12, 10);\n        assertAbbreviateWithOffset(\"...ijklmno\", 13, 10);\n        assertAbbreviateWithOffset(\"...ijklmno\", 14, 10);\n        assertAbbreviateWithOffset(\"...ijklmno\", 15, 10);\n        assertAbbreviateWithOffset(\"...ijklmno\", 16, 10);\n",
+  "compaction": {
+    "source_lines": 1740,
+    "mode": "windows",
+    "windows_total": 29,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        1380,
+        1460
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 60.138633109183566
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 27.12930808625531
+      },
+      {
+        "start": 1380,
+        "end": 1460,
+        "score": 27.824470149193786
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 60.138633109183566
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 27.12930808625531
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 8.735465926994328
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 8.21426561445644
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 2.065216540217151
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 3.825428290774878
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 4.448669463768441
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 3.6528488093663807
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 0.7747219738647604
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 0.06579017846517646
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 0.05857654128681308
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 1.2478662508160168
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 0.07448185609700417
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 8.073849318087813
+      },
+      {
+        "start": 840,
+        "end": 920,
+        "score": 17.05389474660302
+      },
+      {
+        "start": 900,
+        "end": 980,
+        "score": 12.364327642063117
+      },
+      {
+        "start": 960,
+        "end": 1040,
+        "score": 8.382695320242014
+      },
+      {
+        "start": 1020,
+        "end": 1100,
+        "score": 14.220044475710669
+      },
+      {
+        "start": 1080,
+        "end": 1160,
+        "score": 5.002570528647135
+      },
+      {
+        "start": 1140,
+        "end": 1220,
+        "score": 0.0769188460439929
+      },
+      {
+        "start": 1200,
+        "end": 1280,
+        "score": 0.6543513096214822
+      },
+      {
+        "start": 1260,
+        "end": 1340,
+        "score": 0.6625588133343414
+      },
+      {
+        "start": 1320,
+        "end": 1400,
+        "score": 8.598526477096247
+      },
+      {
+        "start": 1380,
+        "end": 1460,
+        "score": 27.824470149193786
+      },
+      {
+        "start": 1440,
+        "end": 1520,
+        "score": 26.669013782157762
+      },
+      {
+        "start": 1500,
+        "end": 1580,
+        "score": 24.3974734274779
+      },
+      {
+        "start": 1560,
+        "end": 1640,
+        "score": 0.08073439418250361
+      },
+      {
+        "start": 1620,
+        "end": 1700,
+        "score": 8.8612804744694
+      },
+      {
+        "start": 1680,
+        "end": 1740,
+        "score": 14.337853469707783
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9902,
+  "representation_chars": 9902,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

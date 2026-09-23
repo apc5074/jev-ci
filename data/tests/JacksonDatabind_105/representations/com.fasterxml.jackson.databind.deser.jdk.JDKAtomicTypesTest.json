@@ -1,0 +1,81 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.deser.jdk.JDKAtomicTypesTest",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/deser/jdk/JDKAtomicTypesTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.deser.jdk.JDKAtomicTypesTest\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/deser/jdk/JDKAtomicTypesTest.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.deser.jdk;\n\nimport java.io.Serializable;\nimport java.math.BigDecimal;\nimport java.util.concurrent.atomic.*;\n\nimport com.fasterxml.jackson.annotation.*;\nimport com.fasterxml.jackson.databind.ObjectMapper;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\nimport com.fasterxml.jackson.databind.annotation.JsonSerialize;\n\npublic class JDKAtomicTypesTest\n    extends com.fasterxml.jackson.databind.BaseMapTest\n{\n    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME)\n    @JsonSubTypes({ @JsonSubTypes.Type(Impl.class) })\n    static abstract class Base { }\n\n    @JsonTypeName(\"I\")\n    static class Impl extends Base {\n        public int value;\n\n        public Impl() { }\n        public Impl(int v) { value = v; }\n    }\n\n    static class RefWrapper\n    {\n        public AtomicReference<Base> w;\n\n        public RefWrapper() { }\n        public RefWrapper(Base b) {\n            w = new AtomicReference<Base>(b);\n        }\n        public RefWrapper(int i) {\n            w = new AtomicReference<Base>(new Impl(i));\n        }\n    }\n\n    static class SimpleWrapper {\n        public AtomicReference<Object> value;\n\n        public SimpleWrapper(Object o) { value = new AtomicReference<Object>(o); }\n    }\n\n    static class RefiningWrapper {\n        @JsonDeserialize(contentAs=BigDecimal.class)\n        public AtomicReference<Serializable> value;\n    }\n\n    // Additional tests for improvements with [databind#932]\n\n    static class UnwrappingRefParent {\n        @JsonUnwrapped(prefix = \"XX.\")\n        public AtomicReference<Child> child = new AtomicReference<Child>(new Child());\n    }\n\n    static class Child {\n        public String name = \"Bob\";\n    }\n\n    static class Parent {\n        private Child child = new Child();\n\n        @JsonUnwrapped\n        public Child getChild() {\n             return child;\n        }\n    }\n\n    static class WrappedString {\n        String value;\n\n        public WrappedString(String s) { value = s; }\n    }\n\n    static class AtomicRefReadWrapper {\n        @JsonDeserialize(contentAs=WrappedString.class)\n        public AtomicReference<Object> value;\n    }\n\n    static class LCStringWrapper {\n        @JsonDeserialize(contentUsing=LowerCasingDeserializer.class)\n        public AtomicReference<String> value;\n\n        public LCStringWrapper() { }\n    }\n\n    @JsonPropertyOrder({ \"a\", \"b\" })\n    static class Issue1256Bean {\n        @JsonSerialize(as=AtomicReference.class)\n        public Object a = new AtomicReference<Object>();\n        public AtomicReference<Object> b = new AtomicReference<Object>();\n    }\n\n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n\n    private final ObjectMapper MAPPER = objectMapper();\n    \n    public void testAtomicBoolean() throws Exception\n    {\n        AtomicBoolean b = MAPPER.readValue(\"true\", AtomicBoolean.class);\n        assertTrue(b.get());\n    }\n\n    public void testAtomicInt() throws Exception\n    {\n        AtomicInteger value = MAPPER.readValue(\"13\", AtomicInteger.class);\n        assertEquals(13, value.get());\n    }\n\n    public void testAtomicLong() throws Exception\n    {\n        AtomicLong value = MAPPER.readValue(\"12345678901\", AtomicLong.class);\n        assertEquals(12345678901L, value.get());\n    }\n\n    public void testAtomicReference() throws Exception\n    {\n        AtomicReference<long[]> value = MAPPER.readValue(\"[1,2]\",\n                new com.fasterxml.jackson.core.type.TypeReference<AtomicReference<long[]>>() { });\n        Object ob = value.get();\n        assertNotNull(ob);\n        assertEquals(long[].class, ob.getClass());\n        long[] longs = (long[]) ob;\n        assertNotNull(longs);\n        assertEquals(2, longs.length);\n        assertEquals(1, longs[0]);\n        assertEquals(2, longs[1]);\n    }\n\n    // for [databind#811]\n    public void testAbsentExclusion() throws Exception\n    {\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.setSerializationInclusion(JsonInclude.Include.NON_ABSENT);\n        assertEquals(aposToQuotes(\"{'value':true}\"),\n                mapper.writeValueAsString(new SimpleWrapper(Boolean.TRUE)));\n        assertEquals(aposToQuotes(\"{}\"),\n                mapper.writeValueAsString(new SimpleWrapper(null)));\n    }\n\n    public void testSerPropInclusionAlways() throws Exception\n    {\n        JsonInclude.Value incl =\n                JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.ALWAYS);\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.setDefaultPropertyInclusion(incl);\n        assertEquals(aposToQuotes(\"{'value':true}\"),\n                mapper.writeValueAsString(new SimpleWrapper(Boolean.TRUE)));\n    }\n\n    public void testSerPropInclusionNonNull() throws Exception\n    {\n        JsonInclude.Value incl =\n                JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.NON_NULL);\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.setDefaultPropertyInclusion(incl);\n        assertEquals(aposToQuotes(\"{'value':true}\"),\n                mapper.writeValueAsString(new SimpleWrapper(Boolean.TRUE)));\n    }\n\n    public void testSerPropInclusionNonAbsent() throws Exception\n    {\n        JsonInclude.Value incl =\n                JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.NON_ABSENT);\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.setDefaultPropertyInclusion(incl);\n        assertEquals(aposToQuotes(\"{'value':true}\"),\n                mapper.writeValueAsString(new SimpleWrapper(Boolean.TRUE)));\n    }\n\n    public void testSerPropInclusionNonEmpty() throws Exception\n    {\n        JsonInclude.Value incl =\n                JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.NON_EMPTY);\n        ObjectMapper mapper = new ObjectMapper();\n        mapper.setDefaultPropertyInclusion(incl);\n        assertEquals(aposToQuotes(\"{'value':true}\"),\n                mapper.writeValueAsString(new SimpleWrapper(Boolean.TRUE)));\n    }\n\n    // [databind#340]\n    public void testPolymorphicAtomicReference() throws Exception\n    {\n        RefWrapper input = new RefWrapper(13);\n        String json = MAPPER.writeValueAsString(input);\n        \n        RefWrapper result = MAPPER.readValue(json, RefWrapper.class);\n        assertNotNull(result.w);\n        Object ob = result.w.get();\n        assertEquals(Impl.class, ob.getClass());\n        assertEquals(13, ((Impl) ob).value);\n    }\n\n    // [databind#740]\n",
+  "compaction": {
+    "source_lines": 281,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.73655152564192
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.204488303916459
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 5.2479933331994
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 15.73655152564192
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 7.204488303916459
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 5.2479933331994
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 3.848445478058418
+      },
+      {
+        "start": 240,
+        "end": 281,
+        "score": 3.4686835358141055
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 6746,
+  "representation_chars": 6746,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

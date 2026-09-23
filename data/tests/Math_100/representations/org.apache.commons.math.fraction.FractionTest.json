@@ -1,0 +1,101 @@
+{
+  "test_class": "org.apache.commons.math.fraction.FractionTest",
+  "source_file": "src/test/org/apache/commons/math/fraction/FractionTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math.fraction.FractionTest\n\nSOURCE FILE:\nsrc/test/org/apache/commons/math/fraction/FractionTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math.fraction;\n\nimport org.apache.commons.math.ConvergenceException;\n\nimport junit.framework.TestCase;\n\n/**\n * @version $Revision$ $Date$\n */\npublic class FractionTest extends TestCase {\n\n    private void assertFraction(int expectedNumerator, int expectedDenominator, Fraction actual) {\n        assertEquals(expectedNumerator, actual.getNumerator());\n        assertEquals(expectedDenominator, actual.getDenominator());\n    }\n    \n    public void testConstructor() {\n        assertFraction(0, 1, new Fraction(0, 1));\n        assertFraction(0, 1, new Fraction(0, 2));\n        assertFraction(0, 1, new Fraction(0, -1));\n        assertFraction(1, 2, new Fraction(1, 2));\n        assertFraction(1, 2, new Fraction(2, 4));\n        assertFraction(-1, 2, new Fraction(-1, 2));\n        assertFraction(-1, 2, new Fraction(1, -2));\n        assertFraction(-1, 2, new Fraction(-2, 4));\n        assertFraction(-1, 2, new Fraction(2, -4));\n        \n        // overflow\n        try {\n            new Fraction(Integer.MIN_VALUE, -1);\n            fail();\n        } catch (ArithmeticException ex) {\n            // success\n        }\n        try {\n            new Fraction(1, Integer.MIN_VALUE);\n            fail();\n        } catch (ArithmeticException ex) {\n            // success\n        }\n        try {        \n            assertFraction(0, 1, new Fraction(0.00000000000001));\n            assertFraction(2, 5, new Fraction(0.40000000000001));\n            assertFraction(15, 1, new Fraction(15.0000000000001));\n            \n        } catch (ConvergenceException ex) {\n            fail(ex.getMessage());\n        }\n    }\n\n    public void testGoldenRatio() {\n        try {\n            // the golden ratio is notoriously a difficult number for continuous fraction\n            new Fraction((1 + Math.sqrt(5)) / 2, 1.0e-12, 25);\n            fail(\"an exception should have been thrown\");\n        } catch (ConvergenceException ce) {\n            // expected behavior\n        } catch (Exception e) {\n            fail(\"wrong exception caught\");\n        }\n    }\n\n    // MATH-179\n    public void testDoubleConstructor() throws ConvergenceException  {\n        assertFraction(1, 2, new Fraction((double)1 / (double)2));\n        assertFraction(1, 3, new Fraction((double)1 / (double)3));\n        assertFraction(2, 3, new Fraction((double)2 / (double)3));\n        assertFraction(1, 4, new Fraction((double)1 / (double)4));\n        assertFraction(3, 4, new Fraction((double)3 / (double)4));\n        assertFraction(1, 5, new Fraction((double)1 / (double)5));\n        assertFraction(2, 5, new Fraction((double)2 / (double)5));\n        assertFraction(3, 5, new Fraction((double)3 / (double)5));\n        assertFraction(4, 5, new Fraction((double)4 / (double)5));\n        assertFraction(1, 6, new Fraction((double)1 / (double)6));\n        assertFraction(5, 6, new Fraction((double)5 / (double)6));\n        assertFraction(1, 7, new Fraction((double)1 / (double)7));\n        assertFraction(2, 7, new Fraction((double)2 / (double)7));\n        assertFraction(3, 7, new Fraction((double)3 / (double)7));\n        assertFraction(4, 7, new Fraction((double)4 / (double)7));\n        assertFraction(5, 7, new Fraction((double)5 / (double)7));\n        assertFraction(6, 7, new Fraction((double)6 / (double)7));\n        assertFraction(1, 8, new Fraction((double)1 / (double)8));\n        assertFraction(3, 8, new Fraction((double)3 / (double)8));\n        assertFraction(5, 8, new Fraction((double)5 / (double)8));\n        assertFraction(7, 8, new Fraction((double)7 / (double)8));\n        assertFraction(1, 9, new Fraction((double)1 / (double)9));\n        assertFraction(2, 9, new Fraction((double)2 / (double)9));\n        assertFraction(4, 9, new Fraction((double)4 / (double)9));\n        assertFraction(5, 9, new Fraction((double)5 / (double)9));\n        assertFraction(7, 9, new Fraction((double)7 / (double)9));\n        assertFraction(8, 9, new Fraction((double)8 / (double)9));\n        assertFraction(1, 10, new Fraction((double)1 / (double)10));\n        assertFraction(3, 10, new Fraction((double)3 / (double)10));\n        assertFraction(7, 10, new Fraction((double)7 / (double)10));\n        assertFraction(9, 10, new Fraction((double)9 / (double)10));\n        assertFraction(1, 11, new Fraction((double)1 / (double)11));\n        assertFraction(2, 11, new Fraction((double)2 / (double)11));\n        assertFraction(3, 11, new Fraction((double)3 / (double)11));\n        assertFraction(4, 11, new Fraction((double)4 / (double)11));\n        assertFraction(5, 11, new Fraction((double)5 / (double)11));\n        assertFraction(6, 11, new Fraction((double)6 / (double)11));\n        assertFraction(7, 11, new Fraction((double)7 / (double)11));\n        assertFraction(8, 11, new Fraction((double)8 / (double)11));\n        assertFraction(9, 11, new Fraction((double)9 / (double)11));\n        assertFraction(10, 11, new Fraction((double)10 / (double)11));\n    }\n\n    // MATH-181\n    public void testDigitLimitConstructor() throws ConvergenceException  {\n        assertFraction(2, 5, new Fraction(0.4,   9));\n        assertFraction(2, 5, new Fraction(0.4,  99));\n        assertFraction(2, 5, new Fraction(0.4, 999));\n\n        assertFraction(3, 5,      new Fraction(0.6152,    9));\n        assertFraction(8, 13,     new Fraction(0.6152,   99));\n        assertFraction(510, 829,  new Fraction(0.6152,  999));\n        assertFraction(769, 1250, new Fraction(0.6152, 9999));\n    }\n\n    public void testIntegerOverflow() {\n        checkIntegerOverflow(0.75000000001455192);\n        checkIntegerOverflow(1.0e10);\n    }\n\n    private void checkIntegerOverflow(double a) {\n        try {\n            new Fraction(a, 1.0e-12, 1000);\n            fail(\"an exception should have been thrown\");\n        } catch (ConvergenceException ce) {\n            // expected behavior\n        } catch (Exception e) {\n            fail(\"wrong exception caught\");\n        }\n    }\n\n    public void testEpsilonLimitConstructor() throws ConvergenceException  {\n        assertFraction(2, 5, new Fraction(0.4, 1.0e-5, 100));\n\n        assertFraction(3, 5,      new Fraction(0.6152, 0.02, 100));\n        assertFraction(8, 13,     new Fraction(0.6152, 1.0e-3, 100));\n        assertFraction(251, 408,  new Fraction(0.6152, 1.0e-4, 100));\n        assertFraction(251, 408,  new Fraction(0.6152, 1.0e-5, 100));\n        assertFraction(510, 829,  new Fraction(0.6152, 1.0e-6, 100));\n        assertFraction(769, 1250, new Fraction(0.6152, 1.0e-7, 100));\n    }\n\n    public void testCompareTo() {\n        Fraction first = new Fraction(1, 2);\n        Fraction second = new Fraction(1, 3);\n        Fraction third = new Fraction(1, 2);\n        \n        assertEquals(0, first.compareTo(first));\n        assertEquals(0, first.compareTo(third));\n        assertEquals(1, first.compareTo(second));\n        assertEquals(-1, second.compareTo(first));\n    }\n    \n    public void testDoubleValue() {\n        Fraction first = new Fraction(1, 2);\n        Fraction second = new Fraction(1, 3);\n\n        assertEquals(0.5, first.doubleValue(), 0.0);\n        assertEquals(1.0 / 3.0, second.doubleValue(), 0.0);\n    }\n    \n    public void testFloatValue() {\n        Fraction first = new Fraction(1, 2);\n        Fraction second = new Fraction(1, 3);\n\n        assertEquals(0.5f, first.floatValue(), 0.0f);\n        assertEquals((float)(1.0 / 3.0), second.floatValue(), 0.0f);\n    }\n    \n    public void testIntValue() {\n        Fraction first = new Fraction(1, 2);\n        Fraction second = new Fraction(3, 2);\n\n        assertEquals(0, first.intValue());\n        assertEquals(1, second.intValue());\n    }\n    \n    public void testLongValue() {\n        Fraction first = new Fraction(1, 2);\n        Fraction second = new Fraction(3, 2);\n",
+  "compaction": {
+    "source_lines": 541,
+    "mode": "windows",
+    "windows_total": 9,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        120,
+        200
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 20.517224808434186
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 8.098273935130369
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 6.844235257016541
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 20.517224808434186
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 8.098273935130369
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 6.844235257016541
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 3.83270367221944
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 2.8020370501945666
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 3.410407163606161
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 1.664209702514641
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 3.5277688023289637
+      },
+      {
+        "start": 480,
+        "end": 541,
+        "score": 6.038423286710551
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8679,
+  "representation_chars": 8679,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.misc.RaceCondition738Test",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/misc/RaceCondition738Test.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.misc.RaceCondition738Test\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/misc/RaceCondition738Test.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.misc;\n\nimport java.util.*;\nimport java.util.concurrent.*;\n\nimport com.fasterxml.jackson.annotation.*;\n\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.JsonNode;\nimport com.fasterxml.jackson.databind.ObjectMapper;\n\npublic class RaceCondition738Test extends BaseMapTest\n{\n    static abstract class AbstractHasSubTypes implements HasSubTypes { }\n\n    static class TypeOne extends AbstractHasSubTypes {\n        private final String id;\n        public TypeOne(String id) {\n            this.id = id;\n        }\n        @JsonProperty\n        public String getId() {\n            return id;\n        }\n        @Override\n        public String getType() {\n            return TypeOne.class.getSimpleName();\n        }\n    }\n\n    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)\n    @JsonSubTypes({\n        @JsonSubTypes.Type(value = TypeOne.class, name = \"one\")\n    })\n    public interface HasSubTypes {\n        String getType();\n    }\n\n    static class Wrapper {\n        private final HasSubTypes hasSubTypes;\n\n        private Wrapper(HasSubTypes hasSubTypes) {\n            this.hasSubTypes = hasSubTypes;\n        }\n\n        @JsonProperty\n        public HasSubTypes getHasSubTypes() {\n            return hasSubTypes;\n        }\n    }\n    \n    /*\n    /**********************************************************\n    /* Test methods\n    /**********************************************************\n     */\n    \n    public void testRepeatedly() throws Exception {\n        final int COUNT = 2000;\n        for (int i = 0; i < COUNT; i++) {\n            runOnce(i, COUNT);\n        }\n    }\n    \n    void runOnce(int round, int max) throws Exception {\n        final ObjectMapper mapper = getObjectMapper();\n        Callable<String> writeJson = new Callable<String>() {\n            @Override\n            public String call() throws Exception {\n                Wrapper wrapper = new Wrapper(new TypeOne(\"test\"));\n                return mapper.writeValueAsString(wrapper);\n            }\n        };\n\n        int numThreads = 4;\n        ExecutorService executor = Executors.newFixedThreadPool(numThreads);\n        List<Future<String>> jsonFutures = new ArrayList<Future<String>>();\n        for (int i = 0; i < numThreads; i++) {\n            jsonFutures.add(executor.submit(writeJson));\n        }\n\n        executor.shutdown();\n        executor.awaitTermination(5, TimeUnit.SECONDS);\n\n        for (Future<String> jsonFuture : jsonFutures) {\n            String json = jsonFuture.get();\n            JsonNode tree = mapper.readTree(json);\n            JsonNode wrapped = tree.get(\"hasSubTypes\");\n\n            if (!wrapped.has(\"one\")) {\n                throw new IllegalStateException(\"Round #\"+round+\"/\"+max+\" ; missing property 'one', source: \"+json);\n            }\n        }\n    }\n\n    private static ObjectMapper getObjectMapper() {\n        return new ObjectMapper();\n    }\n}\n",
+  "compaction": {
+    "source_lines": 99,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3130,
+  "representation_chars": 3130,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

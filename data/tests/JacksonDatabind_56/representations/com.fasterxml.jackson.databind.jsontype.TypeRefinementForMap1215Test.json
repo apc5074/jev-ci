@@ -1,0 +1,25 @@
+{
+  "test_class": "com.fasterxml.jackson.databind.jsontype.TypeRefinementForMap1215Test",
+  "source_file": "src/test/java/com/fasterxml/jackson/databind/jsontype/TypeRefinementForMap1215Test.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\ncom.fasterxml.jackson.databind.jsontype.TypeRefinementForMap1215Test\n\nSOURCE FILE:\nsrc/test/java/com/fasterxml/jackson/databind/jsontype/TypeRefinementForMap1215Test.java\n\nTEST SOURCE:\npackage com.fasterxml.jackson.databind.jsontype;\n\nimport java.util.LinkedHashMap;\nimport java.util.Map;\n\nimport com.fasterxml.jackson.annotation.JsonCreator;\n\nimport com.fasterxml.jackson.databind.BaseMapTest;\nimport com.fasterxml.jackson.databind.ObjectMapper;\nimport com.fasterxml.jackson.databind.annotation.JsonDeserialize;\n\npublic class TypeRefinementForMap1215Test extends BaseMapTest\n{\n    interface HasUniqueId<K> {\n        K getId();\n    }\n\n    static class Item implements HasUniqueId<String>\n    {\n        public String id;\n        public String property;\n\n        @Override\n        public String getId() { return id; }\n    }\n\n    static class Data\n    {\n        public String id;\n\n        @JsonDeserialize(as = MyHashMap.class)\n        public Map<String, Item> items;\n\n        // Would work with straight arguments:\n//        public MyHashMap<String, Item> items;\n    }\n\n    @SuppressWarnings(\"serial\")\n    static class MyHashMap<K, V extends HasUniqueId<K>>\n        extends LinkedHashMap<K, V>\n    {\n        @JsonCreator(mode=JsonCreator.Mode.DELEGATING)\n        public MyHashMap(V[] values) {\n            for (int i = 0; i < values.length; i++) {\n                V v = values[i];\n                put(v.getId(), v);\n            }\n        }\n    }\n\n    /*\n    /*******************************************************\n    /* Test methods\n    /*******************************************************\n     */\n    \n    public void testMapRefinement() throws Exception\n    {\n        String ID1 = \"3a6383d4-8123-4c43-8b8d-7cedf3e59404\";\n        String ID2 = \"81c3d978-90c4-4b00-8da1-1c39ffcab02c\";\n        String json = aposToQuotes(\n\"{'id':'\"+ID1+\"','items':[{'id':'\"+ID2+\"','property':'value'}]}\");\n\n        ObjectMapper m = new ObjectMapper();\n        Data data = m.readValue(json, Data.class);\n\n        assertEquals(ID1, data.id);\n        assertNotNull(data.items);\n        assertEquals(1, data.items.size());\n        Item value = data.items.get(ID2);\n        assertNotNull(value);\n        assertEquals(\"value\", value.property);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 74,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 2243,
+  "representation_chars": 2243,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

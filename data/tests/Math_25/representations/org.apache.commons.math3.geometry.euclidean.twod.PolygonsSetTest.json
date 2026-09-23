@@ -1,0 +1,131 @@
+{
+  "test_class": "org.apache.commons.math3.geometry.euclidean.twod.PolygonsSetTest",
+  "source_file": "src/test/java/org/apache/commons/math3/geometry/euclidean/twod/PolygonsSetTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.geometry.euclidean.twod.PolygonsSetTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/geometry/euclidean/twod/PolygonsSetTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math3.geometry.euclidean.twod;\n\nimport java.util.ArrayList;\nimport java.util.List;\n\nimport org.apache.commons.math3.geometry.euclidean.oned.Interval;\nimport org.apache.commons.math3.geometry.euclidean.oned.IntervalsSet;\nimport org.apache.commons.math3.geometry.euclidean.oned.Vector1D;\nimport org.apache.commons.math3.geometry.euclidean.twod.Line;\nimport org.apache.commons.math3.geometry.euclidean.twod.Vector2D;\nimport org.apache.commons.math3.geometry.euclidean.twod.PolygonsSet;\nimport org.apache.commons.math3.geometry.partitioning.BSPTree;\nimport org.apache.commons.math3.geometry.partitioning.Region;\nimport org.apache.commons.math3.geometry.partitioning.RegionFactory;\nimport org.apache.commons.math3.geometry.partitioning.SubHyperplane;\nimport org.apache.commons.math3.util.FastMath;\nimport org.junit.Assert;\nimport org.junit.Test;\n\npublic class PolygonsSetTest {\n\n    @Test\n    public void testSimplyConnected() {\n        Vector2D[][] vertices = new Vector2D[][] {\n            new Vector2D[] {\n                new Vector2D(36.0, 22.0),\n                new Vector2D(39.0, 32.0),\n                new Vector2D(19.0, 32.0),\n                new Vector2D( 6.0, 16.0),\n                new Vector2D(31.0, 10.0),\n                new Vector2D(42.0, 16.0),\n                new Vector2D(34.0, 20.0),\n                new Vector2D(29.0, 19.0),\n                new Vector2D(23.0, 22.0),\n                new Vector2D(33.0, 25.0)\n            }\n        };\n        PolygonsSet set = buildSet(vertices);\n        Assert.assertEquals(Region.Location.OUTSIDE, set.checkPoint(new Vector2D(50.0, 30.0)));\n        checkPoints(Region.Location.INSIDE, set, new Vector2D[] {\n            new Vector2D(30.0, 15.0),\n            new Vector2D(15.0, 20.0),\n            new Vector2D(24.0, 25.0),\n            new Vector2D(35.0, 30.0),\n            new Vector2D(19.0, 17.0)\n        });\n        checkPoints(Region.Location.OUTSIDE, set, new Vector2D[] {\n            new Vector2D(50.0, 30.0),\n            new Vector2D(30.0, 35.0),\n            new Vector2D(10.0, 25.0),\n            new Vector2D(10.0, 10.0),\n            new Vector2D(40.0, 10.0),\n            new Vector2D(50.0, 15.0),\n            new Vector2D(30.0, 22.0)\n        });\n        checkPoints(Region.Location.BOUNDARY, set, new Vector2D[] {\n            new Vector2D(30.0, 32.0),\n            new Vector2D(34.0, 20.0)\n        });\n        checkVertices(set.getVertices(), vertices);\n    }\n\n    @Test\n    public void testStair() {\n        checkPoints(Region.Location.BOUNDARY, set, new Vector2D[] {\n            new Vector2D(1.0, 1.0),\n            new Vector2D(1.5, 1.0),\n            new Vector2D(0.0, 0.0),\n            new Vector2D(0.5, 2.0),\n            new Vector2D(2.0, 0.5)\n        });\n    }\n\n    @Test\n    public void testEmptyDifference() {\n        Vector2D[][] vertices1 = new Vector2D[][] {\n            new Vector2D[] {\n                new Vector2D( 0.5, 3.5),\n                new Vector2D( 0.5, 4.5),\n                new Vector2D(-0.5, 4.5),\n                new Vector2D(-0.5, 3.5)\n            }\n        };\n        PolygonsSet set1 = buildSet(vertices1);\n        Vector2D[][] vertices2 = new Vector2D[][] {\n            new Vector2D[] {\n                new Vector2D( 1.0, 2.0),\n                new Vector2D( 1.0, 8.0),\n                new Vector2D(-1.0, 8.0),\n                new Vector2D(-1.0, 2.0)\n            }\n        };\n        PolygonsSet set2 = buildSet(vertices2);\n        Assert.assertTrue(new RegionFactory<Euclidean2D>().difference(set1.copySelf(), set2.copySelf()).isEmpty());\n    }\n\n    @Test\n    public void testChoppedHexagon() {\n        double pi6   = FastMath.PI / 6.0;\n        double sqrt3 = FastMath.sqrt(3.0);\n        SubLine[] hyp = {\n            new Line(new Vector2D(   0.0, 1.0),  5 * pi6).wholeHyperplane(),\n            new Line(new Vector2D(-sqrt3, 1.0),  7 * pi6).wholeHyperplane(),\n            new Line(new Vector2D(-sqrt3, 1.0),  9 * pi6).wholeHyperplane(),\n            new Line(new Vector2D(-sqrt3, 0.0), 11 * pi6).wholeHyperplane(),\n            new Line(new Vector2D(   0.0, 0.0), 13 * pi6).wholeHyperplane(),\n            new Line(new Vector2D(   0.0, 1.0),  3 * pi6).wholeHyperplane(),\n            new Line(new Vector2D(-5.0 * sqrt3 / 6.0, 0.0), 9 * pi6).wholeHyperplane()\n        };\n        hyp[1] = (SubLine) hyp[1].split(hyp[0].getHyperplane()).getMinus();\n        hyp[2] = (SubLine) hyp[2].split(hyp[1].getHyperplane()).getMinus();\n        hyp[3] = (SubLine) hyp[3].split(hyp[2].getHyperplane()).getMinus();\n        hyp[4] = (SubLine) hyp[4].split(hyp[3].getHyperplane()).getMinus().split(hyp[0].getHyperplane()).getMinus();\n        hyp[5] = (SubLine) hyp[5].split(hyp[4].getHyperplane()).getMinus().split(hyp[0].getHyperplane()).getMinus();\n        hyp[6] = (SubLine) hyp[6].split(hyp[3].getHyperplane()).getMinus().split(hyp[1].getHyperplane()).getMinus();\n        BSPTree<Euclidean2D> tree = new BSPTree<Euclidean2D>(Boolean.TRUE);\n        for (int i = hyp.length - 1; i >= 0; --i) {\n            tree = new BSPTree<Euclidean2D>(hyp[i], new BSPTree<Euclidean2D>(Boolean.FALSE), tree, null);\n        }\n        PolygonsSet set = new PolygonsSet(tree);\n        SubLine splitter =\n            new Line(new Vector2D(-2.0 * sqrt3 / 3.0, 0.0), 9 * pi6).wholeHyperplane();\n        PolygonsSet slice =\n            new PolygonsSet(new BSPTree<Euclidean2D>(splitter,\n                                                     set.getTree(false).split(splitter).getPlus(),\n                                                     new BSPTree<Euclidean2D>(Boolean.FALSE), null));\n        Assert.assertEquals(Region.Location.OUTSIDE,\n                            slice.checkPoint(new Vector2D(0.1, 0.5)));\n        Assert.assertEquals(11.0 / 3.0, slice.getBoundarySize(), 1.0e-10);\n\n    }\n\n    @Test\n    public void testConcentric() {\n        double h = FastMath.sqrt(3.0) / 2.0;\n        Vector2D[][] vertices1 = new Vector2D[][] {\n            new Vector2D[] {\n                new Vector2D( 0.00, 0.1 * h),\n                new Vector2D( 0.05, 0.1 * h),\n                new Vector2D( 0.10, 0.2 * h),\n                new Vector2D( 0.05, 0.3 * h),\n                new Vector2D(-0.05, 0.3 * h),\n                new Vector2D(-0.10, 0.2 * h),\n                new Vector2D(-0.05, 0.1 * h)\n        return new SubLine(line, new IntervalsSet(lower, upper));\n    }\n\n    private void checkPoints(Region.Location expected, PolygonsSet set,\n                             Vector2D[] points) {\n        for (int i = 0; i < points.length; ++i) {\n            Assert.assertEquals(expected, set.checkPoint(points[i]));\n        }\n    }\n\n    private boolean checkInSegment(Vector2D p,\n                                   Vector2D p1, Vector2D p2,\n                                   double tolerance) {\n        Line line = new Line(p1, p2);\n        if (line.getOffset(p) < tolerance) {\n            double x  = (line.toSubSpace(p)).getX();\n            double x1 = (line.toSubSpace(p1)).getX();\n            double x2 = (line.toSubSpace(p2)).getX();\n            return (((x - x1) * (x - x2) <= 0.0)\n                    || (p1.distance(p) < tolerance)\n                    || (p2.distance(p) < tolerance));\n        } else {\n            return false;\n        }\n    }\n\n    private void checkVertices(Vector2D[][] rebuiltVertices,\n                               Vector2D[][] vertices) {\n\n        // each rebuilt vertex should be in a segment joining two original vertices\n        for (int i = 0; i < rebuiltVertices.length; ++i) {\n            for (int j = 0; j < rebuiltVertices[i].length; ++j) {\n                boolean inSegment = false;\n                Vector2D p = rebuiltVertices[i][j];\n                for (int k = 0; k < vertices.length; ++k) {\n                    Vector2D[] loop = vertices[k];\n                    int length = loop.length;\n                    for (int l = 0; (! inSegment) && (l < length); ++l) {\n                        inSegment = checkInSegment(p, loop[l], loop[(l + 1) % length], 1.0e-10);\n                    }\n                }\n                Assert.assertTrue(inSegment);\n            }\n        }\n\n        // each original vertex should have a corresponding rebuilt vertex\n        for (int k = 0; k < vertices.length; ++k) {\n            for (int l = 0; l < vertices[k].length; ++l) {\n                double min = Double.POSITIVE_INFINITY;\n                for (int i = 0; i < rebuiltVertices.length; ++i) {\n                    for (int j = 0; j < rebuiltVertices[i].length; ++j) {\n                        min = FastMath.min(vertices[k][l].distance(rebuiltVertices[i][j]),\n                                       min);\n                    }\n                }\n                Assert.assertEquals(0.0, min, 1.0e-10);\n            }\n        }\n\n    }\n\n}\n",
+  "compaction": {
+    "source_lines": 902,
+    "mode": "windows",
+    "windows_total": 15,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        540,
+        620
+      ],
+      [
+        840,
+        902
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 32.075045018843866
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 7.3133352393903115
+      },
+      {
+        "start": 840,
+        "end": 902,
+        "score": 14.958457182744155
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 32.075045018843866
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 5.971197797481391
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 0.07766170735765442
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 1.7006522738187786
+      },
+      {
+        "start": 240,
+        "end": 320,
+        "score": 0.07636951095253776
+      },
+      {
+        "start": 300,
+        "end": 380,
+        "score": 0.07772634964333597
+      },
+      {
+        "start": 360,
+        "end": 440,
+        "score": 0.07734005574321634
+      },
+      {
+        "start": 420,
+        "end": 500,
+        "score": 0.07783239433896315
+      },
+      {
+        "start": 480,
+        "end": 560,
+        "score": 0.0777319599438203
+      },
+      {
+        "start": 540,
+        "end": 620,
+        "score": 7.3133352393903115
+      },
+      {
+        "start": 600,
+        "end": 680,
+        "score": 4.800856345868441
+      },
+      {
+        "start": 660,
+        "end": 740,
+        "score": 0.07701608001362817
+      },
+      {
+        "start": 720,
+        "end": 800,
+        "score": 0.07742726494070207
+      },
+      {
+        "start": 780,
+        "end": 860,
+        "score": 3.054838315020576
+      },
+      {
+        "start": 840,
+        "end": 902,
+        "score": 14.958457182744155
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 9708,
+  "representation_chars": 9708,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

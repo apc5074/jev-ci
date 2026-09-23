@@ -1,0 +1,81 @@
+{
+  "test_class": "org.apache.commons.math3.distribution.HypergeometricDistributionTest",
+  "source_file": "src/test/java/org/apache/commons/math3/distribution/HypergeometricDistributionTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.apache.commons.math3.distribution.HypergeometricDistributionTest\n\nSOURCE FILE:\nsrc/test/java/org/apache/commons/math3/distribution/HypergeometricDistributionTest.java\n\nTEST SOURCE:\n/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n\npackage org.apache.commons.math3.distribution;\n\nimport org.apache.commons.math3.TestUtils;\nimport org.apache.commons.math3.exception.NotPositiveException;\nimport org.apache.commons.math3.exception.NotStrictlyPositiveException;\nimport org.apache.commons.math3.exception.NumberIsTooLargeException;\nimport org.apache.commons.math3.util.Precision;\nimport org.junit.Assert;\nimport org.junit.Test;\n\n/**\n * Test cases for HyperGeometriclDistribution.\n * Extends IntegerDistributionAbstractTest.  See class javadoc for\n * IntegerDistributionAbstractTest for details.\n *\n * @version $Id$\n */\npublic class HypergeometricDistributionTest extends IntegerDistributionAbstractTest {\n\n//-------------- Implementations for abstract methods -----------------------\n\n    /** Creates the default discrete distribution instance to use in tests. */\n    @Override\n    public IntegerDistribution makeDistribution() {\n        return new HypergeometricDistribution(10, 5, 5);\n    }\n\n    /** Creates the default probability density test input values */\n    @Override\n    public int[] makeDensityTestPoints() {\n        return new int[] {-1, 0, 1, 2, 3, 4, 5, 10};\n    }\n\n    /** Creates the default probability density test expected values */\n    @Override\n    public double[] makeDensityTestValues() {\n        return new double[] {0d, 0.003968d, 0.099206d, 0.396825d, 0.396825d,\n                0.099206d, 0.003968d, 0d};\n    }\n\n    /** Creates the default cumulative probability density test input values */\n    @Override\n    public int[] makeCumulativeTestPoints() {\n        return makeDensityTestPoints();\n    }\n\n    /** Creates the default cumulative probability density test expected values */\n    @Override\n    public double[] makeCumulativeTestValues() {\n        return new double[] {0d, .003968d, .103175d, .50000d, .896825d, .996032d,\n                1.00000d, 1d};\n    }\n\n    /** Creates the default inverse cumulative probability test input values */\n    @Override\n    public double[] makeInverseCumulativeTestPoints() {\n        return new double[] {0d, 0.001d, 0.010d, 0.025d, 0.050d, 0.100d, 0.999d,\n                0.990d, 0.975d, 0.950d, 0.900d, 1d};\n    }\n\n    /** Creates the default inverse cumulative probability density test expected values */\n    @Override\n    public int[] makeInverseCumulativeTestValues() {\n        return new int[] {0, 0, 1, 1, 1, 1, 5, 4, 4, 4, 4, 5};\n    }\n\n    //-------------------- Additional test cases ------------------------------\n\n    /** Verify that if there are no failures, mass is concentrated on sampleSize */\n    @Test\n    public void testDegenerateNoFailures() {\n        HypergeometricDistribution dist = new HypergeometricDistribution(5,5,3);\n        setDistribution(dist);\n        setCumulativeTestPoints(new int[] {-1, 0, 1, 3, 10 });\n        setCumulativeTestValues(new double[] {0d, 0d, 0d, 1d, 1d});\n        setDensityTestPoints(new int[] {-1, 0, 1, 3, 10});\n        setDensityTestValues(new double[] {0d, 0d, 0d, 1d, 0d});\n        setInverseCumulativeTestPoints(new double[] {0.1d, 0.5d});\n        setInverseCumulativeTestValues(new int[] {3, 3});\n        verifyDensities();\n        verifyCumulativeProbabilities();\n        verifyInverseCumulativeProbabilities();\n        Assert.assertEquals(dist.getSupportLowerBound(), 3);\n        Assert.assertEquals(dist.getSupportUpperBound(), 3);\n    }\n\n    /** Verify that if there are no successes, mass is concentrated on 0 */\n    @Test\n    public void testDegenerateNoSuccesses() {\n        HypergeometricDistribution dist = new HypergeometricDistribution(5,0,3);\n        setDistribution(dist);\n        setCumulativeTestPoints(new int[] {-1, 0, 1, 3, 10 });\n        setCumulativeTestValues(new double[] {0d, 1d, 1d, 1d, 1d});\n        setDensityTestPoints(new int[] {-1, 0, 1, 3, 10});\n        setDensityTestValues(new double[] {0d, 1d, 0d, 0d, 0d});\n        setInverseCumulativeTestPoints(new double[] {0.1d, 0.5d});\n        setInverseCumulativeTestValues(new int[] {0, 0});\n        verifyDensities();\n        verifyCumulativeProbabilities();\n        verifyInverseCumulativeProbabilities();\n        Assert.assertEquals(dist.getSupportLowerBound(), 0);\n        Assert.assertEquals(dist.getSupportUpperBound(), 0);\n    }\n\n    /** Verify that if sampleSize = populationSize, mass is concentrated on numberOfSuccesses */\n    @Test\n    public void testDegenerateFullSample() {\n        HypergeometricDistribution dist = new HypergeometricDistribution(5,3,5);\n        setDistribution(dist);\n        setCumulativeTestPoints(new int[] {-1, 0, 1, 3, 10 });\n        setCumulativeTestValues(new double[] {0d, 0d, 0d, 1d, 1d});\n        setDensityTestPoints(new int[] {-1, 0, 1, 3, 10});\n        setDensityTestValues(new double[] {0d, 0d, 0d, 1d, 0d});\n        setInverseCumulativeTestPoints(new double[] {0.1d, 0.5d});\n        setInverseCumulativeTestValues(new int[] {3, 3});\n        verifyDensities();\n        verifyCumulativeProbabilities();\n        verifyInverseCumulativeProbabilities();\n        Assert.assertEquals(dist.getSupportLowerBound(), 3);\n        Assert.assertEquals(dist.getSupportUpperBound(), 3);\n    }\n\n    @Test\n            {20.0, 3.57101101678792e-16, 1.0, 3.78252101622096e-16},\n            {21.0, 2.00551638598312e-17, 1.0, 2.11509999433041e-17},\n            {22.0, 1.04317070180562e-18, 1.0, 1.09583608347287e-18},\n            {23.0, 5.03153504903308e-20, 1.0, 5.266538166725e-20},\n            {24.0, 2.2525984149695e-21, 1.0, 2.35003117691919e-21},\n            {25.0, 9.3677424515947e-23, 1.0, 9.74327619496943e-23},\n            {50.0, 9.83633962945521e-69, 1.0, 9.8677629437617e-69},\n            {51.0, 3.13448949497553e-71, 1.0, 3.14233143064882e-71},\n            {52.0, 7.82755221928122e-74, 1.0, 7.84193567329055e-74},\n            {53.0, 1.43662126065532e-76, 1.0, 1.43834540093295e-76},\n            {54.0, 1.72312692517348e-79, 1.0, 1.7241402776278e-79},\n            {55.0, 1.01335245432581e-82, 1.0, 1.01335245432581e-82},\n        };\n        testHypergeometricDistributionProbabilities(populationSize, sampleSize, numberOfSucceses, data);\n    }\n\n    @Test\n    public void testMoments() {\n        final double tol = 1e-9;\n        HypergeometricDistribution dist;\n\n        dist = new HypergeometricDistribution(1500, 40, 100);\n        Assert.assertEquals(dist.getNumericalMean(), 40d * 100d / 1500d, tol);\n        Assert.assertEquals(dist.getNumericalVariance(), ( 100d * 40d * (1500d - 100d) * (1500d - 40d) ) / ( (1500d * 1500d * 1499d) ), tol);\n\n        dist = new HypergeometricDistribution(3000, 55, 200);\n        Assert.assertEquals(dist.getNumericalMean(), 55d * 200d / 3000d, tol);\n        Assert.assertEquals(dist.getNumericalVariance(), ( 200d * 55d * (3000d - 200d) * (3000d - 55d) ) / ( (3000d * 3000d * 2999d) ), tol);\n    }\n    \n    @Test\n    public void testMath644() {\n        int N = 14761461;  // population\n        int m = 1035;      // successes in population\n        int n = 1841;      // number of trials\n\n        int k = 0;\n        final HypergeometricDistribution dist = new HypergeometricDistribution(N, m, n);\n        \n        Assert.assertTrue(Precision.compareTo(1.0, dist.upperCumulativeProbability(k), 1) == 0);\n        Assert.assertTrue(Precision.compareTo(dist.cumulativeProbability(k), 0.0, 1) > 0);\n        \n        // another way to calculate the upper cumulative probability\n        double upper = 1.0 - dist.cumulativeProbability(k) + dist.probability(k);\n        Assert.assertTrue(Precision.compareTo(1.0, upper, 1) == 0);\n    }\n}\n",
+  "compaction": {
+    "source_lines": 287,
+    "mode": "windows",
+    "windows_total": 5,
+    "windows_selected": [
+      [
+        0,
+        80
+      ],
+      [
+        60,
+        140
+      ],
+      [
+        240,
+        287
+      ]
+    ],
+    "window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 21.886938464600842
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 8.346660058815228
+      },
+      {
+        "start": 240,
+        "end": 287,
+        "score": 8.231491706324999
+      }
+    ],
+    "all_window_scores": [
+      {
+        "start": 0,
+        "end": 80,
+        "score": 21.886938464600842
+      },
+      {
+        "start": 60,
+        "end": 140,
+        "score": 8.346660058815228
+      },
+      {
+        "start": 120,
+        "end": 200,
+        "score": 5.4956207361800065
+      },
+      {
+        "start": 180,
+        "end": 260,
+        "score": 4.9729555820370575
+      },
+      {
+        "start": 240,
+        "end": 287,
+        "score": 8.231491706324999
+      }
+    ]
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 8467,
+  "representation_chars": 8467,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "test_class": "org.jsoup.internal.ConstrainableInputStreamTest",
+  "source_file": "src/test/java/org/jsoup/internal/ConstrainableInputStreamTest.java",
+  "source_missing": false,
+  "representation_text": "TEST CLASS:\norg.jsoup.internal.ConstrainableInputStreamTest\n\nSOURCE FILE:\nsrc/test/java/org/jsoup/internal/ConstrainableInputStreamTest.java\n\nTEST SOURCE:\npackage org.jsoup.internal;\n\nimport org.jsoup.Jsoup;\nimport org.junit.Ignore;\nimport org.junit.Test;\n\nimport java.io.BufferedInputStream;\nimport java.io.IOException;\nimport java.nio.ByteBuffer;\n\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertFalse;\nimport static org.junit.Assert.assertTrue;\n\n@Ignore\npublic class ConstrainableInputStreamTest {\n    // todo - move these all to local jetty, don't ignore\n\n    @Test\n    public void remainingAfterFirstRead() throws IOException {\n        int bufferSize = 5 * 1024;\n        int capSize = 100 * 1024;\n\n        String url = \"http://direct.infohound.net/tools/large.html\"; // 280 K\n        BufferedInputStream inputStream = Jsoup.connect(url).maxBodySize(capSize)\n            .execute().bodyStream();\n\n        assertTrue(inputStream instanceof ConstrainableInputStream);\n        ConstrainableInputStream stream = (ConstrainableInputStream) inputStream;\n\n        // simulates parse which does a limited read first\n        stream.mark(bufferSize);\n        ByteBuffer firstBytes = stream.readToByteBuffer(bufferSize);\n\n        byte[] array = firstBytes.array();\n        String firstText = new String(array, \"UTF-8\");\n        assertTrue(firstText.startsWith(\"<html><head><title>Large\"));\n        assertEquals(bufferSize, array.length);\n\n        boolean fullyRead = stream.read() == -1;\n        assertFalse(fullyRead);\n\n        // reset and read again\n        stream.reset();\n        ByteBuffer fullRead = stream.readToByteBuffer(0);\n        byte[] fullArray = fullRead.array();\n        assertEquals(capSize, fullArray.length);\n        String fullText = new String(fullArray, \"UTF-8\");\n        assertTrue(fullText.startsWith(firstText));\n    }\n\n    @Test\n    public void noLimitAfterFirstRead() throws IOException {\n        int bufferSize = 5 * 1024;\n\n        String url = \"http://direct.infohound.net/tools/large.html\"; // 280 K\n        BufferedInputStream inputStream = Jsoup.connect(url).execute().bodyStream();\n\n        assertTrue(inputStream instanceof ConstrainableInputStream);\n        ConstrainableInputStream stream = (ConstrainableInputStream) inputStream;\n\n        // simulates parse which does a limited read first\n        stream.mark(bufferSize);\n        ByteBuffer firstBytes = stream.readToByteBuffer(bufferSize);\n        byte[] array = firstBytes.array();\n        String firstText = new String(array, \"UTF-8\");\n        assertTrue(firstText.startsWith(\"<html><head><title>Large\"));\n        assertEquals(bufferSize, array.length);\n\n        // reset and read fully\n        stream.reset();\n        ByteBuffer fullRead = stream.readToByteBuffer(0);\n        byte[] fullArray = fullRead.array();\n        assertEquals(280735, fullArray.length);\n        String fullText = new String(fullArray, \"UTF-8\");\n        assertTrue(fullText.startsWith(firstText));\n\n    }\n}\n",
+  "compaction": {
+    "source_lines": 79,
+    "mode": "full",
+    "windows_total": 0,
+    "windows_selected": [],
+    "window_scores": []
+  },
+  "representation_truncated": false,
+  "original_representation_chars": 3000,
+  "representation_chars": 3000,
+  "representation_char_cap": 12000,
+  "truncation_marker": "[...TEST TRUNCATED...]",
+  "character_count_convention": "python_len_unicode_code_points",
+  "tokenizer_version": "jev-code-tokenizer-v1",
+  "bm25_version": "jev-bm25-v1",
+  "bm25_params": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

@@ -1,0 +1,232 @@
+# Locked methodological configuration for Phase 7 (P6-04).
+# Human preregistration companion is EXPERIMENT.md (P6-05).
+# Do not edit quietly after experiment-v1-frozen; version a new experiment instead.
+
+schema_version: jev-experiment-config-v1
+phase: 6
+locked_at: "2026-09-23T03:30:00+00:00"
+status: methodological_choices_locked
+human_preregistration: EXPERIMENT.md
+# Full freeze tag (experiment-v1-frozen) is created in P6-07 after EXPERIMENT.md + gate.
+# After tagging, run: python scripts/write_freeze_lock.py (do not put freeze_lock.json in the tagged commit).
+
+study:
+  name: jev-ci-defects4j-test-selection
+  claim_limits: >
+    Measures rankings of known fault-revealing test classes under a test-class
+    count budget. Does not claim CI wall-clock reduction or classification of
+    unlabeled tests.
+
+dataset:
+  defects4j_version: from_manifest
+  defects4j_commit: "6d54320e0db5a357f9ab38a8e4d2e5aead7e1c09"
+  selection_seed: 20260922
+  project_order: [Cli, Lang, Math, Jsoup, JacksonDatabind]
+  development_n: 25
+  evaluation_n: 125
+  id_source: data/manifest.json
+  direction:
+    base: Bf
+    proposed: Bb
+    patch_meta_direction: fixed_to_buggy
+
+systems:
+  - name: Random
+    kind: baseline
+  - name: BM25
+    kind: lexical
+  - name: Embedding
+    kind: embedding
+  - name: Jev
+    kind: semantic_rerank
+    shortlist: bm25_top_k
+  - name: GPT-Nano
+    kind: semantic_rerank
+    shortlist: bm25_top_k
+    comparison_key: gpt-5.4-nano
+    is_primary_generative: true
+
+# Additional GPT models scored on development for review only (not headline systems).
+gpt_comparison_models_development_only:
+  - gpt-4.1-nano
+  - gpt-4o-mini
+  - gpt-luna
+
+representations:
+  patch:
+    query_diff_source: model_visible_representation
+    character_count_convention: python_len_unicode_code_points
+    representation_char_cap: 12000
+    truncation_marker: "[...PATCH TRUNCATED...]"
+    truncation_rule: equal_prefix_suffix_budgets_with_marker_reservation
+  tests:
+    compact_representation_cap: 12000
+    long_source_windows: bm25_top3_parseHTTPResponse_v2
+    missing_source: fqcn_only_document_for_bm25
+    nested_ambiguous_source: hard_fail_no_arbitrary_pick
+
+tokenizer:
+  version: jev-code-tokenizer-v1
+  config_sha256: "e8f04897083a9ecf43c92e6612d7b16882e7ac713a00bd1de57e63b5efaa7382"
+  implementation: src.tokenize.tokenize
+
+bm25:
+  version: jev-bm25-v1
+  lexical_contract_version: jev-bm25-lexical-v1
+  k1: 1.5
+  b: 0.75
+  document: fqcn_plus_full_fixed_source
+  query: model_visible_patch_representation_txt
+  order: [score_desc, fqcn_asc]
+  k_cap: 200
+  shortlist_k: "min(200, N)"
+  shortlist_is_ranking_prefix: true
+
+random:
+  n_permutations: 1000
+  index_basis: zero-based
+  evaluation_seed: "1337 + evaluation_bug_index"
+  development_seed: "1001337 + development_bug_index"
+  evaluation_seed_base: 1337
+  development_seed_base: 1001337
+
+embedding:
+  model_id: text-embedding-3-small
+  provider_preference: [openrouter, openai]
+  openrouter_request_model: openai/text-embedding-3-small
+  scope: full_suite_not_shortlist
+  similarity: cosine_desc
+  tie_break: fqcn_asc
+  uses_bm25: false
+  over_limit_rule: fail_closed_no_truncate_v1
+  token_limit: 8192
+
+semantic_ranking:
+  prefix_sort: [score_desc, bm25_rank_asc]
+  tail: bm25_order_unchanged
+  fail_closed_on_missing_scores: true
+  regenerates_candidates: false
+  score_range: [0.0, 1.0]
+
+jev:
+  provider: openrouter
+  request_model: typesafe/jev-1.13
+  observed_model_id_development: typesafe/jev-1.13-20260917
+  forbidden_aliases: [jev-latest, jev-preview, "~typesafe/jev-latest"]
+  prompt_file: prompts/jev/v1.json
+  prompt_file_sha256: "2687635cea341f22e88ad848de09be711b6e80fe45f46d93da72e0ca4a477401"
+  prompt_version: jev-would_detect_regression-v1
+  prompt_revision_count: 0
+  prompt_decision: retain_original
+  question_id: would_detect_regression
+  question_type: noul
+  question_sha256: "3b0c683653e62f3d3964ad0663f8b28e9470f88ecc60b7ca48f9eb7cbf5b40f8"
+  instructions_sha256: "63c29f6032e2ac347c2014ccaea19eb1766625d5e60da692245107e9fc58a238"
+  criteria_sha256: "555cfbc816204fe87a8eac5f8df883ca2557d4849aa4412d54efaa815beeed46"
+  state_keys: [code_change, candidate_test]
+  one_pair_per_request: true
+
+gpt_nano:
+  provider_preference: [openrouter, openai]
+  canonical_model_id: gpt-5.4-nano-2026-03-17
+  openrouter_request_model: openai/gpt-5.4-nano
+  openai_request_model: gpt-5.4-nano-2026-03-17
+  reasoning_effort: none
+  prompt_file: prompts/gpt/v1.json
+  prompt_file_sha256: "a5e7c1590f560dc6faf1b81fc84bbc4a1cb75d125c370bfa23f2724a6e71fd90"
+  prompt_version: gpt-would_detect_regression-v1
+  question_sha256: "bcd293f79f5826ab8be4296b8a77d3cbf1139c4dfe3d113d9180c5d7711b2caa"
+  structured_output: {probability: "[0,1]"}
+  no_chain_of_thought: true
+  same_state_as_jev_byte_for_byte: true
+
+scheduler:
+  max_concurrency: 16
+  max_retries_after_first: 3
+  retry_statuses: [429, 500, 502, 503, 529]
+  backoff_seconds: [1, 2, 4]
+  respect_retry_after: true
+  optional_max_rpm: true
+  optional_spend_ceiling_usd: true
+  in_flight_cache_key_dedupe: true
+
+cache:
+  key_serialization: canonical_json_sorted_keys_compact_separators
+  key_fields: [provider, model_id, prompt_version, state, question]
+  roots: [cache/jev, cache/gpt, cache/embeddings, cache/failures]
+  ledger: results/usage_ledger.jsonl
+  atomic_writes: true
+
+outcomes:
+  primary:
+    name: FDR@10%
+    budget_fraction: 0.10
+    k_rule: "max(1, ceil(fraction * N))"
+  secondary_fdr_fractions: [0.01, 0.02, 0.05, 0.20, 0.50, 1.00]
+  secondary_metrics: [MRR, NFTR, median_NFTR, APFD, candidate_recall_at_200, cost, latency]
+  apfd: "1 - (r_b / N_b) + 1/(2*N_b)"
+  mrr: "mean(1 / r_b)"
+  nftr: "r_b / N_b"
+  rank_basis: one_based
+  output_precision:
+    rates: 4
+    ranks: 0
+    costs_usd: 6
+
+statistics:
+  pairing: by_bug
+  primary_contrast: [Jev, BM25]
+  primary_test: mcnemar_exact
+  bootstrap_samples: 10000
+  bootstrap_intervals: percentile_95
+  secondary_contrasts:
+    - [Jev, Embedding]
+    - [Jev, GPT-Nano]
+
+hypotheses:
+  H1: >
+    At a 10% test-class budget, BM25→Jev detects a larger fraction of
+    Defects4J regressions than BM25 alone (primary: FDR@10%).
+  H2: >
+    Jev places the first known triggering test earlier than BM25 and
+    Embedding (MRR, NFTR, APFD).
+  H3: >
+    Jev approaches or exceeds GPT-Nano ranking quality at substantially
+    lower inference cost.
+
+practical_success:
+  either:
+    - "Jev FDR@10% >= BM25 FDR@10% + 0.05 absolute"
+    - "Jev FDR@10% within 0.02 absolute of GPT-Nano AND Jev_cost <= 0.30 * GPT_Nano_cost"
+
+cost_accounting:
+  record_separately:
+    - list_price_inference_usd
+    - platform_fee_usd
+    - effective_prepaid_credits_usd
+    - provider_reported_cost_usd
+    - actual_cash_usd
+  jev_vs_gpt_30pct_criterion_price_basis: list_price_inference_usd_plus_platform_fee
+  # i.e. effective_prepaid_credits_usd at frozen snapshot rates
+  pricing_snapshot: results/pricing_snapshot.json
+  pricing_snapshot_date: "2026-09-23"
+  promotional_credits: recorded_but_not_used_as_intrinsic_price
+  do_not_declare_jev_free_from_gateway_alone: true
+
+open_availability:
+  - id: A-001
+    bug: Jsoup-70
+    class: org.jsoup.integration.ConnectTest
+    system: Jev
+    issue: OpenRouter Cloudflare WAF on file://etc/passwd
+    status: accepted_for_development_continue
+    evaluation_gate: must_resolve_or_deviate_before_eval_scoring
+
+artifacts:
+  human_preregistration: EXPERIMENT.md
+  decisions_log: docs/phase6-decisions.md
+  defect_log: docs/phase6-defect-log.md
+  development_baseline: results/phase6/development_baseline.json
+  machine_json: results/phase6/experiment.json
+  jev_prompt_file: prompts/jev/v1.json
+  gpt_prompt_file: prompts/gpt/v1.json

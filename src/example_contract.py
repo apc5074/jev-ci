@@ -252,7 +252,7 @@ def require_manifest_membership(
     """Ensure the example is in the locked split.
 
     Phase 3 extraction may use development bugs only unless ``allow_evaluation``
-    is explicitly set (post-freeze evaluation runs).
+    is explicitly set **and** the P6-07 freeze lock is present/validated.
     """
     data = manifest if manifest is not None else load_manifest()
     ex = example if isinstance(example, ExampleId) else ExampleId.parse(example)
@@ -266,6 +266,10 @@ def require_manifest_membership(
                 f"{ex.qualified} is an evaluation bug; Phase 3 may only extract "
                 "development examples until the design is frozen"
             )
+        # Even with --allow-evaluation, refuse until experiment-v1-frozen lock.
+        from src.freeze_guard import assert_evaluation_allowed
+
+        assert_evaluation_allowed()
         return "evaluation"
     raise ExampleContractError(f"{ex.qualified} is not in the locked manifest")
 

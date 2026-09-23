@@ -1,0 +1,20 @@
+A code change is proposed against a working codebase.
+
+The candidate test class already exists in the codebase.
+
+Would this test class be likely to expose an incorrect behavioral
+regression caused by the proposed code change if such a regression
+exists?
+
+Answer YES when the test exercises behavior affected by the changed
+code and its assertions could plausibly fail because of an incorrect
+change.
+
+This includes indirect behavioral relationships across methods or
+classes.
+
+Do not require exact identifier or filename overlap.
+
+Answer NO when the test is merely in the same project or discusses
+similar vocabulary but is unlikely to execute or validate behavior
+affected by this change.

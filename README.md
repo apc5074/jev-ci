@@ -36,6 +36,8 @@ docker run --rm --platform linux/amd64 \
 | [docs/candidates.md](docs/candidates.md) | Shortlist / full-ranking artifacts and Phase 5 reader |
 | [docs/verification-phase4.md](docs/verification-phase4.md) | Phase 4 BM25 retrieval audit record |
 | [docs/phase5-handoff.md](docs/phase5-handoff.md) | Fixed shortlist contract for Jev/GPT |
+| [docs/phase6-handoff.md](docs/phase6-handoff.md) | Frozen design / Phase 7 unlock checklist |
+| [EXPERIMENT.md](EXPERIMENT.md) | Human-readable preregistration (v1) |
 | [docs/jev-provider-decision.md](docs/jev-provider-decision.md) | Jev route selection / pricing / probe gate |
 | [docs/cache-ledger.md](docs/cache-ledger.md) | Semantic cache keys, failures, usage ledger |
 | [docs/random-baseline.md](docs/random-baseline.md) | Seeded Random permutations / index convention |

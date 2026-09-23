@@ -1,0 +1,9 @@
+{
+  "id": "would_detect_regression",
+  "type": "noul",
+  "instructions": "A code change is proposed against a working codebase.\n\nThe candidate test class already exists in the codebase.\n\nWould this test class be likely to expose an incorrect behavioral\nregression caused by the proposed code change if such a regression\nexists?\n\nAnswer YES when the test exercises behavior affected by the changed\ncode and its assertions could plausibly fail because of an incorrect\nchange.\n\nThis includes indirect behavioral relationships across methods or\nclasses.\n\nDo not require exact identifier or filename overlap.\n\nAnswer NO when the test is merely in the same project or discusses\nsimilar vocabulary but is unlikely to execute or validate behavior\naffected by this change.",
+  "criteria": {
+    "true": "The test exercises and checks behavior that could be affected by the proposed code change, so an incorrect implementation could cause this test to fail.",
+    "false": "The test does not meaningfully exercise or validate behavior affected by the proposed change, even if names or vocabulary overlap."
+  }
+}

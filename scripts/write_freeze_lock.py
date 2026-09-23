@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write results/phase6/freeze_lock.json after tagging experiment-v1-frozen.
+"""Write results/phase6/freeze_lock.json after tagging experiment-v1.
 
 Run this *after* the annotated freeze tag exists. Do not include freeze_lock.json
 in the commit that the tag points at (no self-referential freeze SHA in that tree).
@@ -22,7 +22,9 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from src.freeze_guard import FREEZE_LOCK_PATH, REQUIRED_TAG, evaluation_is_unlocked
+from src.freeze_guard import REQUIRED_TAG, evaluation_is_unlocked
+
+LOCK_PATH = _REPO_ROOT / "results" / "phase6" / "freeze_lock.json"
 
 
 def _git(*args: str) -> str:
@@ -55,7 +57,7 @@ def build_freeze_lock(*, tag: str = REQUIRED_TAG) -> dict:
         "created_at": datetime.now(timezone.utc).isoformat(),
         "tag_subject": tag_message or None,
         "notes": (
-            "Written after experiment-v1-frozen. Unlock evaluation for Phase 7. "
+            "Written after experiment-v1. Unlock evaluation for Phase 7. "
             "Keep this file out of the tagged freeze commit."
         ),
     }
@@ -87,17 +89,17 @@ def main(argv: list[str] | None = None) -> int:
         sys.stdout.write(text)
         return 0
 
-    if FREEZE_LOCK_PATH.is_file() and not args.force:
-        if evaluation_is_unlocked():
-            print(f"already unlocked: {FREEZE_LOCK_PATH}", file=sys.stderr)
+    if LOCK_PATH.is_file() and not args.force:
+        if evaluation_is_unlocked(path=LOCK_PATH):
+            print(f"already unlocked: {LOCK_PATH}", file=sys.stderr)
             return 0
         raise SystemExit(
-            f"{FREEZE_LOCK_PATH} exists but is not valid; pass --force to overwrite"
+            f"{LOCK_PATH} exists but is not valid; pass --force to overwrite"
         )
 
-    FREEZE_LOCK_PATH.parent.mkdir(parents=True, exist_ok=True)
-    FREEZE_LOCK_PATH.write_text(text, encoding="utf-8")
-    print(f"wrote {FREEZE_LOCK_PATH.relative_to(_REPO_ROOT)}")
+    LOCK_PATH.parent.mkdir(parents=True, exist_ok=True)
+    LOCK_PATH.write_text(text, encoding="utf-8")
+    print(f"wrote {LOCK_PATH.relative_to(_REPO_ROOT)}")
     print(f"tag={doc['tag']} commit_sha={doc['commit_sha']}")
     return 0
 

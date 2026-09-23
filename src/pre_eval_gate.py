@@ -2,7 +2,7 @@
 
 Validates development artifacts and preregistration agreement **before** any
 evaluation extraction/scoring. Does not unlock evaluation (that is P6-07's
-``freeze_lock.json`` after ``experiment-v1-frozen``).
+``freeze_lock.json`` after ``experiment-v1``).
 """
 
 from __future__ import annotations
@@ -467,7 +467,7 @@ def run_pre_eval_gate() -> dict[str, Any]:
         "evaluation_unlocked": False,
         "notes": (
             "Gate does not unlock evaluation. P6-07 writes freeze_lock.json "
-            "after tagging experiment-v1-frozen."
+            "after tagging experiment-v1."
         ),
     }
     report["ok"] = all(
@@ -522,7 +522,7 @@ def render_gate_markdown(report: Mapping[str, Any]) -> str:
             "",
             "## Next",
             "",
-            "P6-07: commit/tag `experiment-v1-frozen` and write "
+            "P6-07: commit/tag `experiment-v1` and write "
             "`results/phase6/freeze_lock.json` (do not unlock evaluation before that).",
             "",
             f"Machine report: `results/phase6/pre_eval_gate.json`",

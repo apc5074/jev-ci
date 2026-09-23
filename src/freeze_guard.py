@@ -1,7 +1,7 @@
 """Freeze lock for evaluation-mode work (P6-06 / P6-07).
 
 Evaluation extraction, ranking, and scoring must not run until
-``results/phase6/freeze_lock.json`` records a validated ``experiment-v1-frozen``
+``results/phase6/freeze_lock.json`` records a validated ``experiment-v1``
 tag (written by P6-07 after commit/tag). The pre-eval gate may run without
 unlocking evaluation.
 """
@@ -19,7 +19,7 @@ if str(_REPO_ROOT) not in sys.path:
 from src.example_contract import WORKSPACE, ExampleContractError, read_json
 
 FREEZE_LOCK_PATH = WORKSPACE / "results" / "phase6" / "freeze_lock.json"
-REQUIRED_TAG = "experiment-v1-frozen"
+REQUIRED_TAG = "experiment-v1"
 
 
 class FreezeGuardError(ExampleContractError):

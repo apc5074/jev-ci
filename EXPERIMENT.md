@@ -1,6 +1,6 @@
 # EXPERIMENT.md — Preregistered study design (v1)
 
-**Status:** Pre-evaluation integrity gate passed (P6-06). Create annotated git tag `experiment-v1-frozen` in P6-07, then write `results/phase6/freeze_lock.json` via `scripts/write_freeze_lock.py`. Handoff: [`docs/phase6-handoff.md`](docs/phase6-handoff.md).
+**Status:** Frozen at annotated git tag `experiment-v1` (`edc70bacd23f2fc5f511ef4d97a33376e7b20bf8`). Write `results/phase6/freeze_lock.json` via `scripts/write_freeze_lock.py` to unlock evaluation. Handoff: [`docs/phase6-handoff.md`](docs/phase6-handoff.md).
 
 **Machine companion:** [`experiment.yaml`](experiment.yaml) · [`results/phase6/experiment.json`](results/phase6/experiment.json)  
 **Decisions log:** [`docs/phase6-decisions.md`](docs/phase6-decisions.md)  

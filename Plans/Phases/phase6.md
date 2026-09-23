@@ -114,7 +114,7 @@ Tickets are ordered by dependency. Each leaves a reviewable artifact or gate. Di
 
 **Depends on:** P6-01 through P6-06.
 
-**Status:** Handoff and unlock tooling prepared; **you** own the freeze commit and annotated tag (agent does not commit). Handoff [`docs/phase6-handoff.md`](../../docs/phase6-handoff.md); unlock CLI [`scripts/write_freeze_lock.py`](../../scripts/write_freeze_lock.py); freeze guard tests [`tests/test_phase6_freeze_guard.py`](../../tests/test_phase6_freeze_guard.py). Do **not** write `freeze_lock.json` into the tagged tree — run the unlock script after tagging. Fill `_FILL_AFTER_TAG_` in the handoff with `git rev-parse experiment-v1-frozen`.
+**Status:** Freeze tag is **`experiment-v1`** → commit `edc70bacd23f2fc5f511ef4d97a33376e7b20bf8`. Handoff [`docs/phase6-handoff.md`](../../docs/phase6-handoff.md); unlock with [`scripts/write_freeze_lock.py`](../../scripts/write_freeze_lock.py) (writes `freeze_lock.json` after the tag; keep it out of the tagged tree).
 
 **Work**
 

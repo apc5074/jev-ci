@@ -4,8 +4,8 @@ Phase 6 freezes the study design. Phase 7 must execute this configuration on the
 **125 evaluation** bugs without changing prompts, K, models, metrics, or
 success criteria.
 
-**Freeze tag:** `experiment-v1-frozen`  
-**Freeze commit SHA:** `_FILL_AFTER_TAG_`  
+**Freeze tag:** `experiment-v1`  
+**Freeze commit SHA:** `edc70bacd23f2fc5f511ef4d97a33376e7b20bf8`  
 **Pre-eval gate:** [`phase6-pre-eval-gate.md`](phase6-pre-eval-gate.md) · `results/phase6/pre_eval_gate.json` (**PASS** 25/25)
 
 After you create the annotated tag, run:
@@ -76,7 +76,7 @@ Confirm the OpenRouter Jev route still reports the pinned underlying model
 docker build --platform linux/amd64 -t jev-ci:phase1 .
 
 # After tagging: clean check from the tag
-git checkout experiment-v1-frozen
+git checkout experiment-v1
 docker run --rm --platform linux/amd64 \
   -v "$(pwd):/workspace" -w /workspace \
   jev-ci:phase1 \
@@ -138,7 +138,7 @@ Exclude:
 Then:
 
 ```bash
-git tag -a experiment-v1-frozen -m "Freeze preregistered jev-ci experiment v1"
-git rev-parse experiment-v1-frozen   # record in this handoff
+git tag -a experiment-v1 -m "Freeze preregistered jev-ci experiment v1"
+git rev-parse experiment-v1^{commit}   # record in this handoff
 python scripts/write_freeze_lock.py  # unlock evaluation for Phase 7
 ```

@@ -117,17 +117,87 @@ PUBLISHED_RATES: dict[str, dict[str, Any]] = {
         "model": "text-embedding-3-small",
         "input_usd_per_mtok": 0.02,
         "output_usd_per_mtok": 0.0,
+        "platform_fee_rate": 0.0,
         "sources": [
             "https://developers.openai.com/api/docs/models/text-embedding-3-small",
+        ],
+    },
+    "openrouter_embedding": {
+        "provider": "openrouter",
+        "model": "text-embedding-3-small",
+        "request_model": "openai/text-embedding-3-small",
+        "input_usd_per_mtok": 0.02,
+        "output_usd_per_mtok": 0.0,
+        "platform_fee_rate": 0.055,
+        "sources": [
+            "https://developers.openai.com/api/docs/models/text-embedding-3-small",
+            "https://openrouter.ai/pricing",
         ],
     },
     "openai_gpt": {
         "provider": "openai",
         "model": "gpt-5.4-nano-2026-03-17",
+        "input_usd_per_mtok": 0.20,
+        "output_usd_per_mtok": 1.25,
+        "platform_fee_rate": 0.0,
         "sources": [
             "https://developers.openai.com/api/docs/models/gpt-5.4-nano",
         ],
-        "notes": "Confirm live rates in pricing_snapshot when development GPT calls begin.",
+        "notes": "List rates are planning snapshots; refresh pricing_snapshot on live runs.",
+    },
+    "openrouter_gpt": {
+        "provider": "openrouter",
+        "platform_fee_rate": 0.055,
+        "sources": [
+            "https://openrouter.ai/pricing",
+        ],
+        "notes": "Per-model rates stored on ComparisonModel; fee applies to prepaid credits.",
+    },
+    "openrouter_gpt_5_4_nano": {
+        "provider": "openrouter",
+        "model": "gpt-5.4-nano-2026-03-17",
+        "request_model": "openai/gpt-5.4-nano",
+        "input_usd_per_mtok": 0.20,
+        "output_usd_per_mtok": 1.25,
+        "platform_fee_rate": 0.055,
+        "sources": [
+            "https://developers.openai.com/api/docs/models/gpt-5.4-nano",
+            "https://openrouter.ai/pricing",
+        ],
+    },
+    "openrouter_gpt_4_1_nano": {
+        "provider": "openrouter",
+        "model": "gpt-4.1-nano-2025-04-14",
+        "request_model": "openai/gpt-4.1-nano-2025-04-14",
+        "input_usd_per_mtok": 0.10,
+        "output_usd_per_mtok": 0.40,
+        "platform_fee_rate": 0.055,
+        "sources": [
+            "https://openrouter.ai/pricing",
+        ],
+    },
+    "openrouter_gpt_4o_mini": {
+        "provider": "openrouter",
+        "model": "gpt-4o-mini-2024-07-18",
+        "request_model": "openai/gpt-4o-mini-2024-07-18",
+        "input_usd_per_mtok": 0.15,
+        "output_usd_per_mtok": 0.60,
+        "platform_fee_rate": 0.055,
+        "sources": [
+            "https://openrouter.ai/pricing",
+        ],
+    },
+    "openrouter_gpt_luna": {
+        "provider": "openrouter",
+        "model": "gpt-5.6-luna",
+        "request_model": "openai/gpt-5.6-luna",
+        "input_usd_per_mtok": 0.20,
+        "output_usd_per_mtok": 1.20,
+        "platform_fee_rate": 0.055,
+        "sources": [
+            "https://developers.openai.com/api/docs/models/gpt-5.6-luna",
+            "https://openrouter.ai/openai/gpt-5.6-luna",
+        ],
     },
 }
 

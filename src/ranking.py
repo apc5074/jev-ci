@@ -614,5 +614,29 @@ def _cli(argv: Sequence[str] | None = None) -> int:
     return 0
 
 
+# ---------------------------------------------------------------------------
+# P5-08 semantic assembly — lazy re-exports (avoid candidates ↔ ranking cycle).
+# Implementation: ``src.assemble_rankings``.
+# ---------------------------------------------------------------------------
+_ASSEMBLY_EXPORTS = frozenset(
+    {
+        "AssembleError",
+        "AssembledRanking",
+        "assemble_from_scores",
+        "assemble_gpt_ranking",
+        "assemble_jev_ranking",
+        "semantic_ranking_path",
+    }
+)
+
+
+def __getattr__(name: str):  # pragma: no cover - import plumbing
+    if name in _ASSEMBLY_EXPORTS:
+        from src import assemble_rankings as _assemble
+
+        return getattr(_assemble, name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
 if __name__ == "__main__":
     raise SystemExit(_cli())

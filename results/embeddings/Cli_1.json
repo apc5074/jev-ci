@@ -1,0 +1,148 @@
+{
+  "schema_version": "jev-embedding-ranking-v1",
+  "embedding_baseline_version": "jev-embedding-baseline-v1",
+  "example_id": "Cli_1",
+  "qualified_id": "Cli-1",
+  "split": "development",
+  "N": 16,
+  "method": "Embedding",
+  "model_id": "text-embedding-3-small",
+  "provider": "openrouter",
+  "request_model": "openai/text-embedding-3-small",
+  "dimensions": 1536,
+  "over_limit_rule": "fail_closed_no_truncate_v1",
+  "max_input_tokens": 8192,
+  "ranking": [
+    {
+      "test_class": "org.apache.commons.cli.ValuesTest",
+      "score": 0.6782354492493368,
+      "rank": 1
+    },
+    {
+      "test_class": "org.apache.commons.cli.BugsTest",
+      "score": 0.6716178237307047,
+      "rank": 2
+    },
+    {
+      "test_class": "org.apache.commons.cli.ValueTest",
+      "score": 0.6240175428088016,
+      "rank": 3
+    },
+    {
+      "test_class": "org.apache.commons.cli.OptionBuilderTest",
+      "score": 0.623664664653813,
+      "rank": 4
+    },
+    {
+      "test_class": "org.apache.commons.cli.OptionGroupTest",
+      "score": 0.620791061274802,
+      "rank": 5
+    },
+    {
+      "test_class": "org.apache.commons.cli.ParseTest",
+      "score": 0.6138487015308317,
+      "rank": 6
+    },
+    {
+      "test_class": "org.apache.commons.cli.ArgumentIsOptionTest",
+      "score": 0.6058593784369614,
+      "rank": 7
+    },
+    {
+      "test_class": "org.apache.commons.cli.GnuParseTest",
+      "score": 0.5993109093078721,
+      "rank": 8
+    },
+    {
+      "test_class": "org.apache.commons.cli.OptionsTest",
+      "score": 0.5939308309715499,
+      "rank": 9
+    },
+    {
+      "test_class": "org.apache.commons.cli.ParseRequiredTest",
+      "score": 0.5678570846450417,
+      "rank": 10
+    },
+    {
+      "test_class": "org.apache.commons.cli.PatternOptionBuilderTest",
+      "score": 0.5516752946524982,
+      "rank": 11
+    },
+    {
+      "test_class": "org.apache.commons.cli.ApplicationTest",
+      "score": 0.5414879621712008,
+      "rank": 12
+    },
+    {
+      "test_class": "org.apache.commons.cli.BuildTest",
+      "score": 0.5253074471946325,
+      "rank": 13
+    },
+    {
+      "test_class": "org.apache.commons.cli.TestHelpFormatter",
+      "score": 0.47613853424524627,
+      "rank": 14
+    },
+    {
+      "test_class": "org.apache.commons.cli.bug.BugCLI13Test",
+      "score": 0.4758892925430802,
+      "rank": 15
+    },
+    {
+      "test_class": "org.apache.commons.cli.bug.BugCLI18Test",
+      "score": 0.4645413089378135,
+      "rank": 16
+    }
+  ],
+  "ranked_ids": [
+    "org.apache.commons.cli.ValuesTest",
+    "org.apache.commons.cli.BugsTest",
+    "org.apache.commons.cli.ValueTest",
+    "org.apache.commons.cli.OptionBuilderTest",
+    "org.apache.commons.cli.OptionGroupTest",
+    "org.apache.commons.cli.ParseTest",
+    "org.apache.commons.cli.ArgumentIsOptionTest",
+    "org.apache.commons.cli.GnuParseTest",
+    "org.apache.commons.cli.OptionsTest",
+    "org.apache.commons.cli.ParseRequiredTest",
+    "org.apache.commons.cli.PatternOptionBuilderTest",
+    "org.apache.commons.cli.ApplicationTest",
+    "org.apache.commons.cli.BuildTest",
+    "org.apache.commons.cli.TestHelpFormatter",
+    "org.apache.commons.cli.bug.BugCLI13Test",
+    "org.apache.commons.cli.bug.BugCLI18Test"
+  ],
+  "patch_cache_key": "5ed1b126fc06d9bdeee38d6a331655af37b67189d184edbeb11d5fc21314aced",
+  "test_cache_keys": {
+    "org.apache.commons.cli.ApplicationTest": "c427329eef6229c03f69077c3fc82f1e5ad86af4276d36f3c3e4d1fc5cbd2ebd",
+    "org.apache.commons.cli.ArgumentIsOptionTest": "3c28955755bc32ae8513e99a1c2121f170bda3018bbe20a3794eb7e9de381331",
+    "org.apache.commons.cli.BugsTest": "fab7f20851599de4d91b0337f3791a1bc513d505ab1250ed0c08db4432b6bcd0",
+    "org.apache.commons.cli.BuildTest": "2198c5e70c4ad935e14c63c381fc12b1b2c631858b1e6e01fbfaefbe8cd5e411",
+    "org.apache.commons.cli.GnuParseTest": "2773dc60d227cdc6c41d87b02cffc27fd7598b4118f67fd1de2a26e9ce785681",
+    "org.apache.commons.cli.OptionBuilderTest": "adf6b3f0eeba302211df8d764be84431a99322f2d54b334573259d2565b7b2b7",
+    "org.apache.commons.cli.OptionGroupTest": "c9fb14d62584748dc8ab078b59b7085033a68a1e9ef7b158b9caa67dea637c75",
+    "org.apache.commons.cli.OptionsTest": "9347413c74e300efe8fc5a575cdd73c7dbb10585f2e96256f17ddcbc888325f1",
+    "org.apache.commons.cli.ParseRequiredTest": "5e6a28ac0a187f42a1b946e6d15ce87666c4865fe045236785ed3e9300ca36ab",
+    "org.apache.commons.cli.ParseTest": "972bb6d6312cd7515fa540ba461dd78564e8aa1986b439798a03196d61f0d636",
+    "org.apache.commons.cli.PatternOptionBuilderTest": "4a2829623d7ed678cb7267b2b23cdeeae593e99d02c79f3f7c7b86dcfbf770e1",
+    "org.apache.commons.cli.TestHelpFormatter": "c3bc9e962762d722df62568b2e146146c5e4401be374de0f804a240408162b95",
+    "org.apache.commons.cli.ValueTest": "629a210edb20205fd8f82cd4b667b5c345ad00b59b81502d64ac556941730d47",
+    "org.apache.commons.cli.ValuesTest": "fba624048ca3e9ec29321437bf909548540b18643e2f6eef9b9c0bfb92252e6e",
+    "org.apache.commons.cli.bug.BugCLI13Test": "d4508efa8800ef84b539e99ae4e1462625d658b55921aae8dd40e7257de046c3",
+    "org.apache.commons.cli.bug.BugCLI18Test": "259320b94167b635e9927b7f4bb63fcc2280a69ea8a775d11d546a63ac4fec7a"
+  },
+  "total_input_tokens": 18605,
+  "input_hashes": {
+    "patch_representation_sha256": "78dc404c9c5bcfa11e7c19188be50bd67640f0ce01d514dfac81c45d3d5174c9",
+    "test_class_ids_sha256": "e4f4b6fe0cdd9fb1d6cac4f2e6938fdb8d0ac9b02de64e1a460c7e25ede059e1",
+    "test_representations_sha256": "f2cef24ae202d2e3689d7e844f1de6b3bee975660f7a944fc25df24b9dddb7d2"
+  },
+  "settings": {
+    "similarity": "cosine",
+    "tie_break": "fqcn_asc",
+    "uses_bm25": false,
+    "shortlist_restricted": false,
+    "stores_vectors_in_ranking": false,
+    "vector_cache": "cache/embeddings/<sha256>.json"
+  }
+}

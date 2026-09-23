@@ -1,6 +1,6 @@
 {
   "snapshot_date": "2026-09-23",
-  "created_at": "2026-09-23T00:34:31+00:00",
+  "created_at": "2026-09-23T01:34:26+00:00",
   "currency": "USD",
   "notes": "Published list prices from primary docs on snapshot_date. Confirm account-specific rates before paid scoring. Separate list-price inference, platform fees, and promotional cash.",
   "jev": {
@@ -55,6 +55,7 @@
       "model": "text-embedding-3-small",
       "input_usd_per_mtok": 0.02,
       "output_usd_per_mtok": 0.0,
+      "platform_fee_rate": 0.0,
       "sources": [
         "https://developers.openai.com/api/docs/models/text-embedding-3-small"
       ]
@@ -62,10 +63,13 @@
     "gpt": {
       "provider": "openai",
       "model": "gpt-5.4-nano-2026-03-17",
+      "input_usd_per_mtok": 0.2,
+      "output_usd_per_mtok": 1.25,
+      "platform_fee_rate": 0.0,
       "sources": [
         "https://developers.openai.com/api/docs/models/gpt-5.4-nano"
       ],
-      "notes": "Confirm live rates in pricing_snapshot when development GPT calls begin."
+      "notes": "List rates are planning snapshots; refresh pricing_snapshot on live runs."
     }
   },
   "workload_estimates": {

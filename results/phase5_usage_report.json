@@ -1,0 +1,60 @@
+{
+  "schema_version": "jev-phase5-usage-report-v1",
+  "generated_at": "2026-09-23T03:06:19+00:00",
+  "usage_ledger": {
+    "present": true,
+    "rows": 8056,
+    "by_kind": {
+      "embedding": {
+        "rows": 2604,
+        "input_tokens": 3446139,
+        "output_tokens": 0,
+        "list_price_usd": 0.0,
+        "platform_fee_usd": 0.0,
+        "effective_prepaid_credits_usd": 0.0
+      },
+      "jev": {
+        "rows": 2691,
+        "input_tokens": 6935508,
+        "output_tokens": 64584,
+        "list_price_usd": 0.0,
+        "platform_fee_usd": 0.0,
+        "effective_prepaid_credits_usd": 0.0
+      },
+      "gpt": {
+        "rows": 2761,
+        "input_tokens": 5569270,
+        "output_tokens": 51774,
+        "list_price_usd": 0.0,
+        "platform_fee_usd": 0.0,
+        "effective_prepaid_credits_usd": 0.0
+      }
+    }
+  },
+  "five_systems_coverage": {
+    "count": 25,
+    "complete": 24,
+    "incomplete": [
+      {
+        "qualified_id": "Jsoup-70",
+        "BM25": true,
+        "Embedding": true,
+        "Random": true,
+        "Jev": false,
+        "GPT-Nano": true,
+        "ok": false
+      }
+    ]
+  },
+  "unresolved_availability": [
+    {
+      "qualified_id": "Jsoup-70",
+      "test_class": "org.jsoup.integration.ConnectTest",
+      "system": "Jev",
+      "error": "OpenRouter Cloudflare HTTP 403 WAF on substring file://etc/passwd",
+      "notes": "Only development pair blocked. GPT-Nano ranking complete. Do not alter Phase-3 text."
+    }
+  ],
+  "cache_only_rerun": "passed (see results/audit-phase5.json cache_only_assembly_proof)",
+  "evaluation_bugs_scored": false
+}

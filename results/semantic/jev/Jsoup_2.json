@@ -1,0 +1,155 @@
+{
+  "schema_version": "jev-semantic-ranking-v1",
+  "assembly_version": "jev-semantic-assemble-v1",
+  "example_id": "Jsoup_2",
+  "qualified_id": "Jsoup-2",
+  "split": "development",
+  "method": "Jev",
+  "N": 12,
+  "K": 12,
+  "k_cap": 200,
+  "shortlist_sha256": "619b7b23fda984259c91aab3a422841cf077af3769818b03a2a16458d950a27d",
+  "candidate_ids": [
+    "org.jsoup.parser.ParserTest",
+    "org.jsoup.nodes.ElementTest",
+    "org.jsoup.select.SelectorTest",
+    "org.jsoup.nodes.NodeTest",
+    "org.jsoup.select.ElementsTest",
+    "org.jsoup.parser.TagTest",
+    "org.jsoup.integration.UrlConnectTest",
+    "org.jsoup.integration.ParseTest",
+    "org.jsoup.safety.CleanerTest",
+    "org.jsoup.parser.AttributeParseTest",
+    "org.jsoup.nodes.TextNodeTest",
+    "org.jsoup.nodes.DocumentTest"
+  ],
+  "ranked_ids": [
+    "org.jsoup.parser.ParserTest",
+    "org.jsoup.integration.ParseTest",
+    "org.jsoup.nodes.ElementTest",
+    "org.jsoup.safety.CleanerTest",
+    "org.jsoup.nodes.DocumentTest",
+    "org.jsoup.select.SelectorTest",
+    "org.jsoup.select.ElementsTest",
+    "org.jsoup.nodes.TextNodeTest",
+    "org.jsoup.nodes.NodeTest",
+    "org.jsoup.integration.UrlConnectTest",
+    "org.jsoup.parser.AttributeParseTest",
+    "org.jsoup.parser.TagTest"
+  ],
+  "ranking": [
+    {
+      "test_class": "org.jsoup.parser.ParserTest",
+      "rank": 1,
+      "bm25_rank": 1,
+      "score": 0.75,
+      "scored": true
+    },
+    {
+      "test_class": "org.jsoup.integration.ParseTest",
+      "rank": 2,
+      "bm25_rank": 8,
+      "score": 0.54,
+      "scored": true
+    },
+    {
+      "test_class": "org.jsoup.nodes.ElementTest",
+      "rank": 3,
+      "bm25_rank": 2,
+      "score": 0.34,
+      "scored": true
+    },
+    {
+      "test_class": "org.jsoup.safety.CleanerTest",
+      "rank": 4,
+      "bm25_rank": 9,
+      "score": 0.34,
+      "scored": true
+    },
+    {
+      "test_class": "org.jsoup.nodes.DocumentTest",
+      "rank": 5,
+      "bm25_rank": 12,
+      "score": 0.34,
+      "scored": true
+    },
+    {
+      "test_class": "org.jsoup.select.SelectorTest",
+      "rank": 6,
+      "bm25_rank": 3,
+      "score": 0.32,
+      "scored": true
+    },
+    {
+      "test_class": "org.jsoup.select.ElementsTest",
+      "rank": 7,
+      "bm25_rank": 5,
+      "score": 0.27,
+      "scored": true
+    },
+    {
+      "test_class": "org.jsoup.nodes.TextNodeTest",
+      "rank": 8,
+      "bm25_rank": 11,
+      "score": 0.18,
+      "scored": true
+    },
+    {
+      "test_class": "org.jsoup.nodes.NodeTest",
+      "rank": 9,
+      "bm25_rank": 4,
+      "score": 0.13,
+      "scored": true
+    },
+    {
+      "test_class": "org.jsoup.integration.UrlConnectTest",
+      "rank": 10,
+      "bm25_rank": 7,
+      "score": 0.11,
+      "scored": true
+    },
+    {
+      "test_class": "org.jsoup.parser.AttributeParseTest",
+      "rank": 11,
+      "bm25_rank": 10,
+      "score": 0.11,
+      "scored": true
+    },
+    {
+      "test_class": "org.jsoup.parser.TagTest",
+      "rank": 12,
+      "bm25_rank": 6,
+      "score": 0.09,
+      "scored": true
+    }
+  ],
+  "prefix_order": [
+    "org.jsoup.parser.ParserTest",
+    "org.jsoup.integration.ParseTest",
+    "org.jsoup.nodes.ElementTest",
+    "org.jsoup.safety.CleanerTest",
+    "org.jsoup.nodes.DocumentTest",
+    "org.jsoup.select.SelectorTest",
+    "org.jsoup.select.ElementsTest",
+    "org.jsoup.nodes.TextNodeTest",
+    "org.jsoup.nodes.NodeTest",
+    "org.jsoup.integration.UrlConnectTest",
+    "org.jsoup.parser.AttributeParseTest",
+    "org.jsoup.parser.TagTest"
+  ],
+  "tail_ids": [],
+  "settings": {
+    "shortlist_source": "data/candidates (Phase 4)",
+    "prefix_sort": "score_desc_bm25_rank_asc",
+    "tail": "bm25_order_unchanged",
+    "regenerates_candidates": false
+  },
+  "provenance": {
+    "kind": "jev",
+    "provider": "openrouter",
+    "model_id": "typesafe/jev-1.13",
+    "observed_model_id": "typesafe/jev-1.13-20260917",
+    "prompt_version": "jev-would_detect_regression-v1",
+    "ranking_name": "Jev"
+  }
+}

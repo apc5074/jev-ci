@@ -1,0 +1,75 @@
+{
+  "schema_version": "jev-phase6-defect-triage-v1",
+  "generated_at": "2026-09-23T03:23:02+00:00",
+  "depends_on": "results/phase6/development_baseline.json",
+  "docs": "docs/phase6-defect-log.md",
+  "summary": {
+    "implementation_defects_fixed": 1,
+    "availability_issues": 1,
+    "transient_recovered": 1,
+    "bugs_dropped": 0
+  },
+  "findings": [
+    {
+      "id": "D-001",
+      "title": "Usage ledger summary ignored flat cost fields",
+      "class": "implementation_defect",
+      "status": "fixed",
+      "evidence": "baseline usage_ledger.by_kind.*.list_price_usd was 0 while ledger rows have list_price_inference_usd",
+      "affected": [
+        "audit_phase5.summarize_usage_ledger",
+        "development_baseline usage section"
+      ],
+      "correction": "src/audit_phase5.py reads flat and nested cost fields",
+      "artifacts_refreshed": [
+        "results/phase6/development_baseline.json",
+        "docs/phase6-baseline.md"
+      ]
+    },
+    {
+      "id": "A-001",
+      "title": "OpenRouter WAF blocks Jsoup-70 ConnectTest Jev request",
+      "class": "availability",
+      "status": "accepted",
+      "evidence": "Jev HTTP 403 Cloudflare; trigger substring file://etc/passwd",
+      "affected_bugs": [
+        "Jsoup-70"
+      ],
+      "affected_classes": [
+        "org.jsoup.integration.ConnectTest"
+      ],
+      "correction": null,
+      "keep_in_study": true,
+      "notes": "Not an implementation defect; do not rewrite Phase-3 representations"
+    },
+    {
+      "id": "A-002",
+      "title": "Transient GPT-Luna 429 during Cli-30 multi-model scoring",
+      "class": "transient_api",
+      "status": "recovered",
+      "evidence": "cache/failures GPT HTTP 429 new-account-rpm",
+      "affected_bugs": [
+        "Cli-30"
+      ],
+      "correction": null,
+      "notes": "Primary GPT-Nano and later Luna scores present in cache"
+    }
+  ],
+  "reviewed_clean": [
+    "checkout_source_mapping",
+    "fixed_to_buggy_diffs",
+    "trigger_parsing",
+    "truncation_flags",
+    "model_visible_state_leakage",
+    "tokenizer_bm25_candidates",
+    "ranking_assembly_tails",
+    "score_ranges"
+  ],
+  "non_actions": [
+    "no_bug_dropped",
+    "no_K_cap_change",
+    "no_new_systems",
+    "no_probability_threshold_tuning",
+    "no_jev_prompt_revision"
+  ]
+}

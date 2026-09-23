@@ -1,0 +1,2301 @@
+{
+  "schema_version": "jev-phase6-development-baseline-v1",
+  "generated_at": "2026-09-23T03:22:37+00:00",
+  "split": "development",
+  "purpose": "Development-only pipeline diagnosis. Not the headline evaluation table.",
+  "git": {
+    "commit": "6f8a3bcdd31981a6aad0d38302e925fe8bf5f17e",
+    "commit_short": "6f8a3bc",
+    "branch": "main",
+    "dirty": true
+  },
+  "commands": [
+    "python scripts/run_baselines.py --split development",
+    "python scripts/run_jev.py --split development",
+    "python scripts/run_gpt.py --split development --model primary",
+    "python -m src.assemble_rankings --only-primary-gpt",
+    "python scripts/audit_phase5.py",
+    "python scripts/run_development_baseline.py"
+  ],
+  "frozen_for_baseline": {
+    "jev_prompt_version": "jev-would_detect_regression-v1",
+    "gpt_prompt_version": "gpt-would_detect_regression-v1",
+    "jev_provider": "openrouter",
+    "jev_model_id": "typesafe/jev-1.13",
+    "jev_observed_model_id": "typesafe/jev-1.13-20260917",
+    "gpt_primary": "gpt-5.4-nano",
+    "pricing_snapshot": "results/pricing_snapshot.json",
+    "jev_revision_count": 0,
+    "note": "Initial Jev prompt and caches preserved before any P6-03 revision."
+  },
+  "accepted_gaps": [
+    {
+      "qualified_id": "Jsoup-70",
+      "test_class": "org.jsoup.integration.ConnectTest",
+      "system": "Jev",
+      "reason": "OpenRouter Cloudflare WAF HTTP 403 on substring file://etc/passwd; accepted 2026-09-22 to continue Phase 6 (see docs/phase5-handoff.md)."
+    }
+  ],
+  "summary": {
+    "count": 25,
+    "ok": 25,
+    "failed": 0,
+    "with_accepted_gap": 1,
+    "bm25_candidate_recall": 1.0,
+    "mean_bm25_first_trigger_rank": 6.0
+  },
+  "usage_ledger": {
+    "present": true,
+    "rows": 8056,
+    "by_kind": {
+      "embedding": {
+        "rows": 2604,
+        "input_tokens": 3446139,
+        "output_tokens": 0,
+        "list_price_usd": 0.06892278000000013,
+        "platform_fee_usd": 0.0037907529000000013,
+        "effective_prepaid_credits_usd": 0.0
+      },
+      "jev": {
+        "rows": 2691,
+        "input_tokens": 6935508,
+        "output_tokens": 64584,
+        "list_price_usd": 0.2912913360000004,
+        "platform_fee_usd": 0.01602102347999996,
+        "effective_prepaid_credits_usd": 0.30494474325000015
+      },
+      "gpt": {
+        "rows": 2761,
+        "input_tokens": 5569270,
+        "output_tokens": 51774,
+        "list_price_usd": 1.1704669999999993,
+        "platform_fee_usd": 0.06437568499999997,
+        "effective_prepaid_credits_usd": 1.204935386750004
+      }
+    }
+  },
+  "bugs": [
+    {
+      "qualified_id": "Cli-30",
+      "example_id": "Cli_30",
+      "split": "development",
+      "completeness": {
+        "example_ok": true,
+        "systems": {
+          "BM25": true,
+          "Embedding": true,
+          "Random": true,
+          "Jev": true,
+          "GPT-Nano": true
+        },
+        "systems_complete_with_accepted_gaps": true,
+        "accepted_gap": null
+      },
+      "patch": {
+        "direction": "fixed_to_buggy",
+        "base": "Bf",
+        "proposed": "Bb",
+        "patch_truncated": false,
+        "representation_chars": 2265,
+        "representation_char_cap": 12000,
+        "original_patch_chars": 2265
+      },
+      "suite": {
+        "N": 23,
+        "K": 23,
+        "num_test_classes": 23,
+        "num_positive_classes": 5,
+        "num_trigger_methods": 9,
+        "source_missing_count": 0
+      },
+      "bm25": {
+        "candidate_recall": true,
+        "num_triggers_in_top_k": 5,
+        "first_trigger_rank": 3,
+        "shortlist_sha256": "d223022be2383c533622a6aa0b4799c495c49af5eed09c60440760a04cf8d7e1",
+        "integrity_ok": true
+      },
+      "rankings": {
+        "random_ok": true,
+        "embedding": {
+          "present": true,
+          "ok": true,
+          "N": 23,
+          "method": "Embedding",
+          "model_id": null,
+          "provider": null,
+          "prompt_version": null,
+          "shortlist_sha256": null,
+          "first_trigger_rank": 2
+        },
+        "jev": {
+          "present": true,
+          "ok": true,
+          "N": 23,
+          "method": "Jev",
+          "model_id": "typesafe/jev-1.13",
+          "provider": "openrouter",
+          "prompt_version": "jev-would_detect_regression-v1",
+          "shortlist_sha256": "d223022be2383c533622a6aa0b4799c495c49af5eed09c60440760a04cf8d7e1",
+          "first_trigger_rank": 1
+        },
+        "gpt_nano": {
+          "present": true,
+          "ok": true,
+          "N": 23,
+          "method": "GPT-Nano",
+          "model_id": "gpt-5.4-nano-2026-03-17",
+          "provider": "openrouter",
+          "prompt_version": "gpt-would_detect_regression-v1",
+          "shortlist_sha256": "d223022be2383c533622a6aa0b4799c495c49af5eed09c60440760a04cf8d7e1",
+          "first_trigger_rank": 1
+        }
+      },
+      "prompts": {
+        "jev_prompt_version": "jev-would_detect_regression-v1",
+        "gpt_prompt_version": "gpt-would_detect_regression-v1",
+        "jev_revision_count": 0,
+        "baseline_prompt_preserved": true
+      },
+      "integrity": {
+        "phase4_ok": true,
+        "phase5_ok": true,
+        "phase5_note": null
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-15",
+      "example_id": "Cli_15",
+      "split": "development",
+      "completeness": {
+        "example_ok": true,
+        "systems": {
+          "BM25": true,
+          "Embedding": true,
+          "Random": true,
+          "Jev": true,
+          "GPT-Nano": true
+        },
+        "systems_complete_with_accepted_gaps": true,
+        "accepted_gap": null
+      },
+      "patch": {
+        "direction": "fixed_to_buggy",
+        "base": "Bf",
+        "proposed": "Bb",
+        "patch_truncated": false,
+        "representation_chars": 1675,
+        "representation_char_cap": 12000,
+        "original_patch_chars": 1675
+      },
+      "suite": {
+        "N": 48,
+        "K": 48,
+        "num_test_classes": 48,
+        "num_positive_classes": 1,
+        "num_trigger_methods": 2,
+        "source_missing_count": 0
+      },
+      "bm25": {
+        "candidate_recall": true,
+        "num_triggers_in_top_k": 1,
+        "first_trigger_rank": 28,
+        "shortlist_sha256": "bd0cb07430c9acd7c9eacd1bd4a944b3f1b2c1f516c3743222bc25c1bdea47c3",
+        "integrity_ok": true
+      },
+      "rankings": {
+        "random_ok": true,
+        "embedding": {
+          "present": true,
+          "ok": true,
+          "N": 48,
+          "method": "Embedding",
+          "model_id": null,
+          "provider": null,
+          "prompt_version": null,
+          "shortlist_sha256": null,
+          "first_trigger_rank": 7
+        },
+        "jev": {
+          "present": true,
+          "ok": true,
+          "N": 48,
+          "method": "Jev",
+          "model_id": "typesafe/jev-1.13",
+          "provider": "openrouter",
+          "prompt_version": "jev-would_detect_regression-v1",
+          "shortlist_sha256": "bd0cb07430c9acd7c9eacd1bd4a944b3f1b2c1f516c3743222bc25c1bdea47c3",
+          "first_trigger_rank": 1
+        },
+        "gpt_nano": {
+          "present": true,
+          "ok": true,
+          "N": 48,
+          "method": "GPT-Nano",
+          "model_id": "gpt-5.4-nano-2026-03-17",
+          "provider": "openrouter",
+          "prompt_version": "gpt-would_detect_regression-v1",
+          "shortlist_sha256": "bd0cb07430c9acd7c9eacd1bd4a944b3f1b2c1f516c3743222bc25c1bdea47c3",
+          "first_trigger_rank": 3
+        }
+      },
+      "prompts": {
+        "jev_prompt_version": "jev-would_detect_regression-v1",
+        "gpt_prompt_version": "gpt-would_detect_regression-v1",
+        "jev_revision_count": 0,
+        "baseline_prompt_preserved": true
+      },
+      "integrity": {
+        "phase4_ok": true,
+        "phase5_ok": true,
+        "phase5_note": null
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-39",
+      "example_id": "Cli_39",
+      "split": "development",
+      "completeness": {
+        "example_ok": true,
+        "systems": {
+          "BM25": true,
+          "Embedding": true,
+          "Random": true,
+          "Jev": true,
+          "GPT-Nano": true
+        },
+        "systems_complete_with_accepted_gaps": true,
+        "accepted_gap": null
+      },
+      "patch": {
+        "direction": "fixed_to_buggy",
+        "base": "Bf",
+        "proposed": "Bb",
+        "patch_truncated": false,
+        "representation_chars": 1078,
+        "representation_char_cap": 12000,
+        "original_patch_chars": 1078
+      },
+      "suite": {
+        "N": 26,
+        "K": 26,
+        "num_test_classes": 26,
+        "num_positive_classes": 1,
+        "num_trigger_methods": 2,
+        "source_missing_count": 0
+      },
+      "bm25": {
+        "candidate_recall": true,
+        "num_triggers_in_top_k": 1,
+        "first_trigger_rank": 1,
+        "shortlist_sha256": "cadde10ee82e7941b42abf9d2eeafa84e2427275f08b838dd6c1aaac85144795",
+        "integrity_ok": true
+      },
+      "rankings": {
+        "random_ok": true,
+        "embedding": {
+          "present": true,
+          "ok": true,
+          "N": 26,
+          "method": "Embedding",
+          "model_id": null,
+          "provider": null,
+          "prompt_version": null,
+          "shortlist_sha256": null,
+          "first_trigger_rank": 1
+        },
+        "jev": {
+          "present": true,
+          "ok": true,
+          "N": 26,
+          "method": "Jev",
+          "model_id": "typesafe/jev-1.13",
+          "provider": "openrouter",
+          "prompt_version": "jev-would_detect_regression-v1",
+          "shortlist_sha256": "cadde10ee82e7941b42abf9d2eeafa84e2427275f08b838dd6c1aaac85144795",
+          "first_trigger_rank": 1
+        },
+        "gpt_nano": {
+          "present": true,
+          "ok": true,
+          "N": 26,
+          "method": "GPT-Nano",
+          "model_id": "gpt-5.4-nano-2026-03-17",
+          "provider": "openrouter",
+          "prompt_version": "gpt-would_detect_regression-v1",
+          "shortlist_sha256": "cadde10ee82e7941b42abf9d2eeafa84e2427275f08b838dd6c1aaac85144795",
+          "first_trigger_rank": 1
+        }
+      },
+      "prompts": {
+        "jev_prompt_version": "jev-would_detect_regression-v1",
+        "gpt_prompt_version": "gpt-would_detect_regression-v1",
+        "jev_revision_count": 0,
+        "baseline_prompt_preserved": true
+      },
+      "integrity": {
+        "phase4_ok": true,
+        "phase5_ok": true,
+        "phase5_note": null
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-1",
+      "example_id": "Cli_1",
+      "split": "development",
+      "completeness": {
+        "example_ok": true,
+        "systems": {
+          "BM25": true,
+          "Embedding": true,
+          "Random": true,
+          "Jev": true,
+          "GPT-Nano": true
+        },
+        "systems_complete_with_accepted_gaps": true,
+        "accepted_gap": null
+      },
+      "patch": {
+        "direction": "fixed_to_buggy",
+        "base": "Bf",
+        "proposed": "Bb",
+        "patch_truncated": false,
+        "representation_chars": 3691,
+        "representation_char_cap": 12000,
+        "original_patch_chars": 3691
+      },
+      "suite": {
+        "N": 16,
+        "K": 16,
+        "num_test_classes": 16,
+        "num_positive_classes": 1,
+        "num_trigger_methods": 1,
+        "source_missing_count": 0
+      },
+      "bm25": {
+        "candidate_recall": true,
+        "num_triggers_in_top_k": 1,
+        "first_trigger_rank": 14,
+        "shortlist_sha256": "b97acdf83d06584aae5f0dd0aafb9939c9b2706da12df015e1840751250dbbc3",
+        "integrity_ok": true
+      },
+      "rankings": {
+        "random_ok": true,
+        "embedding": {
+          "present": true,
+          "ok": true,
+          "N": 16,
+          "method": "Embedding",
+          "model_id": null,
+          "provider": null,
+          "prompt_version": null,
+          "shortlist_sha256": null,
+          "first_trigger_rank": 15
+        },
+        "jev": {
+          "present": true,
+          "ok": true,
+          "N": 16,
+          "method": "Jev",
+          "model_id": "typesafe/jev-1.13",
+          "provider": "openrouter",
+          "prompt_version": "jev-would_detect_regression-v1",
+          "shortlist_sha256": "b97acdf83d06584aae5f0dd0aafb9939c9b2706da12df015e1840751250dbbc3",
+          "first_trigger_rank": 3
+        },
+        "gpt_nano": {
+          "present": true,
+          "ok": true,
+          "N": 16,
+          "method": "GPT-Nano",
+          "model_id": "gpt-5.4-nano-2026-03-17",
+          "provider": "openrouter",
+          "prompt_version": "gpt-would_detect_regression-v1",
+          "shortlist_sha256": "b97acdf83d06584aae5f0dd0aafb9939c9b2706da12df015e1840751250dbbc3",
+          "first_trigger_rank": 4
+        }
+      },
+      "prompts": {
+        "jev_prompt_version": "jev-would_detect_regression-v1",
+        "gpt_prompt_version": "gpt-would_detect_regression-v1",
+        "jev_revision_count": 0,
+        "baseline_prompt_preserved": true
+      },
+      "integrity": {
+        "phase4_ok": true,
+        "phase5_ok": true,
+        "phase5_note": null
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Cli-7",
+      "example_id": "Cli_7",
+      "split": "development",
+      "completeness": {
+        "example_ok": true,
+        "systems": {
+          "BM25": true,
+          "Embedding": true,
+          "Random": true,
+          "Jev": true,
+          "GPT-Nano": true
+        },
+        "systems_complete_with_accepted_gaps": true,
+        "accepted_gap": null
+      },
+      "patch": {
+        "direction": "fixed_to_buggy",
+        "base": "Bf",
+        "proposed": "Bb",
+        "patch_truncated": false,
+        "representation_chars": 733,
+        "representation_char_cap": 12000,
+        "original_patch_chars": 733
+      },
+      "suite": {
+        "N": 44,
+        "K": 44,
+        "num_test_classes": 44,
+        "num_positive_classes": 1,
+        "num_trigger_methods": 1,
+        "source_missing_count": 0
+      },
+      "bm25": {
+        "candidate_recall": true,
+        "num_triggers_in_top_k": 1,
+        "first_trigger_rank": 13,
+        "shortlist_sha256": "6f281940db1aa642ec8bd5f26ae2f99aa3973a03aa41c2b1def17df3aaa656b8",
+        "integrity_ok": true
+      },
+      "rankings": {
+        "random_ok": true,
+        "embedding": {
+          "present": true,
+          "ok": true,
+          "N": 44,
+          "method": "Embedding",
+          "model_id": null,
+          "provider": null,
+          "prompt_version": null,
+          "shortlist_sha256": null,
+          "first_trigger_rank": 2
+        },
+        "jev": {
+          "present": true,
+          "ok": true,
+          "N": 44,
+          "method": "Jev",
+          "model_id": "typesafe/jev-1.13",
+          "provider": "openrouter",
+          "prompt_version": "jev-would_detect_regression-v1",
+          "shortlist_sha256": "6f281940db1aa642ec8bd5f26ae2f99aa3973a03aa41c2b1def17df3aaa656b8",
+          "first_trigger_rank": 1
+        },
+        "gpt_nano": {
+          "present": true,
+          "ok": true,
+          "N": 44,
+          "method": "GPT-Nano",
+          "model_id": "gpt-5.4-nano-2026-03-17",
+          "provider": "openrouter",
+          "prompt_version": "gpt-would_detect_regression-v1",
+          "shortlist_sha256": "6f281940db1aa642ec8bd5f26ae2f99aa3973a03aa41c2b1def17df3aaa656b8",
+          "first_trigger_rank": 6
+        }
+      },
+      "prompts": {
+        "jev_prompt_version": "jev-would_detect_regression-v1",
+        "gpt_prompt_version": "gpt-would_detect_regression-v1",
+        "jev_revision_count": 0,
+        "baseline_prompt_preserved": true
+      },
+      "integrity": {
+        "phase4_ok": true,
+        "phase5_ok": true,
+        "phase5_note": null
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-9",
+      "example_id": "Lang_9",
+      "split": "development",
+      "completeness": {
+        "example_ok": true,
+        "systems": {
+          "BM25": true,
+          "Embedding": true,
+          "Random": true,
+          "Jev": true,
+          "GPT-Nano": true
+        },
+        "systems_complete_with_accepted_gaps": true,
+        "accepted_gap": null
+      },
+      "patch": {
+        "direction": "fixed_to_buggy",
+        "base": "Bf",
+        "proposed": "Bb",
+        "patch_truncated": false,
+        "representation_chars": 761,
+        "representation_char_cap": 12000,
+        "original_patch_chars": 761
+      },
+      "suite": {
+        "N": 111,
+        "K": 111,
+        "num_test_classes": 111,
+        "num_positive_classes": 2,
+        "num_trigger_methods": 2,
+        "source_missing_count": 0
+      },
+      "bm25": {
+        "candidate_recall": true,
+        "num_triggers_in_top_k": 2,
+        "first_trigger_rank": 2,
+        "shortlist_sha256": "3320f876c10c48bc521dd3079899e28e3992e26aa20578f8fbf1034bd5011501",
+        "integrity_ok": true
+      },
+      "rankings": {
+        "random_ok": true,
+        "embedding": {
+          "present": true,
+          "ok": true,
+          "N": 111,
+          "method": "Embedding",
+          "model_id": null,
+          "provider": null,
+          "prompt_version": null,
+          "shortlist_sha256": null,
+          "first_trigger_rank": 1
+        },
+        "jev": {
+          "present": true,
+          "ok": true,
+          "N": 111,
+          "method": "Jev",
+          "model_id": "typesafe/jev-1.13",
+          "provider": "openrouter",
+          "prompt_version": "jev-would_detect_regression-v1",
+          "shortlist_sha256": "3320f876c10c48bc521dd3079899e28e3992e26aa20578f8fbf1034bd5011501",
+          "first_trigger_rank": 1
+        },
+        "gpt_nano": {
+          "present": true,
+          "ok": true,
+          "N": 111,
+          "method": "GPT-Nano",
+          "model_id": "gpt-5.4-nano-2026-03-17",
+          "provider": "openrouter",
+          "prompt_version": "gpt-would_detect_regression-v1",
+          "shortlist_sha256": "3320f876c10c48bc521dd3079899e28e3992e26aa20578f8fbf1034bd5011501",
+          "first_trigger_rank": 1
+        }
+      },
+      "prompts": {
+        "jev_prompt_version": "jev-would_detect_regression-v1",
+        "gpt_prompt_version": "gpt-would_detect_regression-v1",
+        "jev_revision_count": 0,
+        "baseline_prompt_preserved": true
+      },
+      "integrity": {
+        "phase4_ok": true,
+        "phase5_ok": true,
+        "phase5_note": null
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-27",
+      "example_id": "Lang_27",
+      "split": "development",
+      "completeness": {
+        "example_ok": true,
+        "systems": {
+          "BM25": true,
+          "Embedding": true,
+          "Random": true,
+          "Jev": true,
+          "GPT-Nano": true
+        },
+        "systems_complete_with_accepted_gaps": true,
+        "accepted_gap": null
+      },
+      "patch": {
+        "direction": "fixed_to_buggy",
+        "base": "Bf",
+        "proposed": "Bb",
+        "patch_truncated": false,
+        "representation_chars": 1012,
+        "representation_char_cap": 12000,
+        "original_patch_chars": 1012
+      },
+      "suite": {
+        "N": 92,
+        "K": 92,
+        "num_test_classes": 92,
+        "num_positive_classes": 1,
+        "num_trigger_methods": 1,
+        "source_missing_count": 0
+      },
+      "bm25": {
+        "candidate_recall": true,
+        "num_triggers_in_top_k": 1,
+        "first_trigger_rank": 7,
+        "shortlist_sha256": "453b0f9944d17a481658a11dca78b7d789463ef949a6e58ac53576334e2fcc4e",
+        "integrity_ok": true
+      },
+      "rankings": {
+        "random_ok": true,
+        "embedding": {
+          "present": true,
+          "ok": true,
+          "N": 92,
+          "method": "Embedding",
+          "model_id": null,
+          "provider": null,
+          "prompt_version": null,
+          "shortlist_sha256": null,
+          "first_trigger_rank": 1
+        },
+        "jev": {
+          "present": true,
+          "ok": true,
+          "N": 92,
+          "method": "Jev",
+          "model_id": "typesafe/jev-1.13",
+          "provider": "openrouter",
+          "prompt_version": "jev-would_detect_regression-v1",
+          "shortlist_sha256": "453b0f9944d17a481658a11dca78b7d789463ef949a6e58ac53576334e2fcc4e",
+          "first_trigger_rank": 1
+        },
+        "gpt_nano": {
+          "present": true,
+          "ok": true,
+          "N": 92,
+          "method": "GPT-Nano",
+          "model_id": "gpt-5.4-nano-2026-03-17",
+          "provider": "openrouter",
+          "prompt_version": "gpt-would_detect_regression-v1",
+          "shortlist_sha256": "453b0f9944d17a481658a11dca78b7d789463ef949a6e58ac53576334e2fcc4e",
+          "first_trigger_rank": 1
+        }
+      },
+      "prompts": {
+        "jev_prompt_version": "jev-would_detect_regression-v1",
+        "gpt_prompt_version": "gpt-would_detect_regression-v1",
+        "jev_revision_count": 0,
+        "baseline_prompt_preserved": true
+      },
+      "integrity": {
+        "phase4_ok": true,
+        "phase5_ok": true,
+        "phase5_note": null
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-3",
+      "example_id": "Lang_3",
+      "split": "development",
+      "completeness": {
+        "example_ok": true,
+        "systems": {
+          "BM25": true,
+          "Embedding": true,
+          "Random": true,
+          "Jev": true,
+          "GPT-Nano": true
+        },
+        "systems_complete_with_accepted_gaps": true,
+        "accepted_gap": null
+      },
+      "patch": {
+        "direction": "fixed_to_buggy",
+        "base": "Bf",
+        "proposed": "Bb",
+        "patch_truncated": false,
+        "representation_chars": 1319,
+        "representation_char_cap": 12000,
+        "original_patch_chars": 1319
+      },
+      "suite": {
+        "N": 113,
+        "K": 113,
+        "num_test_classes": 113,
+        "num_positive_classes": 1,
+        "num_trigger_methods": 1,
+        "source_missing_count": 0
+      },
+      "bm25": {
+        "candidate_recall": true,
+        "num_triggers_in_top_k": 1,
+        "first_trigger_rank": 1,
+        "shortlist_sha256": "a42ac51e24bdd05aaa065a989ede1e3af2e9d70c559d458e5f494999aab5740c",
+        "integrity_ok": true
+      },
+      "rankings": {
+        "random_ok": true,
+        "embedding": {
+          "present": true,
+          "ok": true,
+          "N": 113,
+          "method": "Embedding",
+          "model_id": null,
+          "provider": null,
+          "prompt_version": null,
+          "shortlist_sha256": null,
+          "first_trigger_rank": 1
+        },
+        "jev": {
+          "present": true,
+          "ok": true,
+          "N": 113,
+          "method": "Jev",
+          "model_id": "typesafe/jev-1.13",
+          "provider": "openrouter",
+          "prompt_version": "jev-would_detect_regression-v1",
+          "shortlist_sha256": "a42ac51e24bdd05aaa065a989ede1e3af2e9d70c559d458e5f494999aab5740c",
+          "first_trigger_rank": 1
+        },
+        "gpt_nano": {
+          "present": true,
+          "ok": true,
+          "N": 113,
+          "method": "GPT-Nano",
+          "model_id": "gpt-5.4-nano-2026-03-17",
+          "provider": "openrouter",
+          "prompt_version": "gpt-would_detect_regression-v1",
+          "shortlist_sha256": "a42ac51e24bdd05aaa065a989ede1e3af2e9d70c559d458e5f494999aab5740c",
+          "first_trigger_rank": 1
+        }
+      },
+      "prompts": {
+        "jev_prompt_version": "jev-would_detect_regression-v1",
+        "gpt_prompt_version": "gpt-would_detect_regression-v1",
+        "jev_revision_count": 0,
+        "baseline_prompt_preserved": true
+      },
+      "integrity": {
+        "phase4_ok": true,
+        "phase5_ok": true,
+        "phase5_note": null
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-15",
+      "example_id": "Lang_15",
+      "split": "development",
+      "completeness": {
+        "example_ok": true,
+        "systems": {
+          "BM25": true,
+          "Embedding": true,
+          "Random": true,
+          "Jev": true,
+          "GPT-Nano": true
+        },
+        "systems_complete_with_accepted_gaps": true,
+        "accepted_gap": null
+      },
+      "patch": {
+        "direction": "fixed_to_buggy",
+        "base": "Bf",
+        "proposed": "Bb",
+        "patch_truncated": false,
+        "representation_chars": 1296,
+        "representation_char_cap": 12000,
+        "original_patch_chars": 1296
+      },
+      "suite": {
+        "N": 104,
+        "K": 104,
+        "num_test_classes": 104,
+        "num_positive_classes": 1,
+        "num_trigger_methods": 2,
+        "source_missing_count": 0
+      },
+      "bm25": {
+        "candidate_recall": true,
+        "num_triggers_in_top_k": 1,
+        "first_trigger_rank": 1,
+        "shortlist_sha256": "ff081b8b8254c1f1f4961d00c5410a57ca1c023cdbcd7a2fd167cfcec29f4a6f",
+        "integrity_ok": true
+      },
+      "rankings": {
+        "random_ok": true,
+        "embedding": {
+          "present": true,
+          "ok": true,
+          "N": 104,
+          "method": "Embedding",
+          "model_id": null,
+          "provider": null,
+          "prompt_version": null,
+          "shortlist_sha256": null,
+          "first_trigger_rank": 1
+        },
+        "jev": {
+          "present": true,
+          "ok": true,
+          "N": 104,
+          "method": "Jev",
+          "model_id": "typesafe/jev-1.13",
+          "provider": "openrouter",
+          "prompt_version": "jev-would_detect_regression-v1",
+          "shortlist_sha256": "ff081b8b8254c1f1f4961d00c5410a57ca1c023cdbcd7a2fd167cfcec29f4a6f",
+          "first_trigger_rank": 1
+        },
+        "gpt_nano": {
+          "present": true,
+          "ok": true,
+          "N": 104,
+          "method": "GPT-Nano",
+          "model_id": "gpt-5.4-nano-2026-03-17",
+          "provider": "openrouter",
+          "prompt_version": "gpt-would_detect_regression-v1",
+          "shortlist_sha256": "ff081b8b8254c1f1f4961d00c5410a57ca1c023cdbcd7a2fd167cfcec29f4a6f",
+          "first_trigger_rank": 1
+        }
+      },
+      "prompts": {
+        "jev_prompt_version": "jev-would_detect_regression-v1",
+        "gpt_prompt_version": "gpt-would_detect_regression-v1",
+        "jev_revision_count": 0,
+        "baseline_prompt_preserved": true
+      },
+      "integrity": {
+        "phase4_ok": true,
+        "phase5_ok": true,
+        "phase5_note": null
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Lang-35",
+      "example_id": "Lang_35",
+      "split": "development",
+      "completeness": {
+        "example_ok": true,
+        "systems": {
+          "BM25": true,
+          "Embedding": true,
+          "Random": true,
+          "Jev": true,
+          "GPT-Nano": true
+        },
+        "systems_complete_with_accepted_gaps": true,
+        "accepted_gap": null
+      },
+      "patch": {
+        "direction": "fixed_to_buggy",
+        "base": "Bf",
+        "proposed": "Bb",
+        "patch_truncated": false,
+        "representation_chars": 1099,
+        "representation_char_cap": 12000,
+        "original_patch_chars": 1099
+      },
+      "suite": {
+        "N": 85,
+        "K": 85,
+        "num_test_classes": 85,
+        "num_positive_classes": 1,
+        "num_trigger_methods": 1,
+        "source_missing_count": 0
+      },
+      "bm25": {
+        "candidate_recall": true,
+        "num_triggers_in_top_k": 1,
+        "first_trigger_rank": 8,
+        "shortlist_sha256": "1a8574ffd951c6c460c312e76af8a7e45a6a7ddb43a88fc2f7f96f6356016627",
+        "integrity_ok": true
+      },
+      "rankings": {
+        "random_ok": true,
+        "embedding": {
+          "present": true,
+          "ok": true,
+          "N": 85,
+          "method": "Embedding",
+          "model_id": null,
+          "provider": null,
+          "prompt_version": null,
+          "shortlist_sha256": null,
+          "first_trigger_rank": 1
+        },
+        "jev": {
+          "present": true,
+          "ok": true,
+          "N": 85,
+          "method": "Jev",
+          "model_id": "typesafe/jev-1.13",
+          "provider": "openrouter",
+          "prompt_version": "jev-would_detect_regression-v1",
+          "shortlist_sha256": "1a8574ffd951c6c460c312e76af8a7e45a6a7ddb43a88fc2f7f96f6356016627",
+          "first_trigger_rank": 1
+        },
+        "gpt_nano": {
+          "present": true,
+          "ok": true,
+          "N": 85,
+          "method": "GPT-Nano",
+          "model_id": "gpt-5.4-nano-2026-03-17",
+          "provider": "openrouter",
+          "prompt_version": "gpt-would_detect_regression-v1",
+          "shortlist_sha256": "1a8574ffd951c6c460c312e76af8a7e45a6a7ddb43a88fc2f7f96f6356016627",
+          "first_trigger_rank": 1
+        }
+      },
+      "prompts": {
+        "jev_prompt_version": "jev-would_detect_regression-v1",
+        "gpt_prompt_version": "gpt-would_detect_regression-v1",
+        "jev_revision_count": 0,
+        "baseline_prompt_preserved": true
+      },
+      "integrity": {
+        "phase4_ok": true,
+        "phase5_ok": true,
+        "phase5_note": null
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-25",
+      "example_id": "Math_25",
+      "split": "development",
+      "completeness": {
+        "example_ok": true,
+        "systems": {
+          "BM25": true,
+          "Embedding": true,
+          "Random": true,
+          "Jev": true,
+          "GPT-Nano": true
+        },
+        "systems_complete_with_accepted_gaps": true,
+        "accepted_gap": null
+      },
+      "patch": {
+        "direction": "fixed_to_buggy",
+        "base": "Bf",
+        "proposed": "Bb",
+        "patch_truncated": false,
+        "representation_chars": 861,
+        "representation_char_cap": 12000,
+        "original_patch_chars": 861
+      },
+      "suite": {
+        "N": 306,
+        "K": 200,
+        "num_test_classes": 306,
+        "num_positive_classes": 1,
+        "num_trigger_methods": 1,
+        "source_missing_count": 0
+      },
+      "bm25": {
+        "candidate_recall": true,
+        "num_triggers_in_top_k": 1,
+        "first_trigger_rank": 1,
+        "shortlist_sha256": "2e068bd616b4522c403d4ba33e6a8f874fd284c2eba4041c02265c9bee0a53ab",
+        "integrity_ok": true
+      },
+      "rankings": {
+        "random_ok": true,
+        "embedding": {
+          "present": true,
+          "ok": true,
+          "N": 306,
+          "method": "Embedding",
+          "model_id": null,
+          "provider": null,
+          "prompt_version": null,
+          "shortlist_sha256": null,
+          "first_trigger_rank": 1
+        },
+        "jev": {
+          "present": true,
+          "ok": true,
+          "N": 306,
+          "method": "Jev",
+          "model_id": "typesafe/jev-1.13",
+          "provider": "openrouter",
+          "prompt_version": "jev-would_detect_regression-v1",
+          "shortlist_sha256": "2e068bd616b4522c403d4ba33e6a8f874fd284c2eba4041c02265c9bee0a53ab",
+          "first_trigger_rank": 1
+        },
+        "gpt_nano": {
+          "present": true,
+          "ok": true,
+          "N": 306,
+          "method": "GPT-Nano",
+          "model_id": "gpt-5.4-nano-2026-03-17",
+          "provider": "openrouter",
+          "prompt_version": "gpt-would_detect_regression-v1",
+          "shortlist_sha256": "2e068bd616b4522c403d4ba33e6a8f874fd284c2eba4041c02265c9bee0a53ab",
+          "first_trigger_rank": 1
+        }
+      },
+      "prompts": {
+        "jev_prompt_version": "jev-would_detect_regression-v1",
+        "gpt_prompt_version": "gpt-would_detect_regression-v1",
+        "jev_revision_count": 0,
+        "baseline_prompt_preserved": true
+      },
+      "integrity": {
+        "phase4_ok": true,
+        "phase5_ok": true,
+        "phase5_note": null
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-7",
+      "example_id": "Math_7",
+      "split": "development",
+      "completeness": {
+        "example_ok": true,
+        "systems": {
+          "BM25": true,
+          "Embedding": true,
+          "Random": true,
+          "Jev": true,
+          "GPT-Nano": true
+        },
+        "systems_complete_with_accepted_gaps": true,
+        "accepted_gap": null
+      },
+      "patch": {
+        "direction": "fixed_to_buggy",
+        "base": "Bf",
+        "proposed": "Bb",
+        "patch_truncated": false,
+        "representation_chars": 2180,
+        "representation_char_cap": 12000,
+        "original_patch_chars": 2180
+      },
+      "suite": {
+        "N": 362,
+        "K": 200,
+        "num_test_classes": 362,
+        "num_positive_classes": 1,
+        "num_trigger_methods": 1,
+        "source_missing_count": 0
+      },
+      "bm25": {
+        "candidate_recall": true,
+        "num_triggers_in_top_k": 1,
+        "first_trigger_rank": 1,
+        "shortlist_sha256": "22b9837647f7cddbe6d6e4dcea50a84ccf6ba536aa8a60c3ec85515bef46de90",
+        "integrity_ok": true
+      },
+      "rankings": {
+        "random_ok": true,
+        "embedding": {
+          "present": true,
+          "ok": true,
+          "N": 362,
+          "method": "Embedding",
+          "model_id": null,
+          "provider": null,
+          "prompt_version": null,
+          "shortlist_sha256": null,
+          "first_trigger_rank": 1
+        },
+        "jev": {
+          "present": true,
+          "ok": true,
+          "N": 362,
+          "method": "Jev",
+          "model_id": "typesafe/jev-1.13",
+          "provider": "openrouter",
+          "prompt_version": "jev-would_detect_regression-v1",
+          "shortlist_sha256": "22b9837647f7cddbe6d6e4dcea50a84ccf6ba536aa8a60c3ec85515bef46de90",
+          "first_trigger_rank": 3
+        },
+        "gpt_nano": {
+          "present": true,
+          "ok": true,
+          "N": 362,
+          "method": "GPT-Nano",
+          "model_id": "gpt-5.4-nano-2026-03-17",
+          "provider": "openrouter",
+          "prompt_version": "gpt-would_detect_regression-v1",
+          "shortlist_sha256": "22b9837647f7cddbe6d6e4dcea50a84ccf6ba536aa8a60c3ec85515bef46de90",
+          "first_trigger_rank": 6
+        }
+      },
+      "prompts": {
+        "jev_prompt_version": "jev-would_detect_regression-v1",
+        "gpt_prompt_version": "gpt-would_detect_regression-v1",
+        "jev_revision_count": 0,
+        "baseline_prompt_preserved": true
+      },
+      "integrity": {
+        "phase4_ok": true,
+        "phase5_ok": true,
+        "phase5_note": null
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-87",
+      "example_id": "Math_87",
+      "split": "development",
+      "completeness": {
+        "example_ok": true,
+        "systems": {
+          "BM25": true,
+          "Embedding": true,
+          "Random": true,
+          "Jev": true,
+          "GPT-Nano": true
+        },
+        "systems_complete_with_accepted_gaps": true,
+        "accepted_gap": null
+      },
+      "patch": {
+        "direction": "fixed_to_buggy",
+        "base": "Bf",
+        "proposed": "Bb",
+        "patch_truncated": false,
+        "representation_chars": 937,
+        "representation_char_cap": 12000,
+        "original_patch_chars": 937
+      },
+      "suite": {
+        "N": 184,
+        "K": 184,
+        "num_test_classes": 184,
+        "num_positive_classes": 1,
+        "num_trigger_methods": 1,
+        "source_missing_count": 0
+      },
+      "bm25": {
+        "candidate_recall": true,
+        "num_triggers_in_top_k": 1,
+        "first_trigger_rank": 2,
+        "shortlist_sha256": "403adb1e465f05fbb3f63100be9bbfa00dca6517bc224412ff17737d9799075d",
+        "integrity_ok": true
+      },
+      "rankings": {
+        "random_ok": true,
+        "embedding": {
+          "present": true,
+          "ok": true,
+          "N": 184,
+          "method": "Embedding",
+          "model_id": null,
+          "provider": null,
+          "prompt_version": null,
+          "shortlist_sha256": null,
+          "first_trigger_rank": 2
+        },
+        "jev": {
+          "present": true,
+          "ok": true,
+          "N": 184,
+          "method": "Jev",
+          "model_id": "typesafe/jev-1.13",
+          "provider": "openrouter",
+          "prompt_version": "jev-would_detect_regression-v1",
+          "shortlist_sha256": "403adb1e465f05fbb3f63100be9bbfa00dca6517bc224412ff17737d9799075d",
+          "first_trigger_rank": 1
+        },
+        "gpt_nano": {
+          "present": true,
+          "ok": true,
+          "N": 184,
+          "method": "GPT-Nano",
+          "model_id": "gpt-5.4-nano-2026-03-17",
+          "provider": "openrouter",
+          "prompt_version": "gpt-would_detect_regression-v1",
+          "shortlist_sha256": "403adb1e465f05fbb3f63100be9bbfa00dca6517bc224412ff17737d9799075d",
+          "first_trigger_rank": 1
+        }
+      },
+      "prompts": {
+        "jev_prompt_version": "jev-would_detect_regression-v1",
+        "gpt_prompt_version": "gpt-would_detect_regression-v1",
+        "jev_revision_count": 0,
+        "baseline_prompt_preserved": true
+      },
+      "integrity": {
+        "phase4_ok": true,
+        "phase5_ok": true,
+        "phase5_note": null
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-27",
+      "example_id": "Math_27",
+      "split": "development",
+      "completeness": {
+        "example_ok": true,
+        "systems": {
+          "BM25": true,
+          "Embedding": true,
+          "Random": true,
+          "Jev": true,
+          "GPT-Nano": true
+        },
+        "systems_complete_with_accepted_gaps": true,
+        "accepted_gap": null
+      },
+      "patch": {
+        "direction": "fixed_to_buggy",
+        "base": "Bf",
+        "proposed": "Bb",
+        "patch_truncated": false,
+        "representation_chars": 526,
+        "representation_char_cap": 12000,
+        "original_patch_chars": 526
+      },
+      "suite": {
+        "N": 301,
+        "K": 200,
+        "num_test_classes": 301,
+        "num_positive_classes": 1,
+        "num_trigger_methods": 1,
+        "source_missing_count": 0
+      },
+      "bm25": {
+        "candidate_recall": true,
+        "num_triggers_in_top_k": 1,
+        "first_trigger_rank": 1,
+        "shortlist_sha256": "eb623aac3b6732d4a608417c0502ee508311bfe7b201813276ac3f41177fa13c",
+        "integrity_ok": true
+      },
+      "rankings": {
+        "random_ok": true,
+        "embedding": {
+          "present": true,
+          "ok": true,
+          "N": 301,
+          "method": "Embedding",
+          "model_id": null,
+          "provider": null,
+          "prompt_version": null,
+          "shortlist_sha256": null,
+          "first_trigger_rank": 1
+        },
+        "jev": {
+          "present": true,
+          "ok": true,
+          "N": 301,
+          "method": "Jev",
+          "model_id": "typesafe/jev-1.13",
+          "provider": "openrouter",
+          "prompt_version": "jev-would_detect_regression-v1",
+          "shortlist_sha256": "eb623aac3b6732d4a608417c0502ee508311bfe7b201813276ac3f41177fa13c",
+          "first_trigger_rank": 1
+        },
+        "gpt_nano": {
+          "present": true,
+          "ok": true,
+          "N": 301,
+          "method": "GPT-Nano",
+          "model_id": "gpt-5.4-nano-2026-03-17",
+          "provider": "openrouter",
+          "prompt_version": "gpt-would_detect_regression-v1",
+          "shortlist_sha256": "eb623aac3b6732d4a608417c0502ee508311bfe7b201813276ac3f41177fa13c",
+          "first_trigger_rank": 1
+        }
+      },
+      "prompts": {
+        "jev_prompt_version": "jev-would_detect_regression-v1",
+        "gpt_prompt_version": "gpt-would_detect_regression-v1",
+        "jev_revision_count": 0,
+        "baseline_prompt_preserved": true
+      },
+      "integrity": {
+        "phase4_ok": true,
+        "phase5_ok": true,
+        "phase5_note": null
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Math-100",
+      "example_id": "Math_100",
+      "split": "development",
+      "completeness": {
+        "example_ok": true,
+        "systems": {
+          "BM25": true,
+          "Embedding": true,
+          "Random": true,
+          "Jev": true,
+          "GPT-Nano": true
+        },
+        "systems_complete_with_accepted_gaps": true,
+        "accepted_gap": null
+      },
+      "patch": {
+        "direction": "fixed_to_buggy",
+        "base": "Bf",
+        "proposed": "Bb",
+        "patch_truncated": false,
+        "representation_chars": 1582,
+        "representation_char_cap": 12000,
+        "original_patch_chars": 1582
+      },
+      "suite": {
+        "N": 135,
+        "K": 135,
+        "num_test_classes": 135,
+        "num_positive_classes": 1,
+        "num_trigger_methods": 1,
+        "source_missing_count": 0
+      },
+      "bm25": {
+        "candidate_recall": true,
+        "num_triggers_in_top_k": 1,
+        "first_trigger_rank": 2,
+        "shortlist_sha256": "9f3b05180008645ae6e0ceba1ddc4b1a07c56d7398891f4323d9de06deb31353",
+        "integrity_ok": true
+      },
+      "rankings": {
+        "random_ok": true,
+        "embedding": {
+          "present": true,
+          "ok": true,
+          "N": 135,
+          "method": "Embedding",
+          "model_id": null,
+          "provider": null,
+          "prompt_version": null,
+          "shortlist_sha256": null,
+          "first_trigger_rank": 1
+        },
+        "jev": {
+          "present": true,
+          "ok": true,
+          "N": 135,
+          "method": "Jev",
+          "model_id": "typesafe/jev-1.13",
+          "provider": "openrouter",
+          "prompt_version": "jev-would_detect_regression-v1",
+          "shortlist_sha256": "9f3b05180008645ae6e0ceba1ddc4b1a07c56d7398891f4323d9de06deb31353",
+          "first_trigger_rank": 2
+        },
+        "gpt_nano": {
+          "present": true,
+          "ok": true,
+          "N": 135,
+          "method": "GPT-Nano",
+          "model_id": "gpt-5.4-nano-2026-03-17",
+          "provider": "openrouter",
+          "prompt_version": "gpt-would_detect_regression-v1",
+          "shortlist_sha256": "9f3b05180008645ae6e0ceba1ddc4b1a07c56d7398891f4323d9de06deb31353",
+          "first_trigger_rank": 1
+        }
+      },
+      "prompts": {
+        "jev_prompt_version": "jev-would_detect_regression-v1",
+        "gpt_prompt_version": "gpt-would_detect_regression-v1",
+        "jev_revision_count": 0,
+        "baseline_prompt_preserved": true
+      },
+      "integrity": {
+        "phase4_ok": true,
+        "phase5_ok": true,
+        "phase5_note": null
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-2",
+      "example_id": "Jsoup_2",
+      "split": "development",
+      "completeness": {
+        "example_ok": true,
+        "systems": {
+          "BM25": true,
+          "Embedding": true,
+          "Random": true,
+          "Jev": true,
+          "GPT-Nano": true
+        },
+        "systems_complete_with_accepted_gaps": true,
+        "accepted_gap": null
+      },
+      "patch": {
+        "direction": "fixed_to_buggy",
+        "base": "Bf",
+        "proposed": "Bb",
+        "patch_truncated": false,
+        "representation_chars": 571,
+        "representation_char_cap": 12000,
+        "original_patch_chars": 571
+      },
+      "suite": {
+        "N": 12,
+        "K": 12,
+        "num_test_classes": 12,
+        "num_positive_classes": 1,
+        "num_trigger_methods": 1,
+        "source_missing_count": 0
+      },
+      "bm25": {
+        "candidate_recall": true,
+        "num_triggers_in_top_k": 1,
+        "first_trigger_rank": 1,
+        "shortlist_sha256": "619b7b23fda984259c91aab3a422841cf077af3769818b03a2a16458d950a27d",
+        "integrity_ok": true
+      },
+      "rankings": {
+        "random_ok": true,
+        "embedding": {
+          "present": true,
+          "ok": true,
+          "N": 12,
+          "method": "Embedding",
+          "model_id": null,
+          "provider": null,
+          "prompt_version": null,
+          "shortlist_sha256": null,
+          "first_trigger_rank": 1
+        },
+        "jev": {
+          "present": true,
+          "ok": true,
+          "N": 12,
+          "method": "Jev",
+          "model_id": "typesafe/jev-1.13",
+          "provider": "openrouter",
+          "prompt_version": "jev-would_detect_regression-v1",
+          "shortlist_sha256": "619b7b23fda984259c91aab3a422841cf077af3769818b03a2a16458d950a27d",
+          "first_trigger_rank": 1
+        },
+        "gpt_nano": {
+          "present": true,
+          "ok": true,
+          "N": 12,
+          "method": "GPT-Nano",
+          "model_id": "gpt-5.4-nano-2026-03-17",
+          "provider": "openrouter",
+          "prompt_version": "gpt-would_detect_regression-v1",
+          "shortlist_sha256": "619b7b23fda984259c91aab3a422841cf077af3769818b03a2a16458d950a27d",
+          "first_trigger_rank": 1
+        }
+      },
+      "prompts": {
+        "jev_prompt_version": "jev-would_detect_regression-v1",
+        "gpt_prompt_version": "gpt-would_detect_regression-v1",
+        "jev_revision_count": 0,
+        "baseline_prompt_preserved": true
+      },
+      "integrity": {
+        "phase4_ok": true,
+        "phase5_ok": true,
+        "phase5_note": null
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-51",
+      "example_id": "Jsoup_51",
+      "split": "development",
+      "completeness": {
+        "example_ok": true,
+        "systems": {
+          "BM25": true,
+          "Embedding": true,
+          "Random": true,
+          "Jev": true,
+          "GPT-Nano": true
+        },
+        "systems_complete_with_accepted_gaps": true,
+        "accepted_gap": null
+      },
+      "patch": {
+        "direction": "fixed_to_buggy",
+        "base": "Bf",
+        "proposed": "Bb",
+        "patch_truncated": false,
+        "representation_chars": 553,
+        "representation_char_cap": 12000,
+        "original_patch_chars": 553
+      },
+      "suite": {
+        "N": 26,
+        "K": 26,
+        "num_test_classes": 26,
+        "num_positive_classes": 1,
+        "num_trigger_methods": 1,
+        "source_missing_count": 0
+      },
+      "bm25": {
+        "candidate_recall": true,
+        "num_triggers_in_top_k": 1,
+        "first_trigger_rank": 5,
+        "shortlist_sha256": "113171baa0e78dff80a32b4ababefee70f927688d497a5fa7074a619e69643e8",
+        "integrity_ok": true
+      },
+      "rankings": {
+        "random_ok": true,
+        "embedding": {
+          "present": true,
+          "ok": true,
+          "N": 26,
+          "method": "Embedding",
+          "model_id": null,
+          "provider": null,
+          "prompt_version": null,
+          "shortlist_sha256": null,
+          "first_trigger_rank": 12
+        },
+        "jev": {
+          "present": true,
+          "ok": true,
+          "N": 26,
+          "method": "Jev",
+          "model_id": "typesafe/jev-1.13",
+          "provider": "openrouter",
+          "prompt_version": "jev-would_detect_regression-v1",
+          "shortlist_sha256": "113171baa0e78dff80a32b4ababefee70f927688d497a5fa7074a619e69643e8",
+          "first_trigger_rank": 3
+        },
+        "gpt_nano": {
+          "present": true,
+          "ok": true,
+          "N": 26,
+          "method": "GPT-Nano",
+          "model_id": "gpt-5.4-nano-2026-03-17",
+          "provider": "openrouter",
+          "prompt_version": "gpt-would_detect_regression-v1",
+          "shortlist_sha256": "113171baa0e78dff80a32b4ababefee70f927688d497a5fa7074a619e69643e8",
+          "first_trigger_rank": 1
+        }
+      },
+      "prompts": {
+        "jev_prompt_version": "jev-would_detect_regression-v1",
+        "gpt_prompt_version": "gpt-would_detect_regression-v1",
+        "jev_revision_count": 0,
+        "baseline_prompt_preserved": true
+      },
+      "integrity": {
+        "phase4_ok": true,
+        "phase5_ok": true,
+        "phase5_note": null
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-29",
+      "example_id": "Jsoup_29",
+      "split": "development",
+      "completeness": {
+        "example_ok": true,
+        "systems": {
+          "BM25": true,
+          "Embedding": true,
+          "Random": true,
+          "Jev": true,
+          "GPT-Nano": true
+        },
+        "systems_complete_with_accepted_gaps": true,
+        "accepted_gap": null
+      },
+      "patch": {
+        "direction": "fixed_to_buggy",
+        "base": "Bf",
+        "proposed": "Bb",
+        "patch_truncated": false,
+        "representation_chars": 778,
+        "representation_char_cap": 12000,
+        "original_patch_chars": 778
+      },
+      "suite": {
+        "N": 23,
+        "K": 23,
+        "num_test_classes": 23,
+        "num_positive_classes": 1,
+        "num_trigger_methods": 1,
+        "source_missing_count": 0
+      },
+      "bm25": {
+        "candidate_recall": true,
+        "num_triggers_in_top_k": 1,
+        "first_trigger_rank": 10,
+        "shortlist_sha256": "e3225c88f20e6aea4875cee8fa6dcb5a37dbc1d83f11721977309673151aacca",
+        "integrity_ok": true
+      },
+      "rankings": {
+        "random_ok": true,
+        "embedding": {
+          "present": true,
+          "ok": true,
+          "N": 23,
+          "method": "Embedding",
+          "model_id": null,
+          "provider": null,
+          "prompt_version": null,
+          "shortlist_sha256": null,
+          "first_trigger_rank": 1
+        },
+        "jev": {
+          "present": true,
+          "ok": true,
+          "N": 23,
+          "method": "Jev",
+          "model_id": "typesafe/jev-1.13",
+          "provider": "openrouter",
+          "prompt_version": "jev-would_detect_regression-v1",
+          "shortlist_sha256": "e3225c88f20e6aea4875cee8fa6dcb5a37dbc1d83f11721977309673151aacca",
+          "first_trigger_rank": 1
+        },
+        "gpt_nano": {
+          "present": true,
+          "ok": true,
+          "N": 23,
+          "method": "GPT-Nano",
+          "model_id": "gpt-5.4-nano-2026-03-17",
+          "provider": "openrouter",
+          "prompt_version": "gpt-would_detect_regression-v1",
+          "shortlist_sha256": "e3225c88f20e6aea4875cee8fa6dcb5a37dbc1d83f11721977309673151aacca",
+          "first_trigger_rank": 1
+        }
+      },
+      "prompts": {
+        "jev_prompt_version": "jev-would_detect_regression-v1",
+        "gpt_prompt_version": "gpt-would_detect_regression-v1",
+        "jev_revision_count": 0,
+        "baseline_prompt_preserved": true
+      },
+      "integrity": {
+        "phase4_ok": true,
+        "phase5_ok": true,
+        "phase5_note": null
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-70",
+      "example_id": "Jsoup_70",
+      "split": "development",
+      "completeness": {
+        "example_ok": true,
+        "systems": {
+          "BM25": true,
+          "Embedding": true,
+          "Random": true,
+          "Jev": false,
+          "GPT-Nano": true
+        },
+        "systems_complete_with_accepted_gaps": true,
+        "accepted_gap": "OpenRouter Cloudflare WAF HTTP 403 on substring file://etc/passwd; accepted 2026-09-22 to continue Phase 6 (see docs/phase5-handoff.md)."
+      },
+      "patch": {
+        "direction": "fixed_to_buggy",
+        "base": "Bf",
+        "proposed": "Bb",
+        "patch_truncated": false,
+        "representation_chars": 827,
+        "representation_char_cap": 12000,
+        "original_patch_chars": 827
+      },
+      "suite": {
+        "N": 34,
+        "K": 34,
+        "num_test_classes": 34,
+        "num_positive_classes": 1,
+        "num_trigger_methods": 1,
+        "source_missing_count": 0
+      },
+      "bm25": {
+        "candidate_recall": true,
+        "num_triggers_in_top_k": 1,
+        "first_trigger_rank": 2,
+        "shortlist_sha256": "02ebda3b89cfe2843c597677b9a9903009686d9ba1ff7588572c95f24393b488",
+        "integrity_ok": true
+      },
+      "rankings": {
+        "random_ok": true,
+        "embedding": {
+          "present": true,
+          "ok": true,
+          "N": 34,
+          "method": "Embedding",
+          "model_id": null,
+          "provider": null,
+          "prompt_version": null,
+          "shortlist_sha256": null,
+          "first_trigger_rank": 1
+        },
+        "jev": {
+          "present": false,
+          "ok": false,
+          "error": "missing",
+          "first_trigger_rank": null
+        },
+        "gpt_nano": {
+          "present": true,
+          "ok": true,
+          "N": 34,
+          "method": "GPT-Nano",
+          "model_id": "gpt-5.4-nano-2026-03-17",
+          "provider": "openrouter",
+          "prompt_version": "gpt-would_detect_regression-v1",
+          "shortlist_sha256": "02ebda3b89cfe2843c597677b9a9903009686d9ba1ff7588572c95f24393b488",
+          "first_trigger_rank": 2
+        }
+      },
+      "prompts": {
+        "jev_prompt_version": "jev-would_detect_regression-v1",
+        "gpt_prompt_version": "gpt-would_detect_regression-v1",
+        "jev_revision_count": 0,
+        "baseline_prompt_preserved": true
+      },
+      "integrity": {
+        "phase4_ok": true,
+        "phase5_ok": true,
+        "phase5_note": "jev_gap_accepted"
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "Jsoup-4",
+      "example_id": "Jsoup_4",
+      "split": "development",
+      "completeness": {
+        "example_ok": true,
+        "systems": {
+          "BM25": true,
+          "Embedding": true,
+          "Random": true,
+          "Jev": true,
+          "GPT-Nano": true
+        },
+        "systems_complete_with_accepted_gaps": true,
+        "accepted_gap": null
+      },
+      "patch": {
+        "direction": "fixed_to_buggy",
+        "base": "Bf",
+        "proposed": "Bb",
+        "patch_truncated": false,
+        "representation_chars": 1158,
+        "representation_char_cap": 12000,
+        "original_patch_chars": 1158
+      },
+      "suite": {
+        "N": 16,
+        "K": 16,
+        "num_test_classes": 16,
+        "num_positive_classes": 1,
+        "num_trigger_methods": 2,
+        "source_missing_count": 0
+      },
+      "bm25": {
+        "candidate_recall": true,
+        "num_triggers_in_top_k": 1,
+        "first_trigger_rank": 5,
+        "shortlist_sha256": "c8a717954d15417adb6652fa8a3a1addedca36d22e53e3af0727967ea11541df",
+        "integrity_ok": true
+      },
+      "rankings": {
+        "random_ok": true,
+        "embedding": {
+          "present": true,
+          "ok": true,
+          "N": 16,
+          "method": "Embedding",
+          "model_id": null,
+          "provider": null,
+          "prompt_version": null,
+          "shortlist_sha256": null,
+          "first_trigger_rank": 1
+        },
+        "jev": {
+          "present": true,
+          "ok": true,
+          "N": 16,
+          "method": "Jev",
+          "model_id": "typesafe/jev-1.13",
+          "provider": "openrouter",
+          "prompt_version": "jev-would_detect_regression-v1",
+          "shortlist_sha256": "c8a717954d15417adb6652fa8a3a1addedca36d22e53e3af0727967ea11541df",
+          "first_trigger_rank": 1
+        },
+        "gpt_nano": {
+          "present": true,
+          "ok": true,
+          "N": 16,
+          "method": "GPT-Nano",
+          "model_id": "gpt-5.4-nano-2026-03-17",
+          "provider": "openrouter",
+          "prompt_version": "gpt-would_detect_regression-v1",
+          "shortlist_sha256": "c8a717954d15417adb6652fa8a3a1addedca36d22e53e3af0727967ea11541df",
+          "first_trigger_rank": 2
+        }
+      },
+      "prompts": {
+        "jev_prompt_version": "jev-would_detect_regression-v1",
+        "gpt_prompt_version": "gpt-would_detect_regression-v1",
+        "jev_revision_count": 0,
+        "baseline_prompt_preserved": true
+      },
+      "integrity": {
+        "phase4_ok": true,
+        "phase5_ok": true,
+        "phase5_note": null
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-56",
+      "example_id": "JacksonDatabind_56",
+      "split": "development",
+      "completeness": {
+        "example_ok": true,
+        "systems": {
+          "BM25": true,
+          "Embedding": true,
+          "Random": true,
+          "Jev": true,
+          "GPT-Nano": true
+        },
+        "systems_complete_with_accepted_gaps": true,
+        "accepted_gap": null
+      },
+      "patch": {
+        "direction": "fixed_to_buggy",
+        "base": "Bf",
+        "proposed": "Bb",
+        "patch_truncated": false,
+        "representation_chars": 1455,
+        "representation_char_cap": 12000,
+        "original_patch_chars": 1455
+      },
+      "suite": {
+        "N": 303,
+        "K": 200,
+        "num_test_classes": 303,
+        "num_positive_classes": 1,
+        "num_trigger_methods": 1,
+        "source_missing_count": 0
+      },
+      "bm25": {
+        "candidate_recall": true,
+        "num_triggers_in_top_k": 1,
+        "first_trigger_rank": 1,
+        "shortlist_sha256": "7580fea0c1c570884cd8e7bb2ac6fb8811c84c8983b1b14437bf49f57f2c96ab",
+        "integrity_ok": true
+      },
+      "rankings": {
+        "random_ok": true,
+        "embedding": {
+          "present": true,
+          "ok": true,
+          "N": 303,
+          "method": "Embedding",
+          "model_id": null,
+          "provider": null,
+          "prompt_version": null,
+          "shortlist_sha256": null,
+          "first_trigger_rank": 22
+        },
+        "jev": {
+          "present": true,
+          "ok": true,
+          "N": 303,
+          "method": "Jev",
+          "model_id": "typesafe/jev-1.13",
+          "provider": "openrouter",
+          "prompt_version": "jev-would_detect_regression-v1",
+          "shortlist_sha256": "7580fea0c1c570884cd8e7bb2ac6fb8811c84c8983b1b14437bf49f57f2c96ab",
+          "first_trigger_rank": 1
+        },
+        "gpt_nano": {
+          "present": true,
+          "ok": true,
+          "N": 303,
+          "method": "GPT-Nano",
+          "model_id": "gpt-5.4-nano-2026-03-17",
+          "provider": "openrouter",
+          "prompt_version": "gpt-would_detect_regression-v1",
+          "shortlist_sha256": "7580fea0c1c570884cd8e7bb2ac6fb8811c84c8983b1b14437bf49f57f2c96ab",
+          "first_trigger_rank": 1
+        }
+      },
+      "prompts": {
+        "jev_prompt_version": "jev-would_detect_regression-v1",
+        "gpt_prompt_version": "gpt-would_detect_regression-v1",
+        "jev_revision_count": 0,
+        "baseline_prompt_preserved": true
+      },
+      "integrity": {
+        "phase4_ok": true,
+        "phase5_ok": true,
+        "phase5_note": null
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-95",
+      "example_id": "JacksonDatabind_95",
+      "split": "development",
+      "completeness": {
+        "example_ok": true,
+        "systems": {
+          "BM25": true,
+          "Embedding": true,
+          "Random": true,
+          "Jev": true,
+          "GPT-Nano": true
+        },
+        "systems_complete_with_accepted_gaps": true,
+        "accepted_gap": null
+      },
+      "patch": {
+        "direction": "fixed_to_buggy",
+        "base": "Bf",
+        "proposed": "Bb",
+        "patch_truncated": false,
+        "representation_chars": 2151,
+        "representation_char_cap": 12000,
+        "original_patch_chars": 2151
+      },
+      "suite": {
+        "N": 349,
+        "K": 200,
+        "num_test_classes": 349,
+        "num_positive_classes": 1,
+        "num_trigger_methods": 1,
+        "source_missing_count": 0
+      },
+      "bm25": {
+        "candidate_recall": true,
+        "num_triggers_in_top_k": 1,
+        "first_trigger_rank": 1,
+        "shortlist_sha256": "5e7415868fa43ad20f5bf284caa0baf668e2900a52826812dad443e7905a70ae",
+        "integrity_ok": true
+      },
+      "rankings": {
+        "random_ok": true,
+        "embedding": {
+          "present": true,
+          "ok": true,
+          "N": 349,
+          "method": "Embedding",
+          "model_id": null,
+          "provider": null,
+          "prompt_version": null,
+          "shortlist_sha256": null,
+          "first_trigger_rank": 1
+        },
+        "jev": {
+          "present": true,
+          "ok": true,
+          "N": 349,
+          "method": "Jev",
+          "model_id": "typesafe/jev-1.13",
+          "provider": "openrouter",
+          "prompt_version": "jev-would_detect_regression-v1",
+          "shortlist_sha256": "5e7415868fa43ad20f5bf284caa0baf668e2900a52826812dad443e7905a70ae",
+          "first_trigger_rank": 9
+        },
+        "gpt_nano": {
+          "present": true,
+          "ok": true,
+          "N": 349,
+          "method": "GPT-Nano",
+          "model_id": "gpt-5.4-nano-2026-03-17",
+          "provider": "openrouter",
+          "prompt_version": "gpt-would_detect_regression-v1",
+          "shortlist_sha256": "5e7415868fa43ad20f5bf284caa0baf668e2900a52826812dad443e7905a70ae",
+          "first_trigger_rank": 14
+        }
+      },
+      "prompts": {
+        "jev_prompt_version": "jev-would_detect_regression-v1",
+        "gpt_prompt_version": "gpt-would_detect_regression-v1",
+        "jev_revision_count": 0,
+        "baseline_prompt_preserved": true
+      },
+      "integrity": {
+        "phase4_ok": true,
+        "phase5_ok": true,
+        "phase5_note": null
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-12",
+      "example_id": "JacksonDatabind_12",
+      "split": "development",
+      "completeness": {
+        "example_ok": true,
+        "systems": {
+          "BM25": true,
+          "Embedding": true,
+          "Random": true,
+          "Jev": true,
+          "GPT-Nano": true
+        },
+        "systems_complete_with_accepted_gaps": true,
+        "accepted_gap": null
+      },
+      "patch": {
+        "direction": "fixed_to_buggy",
+        "base": "Bf",
+        "proposed": "Bb",
+        "patch_truncated": false,
+        "representation_chars": 806,
+        "representation_char_cap": 12000,
+        "original_patch_chars": 806
+      },
+      "suite": {
+        "N": 238,
+        "K": 200,
+        "num_test_classes": 238,
+        "num_positive_classes": 1,
+        "num_trigger_methods": 1,
+        "source_missing_count": 0
+      },
+      "bm25": {
+        "candidate_recall": true,
+        "num_triggers_in_top_k": 1,
+        "first_trigger_rank": 3,
+        "shortlist_sha256": "d092884df85f47dc9b5ca405159f97f6081e50a047b96193d26254b5ef798a2f",
+        "integrity_ok": true
+      },
+      "rankings": {
+        "random_ok": true,
+        "embedding": {
+          "present": true,
+          "ok": true,
+          "N": 238,
+          "method": "Embedding",
+          "model_id": null,
+          "provider": null,
+          "prompt_version": null,
+          "shortlist_sha256": null,
+          "first_trigger_rank": 1
+        },
+        "jev": {
+          "present": true,
+          "ok": true,
+          "N": 238,
+          "method": "Jev",
+          "model_id": "typesafe/jev-1.13",
+          "provider": "openrouter",
+          "prompt_version": "jev-would_detect_regression-v1",
+          "shortlist_sha256": "d092884df85f47dc9b5ca405159f97f6081e50a047b96193d26254b5ef798a2f",
+          "first_trigger_rank": 1
+        },
+        "gpt_nano": {
+          "present": true,
+          "ok": true,
+          "N": 238,
+          "method": "GPT-Nano",
+          "model_id": "gpt-5.4-nano-2026-03-17",
+          "provider": "openrouter",
+          "prompt_version": "gpt-would_detect_regression-v1",
+          "shortlist_sha256": "d092884df85f47dc9b5ca405159f97f6081e50a047b96193d26254b5ef798a2f",
+          "first_trigger_rank": 6
+        }
+      },
+      "prompts": {
+        "jev_prompt_version": "jev-would_detect_regression-v1",
+        "gpt_prompt_version": "gpt-would_detect_regression-v1",
+        "jev_revision_count": 0,
+        "baseline_prompt_preserved": true
+      },
+      "integrity": {
+        "phase4_ok": true,
+        "phase5_ok": true,
+        "phase5_note": null
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-105",
+      "example_id": "JacksonDatabind_105",
+      "split": "development",
+      "completeness": {
+        "example_ok": true,
+        "systems": {
+          "BM25": true,
+          "Embedding": true,
+          "Random": true,
+          "Jev": true,
+          "GPT-Nano": true
+        },
+        "systems_complete_with_accepted_gaps": true,
+        "accepted_gap": null
+      },
+      "patch": {
+        "direction": "fixed_to_buggy",
+        "base": "Bf",
+        "proposed": "Bb",
+        "patch_truncated": false,
+        "representation_chars": 1050,
+        "representation_char_cap": 12000,
+        "original_patch_chars": 1050
+      },
+      "suite": {
+        "N": 432,
+        "K": 200,
+        "num_test_classes": 432,
+        "num_positive_classes": 1,
+        "num_trigger_methods": 1,
+        "source_missing_count": 0
+      },
+      "bm25": {
+        "candidate_recall": true,
+        "num_triggers_in_top_k": 1,
+        "first_trigger_rank": 21,
+        "shortlist_sha256": "2cd518d85ae5a87ceb0de2fb56a2a3aabfb33a07055bb661240d35174d047c91",
+        "integrity_ok": true
+      },
+      "rankings": {
+        "random_ok": true,
+        "embedding": {
+          "present": true,
+          "ok": true,
+          "N": 432,
+          "method": "Embedding",
+          "model_id": null,
+          "provider": null,
+          "prompt_version": null,
+          "shortlist_sha256": null,
+          "first_trigger_rank": 6
+        },
+        "jev": {
+          "present": true,
+          "ok": true,
+          "N": 432,
+          "method": "Jev",
+          "model_id": "typesafe/jev-1.13",
+          "provider": "openrouter",
+          "prompt_version": "jev-would_detect_regression-v1",
+          "shortlist_sha256": "2cd518d85ae5a87ceb0de2fb56a2a3aabfb33a07055bb661240d35174d047c91",
+          "first_trigger_rank": 1
+        },
+        "gpt_nano": {
+          "present": true,
+          "ok": true,
+          "N": 432,
+          "method": "GPT-Nano",
+          "model_id": "gpt-5.4-nano-2026-03-17",
+          "provider": "openrouter",
+          "prompt_version": "gpt-would_detect_regression-v1",
+          "shortlist_sha256": "2cd518d85ae5a87ceb0de2fb56a2a3aabfb33a07055bb661240d35174d047c91",
+          "first_trigger_rank": 2
+        }
+      },
+      "prompts": {
+        "jev_prompt_version": "jev-would_detect_regression-v1",
+        "gpt_prompt_version": "gpt-would_detect_regression-v1",
+        "jev_revision_count": 0,
+        "baseline_prompt_preserved": true
+      },
+      "integrity": {
+        "phase4_ok": true,
+        "phase5_ok": true,
+        "phase5_note": null
+      },
+      "ok": true
+    },
+    {
+      "qualified_id": "JacksonDatabind-28",
+      "example_id": "JacksonDatabind_28",
+      "split": "development",
+      "completeness": {
+        "example_ok": true,
+        "systems": {
+          "BM25": true,
+          "Embedding": true,
+          "Random": true,
+          "Jev": true,
+          "GPT-Nano": true
+        },
+        "systems_complete_with_accepted_gaps": true,
+        "accepted_gap": null
+      },
+      "patch": {
+        "direction": "fixed_to_buggy",
+        "base": "Bf",
+        "proposed": "Bb",
+        "patch_truncated": false,
+        "representation_chars": 1327,
+        "representation_char_cap": 12000,
+        "original_patch_chars": 1327
+      },
+      "suite": {
+        "N": 279,
+        "K": 200,
+        "num_test_classes": 279,
+        "num_positive_classes": 1,
+        "num_trigger_methods": 1,
+        "source_missing_count": 0
+      },
+      "bm25": {
+        "candidate_recall": true,
+        "num_triggers_in_top_k": 1,
+        "first_trigger_rank": 16,
+        "shortlist_sha256": "3211529683a06913bb0557cbf47869b148ff3738557c38decc42a5d5c21e91eb",
+        "integrity_ok": true
+      },
+      "rankings": {
+        "random_ok": true,
+        "embedding": {
+          "present": true,
+          "ok": true,
+          "N": 279,
+          "method": "Embedding",
+          "model_id": null,
+          "provider": null,
+          "prompt_version": null,
+          "shortlist_sha256": null,
+          "first_trigger_rank": 14
+        },
+        "jev": {
+          "present": true,
+          "ok": true,
+          "N": 279,
+          "method": "Jev",
+          "model_id": "typesafe/jev-1.13",
+          "provider": "openrouter",
+          "prompt_version": "jev-would_detect_regression-v1",
+          "shortlist_sha256": "3211529683a06913bb0557cbf47869b148ff3738557c38decc42a5d5c21e91eb",
+          "first_trigger_rank": 6
+        },
+        "gpt_nano": {
+          "present": true,
+          "ok": true,
+          "N": 279,
+          "method": "GPT-Nano",
+          "model_id": "gpt-5.4-nano-2026-03-17",
+          "provider": "openrouter",
+          "prompt_version": "gpt-would_detect_regression-v1",
+          "shortlist_sha256": "3211529683a06913bb0557cbf47869b148ff3738557c38decc42a5d5c21e91eb",
+          "first_trigger_rank": 3
+        }
+      },
+      "prompts": {
+        "jev_prompt_version": "jev-would_detect_regression-v1",
+        "gpt_prompt_version": "gpt-would_detect_regression-v1",
+        "jev_revision_count": 0,
+        "baseline_prompt_preserved": true
+      },
+      "integrity": {
+        "phase4_ok": true,
+        "phase5_ok": true,
+        "phase5_note": null
+      },
+      "ok": true
+    }
+  ],
+  "failures": [],
+  "ok": true
+}

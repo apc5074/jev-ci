@@ -39,3 +39,7 @@ docker run --rm --platform linux/amd64 \
 | [docs/jev-provider-decision.md](docs/jev-provider-decision.md) | Jev route selection / pricing / probe gate |
 | [docs/cache-ledger.md](docs/cache-ledger.md) | Semantic cache keys, failures, usage ledger |
 | [docs/random-baseline.md](docs/random-baseline.md) | Seeded Random permutations / index convention |
+| [docs/embeddings.md](docs/embeddings.md) | Full-suite Embedding baseline / over-limit rule |
+| [docs/jev-ranker.md](docs/jev-ranker.md) | One-pair Jev Noul client / captured request |
+| [docs/gpt-ranker.md](docs/gpt-ranker.md) | Multi-model GPT comparison clients |
+| [docs/semantic-scheduler.md](docs/semantic-scheduler.md) | Concurrency, retries, spend ceiling |

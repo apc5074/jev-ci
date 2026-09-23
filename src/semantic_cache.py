@@ -12,6 +12,7 @@ Bug ID and test class appear only in metadata — never inside model-visible
 
 from __future__ import annotations
 
+import fcntl
 import hashlib
 import json
 import math
@@ -21,7 +22,7 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 from src.example_contract import WORKSPACE, atomic_write_json, read_json
-from src.jev_providers import OPENROUTER_JEV_MODEL, PUBLISHED_RATES, effective_input_cost_usd
+from src.jev_providers import OPENROUTER_JEV_MODEL, PUBLISHED_RATES
 
 CACHE_ROOT = WORKSPACE / "cache"
 JEV_CACHE_DIR = CACHE_ROOT / "jev"
@@ -38,6 +39,22 @@ JEV_PROMPT_VERSION = "jev-would_detect_regression-v1"
 GPT_PROMPT_VERSION = "gpt-would_detect_regression-v1"
 
 JEV_QUESTION_ID = "would_detect_regression"
+
+# overall.md §20 — GPT task wrapper (rubric body is JEV_INSTRUCTIONS + criteria).
+GPT_TASK_INSTRUCTION = (
+    "Return a number from 0 to 1 estimating how likely this existing test\n"
+    "class is to expose an incorrect behavioral regression caused by the\n"
+    "proposed code change.\n"
+    "\n"
+    "Use the provided rubric. Return only the structured probability."
+)
+
+GPT_RESPONSE_JSON_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {"probability": {"type": "number"}},
+    "required": ["probability"],
+    "additionalProperties": False,
+}
 
 JEV_INSTRUCTIONS = (
     "A code change is proposed against a working codebase.\n"
@@ -119,13 +136,15 @@ def build_jev_question() -> dict[str, Any]:
 
 
 def build_gpt_question() -> dict[str, Any]:
-    """Canonical GPT structured-output question envelope (same rubric, v1)."""
+    """Canonical GPT structured-output question envelope (same rubric as Jev)."""
     return {
         "id": JEV_QUESTION_ID,
         "type": "probability",
+        "task_instruction": GPT_TASK_INSTRUCTION,
         "instructions": JEV_INSTRUCTIONS,
         "criteria": dict(JEV_CRITERIA),
-        "response_schema": {"probability": "number in [0,1]"},
+        "response_schema": dict(GPT_RESPONSE_JSON_SCHEMA),
+        "no_chain_of_thought": True,
     }
 
 
@@ -184,13 +203,19 @@ def validate_score_entry(entry: Mapping[str, Any]) -> None:
     if entry.get("status") != "success":
         raise CacheError(f"not a success entry: status={entry.get('status')!r}")
     score = entry.get("score")
-    if not isinstance(score, (int, float)) or not math.isfinite(float(score)):
+    if isinstance(score, bool) or not isinstance(score, (int, float)) or not math.isfinite(float(score)):
         raise CacheError(f"non-finite score: {score!r}")
     if not (0.0 <= float(score) <= 1.0):
         raise CacheError(f"score out of [0,1]: {score}")
     usage = entry.get("usage") or {}
-    if not isinstance(usage.get("input_tokens"), int) or usage["input_tokens"] < 0:
+    if type(usage.get("input_tokens")) is not int or usage["input_tokens"] < 0:
         raise CacheError(f"bad usage.input_tokens: {usage!r}")
+    for field in ("output_tokens", "cached_input_tokens"):
+        value = usage.get(field)
+        if value is not None and (type(value) is not int or value < 0):
+            raise CacheError(f"bad usage.{field}: {value!r}")
+    if (usage.get("cached_input_tokens") or 0) > usage["input_tokens"]:
+        raise CacheError("cached tokens exceed total input tokens")
     if entry.get("cache_key") != semantic_cache_key(
         provider=str(entry.get("provider")),
         model_id=str(entry.get("model_id")),
@@ -215,8 +240,12 @@ def validate_embedding_entry(entry: Mapping[str, Any]) -> None:
     if not all(isinstance(x, (int, float)) and math.isfinite(float(x)) for x in vector):
         raise CacheError("embedding vector has non-finite values")
     usage = entry.get("usage") or {}
-    if not isinstance(usage.get("input_tokens"), int) or usage["input_tokens"] < 0:
+    if type(usage.get("input_tokens")) is not int or usage["input_tokens"] < 0:
         raise CacheError(f"bad usage.input_tokens: {usage!r}")
+    if entry.get("dimensions") != len(vector):
+        raise CacheError("embedding dimensions disagree with vector length")
+    if not any(vector):
+        raise CacheError("zero embedding vector has undefined cosine similarity")
     expected = embedding_cache_key(
         model_id=str(entry.get("model_id")),
         input_text=str(entry.get("input_text")),
@@ -428,6 +457,7 @@ def default_price_basis(*, route: str) -> dict[str, Any]:
 def cost_breakdown_from_usage(
     *,
     input_tokens: int,
+    output_tokens: int = 0,
     price_basis: Mapping[str, Any],
     actual_cash_usd: float | None = None,
     provider_reported_cost_usd: float | None = None,
@@ -443,11 +473,19 @@ def cost_breakdown_from_usage(
             "provider_reported_cost_usd": provider_reported_cost_usd,
             "actual_cash_usd": actual_cash_usd,
         }
-    parts = effective_input_cost_usd(
-        input_tokens=input_tokens,
-        input_usd_per_mtok=float(input_rate),
-        platform_fee_rate=fee_rate,
-    )
+    for count in (input_tokens, output_tokens):
+        if type(count) is not int or count < 0:
+            raise CacheError("token counts must be nonnegative integers")
+    output_rate = price_basis.get("output_usd_per_mtok")
+    if output_tokens and output_rate is None:
+        raise CacheError("output price missing for nonzero output usage")
+    inference = (input_tokens * float(input_rate) +
+                 output_tokens * float(output_rate or 0.0)) / 1_000_000.0
+    parts = {
+        "list_price_inference_usd": inference,
+        "platform_fee_usd": inference * fee_rate,
+        "effective_prepaid_credits_usd": inference * (1.0 + fee_rate),
+    }
     return {
         **parts,
         "provider_reported_cost_usd": provider_reported_cost_usd,
@@ -480,38 +518,39 @@ def append_usage_ledger(
     if not cache_key or not attempt_id:
         raise CacheError("ledger record requires cache_key and attempt_id")
 
-    existing_ids: set[str] = set()
-    if path.is_file():
-        for line in path.read_text(encoding="utf-8").splitlines():
-            if not line.strip():
-                continue
-            try:
-                row = json.loads(line)
-            except json.JSONDecodeError:
-                continue
-            aid = row.get("attempt_id") or row.get("cache_key")
-            if isinstance(aid, str):
-                existing_ids.add(aid)
-    if attempt_id in existing_ids:
-        return LedgerAppendResult(
-            appended=False,
-            path=path,
-            reason="attempt_id already in ledger",
-        )
+    # Serialize the read/dedupe/append transaction across threads and processes.
+    with path.with_suffix(path.suffix + ".lock").open("a") as lock_handle:
+        fcntl.flock(lock_handle, fcntl.LOCK_EX)
+        existing_ids: set[str] = set()
+        if path.is_file():
+            for line in path.read_text(encoding="utf-8").splitlines():
+                if not line.strip():
+                    continue
+                try:
+                    row = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                aid = row.get("attempt_id") or row.get("cache_key")
+                if isinstance(aid, str):
+                    existing_ids.add(aid)
+        if attempt_id in existing_ids:
+            return LedgerAppendResult(
+                appended=False,
+                path=path,
+                reason="attempt_id already in ledger",
+            )
 
-    row = {
-        "schema_version": LEDGER_SCHEMA_VERSION,
-        "timestamp": _utcnow(),
-        **dict(record),
-        "attempt_id": attempt_id,
-    }
-    line = canonical_json(row) + "\n"
-    # Append atomically enough for single-writer experiment scripts: write to
-    # temp sibling then concatenate via exclusive open+write of the new line.
-    with path.open("a", encoding="utf-8") as handle:
-        handle.write(line)
-        handle.flush()
-    return LedgerAppendResult(appended=True, path=path, reason="appended")
+        row = {
+            "schema_version": LEDGER_SCHEMA_VERSION,
+            "timestamp": _utcnow(),
+            **dict(record),
+            "attempt_id": attempt_id,
+        }
+        line = canonical_json(row) + "\n"
+        with path.open("a", encoding="utf-8") as handle:
+            handle.write(line)
+            handle.flush()
+        return LedgerAppendResult(appended=True, path=path, reason="appended")
 
 
 def read_usage_ledger(*, ledger_path: Path | None = None) -> list[dict[str, Any]]:

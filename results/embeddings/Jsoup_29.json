@@ -1,0 +1,197 @@
+{
+  "schema_version": "jev-embedding-ranking-v1",
+  "embedding_baseline_version": "jev-embedding-baseline-v1",
+  "example_id": "Jsoup_29",
+  "qualified_id": "Jsoup-29",
+  "split": "development",
+  "N": 23,
+  "method": "Embedding",
+  "model_id": "text-embedding-3-small",
+  "provider": "openrouter",
+  "request_model": "openai/text-embedding-3-small",
+  "dimensions": 1536,
+  "over_limit_rule": "fail_closed_no_truncate_v1",
+  "max_input_tokens": 8192,
+  "ranking": [
+    {
+      "test_class": "org.jsoup.nodes.DocumentTest",
+      "score": 0.7174945297971779,
+      "rank": 1
+    },
+    {
+      "test_class": "org.jsoup.nodes.DocumentTypeTest",
+      "score": 0.6344296250000354,
+      "rank": 2
+    },
+    {
+      "test_class": "org.jsoup.helper.StringUtilTest",
+      "score": 0.6100862699367019,
+      "rank": 3
+    },
+    {
+      "test_class": "org.jsoup.nodes.NodeTest",
+      "score": 0.6096903098594443,
+      "rank": 4
+    },
+    {
+      "test_class": "org.jsoup.nodes.ElementTest",
+      "score": 0.6020985910586811,
+      "rank": 5
+    },
+    {
+      "test_class": "org.jsoup.select.ElementsTest",
+      "score": 0.5982116246067577,
+      "rank": 6
+    },
+    {
+      "test_class": "org.jsoup.nodes.TextNodeTest",
+      "score": 0.5977643018306138,
+      "rank": 7
+    },
+    {
+      "test_class": "org.jsoup.safety.CleanerTest",
+      "score": 0.583890599459241,
+      "rank": 8
+    },
+    {
+      "test_class": "org.jsoup.helper.DataUtilTest",
+      "score": 0.5791237134947298,
+      "rank": 9
+    },
+    {
+      "test_class": "org.jsoup.parser.HtmlParserTest",
+      "score": 0.5722531535527383,
+      "rank": 10
+    },
+    {
+      "test_class": "org.jsoup.parser.XmlTreeBuilderTest",
+      "score": 0.5660756298010741,
+      "rank": 11
+    },
+    {
+      "test_class": "org.jsoup.nodes.AttributesTest",
+      "score": 0.5569039346224387,
+      "rank": 12
+    },
+    {
+      "test_class": "org.jsoup.parser.AttributeParseTest",
+      "score": 0.5474795209104085,
+      "rank": 13
+    },
+    {
+      "test_class": "org.jsoup.nodes.EntitiesTest",
+      "score": 0.541862749183027,
+      "rank": 14
+    },
+    {
+      "test_class": "org.jsoup.parser.TagTest",
+      "score": 0.5337329219341203,
+      "rank": 15
+    },
+    {
+      "test_class": "org.jsoup.nodes.AttributeTest",
+      "score": 0.5101430016886929,
+      "rank": 16
+    },
+    {
+      "test_class": "org.jsoup.integration.ParseTest",
+      "score": 0.5042271145933003,
+      "rank": 17
+    },
+    {
+      "test_class": "org.jsoup.select.SelectorTest",
+      "score": 0.5027213766330478,
+      "rank": 18
+    },
+    {
+      "test_class": "org.jsoup.parser.CharacterReaderTest",
+      "score": 0.4784139769903337,
+      "rank": 19
+    },
+    {
+      "test_class": "org.jsoup.integration.UrlConnectTest",
+      "score": 0.4724429650140896,
+      "rank": 20
+    },
+    {
+      "test_class": "org.jsoup.select.QueryParserTest",
+      "score": 0.4671644865120207,
+      "rank": 21
+    },
+    {
+      "test_class": "org.jsoup.helper.HttpConnectionTest",
+      "score": 0.4508897753439268,
+      "rank": 22
+    },
+    {
+      "test_class": "org.jsoup.parser.TokenQueueTest",
+      "score": 0.42980765100434626,
+      "rank": 23
+    }
+  ],
+  "ranked_ids": [
+    "org.jsoup.nodes.DocumentTest",
+    "org.jsoup.nodes.DocumentTypeTest",
+    "org.jsoup.helper.StringUtilTest",
+    "org.jsoup.nodes.NodeTest",
+    "org.jsoup.nodes.ElementTest",
+    "org.jsoup.select.ElementsTest",
+    "org.jsoup.nodes.TextNodeTest",
+    "org.jsoup.safety.CleanerTest",
+    "org.jsoup.helper.DataUtilTest",
+    "org.jsoup.parser.HtmlParserTest",
+    "org.jsoup.parser.XmlTreeBuilderTest",
+    "org.jsoup.nodes.AttributesTest",
+    "org.jsoup.parser.AttributeParseTest",
+    "org.jsoup.nodes.EntitiesTest",
+    "org.jsoup.parser.TagTest",
+    "org.jsoup.nodes.AttributeTest",
+    "org.jsoup.integration.ParseTest",
+    "org.jsoup.select.SelectorTest",
+    "org.jsoup.parser.CharacterReaderTest",
+    "org.jsoup.integration.UrlConnectTest",
+    "org.jsoup.select.QueryParserTest",
+    "org.jsoup.helper.HttpConnectionTest",
+    "org.jsoup.parser.TokenQueueTest"
+  ],
+  "patch_cache_key": "afacad932e643daead85cbf13e955f4492615bc96107743700a0f84f2588e12d",
+  "test_cache_keys": {
+    "org.jsoup.helper.DataUtilTest": "fe50159282b932e12263a0c0d6c1dd69cf2105fada87b17f0b11c850d0d0073e",
+    "org.jsoup.helper.HttpConnectionTest": "421a1b3b27c8bc37a2f799bf69c06a94d639dc67ed988f6e80c366df41050f92",
+    "org.jsoup.helper.StringUtilTest": "0ecc804dffad77cf5b08ca9a644ac9ec8f667b36af8ed84f2fc38d76dd8f5e75",
+    "org.jsoup.integration.ParseTest": "6aedbf8c3b04ef2d4575ba1908f62ebd753a4920db38a5a2c8c13e9b61739153",
+    "org.jsoup.integration.UrlConnectTest": "fc11d1bdab5ac8276bb681391ba8b8c67cc29a83922c89fa77ee4a02489511b6",
+    "org.jsoup.nodes.AttributeTest": "7fe909bc4b4277ae918feaeb9f570d471a105a02635785adf569f1973e9e79f9",
+    "org.jsoup.nodes.AttributesTest": "8a3769703fff356be74fe8f849ee542f54bfcd70b89a05602528bedf4df3171b",
+    "org.jsoup.nodes.DocumentTest": "d45924ca2a5bf4be24904ac9c89e689266cf653d3a79e33c94463eb709f5890a",
+    "org.jsoup.nodes.DocumentTypeTest": "428c817a8bd9796c74542849497f4358ab415d04ae5cfad2eaa7bfbdb63b12b9",
+    "org.jsoup.nodes.ElementTest": "bfeab94f82ee76106923ccc29e8c0e9dfba5999d05c63074b7deecfd4a95356c",
+    "org.jsoup.nodes.EntitiesTest": "0ae2bc2a812c1fb0523f179a1a39a6433fa259aea8879ba1378dfa5e20d1f88b",
+    "org.jsoup.nodes.NodeTest": "ca1e39c21bf105d3b282f78377e21abf605f4998ddb7170ea08f77024e593d8b",
+    "org.jsoup.nodes.TextNodeTest": "96f280f79ac23151bdc3910d8cfc5f1349ebb37152889e2cc372fbd92b2afe07",
+    "org.jsoup.parser.AttributeParseTest": "92390e77f6d7b02962491774d722d4dda80adc61d727d7e030315b552b1283e2",
+    "org.jsoup.parser.CharacterReaderTest": "4d3628f3c8b8175cb1b335eb009f1fefcf931dff29346a86d7f4f5882c5d5ab6",
+    "org.jsoup.parser.HtmlParserTest": "193391484acfda22a5a3158c1a7e61ac9be6a026ec2b9413cb4f6fcb46651569",
+    "org.jsoup.parser.TagTest": "b6b02bc7216994c9e2ca48b757c28579c10764ef83417924d4923a842f6e1f21",
+    "org.jsoup.parser.TokenQueueTest": "edd58b8f42f15f0e2734fdda840c6d87c721d5ee61c38bc4bed863241a49ae35",
+    "org.jsoup.parser.XmlTreeBuilderTest": "5d9bbbaa4bfabe1991dc876f11412238eabd7b8c9cebe071c82c44034d76d124",
+    "org.jsoup.safety.CleanerTest": "2984ae127635fe113f3aa8422b3014703c0acc53f3b66f96e9fd490581b1b24c",
+    "org.jsoup.select.ElementsTest": "5d42c380c6f93aa8fa9e2cf70ca6c9d4f696bdd7060d0626f8d5ccc5c4a61dd0",
+    "org.jsoup.select.QueryParserTest": "f0fa2727898173e41a1ded15590bbbdfd92a2885bcd9d7d8331ea9aea0d60ff0",
+    "org.jsoup.select.SelectorTest": "5738c2e3710e531285ebbf0e88b2094ee66a9333e656f18c8c415f226285b35d"
+  },
+  "total_input_tokens": 27904,
+  "input_hashes": {
+    "patch_representation_sha256": "38b1e3186b3272452c382a36dfce5cce9e82536115fd4f9ae91bd206f65eeee0",
+    "test_class_ids_sha256": "a135c8960ba5ab180f6806e9c90d196e802a74ace1053c19c5b80f2bc8b50bfb",
+    "test_representations_sha256": "1bc539854bd8b283db6b5896f8f7079bcee2849ae696c0531cd34af5806cd242"
+  },
+  "settings": {
+    "similarity": "cosine",
+    "tie_break": "fqcn_asc",
+    "uses_bm25": false,
+    "shortlist_restricted": false,
+    "stores_vectors_in_ranking": false,
+    "vector_cache": "cache/embeddings/<sha256>.json"
+  }
+}

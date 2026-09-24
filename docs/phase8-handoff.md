@@ -16,44 +16,44 @@ without changing methods, raw data, metrics, or the headline lineup.
 
 | Artifact | Path | SHA-256 |
 | --- | --- | --- |
-| metrics_csv | `results/metrics.csv` | `5db4b0a49f6261ebe1d158c642cf7ca1ba3fdea2f0252757d4d74a57ae07bd91` |
-| statistics_json | `results/statistics.json` | `44210263c95624cee2606aad91d693ec6b79f1e9654fc0d739b3254eefaf7138` |
-| headline_table | `results/phase8/headline_table.md` | `f00fed0f1bd5f2537045a6bbd4bf29e6a7e7e280facded9cbddcc6b3d57f1dc5` |
-| figure_data | `results/phase8/figure_data.json` | `0eb4ef4c28761c168c26f9a4e508d16c14065a27bb8f96fa07191079ec28b004` |
-| cohort_summaries | `results/phase8/cohort_summaries.json` | `744f8f31d2ba21382b1a13e633344ace5865371c48d5308edfeb185b4a08fdc5` |
+| metrics_csv | `results/metrics.csv` | `4bd4be3cc3f59e8d90b6fb4c847d45995bf6f97697a0a0d6b6dadb2ab9ecb32e` |
+| statistics_json | `results/statistics.json` | `9df933050134bf6eaa3aaca46534e07e41b5c5662ae4a0e75128d06f6bb3bdd7` |
+| headline_table | `results/phase8/headline_table.md` | `3f8aa21f8ab7aff80fc9901c22728ca8e24470fe947b6988b19033a1a0653f44` |
+| figure_data | `results/phase8/figure_data.json` | `739c36b66f34afd366f5a43a2c4052c505abbce60378c4ef88e2caaf504bc7e3` |
+| cohort_summaries | `results/phase8/cohort_summaries.json` | `71b8f3d7e09930503a9262b383da26c3cba75a459e94f54a3cf0d479d85bd20f` |
 | cost_latency | `results/phase8/cost_latency.json` | `e2ee4beb48c0acdb8ee5519f50e0487cab65f8cc57f92f75bb31986f9bb5d1b3` |
-| evaluate_regeneration | `results/phase8/evaluate_regeneration.json` | `78f41cd2651c8471909f7c2b22525678680a3f8f1e4895b90cdde785487e56be` |
-| case20_deltas | `results/phase8/case20_deltas.json` | `93caed0cdefdc3442f9668b6a1e914fdcb71cf1449ad5ab3ab5ec567a3f1cebe` |
-| figure figure1_budget_curve.svg | `results/phase8/figures/figure1_budget_curve.svg` | `29a926cf4fd3297596c8e6843acb41940815291effab0f5caad5bdcb94b68f4f` |
-| figure figure2_nftr_cdf.svg | `results/phase8/figures/figure2_nftr_cdf.svg` | `ab2abc4b50dc73dcec4cc289a28c8e210383d0dd75682239aa539fd3322bb054` |
-| figure figure3_project_fdr10.svg | `results/phase8/figures/figure3_project_fdr10.svg` | `61174209e8164049da7e8606e5bf9d697d0d74202a4654111a670b71ff5cafd8` |
-| figure figure4_quality_vs_cost.svg | `results/phase8/figures/figure4_quality_vs_cost.svg` | `cb8c712fed4900b58b870b6ba4a210217cbb2286984993241a28a1f4b353f843` |
+| evaluate_regeneration | `results/phase8/evaluate_regeneration.json` | `cd7b7687bc7e55e20c7d2bb16fe8ba973dfd8338638c389dc9f1f4da5c18c690` |
+| case20_deltas | `results/phase8/case20_deltas.json` | `636ea6259ac1df751c44d522d15bfb76d3adc2581ba63ab3cc2c15272cfd3b56` |
+| figure figure1_budget_curve.svg | `results/phase8/figures/figure1_budget_curve.svg` | `0b268610fa24feb28bfcc89d4d0f0aab634d53616cad41404e5d432b989b1903` |
+| figure figure2_nftr_cdf.svg | `results/phase8/figures/figure2_nftr_cdf.svg` | `a89cbb28faba85b8f5907bae8ed00b54e4c22db24481e354cd934d86d1005e3d` |
+| figure figure3_project_fdr10.svg | `results/phase8/figures/figure3_project_fdr10.svg` | `68d81fa43c04e3bbfe42488443ba0b6c3c5ca09f3d27b038ea1c8030bcc82b3e` |
+| figure figure4_quality_vs_cost.svg | `results/phase8/figures/figure4_quality_vs_cost.svg` | `4228fcb679f5d806b25c88099f8b9430f17b3b8fdfb954eeefef8450c3672bd7` |
 
 ## Practical success
 
 - **Result:** `PASS`
 - Winning alternative: `alt1`
-- FDR@10% Jev=0.8640, BM25=0.7360, GPT-Nano=0.9120
-- Alt1 Δpp Jev−BM25: 12.8
-- Alt2 cost ratio Jev/GPT: 0.2471
+- FDR@10% Jev=0.9558, BM25=0.7345, GPT-Nano=0.9204
+- Alt1 Δpp Jev−BM25: 22.1
+- Alt2 cost ratio Jev/GPT: 0.2536
 
 ## Candidate ceiling
 
-- BM25 trigger recall@min(200,N): **125/125 = 1.0000**
+- BM25 trigger recall@min(200,N): **113/113 = 1.0000**
 
 ## Jev misses @10%
 
 - Detections: 108
-- Misses: 17
+- Misses: 5
 - Candidate-generation: 0
-- Reranker: 17
-- Reranker IDs: `Cli-13, Cli-27, Cli-28, Jsoup-33, Jsoup-40, Jsoup-47, Jsoup-54, Jsoup-69, Jsoup-72, Jsoup-75, Jsoup-78, Jsoup-81, Jsoup-84, Jsoup-85, Jsoup-86, Lang-6, Math-104`
+- Reranker: 5
+- Reranker IDs: `Cli-13, Cli-27, Cli-28, Lang-6, Math-104`
 
 ## 20-case qualitative review list
 
 - Path: `results/phase8/case20_deltas.json`
 - Rule: delta = BM25_first_trigger_rank - Jev_first_trigger_rank; 10 largest deltas (Jev gains) + 10 smallest (Jev losses); tie-break: project name then numeric bug_id (manifest order family)
-- IDs: `JacksonDatabind-62, JacksonDatabind-35, JacksonDatabind-38, JacksonDatabind-49, JacksonDatabind-47, JacksonDatabind-72, JacksonDatabind-15, Cli-21, Math-13, Math-14, Jsoup-75, Jsoup-84, Jsoup-86, Jsoup-69, Jsoup-78, Jsoup-72, Jsoup-81, Jsoup-33, Jsoup-47, Jsoup-54`
+- IDs: `JacksonDatabind-62, JacksonDatabind-35, JacksonDatabind-38, JacksonDatabind-49, JacksonDatabind-47, JacksonDatabind-72, JacksonDatabind-15, Cli-21, Math-13, Math-14, JacksonDatabind-103, Math-104, JacksonDatabind-51, Lang-6, Lang-61, Cli-28, Lang-26, Cli-32, JacksonDatabind-100, Lang-47`
 
 ## Offline regenerate
 
@@ -63,6 +63,6 @@ docker run --rm --platform linux/amd64 --network=none -v "$(pwd):/workspace" -w 
 
 ## Deviations (transparent)
 
-- **A-001-eval** (availability): 12 Jsoup evaluation bugs lack Jev rankings (OpenRouter WAF). Phase 8 imputes non-detection with r=N for denom-125 headlines.
+- **A-001-eval** (availability_cohort): 12 Jsoup evaluation bugs lack complete Jev rankings (OpenRouter WAF). Headline analysis excludes those 12 bugs from every method (paired denom=113). Listed in README.
 - **D-wallclock** (measurement): Shortlist wall times reconstructed from per-request latencies at concurrency 16; Phase 7 did not persist end-to-end walls.
 - **D-tag-name** (naming): Freeze tag is experiment-v1 (overall.md historically said experiment-v1-frozen).

@@ -1,0 +1,90 @@
+{
+  "schema_version": "jev-phase9-figures-manifest-v1",
+  "created_at": "2026-09-23T15:24:01+00:00",
+  "ok": true,
+  "analysis_cohort": {
+    "policy": "exclude_a001_jev_waf_gaps_from_all_methods",
+    "note": "12 Jsoup evaluation bugs with accepted Jev A-001 WAF gaps are excluded from headline metrics for every method (paired denom=113). Listed in README.",
+    "full_evaluation_bugs": 125,
+    "headline_evaluation_bugs": 113,
+    "excluded_count": 12,
+    "excluded_qualified_ids": [
+      "Jsoup-33",
+      "Jsoup-40",
+      "Jsoup-47",
+      "Jsoup-54",
+      "Jsoup-69",
+      "Jsoup-72",
+      "Jsoup-75",
+      "Jsoup-78",
+      "Jsoup-81",
+      "Jsoup-84",
+      "Jsoup-85",
+      "Jsoup-86"
+    ],
+    "excluded_reason": "A-001 OpenRouter WAF blocked complete Jev shortlist scoring"
+  },
+  "n_evaluation_bugs": 113,
+  "source_figure_data": {
+    "path": "results/phase8/figure_data.json",
+    "sha256": "739c36b66f34afd366f5a43a2c4052c505abbce60378c4ef88e2caaf504bc7e3",
+    "bytes": 58428
+  },
+  "figures": {
+    "figure1": {
+      "path": "results/figures/figure1_fault_detection_vs_budget.svg",
+      "sha256": "0b268610fa24feb28bfcc89d4d0f0aab634d53616cad41404e5d432b989b1903",
+      "bytes": 13885,
+      "source": "results/phase8/figures/figure1_budget_curve.svg",
+      "source_sha256": "0b268610fa24feb28bfcc89d4d0f0aab634d53616cad41404e5d432b989b1903"
+    },
+    "figure2": {
+      "path": "results/figures/figure2_first_trigger_rank_cdf.svg",
+      "sha256": "a89cbb28faba85b8f5907bae8ed00b54e4c22db24481e354cd934d86d1005e3d",
+      "bytes": 17743,
+      "source": "results/phase8/figures/figure2_nftr_cdf.svg",
+      "source_sha256": "a89cbb28faba85b8f5907bae8ed00b54e4c22db24481e354cd934d86d1005e3d"
+    },
+    "figure3": {
+      "path": "results/figures/figure3_fdr10_by_project.svg",
+      "sha256": "68d81fa43c04e3bbfe42488443ba0b6c3c5ca09f3d27b038ea1c8030bcc82b3e",
+      "bytes": 11915,
+      "source": "results/phase8/figures/figure3_project_fdr10.svg",
+      "source_sha256": "68d81fa43c04e3bbfe42488443ba0b6c3c5ca09f3d27b038ea1c8030bcc82b3e"
+    },
+    "figure4": {
+      "path": "results/figures/figure4_quality_vs_cost.svg",
+      "sha256": "4228fcb679f5d806b25c88099f8b9430f17b3b8fdfb954eeefef8450c3672bd7",
+      "bytes": 6828,
+      "source": "results/phase8/figures/figure4_quality_vs_cost.svg",
+      "source_sha256": "4228fcb679f5d806b25c88099f8b9430f17b3b8fdfb954eeefef8450c3672bd7"
+    }
+  },
+  "captions": {
+    "path": "results/figures/captions.md",
+    "sha256": "b3c73252e678dbdb97e63ed079ee27a0891e17015ca04d97ac7b08a5add5a65b",
+    "bytes": 2361
+  },
+  "regenerate": "docker run --rm --platform linux/amd64 --network=none -v \"$(pwd):/workspace\" -w /workspace jev-ci:phase1 python -u scripts/evaluate.py && python -u scripts/publish_figures.py",
+  "inspection": {
+    "axes_labeled": true,
+    "legends_outside_plot": true,
+    "budget_points": [
+      0.01,
+      0.02,
+      0.05,
+      0.1,
+      0.2,
+      0.5,
+      1.0
+    ],
+    "project_denominators_from_cohort": true,
+    "cost_basis": "effective_prepaid_credits_usd / headline_cohort",
+    "no_hand_edited_points": true
+  },
+  "notes": [
+    "Public report figures live under results/figures/",
+    "Phase 8 generators remain the source of truth (results/phase8/figures/)",
+    "Jsoup project denominator is 13 after A-001 exclusions"
+  ]
+}

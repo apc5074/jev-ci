@@ -3,8 +3,31 @@
   "created_at": "2026-09-23T15:24:01+00:00",
   "metrics_csv": {
     "path": "results/metrics.csv",
-    "sha256": "5db4b0a49f6261ebe1d158c642cf7ca1ba3fdea2f0252757d4d74a57ae07bd91",
-    "n_rows": 625,
+    "sha256": "4bd4be3cc3f59e8d90b6fb4c847d45995bf6f97697a0a0d6b6dadb2ab9ecb32e",
+    "n_rows": 565,
+    "n_bugs": 113,
+    "analysis_cohort": {
+      "policy": "exclude_a001_jev_waf_gaps_from_all_methods",
+      "note": "12 Jsoup evaluation bugs with accepted Jev A-001 WAF gaps are excluded from headline metrics for every method (paired denom=113). Listed in README.",
+      "full_evaluation_bugs": 125,
+      "headline_evaluation_bugs": 113,
+      "excluded_count": 12,
+      "excluded_qualified_ids": [
+        "Jsoup-33",
+        "Jsoup-40",
+        "Jsoup-47",
+        "Jsoup-54",
+        "Jsoup-69",
+        "Jsoup-72",
+        "Jsoup-75",
+        "Jsoup-78",
+        "Jsoup-81",
+        "Jsoup-84",
+        "Jsoup-85",
+        "Jsoup-86"
+      ],
+      "excluded_reason": "A-001 OpenRouter WAF blocked complete Jev shortlist scoring"
+    },
     "columns": [
       "project",
       "bug_id",
@@ -38,15 +61,15 @@
   },
   "statistics_json": {
     "path": "results/statistics.json",
-    "sha256": "44210263c95624cee2606aad91d693ec6b79f1e9654fc0d739b3254eefaf7138"
+    "sha256": "9df933050134bf6eaa3aaca46534e07e41b5c5662ae4a0e75128d06f6bb3bdd7"
   },
   "headline_table": {
     "path": "results/phase8/headline_table.md",
-    "sha256": "f00fed0f1bd5f2537045a6bbd4bf29e6a7e7e280facded9cbddcc6b3d57f1dc5"
+    "sha256": "3f8aa21f8ab7aff80fc9901c22728ca8e24470fe947b6988b19033a1a0653f44"
   },
   "figure_data": {
     "path": "results/phase8/figure_data.json",
-    "sha256": "0eb4ef4c28761c168c26f9a4e508d16c14065a27bb8f96fa07191079ec28b004"
+    "sha256": "739c36b66f34afd366f5a43a2c4052c505abbce60378c4ef88e2caaf504bc7e3"
   },
   "figures": {
     "figure1": "results/phase8/figures/figure1_budget_curve.svg",
@@ -57,70 +80,93 @@
   "provenance": {
     "experiment_commit": "edc70bacd23f2fc5f511ef4d97a33376e7b20bf8",
     "run_id": "eval-v1-20260923T035853+0000",
-    "n_rows": 625,
+    "n_rows": 565,
+    "n_bugs": 113,
     "methods": [
       "Random",
       "BM25",
       "Embedding",
       "Jev",
       "GPT-Nano"
-    ]
+    ],
+    "analysis_cohort": {
+      "policy": "exclude_a001_jev_waf_gaps_from_all_methods",
+      "note": "12 Jsoup evaluation bugs with accepted Jev A-001 WAF gaps are excluded from headline metrics for every method (paired denom=113). Listed in README.",
+      "full_evaluation_bugs": 125,
+      "headline_evaluation_bugs": 113,
+      "excluded_count": 12,
+      "excluded_qualified_ids": [
+        "Jsoup-33",
+        "Jsoup-40",
+        "Jsoup-47",
+        "Jsoup-54",
+        "Jsoup-69",
+        "Jsoup-72",
+        "Jsoup-75",
+        "Jsoup-78",
+        "Jsoup-81",
+        "Jsoup-84",
+        "Jsoup-85",
+        "Jsoup-86"
+      ],
+      "excluded_reason": "A-001 OpenRouter WAF blocked complete Jev shortlist scoring"
+    }
   },
   "headline": {
     "methods": {
       "Random": {
-        "fdr_at_5pct": 0.070032,
-        "fdr_at_10pct": 0.124032,
-        "fdr_at_20pct": 0.22852,
-        "mrr": 0.08836604919671748,
-        "apfd": 0.5206429837626279,
-        "median_nftr": 0.47861506079935195,
+        "fdr_at_5pct": 0.06956637168141593,
+        "fdr_at_10pct": 0.12289380530973451,
+        "fdr_at_20pct": 0.2277345132743363,
+        "mrr": 0.08263138301420762,
+        "apfd": 0.5200698439177063,
+        "median_nftr": 0.47803665689636177,
         "cost_usd_per_bug": 0.0
       },
       "BM25": {
-        "fdr_at_5pct": 0.608,
-        "fdr_at_10pct": 0.736,
-        "fdr_at_20pct": 0.856,
-        "mrr": 0.49760916272832095,
-        "apfd": 0.8987108860253452,
-        "median_nftr": 0.045454545454545456,
+        "fdr_at_5pct": 0.6371681415929203,
+        "fdr_at_10pct": 0.7345132743362832,
+        "fdr_at_20pct": 0.8495575221238938,
+        "mrr": 0.5095971564103845,
+        "apfd": 0.900510308762899,
+        "median_nftr": 0.043478260869565216,
         "cost_usd_per_bug": 0.0
       },
       "Embedding": {
-        "fdr_at_5pct": 0.832,
-        "fdr_at_10pct": 0.88,
-        "fdr_at_20pct": 0.904,
-        "mrr": 0.690551360488092,
-        "apfd": 0.9376290168053428,
-        "median_nftr": 0.026923076923076925,
-        "cost_usd_per_bug": 0.0012607690568000038
+        "fdr_at_5pct": 0.831858407079646,
+        "fdr_at_10pct": 0.8849557522123894,
+        "fdr_at_20pct": 0.911504424778761,
+        "mrr": 0.678338525613671,
+        "apfd": 0.9395983154648916,
+        "median_nftr": 0.016778523489932886,
+        "cost_usd_per_bug": 0.0013477602826327433
       },
       "Jev": {
-        "fdr_at_5pct": 0.816,
-        "fdr_at_10pct": 0.864,
-        "fdr_at_20pct": 0.888,
-        "mrr": 0.7463919698189667,
-        "apfd": 0.880448958117087,
-        "median_nftr": 0.01694915254237288,
-        "cost_usd_per_bug": 0.012545399198640018
+        "fdr_at_5pct": 0.9026548672566371,
+        "fdr_at_10pct": 0.9557522123893806,
+        "fdr_at_20pct": 0.9823008849557522,
+        "mrr": 0.8221913218489837,
+        "apfd": 0.9722162065081242,
+        "median_nftr": 0.011904761904761904,
+        "cost_usd_per_bug": 0.01387765398079646
       },
       "GPT-Nano": {
-        "fdr_at_5pct": 0.912,
-        "fdr_at_10pct": 0.912,
-        "fdr_at_20pct": 0.96,
-        "mrr": 0.7953687070018104,
-        "apfd": 0.95950481003566,
-        "median_nftr": 0.013921113689095127,
-        "cost_usd_per_bug": 0.05077513790399995
+        "fdr_at_5pct": 0.9203539823008849,
+        "fdr_at_10pct": 0.9203539823008849,
+        "fdr_at_20pct": 0.9646017699115044,
+        "mrr": 0.8023990121701443,
+        "apfd": 0.963783587077734,
+        "median_nftr": 0.011904761904761904,
+        "cost_usd_per_bug": 0.05472877900663717
       }
     },
     "best_quality": {
       "fdr_at_5pct": "GPT-Nano",
-      "fdr_at_10pct": "GPT-Nano",
-      "fdr_at_20pct": "GPT-Nano",
-      "mrr": "GPT-Nano",
-      "apfd": "GPT-Nano",
-      "median_nftr": "GPT-Nano"
+      "fdr_at_10pct": "Jev",
+      "fdr_at_20pct": "Jev",
+      "mrr": "Jev",
+      "apfd": "Jev",
+      "median_nftr": "Jev"
     },
     "display_name": {
       "Random": "Random",

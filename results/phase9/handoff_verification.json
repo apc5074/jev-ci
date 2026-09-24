@@ -1,0 +1,48 @@
+{
+  "schema_version": "jev-phase9-handoff-verification-v1",
+  "ok": true,
+  "errors": [],
+  "notes": [
+    "phase7_seal_ok=True",
+    "n_metrics_rows=565",
+    "n_evaluation_bugs=113"
+  ],
+  "created_at": "2026-09-23T15:24:01+00:00",
+  "freeze_tag": "experiment-v1",
+  "experiment_commit": "edc70bacd23f2fc5f511ef4d97a33376e7b20bf8",
+  "run_id": "eval-v1-20260923T035853+0000",
+  "phase7_seal": {
+    "path": "results/phase7/raw_evaluation_seal.json",
+    "sha256": "bf9ba9ff9dee9ae91a344ae0079a63e07a6763c01ae07c2e5d9c0b73e3ffffd2",
+    "bytes": 4249
+  },
+  "phase8_seal": {
+    "path": "results/phase8/analysis_seal.json",
+    "sha256": "6d3bf370b2b901dbb44608243e3684792a7a13e6845746314035c6a8974b10f1",
+    "bytes": 9726
+  },
+  "metrics_csv": {
+    "path": "results/metrics.csv",
+    "sha256": "4bd4be3cc3f59e8d90b6fb4c847d45995bf6f97697a0a0d6b6dadb2ab9ecb32e",
+    "bytes": 145101
+  },
+  "statistics_json": {
+    "path": "results/statistics.json",
+    "sha256": "9df933050134bf6eaa3aaca46534e07e41b5c5662ae4a0e75128d06f6bb3bdd7",
+    "bytes": 8483
+  },
+  "figure_data": {
+    "path": "results/phase8/figure_data.json",
+    "sha256": "739c36b66f34afd366f5a43a2c4052c505abbce60378c4ef88e2caaf504bc7e3",
+    "bytes": 58428
+  },
+  "n_evaluation_bugs": 113,
+  "n_metrics_rows": 565,
+  "method_order": [
+    "Random",
+    "BM25",
+    "Embedding",
+    "Jev",
+    "GPT-Nano"
+  ]
+}

@@ -92,8 +92,8 @@ class SyntheticRandomAggregationTests(unittest.TestCase):
 class SealedRandomMetricsTests(unittest.TestCase):
     def test_one_row_per_evaluation_bug(self) -> None:
         payload = run_random_metrics()
-        self.assertEqual(payload["counts"]["random_rows"], 125)
-        self.assertEqual(len(payload["records"]), 125)
+        self.assertEqual(payload["counts"]["random_rows"], 113)
+        self.assertEqual(len(payload["records"]), 113)
         for row in payload["records"]:
             self.assertEqual(row["method"], "Random")
             self.assertEqual(row["num_permutations"], 1000)

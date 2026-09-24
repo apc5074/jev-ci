@@ -23,13 +23,13 @@ class ReportOutputTests(unittest.TestCase):
             reader = csv.DictReader(handle)
             self.assertEqual(reader.fieldnames, CSV_COLUMNS)
             rows = list(reader)
-        self.assertEqual(len(rows), 625)
+        self.assertEqual(len(rows), 565)
         methods = {r["method"] for r in rows}
         self.assertEqual(methods, set(METHODS))
         self.assertTrue(all(r["split"] == "evaluation" for r in rows))
         # No development IDs
         self.assertTrue(all(r["qualified_id"].count("-") == 1 for r in rows))
-        self.assertEqual(sidecar["metrics_csv"]["n_rows"], 625)
+        self.assertEqual(sidecar["metrics_csv"]["n_rows"], 565)
         self.assertTrue(
             (WORKSPACE / "results" / "phase8" / "headline_table.md").is_file()
         )

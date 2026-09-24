@@ -1,0 +1,428 @@
+{
+  "schema_version": "jev-phase9-reproduction-v1",
+  "generated_at_utc": "2026-09-24T03:19:08+00:00",
+  "ok": true,
+  "environment": {
+    "credentials_were_present": [],
+    "credentials_cleared": {
+      "OPENROUTER_API_KEY": true,
+      "OPENAI_API_KEY": true,
+      "TYPESAFE_API_KEY": true,
+      "ANTHROPIC_API_KEY": true
+    },
+    "offline": true
+  },
+  "commands": [
+    "docker run --rm --platform linux/amd64 --network=none -v \"$(pwd):/workspace\" -w /workspace jev-ci:phase1 python -u scripts/evaluate.py",
+    "docker run --rm --platform linux/amd64 --network=none -v \"$(pwd):/workspace\" -w /workspace jev-ci:phase1 python -u scripts/reproduce_phase9.py"
+  ],
+  "evaluate": {
+    "ok": true,
+    "experiment_commit": "edc70bacd23f2fc5f511ef4d97a33376e7b20bf8",
+    "run_id": "eval-v1-20260923T035853+0000",
+    "freeze_tag": "experiment-v1",
+    "checks": {
+      "ok": true,
+      "n_checks": 16,
+      "n_passed": 16,
+      "n_failed": 0,
+      "passed": [
+        "metrics_csv_565",
+        "metrics_methods",
+        "metrics_split",
+        "budget_k_ceiling",
+        "apfd_rank1",
+        "apfd_rank_n",
+        "multi_trigger_min_rank",
+        "mcnemar_zero_discordance",
+        "random_113_rows",
+        "random_median_nftr_present",
+        "bootstrap_10000",
+        "bootstrap_seed",
+        "mcnemar_table_113",
+        "cohort_denom_113",
+        "candidate_recall_range",
+        "figures_present"
+      ],
+      "failures": []
+    },
+    "artifacts": {
+      "metrics_csv": {
+        "path": "results/metrics.csv",
+        "sha256": "4bd4be3cc3f59e8d90b6fb4c847d45995bf6f97697a0a0d6b6dadb2ab9ecb32e"
+      },
+      "statistics_json": {
+        "path": "results/statistics.json",
+        "sha256": "9df933050134bf6eaa3aaca46534e07e41b5c5662ae4a0e75128d06f6bb3bdd7"
+      },
+      "headline_table": {
+        "path": "results/phase8/headline_table.md",
+        "sha256": "3f8aa21f8ab7aff80fc9901c22728ca8e24470fe947b6988b19033a1a0653f44"
+      },
+      "figure_data": {
+        "path": "results/phase8/figure_data.json",
+        "sha256": "739c36b66f34afd366f5a43a2c4052c505abbce60378c4ef88e2caaf504bc7e3"
+      },
+      "figures": {
+        "figure1_budget_curve.svg": {
+          "path": "results/phase8/figures/figure1_budget_curve.svg",
+          "sha256": "0b268610fa24feb28bfcc89d4d0f0aab634d53616cad41404e5d432b989b1903"
+        },
+        "figure2_nftr_cdf.svg": {
+          "path": "results/phase8/figures/figure2_nftr_cdf.svg",
+          "sha256": "a89cbb28faba85b8f5907bae8ed00b54e4c22db24481e354cd934d86d1005e3d"
+        },
+        "figure3_project_fdr10.svg": {
+          "path": "results/phase8/figures/figure3_project_fdr10.svg",
+          "sha256": "68d81fa43c04e3bbfe42488443ba0b6c3c5ca09f3d27b038ea1c8030bcc82b3e"
+        },
+        "figure4_quality_vs_cost.svg": {
+          "path": "results/phase8/figures/figure4_quality_vs_cost.svg",
+          "sha256": "4228fcb679f5d806b25c88099f8b9430f17b3b8fdfb954eeefef8450c3672bd7"
+        }
+      }
+    }
+  },
+  "hash_comparison": {
+    "compared_paths": [
+      "results/metrics.csv",
+      "results/statistics.json",
+      "results/phase8/headline_table.md",
+      "results/phase8/figure_data.json",
+      "results/phase8/figures/figure1_budget_curve.svg",
+      "results/phase8/figures/figure2_nftr_cdf.svg",
+      "results/phase8/figures/figure3_project_fdr10.svg",
+      "results/phase8/figures/figure4_quality_vs_cost.svg"
+    ],
+    "before": {
+      "results/metrics.csv": {
+        "path": "results/metrics.csv",
+        "sha256": "4bd4be3cc3f59e8d90b6fb4c847d45995bf6f97697a0a0d6b6dadb2ab9ecb32e",
+        "bytes": 145101,
+        "exists": true
+      },
+      "results/statistics.json": {
+        "path": "results/statistics.json",
+        "sha256": "9df933050134bf6eaa3aaca46534e07e41b5c5662ae4a0e75128d06f6bb3bdd7",
+        "bytes": 8483,
+        "exists": true
+      },
+      "results/phase8/headline_table.md": {
+        "path": "results/phase8/headline_table.md",
+        "sha256": "3f8aa21f8ab7aff80fc9901c22728ca8e24470fe947b6988b19033a1a0653f44",
+        "bytes": 699,
+        "exists": true
+      },
+      "results/phase8/figure_data.json": {
+        "path": "results/phase8/figure_data.json",
+        "sha256": "739c36b66f34afd366f5a43a2c4052c505abbce60378c4ef88e2caaf504bc7e3",
+        "bytes": 58428,
+        "exists": true
+      },
+      "results/phase8/figures/figure1_budget_curve.svg": {
+        "path": "results/phase8/figures/figure1_budget_curve.svg",
+        "sha256": "0b268610fa24feb28bfcc89d4d0f0aab634d53616cad41404e5d432b989b1903",
+        "bytes": 13885,
+        "exists": true
+      },
+      "results/phase8/figures/figure2_nftr_cdf.svg": {
+        "path": "results/phase8/figures/figure2_nftr_cdf.svg",
+        "sha256": "a89cbb28faba85b8f5907bae8ed00b54e4c22db24481e354cd934d86d1005e3d",
+        "bytes": 17743,
+        "exists": true
+      },
+      "results/phase8/figures/figure3_project_fdr10.svg": {
+        "path": "results/phase8/figures/figure3_project_fdr10.svg",
+        "sha256": "68d81fa43c04e3bbfe42488443ba0b6c3c5ca09f3d27b038ea1c8030bcc82b3e",
+        "bytes": 11915,
+        "exists": true
+      },
+      "results/phase8/figures/figure4_quality_vs_cost.svg": {
+        "path": "results/phase8/figures/figure4_quality_vs_cost.svg",
+        "sha256": "4228fcb679f5d806b25c88099f8b9430f17b3b8fdfb954eeefef8450c3672bd7",
+        "bytes": 6828,
+        "exists": true
+      }
+    },
+    "after_evaluate": {
+      "results/metrics.csv": {
+        "path": "results/metrics.csv",
+        "sha256": "4bd4be3cc3f59e8d90b6fb4c847d45995bf6f97697a0a0d6b6dadb2ab9ecb32e",
+        "bytes": 145101,
+        "exists": true
+      },
+      "results/statistics.json": {
+        "path": "results/statistics.json",
+        "sha256": "9df933050134bf6eaa3aaca46534e07e41b5c5662ae4a0e75128d06f6bb3bdd7",
+        "bytes": 8483,
+        "exists": true
+      },
+      "results/phase8/headline_table.md": {
+        "path": "results/phase8/headline_table.md",
+        "sha256": "3f8aa21f8ab7aff80fc9901c22728ca8e24470fe947b6988b19033a1a0653f44",
+        "bytes": 699,
+        "exists": true
+      },
+      "results/phase8/figure_data.json": {
+        "path": "results/phase8/figure_data.json",
+        "sha256": "739c36b66f34afd366f5a43a2c4052c505abbce60378c4ef88e2caaf504bc7e3",
+        "bytes": 58428,
+        "exists": true
+      },
+      "results/phase8/figures/figure1_budget_curve.svg": {
+        "path": "results/phase8/figures/figure1_budget_curve.svg",
+        "sha256": "0b268610fa24feb28bfcc89d4d0f0aab634d53616cad41404e5d432b989b1903",
+        "bytes": 13885,
+        "exists": true
+      },
+      "results/phase8/figures/figure2_nftr_cdf.svg": {
+        "path": "results/phase8/figures/figure2_nftr_cdf.svg",
+        "sha256": "a89cbb28faba85b8f5907bae8ed00b54e4c22db24481e354cd934d86d1005e3d",
+        "bytes": 17743,
+        "exists": true
+      },
+      "results/phase8/figures/figure3_project_fdr10.svg": {
+        "path": "results/phase8/figures/figure3_project_fdr10.svg",
+        "sha256": "68d81fa43c04e3bbfe42488443ba0b6c3c5ca09f3d27b038ea1c8030bcc82b3e",
+        "bytes": 11915,
+        "exists": true
+      },
+      "results/phase8/figures/figure4_quality_vs_cost.svg": {
+        "path": "results/phase8/figures/figure4_quality_vs_cost.svg",
+        "sha256": "4228fcb679f5d806b25c88099f8b9430f17b3b8fdfb954eeefef8450c3672bd7",
+        "bytes": 6828,
+        "exists": true
+      }
+    },
+    "diffs": [],
+    "byte_identical": true,
+    "notes": [
+      "Timestamps in Phase 8 JSON are normalized to Phase 7 sealed_at",
+      "SVG/metrics.csv are timestamp-free; mismatches would be content bugs"
+    ]
+  },
+  "phase9_publish": {
+    "handoff_ok": true,
+    "figures_ok": true,
+    "failure_cases_n": 20,
+    "failure_analysis_n": 20
+  },
+  "inventory": {
+    "schema_version": "jev-phase9-artifact-inventory-v1",
+    "ok": true,
+    "required_files": [
+      {
+        "path": "data/manifest.json",
+        "sha256": "ec8b1dbc570ea8fa0a160fc5fe1de55d821c91f1452979c544af5094a4582971",
+        "bytes": 22175,
+        "exists": true
+      },
+      {
+        "path": "EXPERIMENT.md",
+        "sha256": "c2296f7399aee815ce2a5ca893e6eac20ab184e48e1cfd975c44de97843cb221",
+        "bytes": 13257,
+        "exists": true
+      },
+      {
+        "path": "results/predictions.jsonl",
+        "sha256": "551094261bbc1c151964b2c3602ad84482816de73304c9257e2f7d7f1fcbe747",
+        "bytes": 75389360,
+        "exists": true
+      },
+      {
+        "path": "results/metrics.csv",
+        "sha256": "4bd4be3cc3f59e8d90b6fb4c847d45995bf6f97697a0a0d6b6dadb2ab9ecb32e",
+        "bytes": 145101,
+        "exists": true
+      },
+      {
+        "path": "results/statistics.json",
+        "sha256": "9df933050134bf6eaa3aaca46534e07e41b5c5662ae4a0e75128d06f6bb3bdd7",
+        "bytes": 8483,
+        "exists": true
+      },
+      {
+        "path": "results/phase8/analysis_seal.json",
+        "sha256": "6d3bf370b2b901dbb44608243e3684792a7a13e6845746314035c6a8974b10f1",
+        "bytes": 9726,
+        "exists": true
+      },
+      {
+        "path": "results/phase8/case20_deltas.json",
+        "sha256": "636ea6259ac1df751c44d522d15bfb76d3adc2581ba63ab3cc2c15272cfd3b56",
+        "bytes": 41004,
+        "exists": true
+      },
+      {
+        "path": "results/phase8/figures/figure1_budget_curve.svg",
+        "sha256": "0b268610fa24feb28bfcc89d4d0f0aab634d53616cad41404e5d432b989b1903",
+        "bytes": 13885,
+        "exists": true
+      },
+      {
+        "path": "results/phase8/figures/figure2_nftr_cdf.svg",
+        "sha256": "a89cbb28faba85b8f5907bae8ed00b54e4c22db24481e354cd934d86d1005e3d",
+        "bytes": 17743,
+        "exists": true
+      },
+      {
+        "path": "results/phase8/figures/figure3_project_fdr10.svg",
+        "sha256": "68d81fa43c04e3bbfe42488443ba0b6c3c5ca09f3d27b038ea1c8030bcc82b3e",
+        "bytes": 11915,
+        "exists": true
+      },
+      {
+        "path": "results/phase8/figures/figure4_quality_vs_cost.svg",
+        "sha256": "4228fcb679f5d806b25c88099f8b9430f17b3b8fdfb954eeefef8450c3672bd7",
+        "bytes": 6828,
+        "exists": true
+      },
+      {
+        "path": "results/figures/figure1_fault_detection_vs_budget.svg",
+        "sha256": "0b268610fa24feb28bfcc89d4d0f0aab634d53616cad41404e5d432b989b1903",
+        "bytes": 13885,
+        "exists": true
+      },
+      {
+        "path": "results/figures/figure2_first_trigger_rank_cdf.svg",
+        "sha256": "a89cbb28faba85b8f5907bae8ed00b54e4c22db24481e354cd934d86d1005e3d",
+        "bytes": 17743,
+        "exists": true
+      },
+      {
+        "path": "results/figures/figure3_fdr10_by_project.svg",
+        "sha256": "68d81fa43c04e3bbfe42488443ba0b6c3c5ca09f3d27b038ea1c8030bcc82b3e",
+        "bytes": 11915,
+        "exists": true
+      },
+      {
+        "path": "results/figures/figure4_quality_vs_cost.svg",
+        "sha256": "4228fcb679f5d806b25c88099f8b9430f17b3b8fdfb954eeefef8450c3672bd7",
+        "bytes": 6828,
+        "exists": true
+      },
+      {
+        "path": "results/figures/captions.md",
+        "sha256": "b3c73252e678dbdb97e63ed079ee27a0891e17015ca04d97ac7b08a5add5a65b",
+        "bytes": 2361,
+        "exists": true
+      },
+      {
+        "path": "results/failure_cases.json",
+        "sha256": "9a2e8fb280bbb1c2e75bece97fa74ef8a0e3c79c5a2a991f956cb1b4934eb00b",
+        "bytes": 16790,
+        "exists": true
+      },
+      {
+        "path": "results/failure_analysis.json",
+        "sha256": "a251f657f798a44c8e4d5341d56cebd07cc8fbcf74c3e28330f5ab89a3683293",
+        "bytes": 13404,
+        "exists": true
+      },
+      {
+        "path": "results/phase9/headline_table.md",
+        "sha256": "98ce83a6ac113fe2c6d4d6752c6541a8ccd10c1312205acd9116051941a29736",
+        "bytes": 1946,
+        "exists": true
+      },
+      {
+        "path": "README.md",
+        "sha256": "84be9e0921b160bfc8298ef0822eb2b393e7c10e8f3c56eed3fb39fb4901e03d",
+        "bytes": 7339,
+        "exists": true
+      },
+      {
+        "path": "docs/phase9-report.md",
+        "sha256": "7564c83f5c77b3c7cfa5c9fa81ee75be1bee99cbbdf83665c49103b7469829f4",
+        "bytes": 5897,
+        "exists": true
+      }
+    ],
+    "missing": [],
+    "cache_directories": {
+      "results/semantic/jev": true,
+      "results/semantic/gpt_nano": true,
+      "results/embeddings": true,
+      "results/rankings": true,
+      "results/random": true
+    },
+    "phase7_seal_counts": {
+      "evaluation_bugs": 125,
+      "passed": 125,
+      "failed": 0,
+      "projects": {
+        "Cli": 25,
+        "Lang": 25,
+        "Math": 25,
+        "Jsoup": 25,
+        "JacksonDatabind": 25
+      },
+      "jev_rankings": 113,
+      "accepted_jev_gaps": 12,
+      "K_total": 13414
+    },
+    "links": {
+      "readme": "README.md",
+      "report": "docs/phase9-report.md",
+      "experiment": "EXPERIMENT.md",
+      "figures": "results/figures/",
+      "failure_analysis": "results/failure_analysis.json",
+      "reproduction": "results/phase9/reproduction_record.json"
+    }
+  },
+  "report_reconciliation": {
+    "claims": {
+      "jev_fdr_at_10pct": 0.9558,
+      "bm25_fdr_at_10pct": 0.7345,
+      "delta_pp": 22.1,
+      "bootstrap_ci95": [
+        0.133,
+        0.31
+      ],
+      "mcnemar_p": 4.649162292480469e-06,
+      "practical_success": true,
+      "winning_alternative": "alt1",
+      "n_evaluation_bugs": 113,
+      "cost_ratio_jev_gpt": 0.2535714158562438
+    },
+    "text_checks": [
+      {
+        "check": "readme_jev_fdr",
+        "ok": true,
+        "needle": "0.9558"
+      },
+      {
+        "check": "readme_bm25_fdr",
+        "ok": true,
+        "needle": "0.7345"
+      },
+      {
+        "check": "readme_delta_pp",
+        "ok": true,
+        "needle": "+22.1"
+      },
+      {
+        "check": "report_jev_fdr",
+        "ok": true,
+        "needle": "0.9558"
+      },
+      {
+        "check": "report_ci",
+        "ok": true,
+        "needle": "0.133"
+      },
+      {
+        "check": "report_practical_pass",
+        "ok": true,
+        "needle": "PASS"
+      }
+    ],
+    "ok": true
+  },
+  "metrics_split_evaluation_only": true,
+  "paid_requests": 0,
+  "caveats": [
+    "Reproduction attaches the existing sealed data/cache tree; it does not re-download Defects4J checkouts or re-call providers.",
+    "Phase 9 failure_analysis categories are curated constants validated against the mechanical case list; they regenerate as the same table."
+  ]
+}

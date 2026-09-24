@@ -10,16 +10,40 @@
   },
   "input_hashes": {
     "per_bug_metrics": "645b9ee7beaf99b7d5d169f6988828b2adbaf69b13071d5452f027499c06de40",
-    "random_metrics": "3da8ac909c0e2c20e004ed1c5220228e98f891655182829183c73eb0060d5ab8",
+    "random_metrics": "663888de399e1fbfbe990a90bcbc050e4f8825bbc96486344adf25cbc76e36a3",
     "cost_latency": "e2ee4beb48c0acdb8ee5519f50e0487cab65f8cc57f92f75bb31986f9bb5d1b3"
   },
+  "analysis_cohort": {
+    "policy": "exclude_a001_jev_waf_gaps_from_all_methods",
+    "note": "12 Jsoup evaluation bugs with accepted Jev A-001 WAF gaps are excluded from headline metrics for every method (paired denom=113). Listed in README.",
+    "full_evaluation_bugs": 125,
+    "headline_evaluation_bugs": 113,
+    "excluded_count": 12,
+    "excluded_qualified_ids": [
+      "Jsoup-33",
+      "Jsoup-40",
+      "Jsoup-47",
+      "Jsoup-54",
+      "Jsoup-69",
+      "Jsoup-72",
+      "Jsoup-75",
+      "Jsoup-78",
+      "Jsoup-81",
+      "Jsoup-84",
+      "Jsoup-85",
+      "Jsoup-86"
+    ],
+    "excluded_reason": "A-001 OpenRouter WAF blocked complete Jev shortlist scoring"
+  },
   "counts": {
-    "evaluation_bugs": 125,
+    "evaluation_bugs": 113,
+    "full_evaluation_bugs": 125,
+    "excluded_a001": 12,
     "projects": {
       "Cli": 25,
       "Lang": 25,
       "Math": 25,
-      "Jsoup": 25,
+      "Jsoup": 13,
       "JacksonDatabind": 25
     },
     "methods": [
@@ -29,62 +53,62 @@
       "Jev",
       "GPT-Nano"
     ],
-    "jev_imputed_worst_case": 12
+    "jev_imputed_worst_case": 0
   },
   "cohort": {
     "Random": {
       "method": "Random",
-      "denominator": 125,
-      "fdr_at_1pct": 0.027512,
-      "fdr_at_2pct": 0.033872,
-      "fdr_at_5pct": 0.070032,
-      "fdr_at_10pct": 0.124032,
-      "fdr_at_20pct": 0.22852,
-      "fdr_at_50pct": 0.537208,
+      "denominator": 113,
+      "fdr_at_1pct": 0.026380530973451326,
+      "fdr_at_2pct": 0.03341592920353983,
+      "fdr_at_5pct": 0.06956637168141593,
+      "fdr_at_10pct": 0.12289380530973451,
+      "fdr_at_20pct": 0.2277345132743363,
+      "fdr_at_50pct": 0.5366637168141593,
       "fdr_at_100pct": 1.0,
-      "primary_fdr_at_10pct": 0.124032,
-      "mrr": 0.08836604919671748,
-      "mean_apfd": 0.5206429837626279,
-      "mean_nftr": 0.4892957724313171,
-      "median_nftr": 0.47861506079935195,
+      "primary_fdr_at_10pct": 0.12289380530973451,
+      "mrr": 0.08263138301420762,
+      "mean_apfd": 0.5200698439177063,
+      "mean_nftr": 0.48919259940110144,
+      "median_nftr": 0.47803665689636177,
       "cost_usd_per_bug": 0.0,
       "request_latency_ms": null,
       "median_nftr_rule": "mean_of_cohort_medians_across_permutation_replicates"
     },
     "BM25": {
       "method": "BM25",
-      "denominator": 125,
-      "fdr_at_1pct": 0.408,
-      "fdr_at_2pct": 0.448,
-      "fdr_at_5pct": 0.608,
-      "fdr_at_10pct": 0.736,
-      "fdr_at_20pct": 0.856,
-      "fdr_at_50pct": 0.968,
+      "denominator": 113,
+      "fdr_at_1pct": 0.4424778761061947,
+      "fdr_at_2pct": 0.48672566371681414,
+      "fdr_at_5pct": 0.6371681415929203,
+      "fdr_at_10pct": 0.7345132743362832,
+      "fdr_at_20pct": 0.8495575221238938,
+      "fdr_at_50pct": 0.9734513274336283,
       "fdr_at_100pct": 1.0,
-      "primary_fdr_at_10pct": 0.736,
-      "mrr": 0.49760916272832095,
-      "mean_apfd": 0.8987108860253452,
-      "mean_nftr": 0.11122787016859974,
-      "median_nftr": 0.045454545454545456,
+      "primary_fdr_at_10pct": 0.7345132743362832,
+      "mrr": 0.5095971564103845,
+      "mean_apfd": 0.900510308762899,
+      "mean_nftr": 0.1087521345559088,
+      "median_nftr": 0.043478260869565216,
       "cost_usd_per_bug": 0.0,
       "request_latency_ms": null
     },
     "Embedding": {
       "method": "Embedding",
-      "denominator": 125,
-      "fdr_at_1pct": 0.704,
-      "fdr_at_2pct": 0.728,
-      "fdr_at_5pct": 0.832,
-      "fdr_at_10pct": 0.88,
-      "fdr_at_20pct": 0.904,
-      "fdr_at_50pct": 0.96,
+      "denominator": 113,
+      "fdr_at_1pct": 0.6991150442477876,
+      "fdr_at_2pct": 0.7256637168141593,
+      "fdr_at_5pct": 0.831858407079646,
+      "fdr_at_10pct": 0.8849557522123894,
+      "fdr_at_20pct": 0.911504424778761,
+      "fdr_at_50pct": 0.9646017699115044,
       "fdr_at_100pct": 1.0,
-      "primary_fdr_at_10pct": 0.88,
-      "mrr": 0.690551360488092,
-      "mean_apfd": 0.9376290168053428,
-      "mean_nftr": 0.07230973938860212,
-      "median_nftr": 0.026923076923076925,
-      "cost_usd_per_bug": 0.0012607690568000038,
+      "primary_fdr_at_10pct": 0.8849557522123894,
+      "mrr": 0.678338525613671,
+      "mean_apfd": 0.9395983154648916,
+      "mean_nftr": 0.06966412785391614,
+      "median_nftr": 0.016778523489932886,
+      "cost_usd_per_bug": 0.0013477602826327433,
       "request_latency_ms": {
         "mean": 55.11010321696083,
         "p50": 47.29273621887842,
@@ -93,20 +117,20 @@
     },
     "Jev": {
       "method": "Jev",
-      "denominator": 125,
-      "fdr_at_1pct": 0.728,
-      "fdr_at_2pct": 0.768,
-      "fdr_at_5pct": 0.816,
-      "fdr_at_10pct": 0.864,
-      "fdr_at_20pct": 0.888,
-      "fdr_at_50pct": 0.896,
-      "fdr_at_100pct": 0.904,
-      "primary_fdr_at_10pct": 0.864,
-      "mrr": 0.7463919698189667,
-      "mean_apfd": 0.880448958117087,
-      "mean_nftr": 0.12948979807685787,
-      "median_nftr": 0.01694915254237288,
-      "cost_usd_per_bug": 0.012545399198640018,
+      "denominator": 113,
+      "fdr_at_1pct": 0.8053097345132744,
+      "fdr_at_2pct": 0.8495575221238938,
+      "fdr_at_5pct": 0.9026548672566371,
+      "fdr_at_10pct": 0.9557522123893806,
+      "fdr_at_20pct": 0.9823008849557522,
+      "fdr_at_50pct": 0.9911504424778761,
+      "fdr_at_100pct": 1.0,
+      "primary_fdr_at_10pct": 0.9557522123893806,
+      "mrr": 0.8221913218489837,
+      "mean_apfd": 0.9722162065081242,
+      "mean_nftr": 0.03704623681068349,
+      "median_nftr": 0.011904761904761904,
+      "cost_usd_per_bug": 0.01387765398079646,
       "request_latency_ms": {
         "mean": 542.0057674579388,
         "p50": 411.8139850324951,
@@ -115,20 +139,20 @@
     },
     "GPT-Nano": {
       "method": "GPT-Nano",
-      "denominator": 125,
-      "fdr_at_1pct": 0.784,
-      "fdr_at_2pct": 0.816,
-      "fdr_at_5pct": 0.912,
-      "fdr_at_10pct": 0.912,
-      "fdr_at_20pct": 0.96,
-      "fdr_at_50pct": 0.976,
+      "denominator": 113,
+      "fdr_at_1pct": 0.8053097345132744,
+      "fdr_at_2pct": 0.8407079646017699,
+      "fdr_at_5pct": 0.9203539823008849,
+      "fdr_at_10pct": 0.9203539823008849,
+      "fdr_at_20pct": 0.9646017699115044,
+      "fdr_at_50pct": 0.9823008849557522,
       "fdr_at_100pct": 1.0,
-      "primary_fdr_at_10pct": 0.912,
-      "mrr": 0.7953687070018104,
-      "mean_apfd": 0.95950481003566,
-      "mean_nftr": 0.05043394615828488,
-      "median_nftr": 0.013921113689095127,
-      "cost_usd_per_bug": 0.05077513790399995,
+      "primary_fdr_at_10pct": 0.9203539823008849,
+      "mrr": 0.8023990121701443,
+      "mean_apfd": 0.963783587077734,
+      "mean_nftr": 0.045478856241073715,
+      "median_nftr": 0.011904761904761904,
+      "cost_usd_per_bug": 0.05472877900663717,
       "request_latency_ms": {
         "mean": 1358.8183201835689,
         "p50": 1240.2731190086342,
@@ -231,32 +255,32 @@
       }
     },
     "Jsoup": {
-      "denominator": 25,
+      "denominator": 13,
       "significance": "descriptive_only_no_inference",
       "methods": {
         "Random": {
-          "primary_fdr_at_10pct": 0.13656000000000001,
-          "mrr": 0.16248447668364988,
+          "primary_fdr_at_10pct": 0.1382307692307692,
+          "mrr": 0.18105400370054006,
           "median_nftr": 0.5184285714285719
         },
         "BM25": {
-          "primary_fdr_at_10pct": 0.72,
-          "mrr": 0.446,
-          "median_nftr": 0.09090909090909091
+          "primary_fdr_at_10pct": 0.6923076923076923,
+          "mrr": 0.5025641025641026,
+          "median_nftr": 0.10526315789473684
         },
         "Embedding": {
-          "primary_fdr_at_10pct": 0.8,
-          "mrr": 0.7466666666666667,
-          "median_nftr": 0.045454545454545456
+          "primary_fdr_at_10pct": 0.7692307692307693,
+          "mrr": 0.6923076923076923,
+          "median_nftr": 0.05263157894736842
         },
         "Jev": {
-          "primary_fdr_at_10pct": 0.52,
-          "mrr": 0.4956550743374273,
-          "median_nftr": 0.125
+          "primary_fdr_at_10pct": 1.0,
+          "mrr": 0.9230769230769231,
+          "median_nftr": 0.045454545454545456
         },
         "GPT-Nano": {
-          "primary_fdr_at_10pct": 0.88,
-          "mrr": 0.818,
+          "primary_fdr_at_10pct": 0.9230769230769231,
+          "mrr": 0.8999999999999999,
           "median_nftr": 0.045454545454545456
         }
       }
@@ -295,14 +319,14 @@
   },
   "candidate_ceiling": {
     "metric": "bm25_trigger_recall_at_min_200_N",
-    "denominator": 125,
-    "numerator": 125,
+    "denominator": 113,
+    "numerator": 113,
     "recall": 1.0,
     "source": "sealed_candidate_ids_prefix"
   },
   "jev_miss_classification": {
     "budget": "10pct",
-    "denominator": 125,
+    "denominator": 113,
     "detections": [
       "Cli-10",
       "Cli-11",
@@ -420,62 +444,50 @@
       "rule": "no_trigger_in_bm25_shortlist"
     },
     "reranker_misses": {
-      "count": 17,
+      "count": 5,
       "bug_ids": [
         "Cli-13",
         "Cli-27",
         "Cli-28",
-        "Jsoup-33",
-        "Jsoup-40",
-        "Jsoup-47",
-        "Jsoup-54",
-        "Jsoup-69",
-        "Jsoup-72",
-        "Jsoup-75",
-        "Jsoup-78",
-        "Jsoup-81",
-        "Jsoup-84",
-        "Jsoup-85",
-        "Jsoup-86",
         "Lang-6",
         "Math-104"
       ],
-      "rule": "trigger_in_bm25_shortlist_but_jev_not_detected_at_10pct (includes unavailable A-001 gaps imputed as non-detections)"
+      "rule": "trigger_in_bm25_shortlist_but_jev_not_detected_at_10pct"
     },
-    "n_misses": 17
+    "n_misses": 5
   },
   "practical_success": {
     "criterion": "Jev practically successful if (FDR10 >= BM25 + 5pp) OR (within 2pp of GPT-Nano AND cost <= 30% of GPT)",
     "fdr_at_10pct": {
-      "Jev": 0.864,
-      "BM25": 0.736,
-      "GPT-Nano": 0.912,
-      "Embedding": 0.88,
-      "Random": 0.124032
+      "Jev": 0.9557522123893806,
+      "BM25": 0.7345132743362832,
+      "GPT-Nano": 0.9203539823008849,
+      "Embedding": 0.8849557522123894,
+      "Random": 0.12289380530973451
     },
     "alternative_1_beat_bm25_by_5pp": {
-      "delta_pp_jev_minus_bm25": 12.8,
+      "delta_pp_jev_minus_bm25": 22.123893805309734,
       "threshold_pp": 5.0,
       "passed": true
     },
     "alternative_2_near_gpt_and_cheap": {
-      "delta_pp_jev_minus_gpt": -4.800000000000004,
-      "abs_delta_pp": 4.800000000000004,
+      "delta_pp_jev_minus_gpt": 3.539823008849563,
+      "abs_delta_pp": 3.539823008849563,
       "within_2pp": false,
-      "jev_gpt_cost_ratio": 0.24707759971739476,
+      "jev_gpt_cost_ratio": 0.2535714158562438,
       "cost_ratio_threshold": 0.3,
       "cost_ratio_passed": true,
-      "numerator_jev_usd": 1.5681748998300022,
-      "denominator_gpt_usd": 6.3468922379999935,
+      "numerator_jev_usd": 1.56817489983,
+      "denominator_gpt_usd": 6.18435202775,
       "passed": false
     },
     "practically_successful": true,
     "winning_alternative": "alt1"
   },
   "notes": [
-    "Headline FDR denominators are 125 for every method",
-    "Unavailable Jev A-001 bugs imputed as non-detections with r=N",
-    "Random median NFTR uses P8-03 replicate rule",
-    "Project tables are descriptive only (no significance claims)"
+    "12 Jsoup evaluation bugs with accepted Jev A-001 WAF gaps are excluded from headline metrics for every method (paired denom=113). Listed in README.",
+    "Random median NFTR uses P8-03 replicate rule on the headline cohort",
+    "Project tables are descriptive only (no significance claims)",
+    "Jsoup project denominator is reduced by the excluded A-001 bugs"
   ]
 }

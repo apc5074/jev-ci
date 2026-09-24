@@ -14,6 +14,14 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
+from src.analysis_cohort import (
+    COHORT_POLICY_NOTE,
+    HEADLINE_EVAL_BUGS,
+    HEADLINE_METRICS_ROWS,
+    cohort_metadata,
+    filter_headline_ids,
+    is_excluded_a001,
+)
 from src.cohort_summaries import materialize_jev_record, index_nonrandom_records
 from src.example_contract import (
     WORKSPACE,
@@ -81,14 +89,18 @@ def audit_cross_file_consistency(*, workspace: Path) -> dict[str, Any]:
     notes: list[str] = []
 
     rows = load_metrics_rows(workspace)
-    if len(rows) != 625:
-        errors.append(f"metrics.csv has {len(rows)} rows, expected 625")
+    if len(rows) != HEADLINE_METRICS_ROWS:
+        errors.append(
+            f"metrics.csv has {len(rows)} rows, expected {HEADLINE_METRICS_ROWS}"
+        )
 
     by_bug_method: dict[tuple[str, str], dict[str, str]] = {}
     for row in rows:
         key = (row["qualified_id"], row["method"])
         if key in by_bug_method:
             errors.append(f"duplicate metrics row {key}")
+        if is_excluded_a001(row["qualified_id"]):
+            errors.append(f"excluded A-001 bug still in metrics.csv: {row['qualified_id']}")
         by_bug_method[key] = row
 
     # Spot-check: CSV first_trigger_rank matches ranking for BM25 sample of all bugs
@@ -106,7 +118,9 @@ def audit_cross_file_consistency(*, workspace: Path) -> dict[str, Any]:
 
         jev_row = by_bug_method[(qid, "Jev")]
         jev_path = workspace / "results" / "semantic" / "jev" / f"{slug}.json"
-        if jev_path.is_file():
+        if not jev_path.is_file():
+            errors.append(f"{qid} missing Jev ranking but in headline cohort")
+        else:
             jev_doc = read_json(jev_path)
             j_ranked = list(
                 jev_doc.get("ranked_ids")
@@ -116,23 +130,25 @@ def audit_cross_file_consistency(*, workspace: Path) -> dict[str, Any]:
             csv_jr = _as_float(jev_row["first_trigger_rank"])
             if abs(csv_jr - jr) > 1e-9:
                 errors.append(f"{qid} Jev CSV rank {csv_jr} != ranking {jr}")
-        else:
-            n = int(by_bug_method[(qid, "BM25")]["num_test_classes"])
-            if abs(_as_float(jev_row["first_trigger_rank"]) - n) > 1e-9:
-                errors.append(f"{qid} missing Jev ranking but CSV rank != N")
 
     # Cohort FDR@10% vs CSV means
     cohort = read_json(workspace / "results" / "phase8" / "cohort_summaries.json")
     for method in ("BM25", "Embedding", "Jev", "GPT-Nano", "Random"):
         method_rows = [r for r in rows if r["method"] == method]
-        if len(method_rows) != 125:
-            errors.append(f"{method}: expected 125 CSV rows, got {len(method_rows)}")
+        if len(method_rows) != HEADLINE_EVAL_BUGS:
+            errors.append(
+                f"{method}: expected {HEADLINE_EVAL_BUGS} CSV rows, got {len(method_rows)}"
+            )
             continue
         if method == "Random":
-            mean_det = sum(_as_float(r["detected_at_10pct"]) for r in method_rows) / 125.0
+            mean_det = (
+                sum(_as_float(r["detected_at_10pct"]) for r in method_rows)
+                / float(HEADLINE_EVAL_BUGS)
+            )
         else:
             mean_det = (
-                sum(1 for r in method_rows if _as_bool(r["detected_at_10pct"])) / 125.0
+                sum(1 for r in method_rows if _as_bool(r["detected_at_10pct"]))
+                / float(HEADLINE_EVAL_BUGS)
             )
         reported = float(cohort["cohort"][method]["primary_fdr_at_10pct"])
         if abs(mean_det - reported) > 1e-9:
@@ -150,8 +166,7 @@ def audit_cross_file_consistency(*, workspace: Path) -> dict[str, Any]:
             f"stats delta FDR {point} != cohort Jev-BM25 {jev_fdr - bm25_fdr}"
         )
 
-    # Cost totals: sum CSV Jev costs ≈ cohort * 125 for bugs with costs
-    cost = read_json(workspace / "results" / "phase8" / "cost_latency.json")
+    # Cost: CSV sums should match headline cohort cost/bug * n
     for method in ("Embedding", "Jev", "GPT-Nano"):
         csv_sum = 0.0
         n_cost = 0
@@ -163,12 +178,10 @@ def audit_cross_file_consistency(*, workspace: Path) -> dict[str, Any]:
                 continue
             csv_sum += float(val)
             n_cost += 1
-        reported = float(
-            cost["methods"][method]["cost"]["cohort"]["effective_prepaid_credits_usd"]
-        )
-        if abs(csv_sum - reported) > 1e-6:
+        expected = float(cohort["cohort"][method]["cost_usd_per_bug"]) * HEADLINE_EVAL_BUGS
+        if abs(csv_sum - expected) > 1e-4:
             errors.append(
-                f"{method} CSV cost sum {csv_sum} != cost cohort {reported}"
+                f"{method} CSV cost sum {csv_sum} != cohort*n {expected}"
             )
         notes.append(f"{method}: cost rows with values={n_cost}")
 
@@ -178,7 +191,10 @@ def audit_cross_file_consistency(*, workspace: Path) -> dict[str, Any]:
         if abs(float(pts[3]["fdr"]) - float(cohort["cohort"][method]["primary_fdr_at_10pct"])) > 1e-12:
             errors.append(f"figure1 {method} FDR@10 mismatch")
     for project, block in fig["figure3_project_fdr10"].items():
-        for method, fdr in block.items():
+        methods_block = block.get("methods") or block
+        for method, fdr in methods_block.items():
+            if method == "denominator":
+                continue
             expected = float(
                 cohort["projects"][project]["methods"][method]["primary_fdr_at_10pct"]
             )
@@ -196,21 +212,22 @@ def audit_cross_file_consistency(*, workspace: Path) -> dict[str, Any]:
         "notes": notes,
         "evaluate_checks": checks,
         "n_metrics_rows": len(rows),
+        "analysis_cohort": cohort_metadata(),
     }
 
 
 def build_case20_deltas(*, workspace: Path) -> dict[str, Any]:
     """Deterministic BM25−Jev first-trigger rank deltas for Phase 9's 20-case review."""
     per_bug = read_json(workspace / "results" / "phase8" / "per_bug_metrics.json")
-    by_bug = index_nonrandom_records(per_bug["records"])
-    ordered = sorted(
-        by_bug.keys(),
-        key=lambda x: (x.split("-")[0], int(x.split("-")[1])),
-    )
+    by_bug_full = index_nonrandom_records(per_bug["records"])
+    ordered = filter_headline_ids(by_bug_full.keys())
+    by_bug = {qid: by_bug_full[qid] for qid in ordered}
     rows: list[dict[str, Any]] = []
     for qid in ordered:
         bm25 = by_bug[qid]["BM25"]
-        jev = materialize_jev_record(by_bug[qid]["Jev"])
+        jev = dict(by_bug[qid]["Jev"])
+        if not jev.get("available", True):
+            raise AnalysisSealError(f"{qid}: unavailable Jev in case20 cohort")
         bm25_r = int(bm25["first_trigger_rank"])
         jev_r = int(jev["first_trigger_rank"])
         delta = bm25_r - jev_r  # positive => Jev earlier
@@ -225,8 +242,8 @@ def build_case20_deltas(*, workspace: Path) -> dict[str, Any]:
                 "candidate_trigger_in_top200": bool(
                     bm25["candidate_trigger_in_top200"]
                 ),
-                "jev_available": bool(jev.get("available", True)),
-                "jev_imputed": bool(jev.get("imputed", False)),
+                "jev_available": True,
+                "jev_imputed": False,
             }
         )
 
@@ -321,10 +338,11 @@ def build_analysis_seal(
     deviations = [
         {
             "id": "A-001-eval",
-            "kind": "availability",
+            "kind": "availability_cohort",
             "detail": (
-                "12 Jsoup evaluation bugs lack Jev rankings (OpenRouter WAF). "
-                "Phase 8 imputes non-detection with r=N for denom-125 headlines."
+                "12 Jsoup evaluation bugs lack complete Jev rankings (OpenRouter WAF). "
+                "Headline analysis excludes those 12 bugs from every method "
+                f"(paired denom={HEADLINE_EVAL_BUGS}). Listed in README."
             ),
         },
         {

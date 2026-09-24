@@ -4,6 +4,28 @@
   "experiment_commit": "edc70bacd23f2fc5f511ef4d97a33376e7b20bf8",
   "run_id": "eval-v1-20260923T035853+0000",
   "freeze_tag": "experiment-v1",
+  "analysis_cohort": {
+    "policy": "exclude_a001_jev_waf_gaps_from_all_methods",
+    "note": "12 Jsoup evaluation bugs with accepted Jev A-001 WAF gaps are excluded from headline metrics for every method (paired denom=113). Listed in README.",
+    "full_evaluation_bugs": 125,
+    "headline_evaluation_bugs": 113,
+    "excluded_count": 12,
+    "excluded_qualified_ids": [
+      "Jsoup-33",
+      "Jsoup-40",
+      "Jsoup-47",
+      "Jsoup-54",
+      "Jsoup-69",
+      "Jsoup-72",
+      "Jsoup-75",
+      "Jsoup-78",
+      "Jsoup-81",
+      "Jsoup-84",
+      "Jsoup-85",
+      "Jsoup-86"
+    ],
+    "excluded_reason": "A-001 OpenRouter WAF blocked complete Jev shortlist scoring"
+  },
   "configuration": {
     "bootstrap_samples": 10000,
     "bootstrap_seed": 20260922,
@@ -29,7 +51,7 @@
       ]
     ],
     "mcnemar": "exact_two_sided_binomial",
-    "n_evaluation_bugs": 125,
+    "n_evaluation_bugs": 113,
     "bug_id_order": [
       "Cli-3",
       "Cli-4",
@@ -90,21 +112,9 @@
       "Jsoup-21",
       "Jsoup-23",
       "Jsoup-24",
-      "Jsoup-33",
-      "Jsoup-40",
-      "Jsoup-47",
       "Jsoup-48",
       "Jsoup-50",
-      "Jsoup-54",
       "Jsoup-64",
-      "Jsoup-69",
-      "Jsoup-72",
-      "Jsoup-75",
-      "Jsoup-78",
-      "Jsoup-81",
-      "Jsoup-84",
-      "Jsoup-85",
-      "Jsoup-86",
       "Jsoup-87",
       "Lang-5",
       "Lang-6",
@@ -160,7 +170,7 @@
   },
   "input_hashes": {
     "per_bug_metrics": "645b9ee7beaf99b7d5d169f6988828b2adbaf69b13071d5452f027499c06de40",
-    "cohort_summaries": "744f8f31d2ba21382b1a13e633344ace5865371c48d5308edfeb185b4a08fdc5",
+    "cohort_summaries": "71b8f3d7e09930503a9262b383da26c3cba75a459e94f54a3cf0d479d85bd20f",
     "raw_evaluation_seal": "bf9ba9ff9dee9ae91a344ae0079a63e07a6763c01ae07c2e5d9c0b73e3ffffd2"
   },
   "primary": {
@@ -173,38 +183,38 @@
     "paired_detection_fdr_at_10pct": {
       "both": 80,
       "jev_only": 28,
-      "other_only": 12,
-      "neither": 5,
+      "other_only": 3,
+      "neither": 2,
       "discordant_b_jev_only": 28,
-      "discordant_c_other_only": 12,
-      "n_discordant": 40,
-      "mcnemar_exact_two_sided_p": 0.01658900337497471,
-      "n": 125
+      "discordant_c_other_only": 3,
+      "n_discordant": 31,
+      "mcnemar_exact_two_sided_p": 4.649162292480469e-06,
+      "n": 113
     },
     "bootstrap": {
       "delta_fdr_at_10pct": {
-        "point": 0.128,
-        "mean_of_bootstrap": 0.127672,
-        "ci95_low": 0.03200000000000003,
-        "ci95_high": 0.2240000000000001
+        "point": 0.22123893805309736,
+        "mean_of_bootstrap": 0.2210849557522124,
+        "ci95_low": 0.1327433628318584,
+        "ci95_high": 0.3097345132743363
       },
       "delta_mrr": {
-        "point": 0.24878280709064576,
-        "mean_of_bootstrap": 0.24867305582645846,
-        "ci95_low": 0.17076865678070888,
-        "ci95_high": 0.32739352919971876
+        "point": 0.3125941654385992,
+        "mean_of_bootstrap": 0.31197842154681316,
+        "ci95_low": 0.23212504041262969,
+        "ci95_high": 0.3908843971574269
       },
       "delta_apfd": {
-        "point": -0.018261927908258202,
-        "mean_of_bootstrap": -0.01841422591270029,
-        "ci95_low": -0.07372348450455302,
-        "ci95_high": 0.03350617278924628
+        "point": 0.07170589774522529,
+        "mean_of_bootstrap": 0.07172082805424304,
+        "ci95_low": 0.047559669783142945,
+        "ci95_high": 0.09891634419631137
       },
       "delta_median_nftr": {
-        "point": -0.028505392912172575,
-        "mean_of_bootstrap": -0.029667108973794352,
-        "ci95_low": -0.04835164835164836,
-        "ci95_high": -0.010869565217391304
+        "point": -0.03157349896480331,
+        "mean_of_bootstrap": -0.02850118075132978,
+        "ci95_low": -0.0435593220338983,
+        "ci95_high": -0.012851782363977486
       }
     }
   },
@@ -219,38 +229,38 @@
       "paired_detection_fdr_at_10pct": {
         "both": 97,
         "jev_only": 11,
-        "other_only": 13,
-        "neither": 4,
+        "other_only": 3,
+        "neither": 2,
         "discordant_b_jev_only": 11,
-        "discordant_c_other_only": 13,
-        "n_discordant": 24,
-        "mcnemar_exact_two_sided_p": 0.8388197422027588,
-        "n": 125
+        "discordant_c_other_only": 3,
+        "n_discordant": 14,
+        "mcnemar_exact_two_sided_p": 0.057373046875,
+        "n": 113
       },
       "bootstrap": {
         "delta_fdr_at_10pct": {
-          "point": -0.016000000000000014,
-          "mean_of_bootstrap": -0.01611760000000001,
-          "ci95_low": -0.09599999999999997,
-          "ci95_high": 0.06399999999999995
+          "point": 0.07079646017699115,
+          "mean_of_bootstrap": 0.07057964601769912,
+          "ci95_low": 0.008849557522123908,
+          "ci95_high": 0.1327433628318585
         },
         "delta_mrr": {
-          "point": 0.05584060933087476,
-          "mean_of_bootstrap": 0.055838185450979905,
-          "ci95_low": -0.02776533936290083,
-          "ci95_high": 0.1387265657005811
+          "point": 0.14385279623531266,
+          "mean_of_bootstrap": 0.143814487175888,
+          "ci95_low": 0.07392449870930203,
+          "ci95_high": 0.21581166167165594
         },
         "delta_apfd": {
-          "point": -0.05718005868825582,
-          "mean_of_bootstrap": -0.05728548933363869,
-          "ci95_low": -0.11167048333874459,
-          "ci95_high": -0.0066149720674498445
+          "point": 0.03261789104323265,
+          "mean_of_bootstrap": 0.03265099908112301,
+          "ci95_low": 0.012887635201142129,
+          "ci95_high": 0.0560921082688103
         },
         "delta_median_nftr": {
-          "point": -0.009973924380704043,
-          "mean_of_bootstrap": -0.005364464868315154,
-          "ci95_low": -0.01721664275466284,
-          "ci95_high": 0.009049773755656111
+          "point": -0.004873761585170982,
+          "mean_of_bootstrap": -0.005684713334923428,
+          "ci95_low": -0.018826868495742673,
+          "ci95_high": 0.0032214765100671144
         }
       }
     },
@@ -264,38 +274,38 @@
       "paired_detection_fdr_at_10pct": {
         "both": 102,
         "jev_only": 6,
-        "other_only": 12,
-        "neither": 5,
+        "other_only": 2,
+        "neither": 3,
         "discordant_b_jev_only": 6,
-        "discordant_c_other_only": 12,
-        "n_discordant": 18,
-        "mcnemar_exact_two_sided_p": 0.237884521484375,
-        "n": 125
+        "discordant_c_other_only": 2,
+        "n_discordant": 8,
+        "mcnemar_exact_two_sided_p": 0.2890625,
+        "n": 113
       },
       "bootstrap": {
         "delta_fdr_at_10pct": {
-          "point": -0.04800000000000004,
-          "mean_of_bootstrap": -0.04819040000000002,
-          "ci95_low": -0.1120000000000001,
-          "ci95_high": 0.016000000000000014
+          "point": 0.03539823008849563,
+          "mean_of_bootstrap": 0.035356637168141594,
+          "ci95_low": -0.008849557522123908,
+          "ci95_high": 0.08849557522123885
         },
         "delta_mrr": {
-          "point": -0.04897673718284368,
-          "mean_of_bootstrap": -0.048967658833182715,
-          "ci95_low": -0.11080366253622306,
-          "ci95_high": 0.013669554700841594
+          "point": 0.01979230967883938,
+          "mean_of_bootstrap": 0.01978738260361435,
+          "ci95_low": -0.03111692376318838,
+          "ci95_high": 0.07277536341862072
         },
         "delta_apfd": {
-          "point": -0.079055851918573,
-          "mean_of_bootstrap": -0.07921084259377606,
-          "ci95_low": -0.12963580162911492,
-          "ci95_high": -0.03387130994843329
+          "point": 0.008432619430390198,
+          "mean_of_bootstrap": 0.008487830337351319,
+          "ci95_low": -0.000609924177106474,
+          "ci95_high": 0.018925678714991692
         },
         "delta_median_nftr": {
-          "point": 0.0030280388532777543,
-          "mean_of_bootstrap": 0.0003104446992072183,
-          "ci95_low": -0.013519163763066201,
-          "ci95_high": 0.012254901960784312
+          "point": 0.0,
+          "mean_of_bootstrap": -0.00017092058515083707,
+          "ci95_low": -0.011428571428571429,
+          "ci95_high": 0.0083163116428363
         }
       }
     }
@@ -303,7 +313,7 @@
   "notes": [
     "Deltas are Jev minus comparator (positive favors Jev for FDR/MRR/APFD; negative median-NFTR delta favors Jev)",
     "Secondary contrasts are not additional primary tests",
-    "Jev A-001 gaps imputed as non-detections with r=N (same as P8-05)",
+    "12 Jsoup evaluation bugs with accepted Jev A-001 WAF gaps are excluded from headline metrics for every method (paired denom=113). Listed in README.",
     "All contrasts share identical bootstrap index samples"
   ]
 }

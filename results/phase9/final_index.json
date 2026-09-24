@@ -1,0 +1,107 @@
+{
+  "schema_version": "jev-phase9-final-v1",
+  "generated_at_utc": "2026-09-24T03:22:36+00:00",
+  "ok": true,
+  "phase_complete": true,
+  "main_finding_path": "results/phase9/main_finding.md",
+  "consistency": {
+    "ok": true,
+    "errors": [],
+    "jev_fdr_at_10pct": 0.9557522123893806,
+    "bm25_fdr_at_10pct": 0.7345132743362832,
+    "delta_pp": 22.123893805309734,
+    "mcnemar_p": 4.649162292480469e-06,
+    "practical_success": true,
+    "n_cases": 20,
+    "n_figures": 4,
+    "reproduction_ok": true,
+    "report_reconciliation": {
+      "claims": {
+        "jev_fdr_at_10pct": 0.9558,
+        "bm25_fdr_at_10pct": 0.7345,
+        "delta_pp": 22.1,
+        "bootstrap_ci95": [
+          0.133,
+          0.31
+        ],
+        "mcnemar_p": 4.649162292480469e-06,
+        "practical_success": true,
+        "winning_alternative": "alt1",
+        "n_evaluation_bugs": 113,
+        "cost_ratio_jev_gpt": 0.2535714158562438
+      },
+      "text_checks": [
+        {
+          "check": "readme_jev_fdr",
+          "ok": true,
+          "needle": "0.9558"
+        },
+        {
+          "check": "readme_bm25_fdr",
+          "ok": true,
+          "needle": "0.7345"
+        },
+        {
+          "check": "readme_delta_pp",
+          "ok": true,
+          "needle": "+22.1"
+        },
+        {
+          "check": "report_jev_fdr",
+          "ok": true,
+          "needle": "0.9558"
+        },
+        {
+          "check": "report_ci",
+          "ok": true,
+          "needle": "0.133"
+        },
+        {
+          "check": "report_practical_pass",
+          "ok": true,
+          "needle": "PASS"
+        }
+      ],
+      "ok": true
+    }
+  },
+  "freeze": {
+    "tag": "experiment-v1",
+    "experiment_commit": "edc70bacd23f2fc5f511ef4d97a33376e7b20bf8",
+    "phase7_seal": {
+      "path": "results/phase7/raw_evaluation_seal.json",
+      "sha256": "bf9ba9ff9dee9ae91a344ae0079a63e07a6763c01ae07c2e5d9c0b73e3ffffd2",
+      "bytes": 4249
+    },
+    "phase8_seal": {
+      "path": "results/phase8/analysis_seal.json",
+      "sha256": "6d3bf370b2b901dbb44608243e3684792a7a13e6845746314035c6a8974b10f1",
+      "bytes": 9726
+    }
+  },
+  "artifact_index": {
+    "manifest": "data/manifest.json",
+    "preregistration": "EXPERIMENT.md",
+    "metrics": "results/metrics.csv",
+    "predictions": "results/predictions.jsonl",
+    "statistics": "results/statistics.json",
+    "headline_table": "results/phase9/headline_table.md",
+    "figures": "results/figures/",
+    "failure_cases": "results/failure_cases.json",
+    "failure_analysis": "results/failure_analysis.json",
+    "readme": "README.md",
+    "report": "docs/phase9-report.md",
+    "reproduction": "results/phase9/reproduction_record.json",
+    "inventory": "results/phase9/final_artifact_inventory.json",
+    "main_finding": "results/phase9/main_finding.md"
+  },
+  "inventory_ok": true,
+  "deviations_recorded": [
+    "A-001-eval: 12 Jsoup WAF gaps excluded from all methods (n=113)",
+    "D-wallclock: shortlist walls reconstructed from per-request latencies",
+    "D-tag-name: freeze tag experiment-v1"
+  ],
+  "post_hoc_exploration": [
+    "P9-04 qualitative categories on mechanical 20-case list (explanatory only)"
+  ]
+}

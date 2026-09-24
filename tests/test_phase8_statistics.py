@@ -89,7 +89,7 @@ class SealedStatisticsTests(unittest.TestCase):
             + table["jev_only"]
             + table["other_only"]
             + table["neither"],
-            125,
+            113,
         )
         self.assertEqual(first["configuration"]["bootstrap_samples"], 10000)
         self.assertEqual(first["configuration"]["bootstrap_seed"], BOOTSTRAP_SEED)

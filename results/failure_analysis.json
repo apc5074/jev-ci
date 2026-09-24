@@ -1,0 +1,281 @@
+{
+  "schema_version": "jev-phase9-failure-analysis-v1",
+  "generated_at_utc": "2026-09-24T03:19:08+00:00",
+  "ok": true,
+  "n_cases": 20,
+  "categories": [
+    "identifier/name match",
+    "behavioral semantic match",
+    "cross-class relationship",
+    "test source provided useful clue",
+    "BM25 candidate-generation miss",
+    "Jev overvalued superficial similarity",
+    "Jev missed indirect dependency",
+    "large/truncated patch",
+    "large/truncated test",
+    "ambiguous test responsibility"
+  ],
+  "category_counts": {
+    "identifier/name match": 2,
+    "behavioral semantic match": 5,
+    "cross-class relationship": 3,
+    "test source provided useful clue": 1,
+    "Jev overvalued superficial similarity": 6,
+    "Jev missed indirect dependency": 1,
+    "large/truncated patch": 1,
+    "ambiguous test responsibility": 1
+  },
+  "shortlist_miss_cases": 0,
+  "notes": "Review uses only sealed patch/test/ranking artifacts. No new model calls. Categories are explanatory; they do not change metrics, prompts, or shortlist size. All 20 mechanically selected IDs are covered exactly once.",
+  "input_hashes": {
+    "failure_cases": {
+      "path": "results/failure_cases.json",
+      "sha256": "9a2e8fb280bbb1c2e75bece97fa74ef8a0e3c79c5a2a991f956cb1b4934eb00b",
+      "bytes": 16790
+    }
+  },
+  "selected_ids": [
+    "JacksonDatabind-62",
+    "JacksonDatabind-35",
+    "JacksonDatabind-38",
+    "JacksonDatabind-49",
+    "JacksonDatabind-47",
+    "JacksonDatabind-72",
+    "JacksonDatabind-15",
+    "Cli-21",
+    "Math-13",
+    "Math-14",
+    "JacksonDatabind-103",
+    "Math-104",
+    "JacksonDatabind-51",
+    "Lang-6",
+    "Lang-61",
+    "Cli-28",
+    "Lang-26",
+    "Cli-32",
+    "JacksonDatabind-100",
+    "Lang-47"
+  ],
+  "cases": [
+    {
+      "qualified_id": "JacksonDatabind-62",
+      "selection_arm": "top10_jev_gains",
+      "bm25_first_trigger_rank": 131,
+      "jev_first_trigger_rank": 1,
+      "delta_bm25_minus_jev": 130,
+      "delta_sign_label": "jev_gain",
+      "candidate_trigger_in_top200": true,
+      "dominant_category": "behavioral semantic match",
+      "evidence": "Patch removes CollectionDeserializer array-delegate creator path (canCreateUsingArrayDelegate). Jev ranks ArrayDelegatorCreatorForCollectionTest #1 (p=0.70); BM25 ranks it #131. Reranker win: semantic link between array-delegate creation and the named creator test, not a shortlist miss."
+    },
+    {
+      "qualified_id": "JacksonDatabind-35",
+      "selection_arm": "top10_jev_gains",
+      "bm25_first_trigger_rank": 114,
+      "jev_first_trigger_rank": 3,
+      "delta_bm25_minus_jev": 111,
+      "delta_sign_label": "jev_gain",
+      "candidate_trigger_in_top200": true,
+      "dominant_category": "behavioral semantic match",
+      "evidence": "Patch edits AsWrapperTypeDeserializer; trigger WrapperObjectWithObjectIdTest. Jev places it #3 among typed/wrapper deserialization tests; BM25 #114 behind generic deserializer/factory names. Behavioral wrapper/type-id match."
+    },
+    {
+      "qualified_id": "JacksonDatabind-38",
+      "selection_arm": "top10_jev_gains",
+      "bm25_first_trigger_rank": 93,
+      "jev_first_trigger_rank": 5,
+      "delta_bm25_minus_jev": 88,
+      "delta_sign_label": "jev_gain",
+      "candidate_trigger_in_top200": true,
+      "dominant_category": "cross-class relationship",
+      "evidence": "Patch changes CollectionType/MapType/SimpleType construction; trigger is interop.DeprecatedTypeHandling1102Test (explicit collection/map type APIs). Jev #5 after other type/generics tests; BM25 #93 stuck on TestTypeFactory lexical neighbors. Failure mode avoided: cross-package type-API consumer test."
+    },
+    {
+      "qualified_id": "JacksonDatabind-49",
+      "selection_arm": "top10_jev_gains",
+      "bm25_first_trigger_rank": 85,
+      "jev_first_trigger_rank": 8,
+      "delta_bm25_minus_jev": 77,
+      "delta_sign_label": "jev_gain",
+      "candidate_trigger_in_top200": true,
+      "dominant_category": "behavioral semantic match",
+      "evidence": "WritableObjectId change; trigger objectid.AlwaysAsReferenceFirstTest. Jev packs ObjectId tests in the top ranks (trigger #8); BM25 #85 with serializer config noise. Object-id / always-as-reference behavior match."
+    },
+    {
+      "qualified_id": "JacksonDatabind-47",
+      "selection_arm": "top10_jev_gains",
+      "bm25_first_trigger_rank": 63,
+      "jev_first_trigger_rank": 1,
+      "delta_bm25_minus_jev": 62,
+      "delta_sign_label": "jev_gain",
+      "candidate_trigger_in_top200": true,
+      "dominant_category": "behavioral semantic match",
+      "evidence": "AnnotationIntrospector serialize-typing change; triggers TestJsonSerialize / TestJsonSerializeAs (broken annotation / specialized-as). Jev #1/#4; BM25 #63. Reranker maps introspector annotation logic to @JsonSerialize tests."
+    },
+    {
+      "qualified_id": "JacksonDatabind-72",
+      "selection_arm": "top10_jev_gains",
+      "bm25_first_trigger_rank": 50,
+      "jev_first_trigger_rank": 1,
+      "delta_bm25_minus_jev": 49,
+      "delta_sign_label": "jev_gain",
+      "candidate_trigger_in_top200": true,
+      "dominant_category": "identifier/name match",
+      "evidence": "InnerClassProperty ↔ creators.InnerClassCreatorTest. Shared InnerClass token; Jev #1 vs BM25 #50. Dominant signal is the identifier overlap Jev promoted that BM25 under-weighted in the full suite ordering."
+    },
+    {
+      "qualified_id": "JacksonDatabind-15",
+      "selection_arm": "top10_jev_gains",
+      "bm25_first_trigger_rank": 48,
+      "jev_first_trigger_rank": 1,
+      "delta_bm25_minus_jev": 47,
+      "delta_sign_label": "jev_gain",
+      "candidate_trigger_in_top200": true,
+      "dominant_category": "behavioral semantic match",
+      "evidence": "Patch touches StdDelegatingSerializer / converter serializer path; trigger convert.TestConvertingSerializer at Jev #1 vs BM25 #48 (BM25 preferred TestBeanConversions). Converting/delegating serializer semantics."
+    },
+    {
+      "qualified_id": "Cli-21",
+      "selection_arm": "top10_jev_gains",
+      "bm25_first_trigger_rank": 49,
+      "jev_first_trigger_rank": 4,
+      "delta_bm25_minus_jev": 45,
+      "delta_sign_label": "jev_gain",
+      "candidate_trigger_in_top200": true,
+      "dominant_category": "test source provided useful clue",
+      "evidence": "Removes WriteableCommandLine get/setCurrentOption; trigger BugCLI150Test. Jev elevates bug.* regression tests (trigger #4) while BM25 #49 prefers option/Group unit tests. Bug-test source aligns with the current-option API loss."
+    },
+    {
+      "qualified_id": "Math-13",
+      "selection_arm": "top10_jev_gains",
+      "bm25_first_trigger_rank": 50,
+      "jev_first_trigger_rank": 7,
+      "delta_bm25_minus_jev": 43,
+      "delta_sign_label": "jev_gain",
+      "candidate_trigger_in_top200": true,
+      "dominant_category": "cross-class relationship",
+      "evidence": "AbstractLeastSquaresOptimizer.squareRoot(DiagonalMatrix) change; trigger optimization.fitting.PolynomialFitterTest (uses the optimizer). Jev #7 in an optimizer/fitter cluster; BM25 #50 distracted by EigenDecomposition matrix tests. Fitter→optimizer dependency, not same-class naming."
+    },
+    {
+      "qualified_id": "Math-14",
+      "selection_arm": "top10_jev_gains",
+      "bm25_first_trigger_rank": 44,
+      "jev_first_trigger_rank": 5,
+      "delta_bm25_minus_jev": 39,
+      "delta_sign_label": "jev_gain",
+      "candidate_trigger_in_top200": true,
+      "dominant_category": "cross-class relationship",
+      "evidence": "Weight / AbstractLeastSquaresOptimizer diagonal-weight change; trigger fitting.PolynomialFitterTest. Jev #5; BM25 #44 again ranks linear-algebra tests first. Same cross-class fitter→optimizer pattern as Math-13."
+    },
+    {
+      "qualified_id": "JacksonDatabind-103",
+      "selection_arm": "top10_jev_losses",
+      "bm25_first_trigger_rank": 7,
+      "jev_first_trigger_rank": 26,
+      "delta_bm25_minus_jev": -19,
+      "delta_sign_label": "jev_loss",
+      "candidate_trigger_in_top200": true,
+      "dominant_category": "large/truncated patch",
+      "evidence": "Multi-file exception/context patch (~14.8k chars, patch_truncated=true). Trigger exc.BasicExceptionTest. BM25 #7 (exception lexical cues); Jev #26 among unrelated deser/creator tests. Truncated wide patch harms reranker focus."
+    },
+    {
+      "qualified_id": "Math-104",
+      "selection_arm": "top10_jev_losses",
+      "bm25_first_trigger_rank": 2,
+      "jev_first_trigger_rank": 19,
+      "delta_bm25_minus_jev": -17,
+      "delta_sign_label": "jev_loss",
+      "candidate_trigger_in_top200": true,
+      "dominant_category": "Jev overvalued superficial similarity",
+      "evidence": "Gamma.java ↔ special.GammaTest. BM25 #2 via Gamma name tokens; Jev #19 after ChiSquare/Poisson/inference tests. Reranker preferred neighboring stats distributions over the matching GammaTest."
+    },
+    {
+      "qualified_id": "JacksonDatabind-51",
+      "selection_arm": "top10_jev_losses",
+      "bm25_first_trigger_rank": 17,
+      "jev_first_trigger_rank": 25,
+      "delta_bm25_minus_jev": -8,
+      "delta_sign_label": "jev_loss",
+      "candidate_trigger_in_top200": true,
+      "dominant_category": "Jev overvalued superficial similarity",
+      "evidence": "TypeDeserializerBase change; trigger jsontype.TestCustomTypeIdResolver. BM25 #17; Jev #25 after polymorphic/generics deser tests. Superficial type-system theme outranked the custom type-id resolver test."
+    },
+    {
+      "qualified_id": "Lang-6",
+      "selection_arm": "top10_jev_losses",
+      "bm25_first_trigger_rank": 5,
+      "jev_first_trigger_rank": 13,
+      "delta_bm25_minus_jev": -8,
+      "delta_sign_label": "jev_loss",
+      "candidate_trigger_in_top200": true,
+      "dominant_category": "Jev missed indirect dependency",
+      "evidence": "CharSequenceTranslator code-point indexing change; trigger StringUtilsTest::testEscapeSurrogatePairs (StringUtils escape uses the translator). BM25 #5 includes StringUtilsTest; Jev #13 after direct translate.* tests. Missed the StringUtils→translator dependency."
+    },
+    {
+      "qualified_id": "Lang-61",
+      "selection_arm": "top10_jev_losses",
+      "bm25_first_trigger_rank": 1,
+      "jev_first_trigger_rank": 5,
+      "delta_bm25_minus_jev": -4,
+      "delta_sign_label": "jev_loss",
+      "candidate_trigger_in_top200": true,
+      "dominant_category": "Jev overvalued superficial similarity",
+      "evidence": "StrBuilder ↔ StrBuilderTest (clear name match). BM25 #1; Jev #5 behind StringUtilsEqualsIndexOfTest and other text utils. Overvalued adjacent string utilities versus the matching *Test class."
+    },
+    {
+      "qualified_id": "Cli-28",
+      "selection_arm": "top10_jev_losses",
+      "bm25_first_trigger_rank": 2,
+      "jev_first_trigger_rank": 4,
+      "delta_bm25_minus_jev": -2,
+      "delta_sign_label": "jev_loss",
+      "candidate_trigger_in_top200": true,
+      "dominant_category": "Jev overvalued superficial similarity",
+      "evidence": "Parser change; trigger ValueTest. BM25 #2; Jev #4 after BugCLI13/BugCLI148. Bug-regression tests outranked the value-parsing test that BM25 surfaced."
+    },
+    {
+      "qualified_id": "Lang-26",
+      "selection_arm": "top10_jev_losses",
+      "bm25_first_trigger_rank": 1,
+      "jev_first_trigger_rank": 3,
+      "delta_bm25_minus_jev": -2,
+      "delta_sign_label": "jev_loss",
+      "candidate_trigger_in_top200": true,
+      "dominant_category": "Jev overvalued superficial similarity",
+      "evidence": "FastDateFormat ↔ FastDateFormatTest. BM25 #1; Jev #3 behind ExtendedMessageFormatTest / DateFormatUtilsTest. Neighboring date-format tests displaced the identifier-matched trigger."
+    },
+    {
+      "qualified_id": "Cli-32",
+      "selection_arm": "top10_jev_losses",
+      "bm25_first_trigger_rank": 1,
+      "jev_first_trigger_rank": 2,
+      "delta_bm25_minus_jev": -1,
+      "delta_sign_label": "jev_loss",
+      "candidate_trigger_in_top200": true,
+      "dominant_category": "identifier/name match",
+      "evidence": "HelpFormatter ↔ HelpFormatterTest. BM25 #1 via name; Jev #2 after BugCLI162Test. Small loss: BM25's identifier match beat Jev's bug-test preference by one rank."
+    },
+    {
+      "qualified_id": "JacksonDatabind-100",
+      "selection_arm": "top10_jev_losses",
+      "bm25_first_trigger_rank": 1,
+      "jev_first_trigger_rank": 2,
+      "delta_bm25_minus_jev": -1,
+      "delta_sign_label": "jev_loss",
+      "candidate_trigger_in_top200": true,
+      "dominant_category": "ambiguous test responsibility",
+      "evidence": "TreeTraversingParser patched; trigger node.TestConversions (not TestTreeTraversingParser). Jev #1 ranks TestTreeTraversingParser (class-name match to the modified file); BM25 #1 ranks TestConversions (actual trigger). Same-package name match is the wrong positive; responsibility is ambiguous."
+    },
+    {
+      "qualified_id": "Lang-47",
+      "selection_arm": "top10_jev_losses",
+      "bm25_first_trigger_rank": 1,
+      "jev_first_trigger_rank": 2,
+      "delta_bm25_minus_jev": -1,
+      "delta_sign_label": "jev_loss",
+      "candidate_trigger_in_top200": true,
+      "dominant_category": "Jev overvalued superficial similarity",
+      "evidence": "StrBuilder ↔ StrBuilderTest. BM25 #1; Jev #2 after StrBuilderAppendInsertTest. Near-miss: related StrBuilder* test preferred over the labeled trigger class."
+    }
+  ]
+}

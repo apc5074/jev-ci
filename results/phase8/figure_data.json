@@ -1,31 +1,53 @@
 {
   "schema_version": "jev-phase8-figure-data-v1",
   "created_at": "2026-09-23T15:24:01+00:00",
+  "analysis_cohort": {
+    "policy": "exclude_a001_jev_waf_gaps_from_all_methods",
+    "note": "12 Jsoup evaluation bugs with accepted Jev A-001 WAF gaps are excluded from headline metrics for every method (paired denom=113). Listed in README.",
+    "full_evaluation_bugs": 125,
+    "headline_evaluation_bugs": 113,
+    "excluded_count": 12,
+    "excluded_qualified_ids": [
+      "Jsoup-33",
+      "Jsoup-40",
+      "Jsoup-47",
+      "Jsoup-54",
+      "Jsoup-69",
+      "Jsoup-72",
+      "Jsoup-75",
+      "Jsoup-78",
+      "Jsoup-81",
+      "Jsoup-84",
+      "Jsoup-85",
+      "Jsoup-86"
+    ],
+    "excluded_reason": "A-001 OpenRouter WAF blocked complete Jev shortlist scoring"
+  },
   "figure1_budget_curve": {
     "Random": [
       {
         "budget_fraction": 0.01,
-        "fdr": 0.027512
+        "fdr": 0.026380530973451326
       },
       {
         "budget_fraction": 0.02,
-        "fdr": 0.033872
+        "fdr": 0.03341592920353983
       },
       {
         "budget_fraction": 0.05,
-        "fdr": 0.070032
+        "fdr": 0.06956637168141593
       },
       {
         "budget_fraction": 0.1,
-        "fdr": 0.124032
+        "fdr": 0.12289380530973451
       },
       {
         "budget_fraction": 0.2,
-        "fdr": 0.22852
+        "fdr": 0.2277345132743363
       },
       {
         "budget_fraction": 0.5,
-        "fdr": 0.537208
+        "fdr": 0.5366637168141593
       },
       {
         "budget_fraction": 1.0,
@@ -35,27 +57,27 @@
     "BM25": [
       {
         "budget_fraction": 0.01,
-        "fdr": 0.408
+        "fdr": 0.4424778761061947
       },
       {
         "budget_fraction": 0.02,
-        "fdr": 0.448
+        "fdr": 0.48672566371681414
       },
       {
         "budget_fraction": 0.05,
-        "fdr": 0.608
+        "fdr": 0.6371681415929203
       },
       {
         "budget_fraction": 0.1,
-        "fdr": 0.736
+        "fdr": 0.7345132743362832
       },
       {
         "budget_fraction": 0.2,
-        "fdr": 0.856
+        "fdr": 0.8495575221238938
       },
       {
         "budget_fraction": 0.5,
-        "fdr": 0.968
+        "fdr": 0.9734513274336283
       },
       {
         "budget_fraction": 1.0,
@@ -65,27 +87,27 @@
     "Embedding": [
       {
         "budget_fraction": 0.01,
-        "fdr": 0.704
+        "fdr": 0.6991150442477876
       },
       {
         "budget_fraction": 0.02,
-        "fdr": 0.728
+        "fdr": 0.7256637168141593
       },
       {
         "budget_fraction": 0.05,
-        "fdr": 0.832
+        "fdr": 0.831858407079646
       },
       {
         "budget_fraction": 0.1,
-        "fdr": 0.88
+        "fdr": 0.8849557522123894
       },
       {
         "budget_fraction": 0.2,
-        "fdr": 0.904
+        "fdr": 0.911504424778761
       },
       {
         "budget_fraction": 0.5,
-        "fdr": 0.96
+        "fdr": 0.9646017699115044
       },
       {
         "budget_fraction": 1.0,
@@ -95,57 +117,57 @@
     "Jev": [
       {
         "budget_fraction": 0.01,
-        "fdr": 0.728
+        "fdr": 0.8053097345132744
       },
       {
         "budget_fraction": 0.02,
-        "fdr": 0.768
+        "fdr": 0.8495575221238938
       },
       {
         "budget_fraction": 0.05,
-        "fdr": 0.816
+        "fdr": 0.9026548672566371
       },
       {
         "budget_fraction": 0.1,
-        "fdr": 0.864
+        "fdr": 0.9557522123893806
       },
       {
         "budget_fraction": 0.2,
-        "fdr": 0.888
+        "fdr": 0.9823008849557522
       },
       {
         "budget_fraction": 0.5,
-        "fdr": 0.896
+        "fdr": 0.9911504424778761
       },
       {
         "budget_fraction": 1.0,
-        "fdr": 0.904
+        "fdr": 1.0
       }
     ],
     "GPT-Nano": [
       {
         "budget_fraction": 0.01,
-        "fdr": 0.784
+        "fdr": 0.8053097345132744
       },
       {
         "budget_fraction": 0.02,
-        "fdr": 0.816
+        "fdr": 0.8407079646017699
       },
       {
         "budget_fraction": 0.05,
-        "fdr": 0.912
+        "fdr": 0.9203539823008849
       },
       {
         "budget_fraction": 0.1,
-        "fdr": 0.912
+        "fdr": 0.9203539823008849
       },
       {
         "budget_fraction": 0.2,
-        "fdr": 0.96
+        "fdr": 0.9646017699115044
       },
       {
         "budget_fraction": 0.5,
-        "fdr": 0.976
+        "fdr": 0.9823008849557522
       },
       {
         "budget_fraction": 1.0,
@@ -161,399 +183,399 @@
       },
       {
         "nftr": 0.01,
-        "fraction_bugs": 0.004656000000000003
+        "fraction_bugs": 0.005150442477876089
       },
       {
         "nftr": 0.02,
-        "fraction_bugs": 0.01135999999999987
+        "fraction_bugs": 0.012566371681415996
       },
       {
         "nftr": 0.03,
-        "fraction_bugs": 0.020551999999999713
+        "fraction_bugs": 0.020380530973451307
       },
       {
         "nftr": 0.04,
-        "fraction_bugs": 0.03041599999999971
+        "fraction_bugs": 0.029592920353982262
       },
       {
         "nftr": 0.05,
-        "fraction_bugs": 0.04696799999999958
+        "fraction_bugs": 0.047902654867256665
       },
       {
         "nftr": 0.06,
-        "fraction_bugs": 0.05843199999999977
+        "fraction_bugs": 0.05838053097345127
       },
       {
         "nftr": 0.07,
-        "fraction_bugs": 0.06550399999999973
+        "fraction_bugs": 0.06620353982300874
       },
       {
         "nftr": 0.08,
-        "fraction_bugs": 0.07593599999999948
+        "fraction_bugs": 0.07609734513274333
       },
       {
         "nftr": 0.09,
-        "fraction_bugs": 0.08941599999999944
+        "fraction_bugs": 0.08881415929203527
       },
       {
         "nftr": 0.1,
-        "fraction_bugs": 0.10125599999999954
+        "fraction_bugs": 0.10191150442477859
       },
       {
         "nftr": 0.11,
-        "fraction_bugs": 0.11103999999999968
+        "fraction_bugs": 0.11273451327433608
       },
       {
         "nftr": 0.12,
-        "fraction_bugs": 0.12292799999999987
+        "fraction_bugs": 0.1216725663716812
       },
       {
         "nftr": 0.13,
-        "fraction_bugs": 0.13014399999999995
+        "fraction_bugs": 0.12965486725663697
       },
       {
         "nftr": 0.14,
-        "fraction_bugs": 0.14571999999999968
+        "fraction_bugs": 0.1468849557522127
       },
       {
         "nftr": 0.15,
-        "fraction_bugs": 0.15559999999999952
+        "fraction_bugs": 0.1555486725663721
       },
       {
         "nftr": 0.16,
-        "fraction_bugs": 0.1678479999999994
+        "fraction_bugs": 0.1672477876106197
       },
       {
         "nftr": 0.17,
-        "fraction_bugs": 0.1744239999999993
+        "fraction_bugs": 0.17452212389380553
       },
       {
         "nftr": 0.18,
-        "fraction_bugs": 0.18814399999999926
+        "fraction_bugs": 0.18754867256637192
       },
       {
         "nftr": 0.19,
-        "fraction_bugs": 0.19913599999999937
+        "fraction_bugs": 0.19970796460176982
       },
       {
         "nftr": 0.2,
-        "fraction_bugs": 0.20959199999999942
+        "fraction_bugs": 0.2092920353982298
       },
       {
         "nftr": 0.21,
-        "fraction_bugs": 0.2177999999999991
+        "fraction_bugs": 0.21651327433628287
       },
       {
         "nftr": 0.22,
-        "fraction_bugs": 0.23180799999999976
+        "fraction_bugs": 0.23200884955752182
       },
       {
         "nftr": 0.23,
-        "fraction_bugs": 0.24279199999999987
+        "fraction_bugs": 0.24390265486725632
       },
       {
         "nftr": 0.24,
-        "fraction_bugs": 0.2541119999999996
+        "fraction_bugs": 0.25251327433628307
       },
       {
         "nftr": 0.25,
-        "fraction_bugs": 0.2624560000000006
+        "fraction_bugs": 0.26174336283185873
       },
       {
         "nftr": 0.26,
-        "fraction_bugs": 0.26946400000000015
+        "fraction_bugs": 0.2692920353982307
       },
       {
         "nftr": 0.27,
-        "fraction_bugs": 0.2852880000000002
+        "fraction_bugs": 0.2843274336283198
       },
       {
         "nftr": 0.28,
-        "fraction_bugs": 0.29587999999999914
+        "fraction_bugs": 0.2952477876106211
       },
       {
         "nftr": 0.29,
-        "fraction_bugs": 0.3033919999999998
+        "fraction_bugs": 0.3033362831858426
       },
       {
         "nftr": 0.3,
-        "fraction_bugs": 0.3126799999999996
+        "fraction_bugs": 0.3116371681415951
       },
       {
         "nftr": 0.31,
-        "fraction_bugs": 0.3247199999999998
+        "fraction_bugs": 0.32432743362832067
       },
       {
         "nftr": 0.32,
-        "fraction_bugs": 0.3386479999999989
+        "fraction_bugs": 0.3388584070796474
       },
       {
         "nftr": 0.33,
-        "fraction_bugs": 0.34670399999999874
+        "fraction_bugs": 0.346044247787612
       },
       {
         "nftr": 0.34,
-        "fraction_bugs": 0.35453599999999924
+        "fraction_bugs": 0.3547079646017709
       },
       {
         "nftr": 0.35,
-        "fraction_bugs": 0.367303999999999
+        "fraction_bugs": 0.367814159292036
       },
       {
         "nftr": 0.36,
-        "fraction_bugs": 0.37662399999999796
+        "fraction_bugs": 0.3753097345132745
       },
       {
         "nftr": 0.37,
-        "fraction_bugs": 0.38893599999999834
+        "fraction_bugs": 0.3889292035398225
       },
       {
         "nftr": 0.38,
-        "fraction_bugs": 0.3973519999999977
+        "fraction_bugs": 0.3979999999999985
       },
       {
         "nftr": 0.39,
-        "fraction_bugs": 0.40679999999999794
+        "fraction_bugs": 0.40614159292035207
       },
       {
         "nftr": 0.4,
-        "fraction_bugs": 0.4195119999999982
+        "fraction_bugs": 0.4190796460176959
       },
       {
         "nftr": 0.41,
-        "fraction_bugs": 0.42885599999999896
+        "fraction_bugs": 0.4294159292035362
       },
       {
         "nftr": 0.42,
-        "fraction_bugs": 0.43791199999999897
+        "fraction_bugs": 0.4375663716814119
       },
       {
         "nftr": 0.43,
-        "fraction_bugs": 0.45007999999999887
+        "fraction_bugs": 0.4501415929203504
       },
       {
         "nftr": 0.44,
-        "fraction_bugs": 0.4611679999999984
+        "fraction_bugs": 0.46166371681415624
       },
       {
         "nftr": 0.45,
-        "fraction_bugs": 0.46967199999999876
+        "fraction_bugs": 0.4692123893805281
       },
       {
         "nftr": 0.46,
-        "fraction_bugs": 0.48055999999999915
+        "fraction_bugs": 0.48107964601769687
       },
       {
         "nftr": 0.47,
-        "fraction_bugs": 0.48930399999999974
+        "fraction_bugs": 0.4901592920353968
       },
       {
         "nftr": 0.48,
-        "fraction_bugs": 0.5047840000000006
+        "fraction_bugs": 0.5046814159292037
       },
       {
         "nftr": 0.49,
-        "fraction_bugs": 0.5120399999999998
+        "fraction_bugs": 0.5125575221238949
       },
       {
         "nftr": 0.5,
-        "fraction_bugs": 0.5272880000000008
+        "fraction_bugs": 0.5266902654867286
       },
       {
         "nftr": 0.51,
-        "fraction_bugs": 0.5320000000000007
+        "fraction_bugs": 0.5319026548672598
       },
       {
         "nftr": 0.52,
-        "fraction_bugs": 0.5400160000000007
+        "fraction_bugs": 0.5397699115044287
       },
       {
         "nftr": 0.53,
-        "fraction_bugs": 0.5542960000000001
+        "fraction_bugs": 0.5538407079646069
       },
       {
         "nftr": 0.54,
-        "fraction_bugs": 0.5621760000000002
+        "fraction_bugs": 0.5619469026548729
       },
       {
         "nftr": 0.55,
-        "fraction_bugs": 0.572408
+        "fraction_bugs": 0.5730265486725723
       },
       {
         "nftr": 0.56,
-        "fraction_bugs": 0.5813599999999998
+        "fraction_bugs": 0.5803893805309799
       },
       {
         "nftr": 0.57,
-        "fraction_bugs": 0.5916959999999994
+        "fraction_bugs": 0.5918230088495642
       },
       {
         "nftr": 0.58,
-        "fraction_bugs": 0.6029840000000001
+        "fraction_bugs": 0.6033982300885019
       },
       {
         "nftr": 0.59,
-        "fraction_bugs": 0.6114400000000004
+        "fraction_bugs": 0.610946902654873
       },
       {
         "nftr": 0.6,
-        "fraction_bugs": 0.6220799999999981
+        "fraction_bugs": 0.6217699115044303
       },
       {
         "nftr": 0.61,
-        "fraction_bugs": 0.6324399999999993
+        "fraction_bugs": 0.6332300884955803
       },
       {
         "nftr": 0.62,
-        "fraction_bugs": 0.6419759999999998
+        "fraction_bugs": 0.6414070796460217
       },
       {
         "nftr": 0.63,
-        "fraction_bugs": 0.6495759999999996
+        "fraction_bugs": 0.6495575221238975
       },
       {
         "nftr": 0.64,
-        "fraction_bugs": 0.66028
+        "fraction_bugs": 0.6607610619469065
       },
       {
         "nftr": 0.65,
-        "fraction_bugs": 0.6682559999999989
+        "fraction_bugs": 0.6677787610619514
       },
       {
         "nftr": 0.66,
-        "fraction_bugs": 0.6804639999999996
+        "fraction_bugs": 0.6802300884955805
       },
       {
         "nftr": 0.67,
-        "fraction_bugs": 0.6876399999999991
+        "fraction_bugs": 0.6881681415929256
       },
       {
         "nftr": 0.68,
-        "fraction_bugs": 0.6963919999999988
+        "fraction_bugs": 0.6954070796460234
       },
       {
         "nftr": 0.69,
-        "fraction_bugs": 0.707103999999999
+        "fraction_bugs": 0.70693805309735
       },
       {
         "nftr": 0.7,
-        "fraction_bugs": 0.7187839999999979
+        "fraction_bugs": 0.7191946902654914
       },
       {
         "nftr": 0.71,
-        "fraction_bugs": 0.7271839999999983
+        "fraction_bugs": 0.7267876106194724
       },
       {
         "nftr": 0.72,
-        "fraction_bugs": 0.7345119999999978
+        "fraction_bugs": 0.7342389380530996
       },
       {
         "nftr": 0.73,
-        "fraction_bugs": 0.7425359999999973
+        "fraction_bugs": 0.7431150442477875
       },
       {
         "nftr": 0.74,
-        "fraction_bugs": 0.7572159999999972
+        "fraction_bugs": 0.7569999999999973
       },
       {
         "nftr": 0.75,
-        "fraction_bugs": 0.7653919999999965
+        "fraction_bugs": 0.7657256637168096
       },
       {
         "nftr": 0.76,
-        "fraction_bugs": 0.7708079999999967
+        "fraction_bugs": 0.7711946902654806
       },
       {
         "nftr": 0.77,
-        "fraction_bugs": 0.7809679999999969
+        "fraction_bugs": 0.779796460176984
       },
       {
         "nftr": 0.78,
-        "fraction_bugs": 0.7897519999999961
+        "fraction_bugs": 0.7892123893805222
       },
       {
         "nftr": 0.79,
-        "fraction_bugs": 0.8021519999999944
+        "fraction_bugs": 0.8029292035398133
       },
       {
         "nftr": 0.8,
-        "fraction_bugs": 0.8120079999999956
+        "fraction_bugs": 0.811123893805299
       },
       {
         "nftr": 0.81,
-        "fraction_bugs": 0.8197359999999961
+        "fraction_bugs": 0.8190973451327326
       },
       {
         "nftr": 0.82,
-        "fraction_bugs": 0.8282159999999961
+        "fraction_bugs": 0.828477876106184
       },
       {
         "nftr": 0.83,
-        "fraction_bugs": 0.8405999999999966
+        "fraction_bugs": 0.8402212389380417
       },
       {
         "nftr": 0.84,
-        "fraction_bugs": 0.847279999999997
+        "fraction_bugs": 0.847203539822997
       },
       {
         "nftr": 0.85,
-        "fraction_bugs": 0.857223999999997
+        "fraction_bugs": 0.8574778761061824
       },
       {
         "nftr": 0.86,
-        "fraction_bugs": 0.8657919999999975
+        "fraction_bugs": 0.8650796460176865
       },
       {
         "nftr": 0.87,
-        "fraction_bugs": 0.877847999999998
+        "fraction_bugs": 0.8784159292035268
       },
       {
         "nftr": 0.88,
-        "fraction_bugs": 0.8846479999999974
+        "fraction_bugs": 0.8855575221238805
       },
       {
         "nftr": 0.89,
-        "fraction_bugs": 0.8940239999999984
+        "fraction_bugs": 0.8935752212389243
       },
       {
         "nftr": 0.9,
-        "fraction_bugs": 0.9014959999999975
+        "fraction_bugs": 0.9018407079645886
       },
       {
         "nftr": 0.91,
-        "fraction_bugs": 0.9097599999999966
+        "fraction_bugs": 0.910982300884943
       },
       {
         "nftr": 0.92,
-        "fraction_bugs": 0.9225199999999978
+        "fraction_bugs": 0.922920353982289
       },
       {
         "nftr": 0.93,
-        "fraction_bugs": 0.930975999999998
+        "fraction_bugs": 0.931575221238927
       },
       {
         "nftr": 0.94,
-        "fraction_bugs": 0.9368639999999986
+        "fraction_bugs": 0.9380884955752107
       },
       {
         "nftr": 0.95,
-        "fraction_bugs": 0.9457359999999985
+        "fraction_bugs": 0.9459026548672472
       },
       {
         "nftr": 0.96,
-        "fraction_bugs": 0.9584479999999985
+        "fraction_bugs": 0.9595486725663643
       },
       {
         "nftr": 0.97,
-        "fraction_bugs": 0.9669039999999992
+        "fraction_bugs": 0.9682477876106134
       },
       {
         "nftr": 0.98,
-        "fraction_bugs": 0.9744559999999987
+        "fraction_bugs": 0.9748053097345084
       },
       {
         "nftr": 0.99,
-        "fraction_bugs": 0.9801039999999982
+        "fraction_bugs": 0.9810530973451289
       },
       {
         "nftr": 1.0,
@@ -563,499 +585,451 @@
     "BM25": [
       {
         "nftr": 0.0023094688221709007,
-        "fraction_bugs": 0.008
+        "fraction_bugs": 0.008849557522123894
       },
       {
         "nftr": 0.002320185614849188,
-        "fraction_bugs": 0.016
+        "fraction_bugs": 0.017699115044247787
       },
       {
         "nftr": 0.0028653295128939827,
-        "fraction_bugs": 0.024
+        "fraction_bugs": 0.02654867256637168
       },
       {
         "nftr": 0.0029411764705882353,
-        "fraction_bugs": 0.032
+        "fraction_bugs": 0.035398230088495575
       },
       {
         "nftr": 0.0029411764705882353,
-        "fraction_bugs": 0.04
+        "fraction_bugs": 0.04424778761061947
       },
       {
         "nftr": 0.0029585798816568047,
-        "fraction_bugs": 0.048
+        "fraction_bugs": 0.05309734513274336
       },
       {
         "nftr": 0.003205128205128205,
-        "fraction_bugs": 0.056
+        "fraction_bugs": 0.061946902654867256
       },
       {
         "nftr": 0.0032258064516129032,
-        "fraction_bugs": 0.064
+        "fraction_bugs": 0.07079646017699115
       },
       {
         "nftr": 0.003472222222222222,
-        "fraction_bugs": 0.072
+        "fraction_bugs": 0.07964601769911504
       },
       {
         "nftr": 0.0035211267605633804,
-        "fraction_bugs": 0.08
+        "fraction_bugs": 0.08849557522123894
       },
       {
         "nftr": 0.0035211267605633804,
-        "fraction_bugs": 0.088
+        "fraction_bugs": 0.09734513274336283
       },
       {
         "nftr": 0.00425531914893617,
-        "fraction_bugs": 0.096
+        "fraction_bugs": 0.10619469026548672
       },
       {
         "nftr": 0.004424778761061947,
-        "fraction_bugs": 0.104
+        "fraction_bugs": 0.11504424778761062
       },
       {
         "nftr": 0.0045662100456621,
-        "fraction_bugs": 0.112
+        "fraction_bugs": 0.12389380530973451
       },
       {
         "nftr": 0.0045871559633027525,
-        "fraction_bugs": 0.12
+        "fraction_bugs": 0.13274336283185842
       },
       {
         "nftr": 0.005434782608695652,
-        "fraction_bugs": 0.128
+        "fraction_bugs": 0.1415929203539823
       },
       {
         "nftr": 0.005681818181818182,
-        "fraction_bugs": 0.136
+        "fraction_bugs": 0.1504424778761062
       },
       {
         "nftr": 0.005747126436781609,
-        "fraction_bugs": 0.144
+        "fraction_bugs": 0.1592920353982301
       },
       {
         "nftr": 0.006289308176100629,
-        "fraction_bugs": 0.152
+        "fraction_bugs": 0.168141592920354
       },
       {
         "nftr": 0.006329113924050633,
-        "fraction_bugs": 0.16
+        "fraction_bugs": 0.17699115044247787
       },
       {
         "nftr": 0.006993006993006993,
-        "fraction_bugs": 0.168
+        "fraction_bugs": 0.18584070796460178
       },
       {
         "nftr": 0.007042253521126761,
-        "fraction_bugs": 0.176
+        "fraction_bugs": 0.19469026548672566
       },
       {
         "nftr": 0.008333333333333333,
-        "fraction_bugs": 0.184
+        "fraction_bugs": 0.20353982300884957
       },
       {
         "nftr": 0.008849557522123894,
-        "fraction_bugs": 0.192
+        "fraction_bugs": 0.21238938053097345
       },
       {
         "nftr": 0.009009009009009009,
-        "fraction_bugs": 0.2
+        "fraction_bugs": 0.22123893805309736
       },
       {
         "nftr": 0.009009009009009009,
-        "fraction_bugs": 0.208
+        "fraction_bugs": 0.23008849557522124
       },
       {
         "nftr": 0.009009009009009009,
-        "fraction_bugs": 0.216
+        "fraction_bugs": 0.23893805309734514
       },
       {
         "nftr": 0.009966777408637873,
-        "fraction_bugs": 0.224
+        "fraction_bugs": 0.24778761061946902
       },
       {
         "nftr": 0.010309278350515464,
-        "fraction_bugs": 0.232
+        "fraction_bugs": 0.25663716814159293
       },
       {
         "nftr": 0.010526315789473684,
-        "fraction_bugs": 0.24
+        "fraction_bugs": 0.26548672566371684
       },
       {
         "nftr": 0.010869565217391304,
-        "fraction_bugs": 0.248
+        "fraction_bugs": 0.2743362831858407
       },
       {
         "nftr": 0.011111111111111112,
-        "fraction_bugs": 0.256
+        "fraction_bugs": 0.2831858407079646
       },
       {
         "nftr": 0.011363636363636364,
-        "fraction_bugs": 0.264
+        "fraction_bugs": 0.2920353982300885
       },
       {
         "nftr": 0.011627906976744186,
-        "fraction_bugs": 0.272
+        "fraction_bugs": 0.3008849557522124
       },
       {
         "nftr": 0.011904761904761904,
-        "fraction_bugs": 0.28
+        "fraction_bugs": 0.30973451327433627
       },
       {
         "nftr": 0.011904761904761904,
-        "fraction_bugs": 0.288
+        "fraction_bugs": 0.3185840707964602
       },
       {
         "nftr": 0.012195121951219513,
-        "fraction_bugs": 0.296
+        "fraction_bugs": 0.3274336283185841
       },
       {
         "nftr": 0.012195121951219513,
-        "fraction_bugs": 0.304
+        "fraction_bugs": 0.336283185840708
       },
       {
         "nftr": 0.012244897959183673,
-        "fraction_bugs": 0.312
+        "fraction_bugs": 0.34513274336283184
       },
       {
         "nftr": 0.0125,
-        "fraction_bugs": 0.32
+        "fraction_bugs": 0.35398230088495575
       },
       {
         "nftr": 0.015748031496062992,
-        "fraction_bugs": 0.328
+        "fraction_bugs": 0.36283185840707965
       },
       {
         "nftr": 0.016241299303944315,
-        "fraction_bugs": 0.336
+        "fraction_bugs": 0.37168141592920356
       },
       {
         "nftr": 0.017191977077363897,
-        "fraction_bugs": 0.344
+        "fraction_bugs": 0.3805309734513274
       },
       {
         "nftr": 0.01904761904761905,
-        "fraction_bugs": 0.352
+        "fraction_bugs": 0.3893805309734513
       },
       {
         "nftr": 0.023529411764705882,
-        "fraction_bugs": 0.36
+        "fraction_bugs": 0.39823008849557523
       },
       {
         "nftr": 0.024024024024024024,
-        "fraction_bugs": 0.368
+        "fraction_bugs": 0.40707964601769914
       },
       {
         "nftr": 0.024390243902439025,
-        "fraction_bugs": 0.376
+        "fraction_bugs": 0.415929203539823
       },
       {
         "nftr": 0.02702702702702703,
-        "fraction_bugs": 0.384
+        "fraction_bugs": 0.4247787610619469
       },
       {
         "nftr": 0.02857142857142857,
-        "fraction_bugs": 0.392
+        "fraction_bugs": 0.4336283185840708
       },
       {
         "nftr": 0.03184713375796178,
-        "fraction_bugs": 0.4
+        "fraction_bugs": 0.4424778761061947
       },
       {
         "nftr": 0.034482758620689655,
-        "fraction_bugs": 0.408
+        "fraction_bugs": 0.45132743362831856
       },
       {
         "nftr": 0.03571428571428571,
-        "fraction_bugs": 0.416
+        "fraction_bugs": 0.46017699115044247
       },
       {
         "nftr": 0.037037037037037035,
-        "fraction_bugs": 0.424
+        "fraction_bugs": 0.4690265486725664
       },
       {
         "nftr": 0.037209302325581395,
-        "fraction_bugs": 0.432
+        "fraction_bugs": 0.4778761061946903
       },
       {
         "nftr": 0.04,
-        "fraction_bugs": 0.44
-      },
-      {
-        "nftr": 0.04,
-        "fraction_bugs": 0.448
+        "fraction_bugs": 0.48672566371681414
       },
       {
         "nftr": 0.040372670807453416,
-        "fraction_bugs": 0.456
+        "fraction_bugs": 0.49557522123893805
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.464
+        "fraction_bugs": 0.504424778761062
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.472
+        "fraction_bugs": 0.5132743362831859
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.48
+        "fraction_bugs": 0.5221238938053098
       },
       {
         "nftr": 0.04424778761061947,
-        "fraction_bugs": 0.488
+        "fraction_bugs": 0.5309734513274337
       },
       {
         "nftr": 0.044444444444444446,
-        "fraction_bugs": 0.496
+        "fraction_bugs": 0.5398230088495575
       },
       {
         "nftr": 0.045454545454545456,
-        "fraction_bugs": 0.504
+        "fraction_bugs": 0.5486725663716814
       },
       {
         "nftr": 0.05,
-        "fraction_bugs": 0.512
+        "fraction_bugs": 0.5575221238938053
       },
       {
         "nftr": 0.05263157894736842,
-        "fraction_bugs": 0.52
+        "fraction_bugs": 0.5663716814159292
       },
       {
         "nftr": 0.053117782909930716,
-        "fraction_bugs": 0.528
+        "fraction_bugs": 0.5752212389380531
       },
       {
         "nftr": 0.054313099041533544,
-        "fraction_bugs": 0.536
-      },
-      {
-        "nftr": 0.058823529411764705,
-        "fraction_bugs": 0.544
-      },
-      {
-        "nftr": 0.058823529411764705,
-        "fraction_bugs": 0.552
+        "fraction_bugs": 0.584070796460177
       },
       {
         "nftr": 0.059907834101382486,
-        "fraction_bugs": 0.56
+        "fraction_bugs": 0.5929203539823009
       },
       {
         "nftr": 0.0635593220338983,
-        "fraction_bugs": 0.568
+        "fraction_bugs": 0.6017699115044248
       },
       {
         "nftr": 0.0673758865248227,
-        "fraction_bugs": 0.576
+        "fraction_bugs": 0.6106194690265486
       },
       {
         "nftr": 0.07692307692307693,
-        "fraction_bugs": 0.584
+        "fraction_bugs": 0.6194690265486725
       },
       {
         "nftr": 0.07692307692307693,
-        "fraction_bugs": 0.592
-      },
-      {
-        "nftr": 0.07692307692307693,
-        "fraction_bugs": 0.6
+        "fraction_bugs": 0.6283185840707964
       },
       {
         "nftr": 0.08045977011494253,
-        "fraction_bugs": 0.608
+        "fraction_bugs": 0.6371681415929203
       },
       {
         "nftr": 0.08333333333333333,
-        "fraction_bugs": 0.616
-      },
-      {
-        "nftr": 0.08571428571428572,
-        "fraction_bugs": 0.624
+        "fraction_bugs": 0.6460176991150443
       },
       {
         "nftr": 0.08695652173913043,
-        "fraction_bugs": 0.632
+        "fraction_bugs": 0.6548672566371682
       },
       {
         "nftr": 0.08695652173913043,
-        "fraction_bugs": 0.64
+        "fraction_bugs": 0.6637168141592921
       },
       {
         "nftr": 0.08695652173913043,
-        "fraction_bugs": 0.648
+        "fraction_bugs": 0.672566371681416
       },
       {
         "nftr": 0.08695652173913043,
-        "fraction_bugs": 0.656
-      },
-      {
-        "nftr": 0.08823529411764706,
-        "fraction_bugs": 0.664
-      },
-      {
-        "nftr": 0.08823529411764706,
-        "fraction_bugs": 0.672
+        "fraction_bugs": 0.6814159292035398
       },
       {
         "nftr": 0.09090909090909091,
-        "fraction_bugs": 0.68
+        "fraction_bugs": 0.6902654867256637
       },
       {
         "nftr": 0.10526315789473684,
-        "fraction_bugs": 0.688
+        "fraction_bugs": 0.6991150442477876
       },
       {
         "nftr": 0.10526315789473684,
-        "fraction_bugs": 0.696
-      },
-      {
-        "nftr": 0.11538461538461539,
-        "fraction_bugs": 0.704
-      },
-      {
-        "nftr": 0.12,
-        "fraction_bugs": 0.712
+        "fraction_bugs": 0.7079646017699115
       },
       {
         "nftr": 0.12571428571428572,
-        "fraction_bugs": 0.72
+        "fraction_bugs": 0.7168141592920354
       },
       {
         "nftr": 0.13636363636363635,
-        "fraction_bugs": 0.728
+        "fraction_bugs": 0.7256637168141593
       },
       {
         "nftr": 0.13636363636363635,
-        "fraction_bugs": 0.736
+        "fraction_bugs": 0.7345132743362832
       },
       {
         "nftr": 0.14285714285714285,
-        "fraction_bugs": 0.744
+        "fraction_bugs": 0.7433628318584071
       },
       {
         "nftr": 0.14285714285714285,
-        "fraction_bugs": 0.752
+        "fraction_bugs": 0.7522123893805309
       },
       {
         "nftr": 0.14285714285714285,
-        "fraction_bugs": 0.76
-      },
-      {
-        "nftr": 0.14705882352941177,
-        "fraction_bugs": 0.768
-      },
-      {
-        "nftr": 0.14705882352941177,
-        "fraction_bugs": 0.776
+        "fraction_bugs": 0.7610619469026548
       },
       {
         "nftr": 0.16181229773462782,
-        "fraction_bugs": 0.784
+        "fraction_bugs": 0.7699115044247787
       },
       {
         "nftr": 0.17391304347826086,
-        "fraction_bugs": 0.792
+        "fraction_bugs": 0.7787610619469026
       },
       {
         "nftr": 0.17391304347826086,
-        "fraction_bugs": 0.8
+        "fraction_bugs": 0.7876106194690266
       },
       {
         "nftr": 0.174496644295302,
-        "fraction_bugs": 0.808
+        "fraction_bugs": 0.7964601769911505
       },
       {
         "nftr": 0.18181818181818182,
-        "fraction_bugs": 0.816
+        "fraction_bugs": 0.8053097345132744
       },
       {
         "nftr": 0.18584070796460178,
-        "fraction_bugs": 0.824
+        "fraction_bugs": 0.8141592920353983
       },
       {
         "nftr": 0.1875,
-        "fraction_bugs": 0.832
+        "fraction_bugs": 0.8230088495575221
       },
       {
         "nftr": 0.1875,
-        "fraction_bugs": 0.84
+        "fraction_bugs": 0.831858407079646
       },
       {
         "nftr": 0.20588235294117646,
-        "fraction_bugs": 0.848
+        "fraction_bugs": 0.8407079646017699
       },
       {
         "nftr": 0.20860927152317882,
-        "fraction_bugs": 0.856
+        "fraction_bugs": 0.8495575221238938
       },
       {
         "nftr": 0.21739130434782608,
-        "fraction_bugs": 0.864
+        "fraction_bugs": 0.8584070796460177
       },
       {
         "nftr": 0.22727272727272727,
-        "fraction_bugs": 0.872
+        "fraction_bugs": 0.8672566371681416
       },
       {
         "nftr": 0.2608695652173913,
-        "fraction_bugs": 0.88
+        "fraction_bugs": 0.8761061946902655
       },
       {
         "nftr": 0.2692307692307692,
-        "fraction_bugs": 0.888
+        "fraction_bugs": 0.8849557522123894
       },
       {
         "nftr": 0.3003533568904594,
-        "fraction_bugs": 0.896
+        "fraction_bugs": 0.8938053097345132
       },
       {
         "nftr": 0.30434782608695654,
-        "fraction_bugs": 0.904
+        "fraction_bugs": 0.9026548672566371
       },
       {
         "nftr": 0.3152542372881356,
-        "fraction_bugs": 0.912
+        "fraction_bugs": 0.911504424778761
       },
       {
         "nftr": 0.3157894736842105,
-        "fraction_bugs": 0.92
+        "fraction_bugs": 0.9203539823008849
       },
       {
         "nftr": 0.3333333333333333,
-        "fraction_bugs": 0.928
+        "fraction_bugs": 0.9292035398230089
       },
       {
         "nftr": 0.34615384615384615,
-        "fraction_bugs": 0.936
+        "fraction_bugs": 0.9380530973451328
       },
       {
         "nftr": 0.42950819672131146,
-        "fraction_bugs": 0.944
+        "fraction_bugs": 0.9469026548672567
       },
       {
         "nftr": 0.43846153846153846,
-        "fraction_bugs": 0.952
+        "fraction_bugs": 0.9557522123893806
       },
       {
         "nftr": 0.4888888888888889,
-        "fraction_bugs": 0.96
+        "fraction_bugs": 0.9646017699115044
       },
       {
         "nftr": 0.5,
-        "fraction_bugs": 0.968
-      },
-      {
-        "nftr": 0.5882352941176471,
-        "fraction_bugs": 0.976
+        "fraction_bugs": 0.9734513274336283
       },
       {
         "nftr": 0.631578947368421,
-        "fraction_bugs": 0.984
+        "fraction_bugs": 0.9823008849557522
       },
       {
         "nftr": 0.9090909090909091,
-        "fraction_bugs": 0.992
+        "fraction_bugs": 0.9911504424778761
       },
       {
         "nftr": 0.9607843137254902,
@@ -1065,499 +1039,451 @@
     "Embedding": [
       {
         "nftr": 0.002304147465437788,
-        "fraction_bugs": 0.008
+        "fraction_bugs": 0.008849557522123894
       },
       {
         "nftr": 0.002325581395348837,
-        "fraction_bugs": 0.016
+        "fraction_bugs": 0.017699115044247787
       },
       {
         "nftr": 0.0029411764705882353,
-        "fraction_bugs": 0.024
+        "fraction_bugs": 0.02654867256637168
       },
       {
         "nftr": 0.0031847133757961785,
-        "fraction_bugs": 0.032
+        "fraction_bugs": 0.035398230088495575
       },
       {
         "nftr": 0.003194888178913738,
-        "fraction_bugs": 0.04
+        "fraction_bugs": 0.04424778761061947
       },
       {
         "nftr": 0.003205128205128205,
-        "fraction_bugs": 0.048
+        "fraction_bugs": 0.05309734513274336
       },
       {
         "nftr": 0.0035211267605633804,
-        "fraction_bugs": 0.056
+        "fraction_bugs": 0.061946902654867256
       },
       {
         "nftr": 0.0035211267605633804,
-        "fraction_bugs": 0.064
+        "fraction_bugs": 0.07079646017699115
       },
       {
         "nftr": 0.004081632653061225,
-        "fraction_bugs": 0.072
+        "fraction_bugs": 0.07964601769911504
       },
       {
         "nftr": 0.004166666666666667,
-        "fraction_bugs": 0.08
+        "fraction_bugs": 0.08849557522123894
       },
       {
         "nftr": 0.004424778761061947,
-        "fraction_bugs": 0.088
+        "fraction_bugs": 0.09734513274336283
       },
       {
         "nftr": 0.0045045045045045045,
-        "fraction_bugs": 0.096
+        "fraction_bugs": 0.10619469026548672
       },
       {
         "nftr": 0.0045662100456621,
-        "fraction_bugs": 0.104
+        "fraction_bugs": 0.11504424778761062
       },
       {
         "nftr": 0.0045871559633027525,
-        "fraction_bugs": 0.112
+        "fraction_bugs": 0.12389380530973451
       },
       {
         "nftr": 0.004618937644341801,
-        "fraction_bugs": 0.12
+        "fraction_bugs": 0.13274336283185842
       },
       {
         "nftr": 0.004618937644341801,
-        "fraction_bugs": 0.128
+        "fraction_bugs": 0.1415929203539823
       },
       {
         "nftr": 0.004640371229698376,
-        "fraction_bugs": 0.136
+        "fraction_bugs": 0.1504424778761062
       },
       {
         "nftr": 0.005434782608695652,
-        "fraction_bugs": 0.144
+        "fraction_bugs": 0.1592920353982301
       },
       {
         "nftr": 0.0057306590257879654,
-        "fraction_bugs": 0.152
+        "fraction_bugs": 0.168141592920354
       },
       {
         "nftr": 0.005747126436781609,
-        "fraction_bugs": 0.16
+        "fraction_bugs": 0.17699115044247787
       },
       {
         "nftr": 0.0058823529411764705,
-        "fraction_bugs": 0.168
+        "fraction_bugs": 0.18584070796460178
       },
       {
         "nftr": 0.006289308176100629,
-        "fraction_bugs": 0.176
+        "fraction_bugs": 0.19469026548672566
       },
       {
         "nftr": 0.006329113924050633,
-        "fraction_bugs": 0.184
+        "fraction_bugs": 0.20353982300884957
       },
       {
         "nftr": 0.0064516129032258064,
-        "fraction_bugs": 0.192
+        "fraction_bugs": 0.21238938053097345
       },
       {
         "nftr": 0.006557377049180328,
-        "fraction_bugs": 0.2
+        "fraction_bugs": 0.22123893805309736
       },
       {
         "nftr": 0.006644518272425249,
-        "fraction_bugs": 0.208
+        "fraction_bugs": 0.23008849557522124
       },
       {
         "nftr": 0.006944444444444444,
-        "fraction_bugs": 0.216
+        "fraction_bugs": 0.23893805309734514
       },
       {
         "nftr": 0.007042253521126761,
-        "fraction_bugs": 0.224
+        "fraction_bugs": 0.24778761061946902
       },
       {
         "nftr": 0.007874015748031496,
-        "fraction_bugs": 0.232
+        "fraction_bugs": 0.25663716814159293
       },
       {
         "nftr": 0.00847457627118644,
-        "fraction_bugs": 0.24
+        "fraction_bugs": 0.26548672566371684
       },
       {
         "nftr": 0.00851063829787234,
-        "fraction_bugs": 0.248
+        "fraction_bugs": 0.2743362831858407
       },
       {
         "nftr": 0.008849557522123894,
-        "fraction_bugs": 0.256
+        "fraction_bugs": 0.2831858407079646
       },
       {
         "nftr": 0.008849557522123894,
-        "fraction_bugs": 0.264
+        "fraction_bugs": 0.2920353982300885
       },
       {
         "nftr": 0.008875739644970414,
-        "fraction_bugs": 0.272
+        "fraction_bugs": 0.3008849557522124
       },
       {
         "nftr": 0.009009009009009009,
-        "fraction_bugs": 0.28
+        "fraction_bugs": 0.30973451327433627
       },
       {
         "nftr": 0.009009009009009009,
-        "fraction_bugs": 0.288
+        "fraction_bugs": 0.3185840707964602
       },
       {
         "nftr": 0.009523809523809525,
-        "fraction_bugs": 0.296
+        "fraction_bugs": 0.3274336283185841
       },
       {
         "nftr": 0.01,
-        "fraction_bugs": 0.304
+        "fraction_bugs": 0.336283185840708
       },
       {
         "nftr": 0.010309278350515464,
-        "fraction_bugs": 0.312
+        "fraction_bugs": 0.34513274336283184
       },
       {
         "nftr": 0.010526315789473684,
-        "fraction_bugs": 0.32
+        "fraction_bugs": 0.35398230088495575
       },
       {
         "nftr": 0.010869565217391304,
-        "fraction_bugs": 0.328
+        "fraction_bugs": 0.36283185840707965
       },
       {
         "nftr": 0.011111111111111112,
-        "fraction_bugs": 0.336
+        "fraction_bugs": 0.37168141592920356
       },
       {
         "nftr": 0.011111111111111112,
-        "fraction_bugs": 0.344
+        "fraction_bugs": 0.3805309734513274
       },
       {
         "nftr": 0.011363636363636364,
-        "fraction_bugs": 0.352
+        "fraction_bugs": 0.3893805309734513
       },
       {
         "nftr": 0.011494252873563218,
-        "fraction_bugs": 0.36
+        "fraction_bugs": 0.39823008849557523
       },
       {
         "nftr": 0.011494252873563218,
-        "fraction_bugs": 0.368
+        "fraction_bugs": 0.40707964601769914
       },
       {
         "nftr": 0.01160092807424594,
-        "fraction_bugs": 0.376
+        "fraction_bugs": 0.415929203539823
       },
       {
         "nftr": 0.011627906976744186,
-        "fraction_bugs": 0.384
+        "fraction_bugs": 0.4247787610619469
       },
       {
         "nftr": 0.011764705882352941,
-        "fraction_bugs": 0.392
+        "fraction_bugs": 0.4336283185840708
       },
       {
         "nftr": 0.011904761904761904,
-        "fraction_bugs": 0.4
+        "fraction_bugs": 0.4424778761061947
       },
       {
         "nftr": 0.011904761904761904,
-        "fraction_bugs": 0.408
+        "fraction_bugs": 0.45132743362831856
       },
       {
         "nftr": 0.011904761904761904,
-        "fraction_bugs": 0.416
+        "fraction_bugs": 0.46017699115044247
       },
       {
         "nftr": 0.012195121951219513,
-        "fraction_bugs": 0.424
+        "fraction_bugs": 0.4690265486725664
       },
       {
         "nftr": 0.012195121951219513,
-        "fraction_bugs": 0.432
+        "fraction_bugs": 0.4778761061946903
       },
       {
         "nftr": 0.013986013986013986,
-        "fraction_bugs": 0.44
+        "fraction_bugs": 0.48672566371681414
       },
       {
         "nftr": 0.015527950310559006,
-        "fraction_bugs": 0.448
+        "fraction_bugs": 0.49557522123893805
       },
       {
         "nftr": 0.016778523489932886,
-        "fraction_bugs": 0.456
+        "fraction_bugs": 0.504424778761062
       },
       {
         "nftr": 0.018018018018018018,
-        "fraction_bugs": 0.464
+        "fraction_bugs": 0.5132743362831859
       },
       {
         "nftr": 0.023728813559322035,
-        "fraction_bugs": 0.472
+        "fraction_bugs": 0.5221238938053098
       },
       {
         "nftr": 0.024390243902439025,
-        "fraction_bugs": 0.48
+        "fraction_bugs": 0.5309734513274337
       },
       {
         "nftr": 0.024822695035460994,
-        "fraction_bugs": 0.488
+        "fraction_bugs": 0.5398230088495575
       },
       {
         "nftr": 0.025889967637540454,
-        "fraction_bugs": 0.496
+        "fraction_bugs": 0.5486725663716814
       },
       {
         "nftr": 0.026923076923076925,
-        "fraction_bugs": 0.504
+        "fraction_bugs": 0.5575221238938053
       },
       {
         "nftr": 0.02734375,
-        "fraction_bugs": 0.512
-      },
-      {
-        "nftr": 0.02857142857142857,
-        "fraction_bugs": 0.52
-      },
-      {
-        "nftr": 0.029411764705882353,
-        "fraction_bugs": 0.528
-      },
-      {
-        "nftr": 0.029411764705882353,
-        "fraction_bugs": 0.536
-      },
-      {
-        "nftr": 0.029411764705882353,
-        "fraction_bugs": 0.544
-      },
-      {
-        "nftr": 0.029411764705882353,
-        "fraction_bugs": 0.552
-      },
-      {
-        "nftr": 0.029411764705882353,
-        "fraction_bugs": 0.56
+        "fraction_bugs": 0.5663716814159292
       },
       {
         "nftr": 0.03125,
-        "fraction_bugs": 0.568
+        "fraction_bugs": 0.5752212389380531
       },
       {
         "nftr": 0.033112582781456956,
-        "fraction_bugs": 0.576
+        "fraction_bugs": 0.584070796460177
       },
       {
         "nftr": 0.03571428571428571,
-        "fraction_bugs": 0.584
+        "fraction_bugs": 0.5929203539823009
       },
       {
         "nftr": 0.0375,
-        "fraction_bugs": 0.592
+        "fraction_bugs": 0.6017699115044248
       },
       {
         "nftr": 0.038461538461538464,
-        "fraction_bugs": 0.6
+        "fraction_bugs": 0.6106194690265486
       },
       {
         "nftr": 0.038461538461538464,
-        "fraction_bugs": 0.608
+        "fraction_bugs": 0.6194690265486725
       },
       {
         "nftr": 0.038461538461538464,
-        "fraction_bugs": 0.616
+        "fraction_bugs": 0.6283185840707964
       },
       {
         "nftr": 0.038461538461538464,
-        "fraction_bugs": 0.624
-      },
-      {
-        "nftr": 0.038461538461538464,
-        "fraction_bugs": 0.632
-      },
-      {
-        "nftr": 0.038461538461538464,
-        "fraction_bugs": 0.64
+        "fraction_bugs": 0.6371681415929203
       },
       {
         "nftr": 0.038869257950530034,
-        "fraction_bugs": 0.648
-      },
-      {
-        "nftr": 0.04,
-        "fraction_bugs": 0.656
+        "fraction_bugs": 0.6460176991150443
       },
       {
         "nftr": 0.041666666666666664,
-        "fraction_bugs": 0.664
+        "fraction_bugs": 0.6548672566371682
       },
       {
         "nftr": 0.04297994269340974,
-        "fraction_bugs": 0.672
+        "fraction_bugs": 0.6637168141592921
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.68
+        "fraction_bugs": 0.672566371681416
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.688
+        "fraction_bugs": 0.6814159292035398
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.696
+        "fraction_bugs": 0.6902654867256637
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.704
+        "fraction_bugs": 0.6991150442477876
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.712
+        "fraction_bugs": 0.7079646017699115
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.72
+        "fraction_bugs": 0.7168141592920354
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.728
+        "fraction_bugs": 0.7256637168141593
       },
       {
         "nftr": 0.045454545454545456,
-        "fraction_bugs": 0.736
+        "fraction_bugs": 0.7345132743362832
       },
       {
         "nftr": 0.045454545454545456,
-        "fraction_bugs": 0.744
+        "fraction_bugs": 0.7433628318584071
       },
       {
         "nftr": 0.045454545454545456,
-        "fraction_bugs": 0.752
+        "fraction_bugs": 0.7522123893805309
       },
       {
         "nftr": 0.045454545454545456,
-        "fraction_bugs": 0.76
+        "fraction_bugs": 0.7610619469026548
       },
       {
         "nftr": 0.045454545454545456,
-        "fraction_bugs": 0.768
+        "fraction_bugs": 0.7699115044247787
       },
       {
         "nftr": 0.045454545454545456,
-        "fraction_bugs": 0.776
+        "fraction_bugs": 0.7787610619469026
       },
       {
         "nftr": 0.045454545454545456,
-        "fraction_bugs": 0.784
+        "fraction_bugs": 0.7876106194690266
       },
       {
         "nftr": 0.047619047619047616,
-        "fraction_bugs": 0.792
+        "fraction_bugs": 0.7964601769911505
       },
       {
         "nftr": 0.05263157894736842,
-        "fraction_bugs": 0.8
+        "fraction_bugs": 0.8053097345132744
       },
       {
         "nftr": 0.05263157894736842,
-        "fraction_bugs": 0.808
+        "fraction_bugs": 0.8141592920353983
       },
       {
         "nftr": 0.05714285714285714,
-        "fraction_bugs": 0.816
+        "fraction_bugs": 0.8230088495575221
       },
       {
         "nftr": 0.06906906906906907,
-        "fraction_bugs": 0.824
-      },
-      {
-        "nftr": 0.08,
-        "fraction_bugs": 0.832
+        "fraction_bugs": 0.831858407079646
       },
       {
         "nftr": 0.08695652173913043,
-        "fraction_bugs": 0.84
+        "fraction_bugs": 0.8407079646017699
       },
       {
         "nftr": 0.08849557522123894,
-        "fraction_bugs": 0.848
+        "fraction_bugs": 0.8495575221238938
       },
       {
         "nftr": 0.10526315789473684,
-        "fraction_bugs": 0.856
+        "fraction_bugs": 0.8584070796460177
       },
       {
         "nftr": 0.1111111111111111,
-        "fraction_bugs": 0.864
+        "fraction_bugs": 0.8672566371681416
       },
       {
         "nftr": 0.13043478260869565,
-        "fraction_bugs": 0.872
+        "fraction_bugs": 0.8761061946902655
       },
       {
         "nftr": 0.13043478260869565,
-        "fraction_bugs": 0.88
+        "fraction_bugs": 0.8849557522123894
       },
       {
         "nftr": 0.15789473684210525,
-        "fraction_bugs": 0.888
+        "fraction_bugs": 0.8938053097345132
       },
       {
         "nftr": 0.17391304347826086,
-        "fraction_bugs": 0.896
+        "fraction_bugs": 0.9026548672566371
       },
       {
         "nftr": 0.17391304347826086,
-        "fraction_bugs": 0.904
+        "fraction_bugs": 0.911504424778761
       },
       {
         "nftr": 0.22,
-        "fraction_bugs": 0.912
-      },
-      {
-        "nftr": 0.2647058823529412,
-        "fraction_bugs": 0.92
+        "fraction_bugs": 0.9203539823008849
       },
       {
         "nftr": 0.2916666666666667,
-        "fraction_bugs": 0.928
+        "fraction_bugs": 0.9292035398230089
       },
       {
         "nftr": 0.3028571428571429,
-        "fraction_bugs": 0.936
+        "fraction_bugs": 0.9380530973451328
       },
       {
         "nftr": 0.31142857142857144,
-        "fraction_bugs": 0.944
+        "fraction_bugs": 0.9469026548672567
       },
       {
         "nftr": 0.375,
-        "fraction_bugs": 0.952
+        "fraction_bugs": 0.9557522123893806
       },
       {
         "nftr": 0.4166666666666667,
-        "fraction_bugs": 0.96
-      },
-      {
-        "nftr": 0.5294117647058824,
-        "fraction_bugs": 0.968
+        "fraction_bugs": 0.9646017699115044
       },
       {
         "nftr": 0.6666666666666666,
-        "fraction_bugs": 0.976
+        "fraction_bugs": 0.9734513274336283
       },
       {
         "nftr": 0.6818181818181818,
-        "fraction_bugs": 0.984
+        "fraction_bugs": 0.9823008849557522
       },
       {
         "nftr": 0.6842105263157895,
-        "fraction_bugs": 0.992
+        "fraction_bugs": 0.9911504424778761
       },
       {
         "nftr": 0.8235294117647058,
@@ -1567,1001 +1493,905 @@
     "Jev": [
       {
         "nftr": 0.002304147465437788,
-        "fraction_bugs": 0.008
+        "fraction_bugs": 0.008849557522123894
       },
       {
         "nftr": 0.0023094688221709007,
-        "fraction_bugs": 0.016
+        "fraction_bugs": 0.017699115044247787
       },
       {
         "nftr": 0.002325581395348837,
-        "fraction_bugs": 0.024
+        "fraction_bugs": 0.02654867256637168
       },
       {
         "nftr": 0.002840909090909091,
-        "fraction_bugs": 0.032
+        "fraction_bugs": 0.035398230088495575
       },
       {
         "nftr": 0.0028653295128939827,
-        "fraction_bugs": 0.04
+        "fraction_bugs": 0.04424778761061947
       },
       {
         "nftr": 0.0028653295128939827,
-        "fraction_bugs": 0.048
+        "fraction_bugs": 0.05309734513274336
       },
       {
         "nftr": 0.0029411764705882353,
-        "fraction_bugs": 0.056
+        "fraction_bugs": 0.061946902654867256
       },
       {
         "nftr": 0.0029411764705882353,
-        "fraction_bugs": 0.064
+        "fraction_bugs": 0.07079646017699115
       },
       {
         "nftr": 0.0029585798816568047,
-        "fraction_bugs": 0.072
+        "fraction_bugs": 0.07964601769911504
       },
       {
         "nftr": 0.003003003003003003,
-        "fraction_bugs": 0.08
+        "fraction_bugs": 0.08849557522123894
       },
       {
         "nftr": 0.0031847133757961785,
-        "fraction_bugs": 0.088
+        "fraction_bugs": 0.09734513274336283
       },
       {
         "nftr": 0.003205128205128205,
-        "fraction_bugs": 0.096
+        "fraction_bugs": 0.10619469026548672
       },
       {
         "nftr": 0.0032258064516129032,
-        "fraction_bugs": 0.104
+        "fraction_bugs": 0.11504424778761062
       },
       {
         "nftr": 0.003236245954692557,
-        "fraction_bugs": 0.112
+        "fraction_bugs": 0.12389380530973451
       },
       {
         "nftr": 0.003278688524590164,
-        "fraction_bugs": 0.12
+        "fraction_bugs": 0.13274336283185842
       },
       {
         "nftr": 0.0033112582781456954,
-        "fraction_bugs": 0.128
+        "fraction_bugs": 0.1415929203539823
       },
       {
         "nftr": 0.0033222591362126247,
-        "fraction_bugs": 0.136
+        "fraction_bugs": 0.1504424778761062
       },
       {
         "nftr": 0.003472222222222222,
-        "fraction_bugs": 0.144
+        "fraction_bugs": 0.1592920353982301
       },
       {
         "nftr": 0.0035211267605633804,
-        "fraction_bugs": 0.152
+        "fraction_bugs": 0.168141592920354
       },
       {
         "nftr": 0.0035211267605633804,
-        "fraction_bugs": 0.16
+        "fraction_bugs": 0.17699115044247787
       },
       {
         "nftr": 0.0035211267605633804,
-        "fraction_bugs": 0.168
+        "fraction_bugs": 0.18584070796460178
       },
       {
         "nftr": 0.0035460992907801418,
-        "fraction_bugs": 0.176
+        "fraction_bugs": 0.19469026548672566
       },
       {
         "nftr": 0.00390625,
-        "fraction_bugs": 0.184
+        "fraction_bugs": 0.20353982300884957
       },
       {
         "nftr": 0.004081632653061225,
-        "fraction_bugs": 0.192
+        "fraction_bugs": 0.21238938053097345
       },
       {
         "nftr": 0.004166666666666667,
-        "fraction_bugs": 0.2
+        "fraction_bugs": 0.22123893805309736
       },
       {
         "nftr": 0.00423728813559322,
-        "fraction_bugs": 0.208
+        "fraction_bugs": 0.23008849557522124
       },
       {
         "nftr": 0.00425531914893617,
-        "fraction_bugs": 0.216
+        "fraction_bugs": 0.23893805309734514
       },
       {
         "nftr": 0.004424778761061947,
-        "fraction_bugs": 0.224
+        "fraction_bugs": 0.24778761061946902
       },
       {
         "nftr": 0.0045662100456621,
-        "fraction_bugs": 0.232
+        "fraction_bugs": 0.25663716814159293
       },
       {
         "nftr": 0.0045871559633027525,
-        "fraction_bugs": 0.24
+        "fraction_bugs": 0.26548672566371684
       },
       {
         "nftr": 0.004640371229698376,
-        "fraction_bugs": 0.248
+        "fraction_bugs": 0.2743362831858407
       },
       {
         "nftr": 0.005434782608695652,
-        "fraction_bugs": 0.256
+        "fraction_bugs": 0.2831858407079646
       },
       {
         "nftr": 0.005747126436781609,
-        "fraction_bugs": 0.264
+        "fraction_bugs": 0.2920353982300885
       },
       {
         "nftr": 0.006289308176100629,
-        "fraction_bugs": 0.272
+        "fraction_bugs": 0.3008849557522124
       },
       {
         "nftr": 0.006329113924050633,
-        "fraction_bugs": 0.28
+        "fraction_bugs": 0.30973451327433627
       },
       {
         "nftr": 0.006993006993006993,
-        "fraction_bugs": 0.288
+        "fraction_bugs": 0.3185840707964602
       },
       {
         "nftr": 0.008333333333333333,
-        "fraction_bugs": 0.296
+        "fraction_bugs": 0.3274336283185841
       },
       {
         "nftr": 0.008849557522123894,
-        "fraction_bugs": 0.304
+        "fraction_bugs": 0.336283185840708
       },
       {
         "nftr": 0.008849557522123894,
-        "fraction_bugs": 0.312
+        "fraction_bugs": 0.34513274336283184
       },
       {
         "nftr": 0.009009009009009009,
-        "fraction_bugs": 0.32
+        "fraction_bugs": 0.35398230088495575
       },
       {
         "nftr": 0.009009009009009009,
-        "fraction_bugs": 0.328
+        "fraction_bugs": 0.36283185840707965
       },
       {
         "nftr": 0.009009009009009009,
-        "fraction_bugs": 0.336
+        "fraction_bugs": 0.37168141592920356
       },
       {
         "nftr": 0.009009009009009009,
-        "fraction_bugs": 0.344
+        "fraction_bugs": 0.3805309734513274
       },
       {
         "nftr": 0.009237875288683603,
-        "fraction_bugs": 0.352
+        "fraction_bugs": 0.3893805309734513
       },
       {
         "nftr": 0.009523809523809525,
-        "fraction_bugs": 0.36
+        "fraction_bugs": 0.39823008849557523
       },
       {
         "nftr": 0.01,
-        "fraction_bugs": 0.368
+        "fraction_bugs": 0.40707964601769914
       },
       {
         "nftr": 0.01,
-        "fraction_bugs": 0.376
+        "fraction_bugs": 0.415929203539823
       },
       {
         "nftr": 0.010309278350515464,
-        "fraction_bugs": 0.384
+        "fraction_bugs": 0.4247787610619469
       },
       {
         "nftr": 0.010526315789473684,
-        "fraction_bugs": 0.392
+        "fraction_bugs": 0.4336283185840708
       },
       {
         "nftr": 0.011111111111111112,
-        "fraction_bugs": 0.4
+        "fraction_bugs": 0.4424778761061947
       },
       {
         "nftr": 0.011111111111111112,
-        "fraction_bugs": 0.408
+        "fraction_bugs": 0.45132743362831856
       },
       {
         "nftr": 0.011363636363636364,
-        "fraction_bugs": 0.416
+        "fraction_bugs": 0.46017699115044247
       },
       {
         "nftr": 0.011494252873563218,
-        "fraction_bugs": 0.424
+        "fraction_bugs": 0.4690265486725664
       },
       {
         "nftr": 0.011494252873563218,
-        "fraction_bugs": 0.432
+        "fraction_bugs": 0.4778761061946903
       },
       {
         "nftr": 0.011538461538461539,
-        "fraction_bugs": 0.44
+        "fraction_bugs": 0.48672566371681414
       },
       {
         "nftr": 0.011764705882352941,
-        "fraction_bugs": 0.448
+        "fraction_bugs": 0.49557522123893805
       },
       {
         "nftr": 0.011904761904761904,
-        "fraction_bugs": 0.456
+        "fraction_bugs": 0.504424778761062
       },
       {
         "nftr": 0.011904761904761904,
-        "fraction_bugs": 0.464
+        "fraction_bugs": 0.5132743362831859
       },
       {
         "nftr": 0.011904761904761904,
-        "fraction_bugs": 0.472
+        "fraction_bugs": 0.5221238938053098
       },
       {
         "nftr": 0.012195121951219513,
-        "fraction_bugs": 0.48
+        "fraction_bugs": 0.5309734513274337
       },
       {
         "nftr": 0.012195121951219513,
-        "fraction_bugs": 0.488
+        "fraction_bugs": 0.5398230088495575
       },
       {
         "nftr": 0.014285714285714285,
-        "fraction_bugs": 0.496
+        "fraction_bugs": 0.5486725663716814
       },
       {
         "nftr": 0.01694915254237288,
-        "fraction_bugs": 0.504
+        "fraction_bugs": 0.5575221238938053
       },
       {
         "nftr": 0.02,
-        "fraction_bugs": 0.512
+        "fraction_bugs": 0.5663716814159292
       },
       {
         "nftr": 0.021739130434782608,
-        "fraction_bugs": 0.52
+        "fraction_bugs": 0.5752212389380531
       },
       {
         "nftr": 0.023255813953488372,
-        "fraction_bugs": 0.528
+        "fraction_bugs": 0.584070796460177
       },
       {
         "nftr": 0.028268551236749116,
-        "fraction_bugs": 0.536
+        "fraction_bugs": 0.5929203539823009
       },
       {
         "nftr": 0.02857142857142857,
-        "fraction_bugs": 0.544
+        "fraction_bugs": 0.6017699115044248
       },
       {
         "nftr": 0.03260869565217391,
-        "fraction_bugs": 0.552
+        "fraction_bugs": 0.6106194690265486
       },
       {
         "nftr": 0.03571428571428571,
-        "fraction_bugs": 0.56
+        "fraction_bugs": 0.6194690265486725
       },
       {
         "nftr": 0.037037037037037035,
-        "fraction_bugs": 0.568
+        "fraction_bugs": 0.6283185840707964
       },
       {
         "nftr": 0.038461538461538464,
-        "fraction_bugs": 0.576
+        "fraction_bugs": 0.6371681415929203
       },
       {
         "nftr": 0.038461538461538464,
-        "fraction_bugs": 0.584
+        "fraction_bugs": 0.6460176991150443
       },
       {
         "nftr": 0.038461538461538464,
-        "fraction_bugs": 0.592
+        "fraction_bugs": 0.6548672566371682
       },
       {
         "nftr": 0.038461538461538464,
-        "fraction_bugs": 0.6
+        "fraction_bugs": 0.6637168141592921
       },
       {
         "nftr": 0.041666666666666664,
-        "fraction_bugs": 0.608
+        "fraction_bugs": 0.672566371681416
       },
       {
         "nftr": 0.041666666666666664,
-        "fraction_bugs": 0.616
+        "fraction_bugs": 0.6814159292035398
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.624
+        "fraction_bugs": 0.6902654867256637
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.632
+        "fraction_bugs": 0.6991150442477876
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.64
+        "fraction_bugs": 0.7079646017699115
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.648
+        "fraction_bugs": 0.7168141592920354
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.656
+        "fraction_bugs": 0.7256637168141593
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.664
+        "fraction_bugs": 0.7345132743362832
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.672
+        "fraction_bugs": 0.7433628318584071
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.68
+        "fraction_bugs": 0.7522123893805309
       },
       {
         "nftr": 0.045454545454545456,
-        "fraction_bugs": 0.688
+        "fraction_bugs": 0.7610619469026548
       },
       {
         "nftr": 0.045454545454545456,
-        "fraction_bugs": 0.696
+        "fraction_bugs": 0.7699115044247787
       },
       {
         "nftr": 0.045454545454545456,
-        "fraction_bugs": 0.704
+        "fraction_bugs": 0.7787610619469026
       },
       {
         "nftr": 0.045454545454545456,
-        "fraction_bugs": 0.712
+        "fraction_bugs": 0.7876106194690266
       },
       {
         "nftr": 0.045454545454545456,
-        "fraction_bugs": 0.72
+        "fraction_bugs": 0.7964601769911505
       },
       {
         "nftr": 0.045454545454545456,
-        "fraction_bugs": 0.728
+        "fraction_bugs": 0.8053097345132744
       },
       {
         "nftr": 0.045454545454545456,
-        "fraction_bugs": 0.736
+        "fraction_bugs": 0.8141592920353983
       },
       {
         "nftr": 0.047619047619047616,
-        "fraction_bugs": 0.744
+        "fraction_bugs": 0.8230088495575221
       },
       {
         "nftr": 0.05263157894736842,
-        "fraction_bugs": 0.752
+        "fraction_bugs": 0.831858407079646
       },
       {
         "nftr": 0.05263157894736842,
-        "fraction_bugs": 0.76
+        "fraction_bugs": 0.8407079646017699
       },
       {
         "nftr": 0.05263157894736842,
-        "fraction_bugs": 0.768
+        "fraction_bugs": 0.8495575221238938
       },
       {
         "nftr": 0.05263157894736842,
-        "fraction_bugs": 0.776
+        "fraction_bugs": 0.8584070796460177
       },
       {
         "nftr": 0.05263157894736842,
-        "fraction_bugs": 0.784
+        "fraction_bugs": 0.8672566371681416
       },
       {
         "nftr": 0.058823529411764705,
-        "fraction_bugs": 0.792
+        "fraction_bugs": 0.8761061946902655
       },
       {
         "nftr": 0.060324825986078884,
-        "fraction_bugs": 0.8
+        "fraction_bugs": 0.8849557522123894
       },
       {
         "nftr": 0.06097560975609756,
-        "fraction_bugs": 0.808
+        "fraction_bugs": 0.8938053097345132
       },
       {
         "nftr": 0.06711409395973154,
-        "fraction_bugs": 0.816
+        "fraction_bugs": 0.9026548672566371
       },
       {
         "nftr": 0.0784313725490196,
-        "fraction_bugs": 0.824
+        "fraction_bugs": 0.911504424778761
       },
       {
         "nftr": 0.07987220447284345,
-        "fraction_bugs": 0.832
+        "fraction_bugs": 0.9203539823008849
       },
       {
         "nftr": 0.08695652173913043,
-        "fraction_bugs": 0.84
+        "fraction_bugs": 0.9292035398230089
       },
       {
         "nftr": 0.08695652173913043,
-        "fraction_bugs": 0.848
+        "fraction_bugs": 0.9380530973451328
       },
       {
         "nftr": 0.08695652173913043,
-        "fraction_bugs": 0.856
+        "fraction_bugs": 0.9469026548672567
       },
       {
         "nftr": 0.11504424778761062,
-        "fraction_bugs": 0.864
+        "fraction_bugs": 0.9557522123893806
       },
       {
         "nftr": 0.125,
-        "fraction_bugs": 0.872
+        "fraction_bugs": 0.9646017699115044
       },
       {
         "nftr": 0.14960629921259844,
-        "fraction_bugs": 0.88
+        "fraction_bugs": 0.9734513274336283
       },
       {
         "nftr": 0.17391304347826086,
-        "fraction_bugs": 0.888
+        "fraction_bugs": 0.9823008849557522
       },
       {
         "nftr": 0.26666666666666666,
-        "fraction_bugs": 0.896
+        "fraction_bugs": 0.9911504424778761
       },
       {
         "nftr": 0.8181818181818182,
-        "fraction_bugs": 0.904
-      },
-      {
-        "nftr": 1.0,
-        "fraction_bugs": 0.912
-      },
-      {
-        "nftr": 1.0,
-        "fraction_bugs": 0.92
-      },
-      {
-        "nftr": 1.0,
-        "fraction_bugs": 0.928
-      },
-      {
-        "nftr": 1.0,
-        "fraction_bugs": 0.936
-      },
-      {
-        "nftr": 1.0,
-        "fraction_bugs": 0.944
-      },
-      {
-        "nftr": 1.0,
-        "fraction_bugs": 0.952
-      },
-      {
-        "nftr": 1.0,
-        "fraction_bugs": 0.96
-      },
-      {
-        "nftr": 1.0,
-        "fraction_bugs": 0.968
-      },
-      {
-        "nftr": 1.0,
-        "fraction_bugs": 0.976
-      },
-      {
-        "nftr": 1.0,
-        "fraction_bugs": 0.984
-      },
-      {
-        "nftr": 1.0,
-        "fraction_bugs": 0.992
-      },
-      {
-        "nftr": 1.0,
         "fraction_bugs": 1.0
       }
     ],
     "GPT-Nano": [
       {
         "nftr": 0.0023094688221709007,
-        "fraction_bugs": 0.008
+        "fraction_bugs": 0.008849557522123894
       },
       {
         "nftr": 0.002840909090909091,
-        "fraction_bugs": 0.016
+        "fraction_bugs": 0.017699115044247787
       },
       {
         "nftr": 0.0028653295128939827,
-        "fraction_bugs": 0.024
+        "fraction_bugs": 0.02654867256637168
       },
       {
         "nftr": 0.0029411764705882353,
-        "fraction_bugs": 0.032
+        "fraction_bugs": 0.035398230088495575
       },
       {
         "nftr": 0.0029411764705882353,
-        "fraction_bugs": 0.04
+        "fraction_bugs": 0.04424778761061947
       },
       {
         "nftr": 0.0029585798816568047,
-        "fraction_bugs": 0.048
+        "fraction_bugs": 0.05309734513274336
       },
       {
         "nftr": 0.003003003003003003,
-        "fraction_bugs": 0.056
+        "fraction_bugs": 0.061946902654867256
       },
       {
         "nftr": 0.0031847133757961785,
-        "fraction_bugs": 0.064
+        "fraction_bugs": 0.07079646017699115
       },
       {
         "nftr": 0.003205128205128205,
-        "fraction_bugs": 0.072
+        "fraction_bugs": 0.07964601769911504
       },
       {
         "nftr": 0.0032258064516129032,
-        "fraction_bugs": 0.08
+        "fraction_bugs": 0.08849557522123894
       },
       {
         "nftr": 0.003278688524590164,
-        "fraction_bugs": 0.088
+        "fraction_bugs": 0.09734513274336283
       },
       {
         "nftr": 0.0033112582781456954,
-        "fraction_bugs": 0.096
+        "fraction_bugs": 0.10619469026548672
       },
       {
         "nftr": 0.0033222591362126247,
-        "fraction_bugs": 0.104
+        "fraction_bugs": 0.11504424778761062
       },
       {
         "nftr": 0.003472222222222222,
-        "fraction_bugs": 0.112
+        "fraction_bugs": 0.12389380530973451
       },
       {
         "nftr": 0.0035211267605633804,
-        "fraction_bugs": 0.12
+        "fraction_bugs": 0.13274336283185842
       },
       {
         "nftr": 0.0035460992907801418,
-        "fraction_bugs": 0.128
+        "fraction_bugs": 0.1415929203539823
       },
       {
         "nftr": 0.0038461538461538464,
-        "fraction_bugs": 0.136
+        "fraction_bugs": 0.1504424778761062
       },
       {
         "nftr": 0.00390625,
-        "fraction_bugs": 0.144
+        "fraction_bugs": 0.1592920353982301
       },
       {
         "nftr": 0.004081632653061225,
-        "fraction_bugs": 0.152
+        "fraction_bugs": 0.168141592920354
       },
       {
         "nftr": 0.004166666666666667,
-        "fraction_bugs": 0.16
+        "fraction_bugs": 0.17699115044247787
       },
       {
         "nftr": 0.004166666666666667,
-        "fraction_bugs": 0.168
+        "fraction_bugs": 0.18584070796460178
       },
       {
         "nftr": 0.00425531914893617,
-        "fraction_bugs": 0.176
+        "fraction_bugs": 0.19469026548672566
       },
       {
         "nftr": 0.004424778761061947,
-        "fraction_bugs": 0.184
+        "fraction_bugs": 0.20353982300884957
       },
       {
         "nftr": 0.0045662100456621,
-        "fraction_bugs": 0.192
+        "fraction_bugs": 0.21238938053097345
       },
       {
         "nftr": 0.0045871559633027525,
-        "fraction_bugs": 0.2
+        "fraction_bugs": 0.22123893805309736
       },
       {
         "nftr": 0.004608294930875576,
-        "fraction_bugs": 0.208
+        "fraction_bugs": 0.23008849557522124
       },
       {
         "nftr": 0.004640371229698376,
-        "fraction_bugs": 0.216
+        "fraction_bugs": 0.23893805309734514
       },
       {
         "nftr": 0.005434782608695652,
-        "fraction_bugs": 0.224
+        "fraction_bugs": 0.24778761061946902
       },
       {
         "nftr": 0.005747126436781609,
-        "fraction_bugs": 0.232
+        "fraction_bugs": 0.25663716814159293
       },
       {
         "nftr": 0.006289308176100629,
-        "fraction_bugs": 0.24
+        "fraction_bugs": 0.26548672566371684
       },
       {
         "nftr": 0.006329113924050633,
-        "fraction_bugs": 0.248
+        "fraction_bugs": 0.2743362831858407
       },
       {
         "nftr": 0.006779661016949152,
-        "fraction_bugs": 0.256
+        "fraction_bugs": 0.2831858407079646
       },
       {
         "nftr": 0.006993006993006993,
-        "fraction_bugs": 0.264
+        "fraction_bugs": 0.2920353982300885
       },
       {
         "nftr": 0.007042253521126761,
-        "fraction_bugs": 0.272
+        "fraction_bugs": 0.3008849557522124
       },
       {
         "nftr": 0.007042253521126761,
-        "fraction_bugs": 0.28
+        "fraction_bugs": 0.30973451327433627
       },
       {
         "nftr": 0.007874015748031496,
-        "fraction_bugs": 0.288
+        "fraction_bugs": 0.3185840707964602
       },
       {
         "nftr": 0.00847457627118644,
-        "fraction_bugs": 0.296
+        "fraction_bugs": 0.3274336283185841
       },
       {
         "nftr": 0.008849557522123894,
-        "fraction_bugs": 0.304
+        "fraction_bugs": 0.336283185840708
       },
       {
         "nftr": 0.008849557522123894,
-        "fraction_bugs": 0.312
+        "fraction_bugs": 0.34513274336283184
       },
       {
         "nftr": 0.009009009009009009,
-        "fraction_bugs": 0.32
+        "fraction_bugs": 0.35398230088495575
       },
       {
         "nftr": 0.009009009009009009,
-        "fraction_bugs": 0.328
+        "fraction_bugs": 0.36283185840707965
       },
       {
         "nftr": 0.009009009009009009,
-        "fraction_bugs": 0.336
+        "fraction_bugs": 0.37168141592920356
       },
       {
         "nftr": 0.009316770186335404,
-        "fraction_bugs": 0.344
+        "fraction_bugs": 0.3805309734513274
       },
       {
         "nftr": 0.009523809523809525,
-        "fraction_bugs": 0.352
+        "fraction_bugs": 0.3893805309734513
       },
       {
         "nftr": 0.01,
-        "fraction_bugs": 0.36
+        "fraction_bugs": 0.39823008849557523
       },
       {
         "nftr": 0.01,
-        "fraction_bugs": 0.368
+        "fraction_bugs": 0.40707964601769914
       },
       {
         "nftr": 0.010309278350515464,
-        "fraction_bugs": 0.376
+        "fraction_bugs": 0.415929203539823
       },
       {
         "nftr": 0.010526315789473684,
-        "fraction_bugs": 0.384
+        "fraction_bugs": 0.4247787610619469
       },
       {
         "nftr": 0.010869565217391304,
-        "fraction_bugs": 0.392
+        "fraction_bugs": 0.4336283185840708
       },
       {
         "nftr": 0.011111111111111112,
-        "fraction_bugs": 0.4
+        "fraction_bugs": 0.4424778761061947
       },
       {
         "nftr": 0.011111111111111112,
-        "fraction_bugs": 0.408
+        "fraction_bugs": 0.45132743362831856
       },
       {
         "nftr": 0.011363636363636364,
-        "fraction_bugs": 0.416
+        "fraction_bugs": 0.46017699115044247
       },
       {
         "nftr": 0.011494252873563218,
-        "fraction_bugs": 0.424
+        "fraction_bugs": 0.4690265486725664
       },
       {
         "nftr": 0.011494252873563218,
-        "fraction_bugs": 0.432
+        "fraction_bugs": 0.4778761061946903
       },
       {
         "nftr": 0.011627906976744186,
-        "fraction_bugs": 0.44
+        "fraction_bugs": 0.48672566371681414
       },
       {
         "nftr": 0.011764705882352941,
-        "fraction_bugs": 0.448
+        "fraction_bugs": 0.49557522123893805
       },
       {
         "nftr": 0.011904761904761904,
-        "fraction_bugs": 0.456
+        "fraction_bugs": 0.504424778761062
       },
       {
         "nftr": 0.011904761904761904,
-        "fraction_bugs": 0.464
+        "fraction_bugs": 0.5132743362831859
       },
       {
         "nftr": 0.011904761904761904,
-        "fraction_bugs": 0.472
+        "fraction_bugs": 0.5221238938053098
       },
       {
         "nftr": 0.012195121951219513,
-        "fraction_bugs": 0.48
+        "fraction_bugs": 0.5309734513274337
       },
       {
         "nftr": 0.012195121951219513,
-        "fraction_bugs": 0.488
+        "fraction_bugs": 0.5398230088495575
       },
       {
         "nftr": 0.013422818791946308,
-        "fraction_bugs": 0.496
+        "fraction_bugs": 0.5486725663716814
       },
       {
         "nftr": 0.013921113689095127,
-        "fraction_bugs": 0.504
+        "fraction_bugs": 0.5575221238938053
       },
       {
         "nftr": 0.02120141342756184,
-        "fraction_bugs": 0.512
+        "fraction_bugs": 0.5663716814159292
       },
       {
         "nftr": 0.025714285714285714,
-        "fraction_bugs": 0.52
+        "fraction_bugs": 0.5752212389380531
       },
       {
         "nftr": 0.025714285714285714,
-        "fraction_bugs": 0.528
-      },
-      {
-        "nftr": 0.02857142857142857,
-        "fraction_bugs": 0.536
-      },
-      {
-        "nftr": 0.029411764705882353,
-        "fraction_bugs": 0.544
-      },
-      {
-        "nftr": 0.029411764705882353,
-        "fraction_bugs": 0.552
-      },
-      {
-        "nftr": 0.029411764705882353,
-        "fraction_bugs": 0.56
+        "fraction_bugs": 0.584070796460177
       },
       {
         "nftr": 0.03153153153153153,
-        "fraction_bugs": 0.568
+        "fraction_bugs": 0.5929203539823009
       },
       {
         "nftr": 0.03488372093023256,
-        "fraction_bugs": 0.576
+        "fraction_bugs": 0.6017699115044248
       },
       {
         "nftr": 0.03571428571428571,
-        "fraction_bugs": 0.584
+        "fraction_bugs": 0.6106194690265486
       },
       {
         "nftr": 0.036585365853658534,
-        "fraction_bugs": 0.592
+        "fraction_bugs": 0.6194690265486725
       },
       {
         "nftr": 0.037037037037037035,
-        "fraction_bugs": 0.6
+        "fraction_bugs": 0.6283185840707964
       },
       {
         "nftr": 0.038461538461538464,
-        "fraction_bugs": 0.608
+        "fraction_bugs": 0.6371681415929203
       },
       {
         "nftr": 0.038461538461538464,
-        "fraction_bugs": 0.616
+        "fraction_bugs": 0.6460176991150443
       },
       {
         "nftr": 0.038461538461538464,
-        "fraction_bugs": 0.624
-      },
-      {
-        "nftr": 0.038461538461538464,
-        "fraction_bugs": 0.632
+        "fraction_bugs": 0.6548672566371682
       },
       {
         "nftr": 0.0392156862745098,
-        "fraction_bugs": 0.64
-      },
-      {
-        "nftr": 0.04,
-        "fraction_bugs": 0.648
-      },
-      {
-        "nftr": 0.04,
-        "fraction_bugs": 0.656
+        "fraction_bugs": 0.6637168141592921
       },
       {
         "nftr": 0.041666666666666664,
-        "fraction_bugs": 0.664
+        "fraction_bugs": 0.672566371681416
       },
       {
         "nftr": 0.041666666666666664,
-        "fraction_bugs": 0.672
+        "fraction_bugs": 0.6814159292035398
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.68
+        "fraction_bugs": 0.6902654867256637
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.688
+        "fraction_bugs": 0.6991150442477876
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.696
+        "fraction_bugs": 0.7079646017699115
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.704
+        "fraction_bugs": 0.7168141592920354
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.712
+        "fraction_bugs": 0.7256637168141593
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.72
+        "fraction_bugs": 0.7345132743362832
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.728
+        "fraction_bugs": 0.7433628318584071
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.736
+        "fraction_bugs": 0.7522123893805309
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.744
+        "fraction_bugs": 0.7610619469026548
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.752
+        "fraction_bugs": 0.7699115044247787
       },
       {
         "nftr": 0.043478260869565216,
-        "fraction_bugs": 0.76
+        "fraction_bugs": 0.7787610619469026
       },
       {
         "nftr": 0.045307443365695796,
-        "fraction_bugs": 0.768
+        "fraction_bugs": 0.7876106194690266
       },
       {
         "nftr": 0.045454545454545456,
-        "fraction_bugs": 0.776
+        "fraction_bugs": 0.7964601769911505
       },
       {
         "nftr": 0.045454545454545456,
-        "fraction_bugs": 0.784
+        "fraction_bugs": 0.8053097345132744
       },
       {
         "nftr": 0.045454545454545456,
-        "fraction_bugs": 0.792
+        "fraction_bugs": 0.8141592920353983
       },
       {
         "nftr": 0.045454545454545456,
-        "fraction_bugs": 0.8
+        "fraction_bugs": 0.8230088495575221
       },
       {
         "nftr": 0.045454545454545456,
-        "fraction_bugs": 0.808
+        "fraction_bugs": 0.831858407079646
       },
       {
         "nftr": 0.045454545454545456,
-        "fraction_bugs": 0.816
+        "fraction_bugs": 0.8407079646017699
       },
       {
         "nftr": 0.045454545454545456,
-        "fraction_bugs": 0.824
+        "fraction_bugs": 0.8495575221238938
       },
       {
         "nftr": 0.047619047619047616,
-        "fraction_bugs": 0.832
+        "fraction_bugs": 0.8584070796460177
       },
       {
         "nftr": 0.05157593123209169,
-        "fraction_bugs": 0.84
+        "fraction_bugs": 0.8672566371681416
       },
       {
         "nftr": 0.05263157894736842,
-        "fraction_bugs": 0.848
+        "fraction_bugs": 0.8761061946902655
       },
       {
         "nftr": 0.05263157894736842,
-        "fraction_bugs": 0.856
+        "fraction_bugs": 0.8849557522123894
       },
       {
         "nftr": 0.05263157894736842,
-        "fraction_bugs": 0.864
+        "fraction_bugs": 0.8938053097345132
       },
       {
         "nftr": 0.05263157894736842,
-        "fraction_bugs": 0.872
+        "fraction_bugs": 0.9026548672566371
       },
       {
         "nftr": 0.05714285714285714,
-        "fraction_bugs": 0.88
-      },
-      {
-        "nftr": 0.058823529411764705,
-        "fraction_bugs": 0.888
-      },
-      {
-        "nftr": 0.058823529411764705,
-        "fraction_bugs": 0.896
-      },
-      {
-        "nftr": 0.07692307692307693,
-        "fraction_bugs": 0.904
+        "fraction_bugs": 0.911504424778761
       },
       {
         "nftr": 0.08695652173913043,
-        "fraction_bugs": 0.912
+        "fraction_bugs": 0.9203539823008849
       },
       {
         "nftr": 0.12745098039215685,
-        "fraction_bugs": 0.92
-      },
-      {
-        "nftr": 0.14705882352941177,
-        "fraction_bugs": 0.928
+        "fraction_bugs": 0.9292035398230089
       },
       {
         "nftr": 0.15384615384615385,
-        "fraction_bugs": 0.936
+        "fraction_bugs": 0.9380530973451328
       },
       {
         "nftr": 0.1597444089456869,
-        "fraction_bugs": 0.944
+        "fraction_bugs": 0.9469026548672567
       },
       {
         "nftr": 0.16166281755196305,
-        "fraction_bugs": 0.952
+        "fraction_bugs": 0.9557522123893806
       },
       {
         "nftr": 0.21052631578947367,
-        "fraction_bugs": 0.96
+        "fraction_bugs": 0.9646017699115044
       },
       {
         "nftr": 0.23008849557522124,
-        "fraction_bugs": 0.968
+        "fraction_bugs": 0.9734513274336283
       },
       {
         "nftr": 0.3125,
-        "fraction_bugs": 0.976
-      },
-      {
-        "nftr": 0.5882352941176471,
-        "fraction_bugs": 0.984
+        "fraction_bugs": 0.9823008849557522
       },
       {
         "nftr": 0.6444444444444445,
-        "fraction_bugs": 0.992
+        "fraction_bugs": 0.9911504424778761
       },
       {
         "nftr": 0.9090909090909091,
@@ -2571,60 +2401,75 @@
   },
   "figure3_project_fdr10": {
     "Cli": {
-      "Random": 0.15136,
-      "BM25": 0.48,
-      "Embedding": 0.76,
-      "Jev": 0.88,
-      "GPT-Nano": 0.84
+      "denominator": 25,
+      "methods": {
+        "Random": 0.15136,
+        "BM25": 0.48,
+        "Embedding": 0.76,
+        "Jev": 0.88,
+        "GPT-Nano": 0.84
+      }
     },
     "Lang": {
-      "Random": 0.10728,
-      "BM25": 0.92,
-      "Embedding": 0.96,
-      "Jev": 0.96,
-      "GPT-Nano": 0.96
+      "denominator": 25,
+      "methods": {
+        "Random": 0.10728,
+        "BM25": 0.92,
+        "Embedding": 0.96,
+        "Jev": 0.96,
+        "GPT-Nano": 0.96
+      }
     },
     "Math": {
-      "Random": 0.11443999999999999,
-      "BM25": 0.88,
-      "Embedding": 0.88,
-      "Jev": 0.96,
-      "GPT-Nano": 0.96
+      "denominator": 25,
+      "methods": {
+        "Random": 0.11443999999999999,
+        "BM25": 0.88,
+        "Embedding": 0.88,
+        "Jev": 0.96,
+        "GPT-Nano": 0.96
+      }
     },
     "Jsoup": {
-      "Random": 0.13656000000000001,
-      "BM25": 0.72,
-      "Embedding": 0.8,
-      "Jev": 0.52,
-      "GPT-Nano": 0.88
+      "denominator": 13,
+      "methods": {
+        "Random": 0.1382307692307692,
+        "BM25": 0.6923076923076923,
+        "Embedding": 0.7692307692307693,
+        "Jev": 1.0,
+        "GPT-Nano": 0.9230769230769231
+      }
     },
     "JacksonDatabind": {
-      "Random": 0.11052,
-      "BM25": 0.68,
-      "Embedding": 1.0,
-      "Jev": 1.0,
-      "GPT-Nano": 0.92
+      "denominator": 25,
+      "methods": {
+        "Random": 0.11052,
+        "BM25": 0.68,
+        "Embedding": 1.0,
+        "Jev": 1.0,
+        "GPT-Nano": 0.92
+      }
     }
   },
   "figure4_quality_vs_cost": [
     {
       "method": "Embedding",
-      "fdr_at_10pct": 0.88,
-      "cost_usd_per_bug": 0.0012607690568000038
+      "fdr_at_10pct": 0.8849557522123894,
+      "cost_usd_per_bug": 0.0013477602826327433
     },
     {
       "method": "Jev",
-      "fdr_at_10pct": 0.864,
-      "cost_usd_per_bug": 0.012545399198640018
+      "fdr_at_10pct": 0.9557522123893806,
+      "cost_usd_per_bug": 0.01387765398079646
     },
     {
       "method": "GPT-Nano",
-      "fdr_at_10pct": 0.912,
-      "cost_usd_per_bug": 0.05077513790399995
+      "fdr_at_10pct": 0.9203539823008849,
+      "cost_usd_per_bug": 0.05472877900663717
     }
   ],
   "notes": [
-    "Phase 9 may refine layout/captions; numeric content is frozen here",
-    "Random NFTR CDF uses P8-03 replicate-averaged grid"
+    "12 Jsoup evaluation bugs with accepted Jev A-001 WAF gaps are excluded from headline metrics for every method (paired denom=113). Listed in README.",
+    "Random NFTR CDF uses P8-03 replicate-averaged grid on the headline cohort"
   ]
 }

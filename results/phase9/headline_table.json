@@ -1,0 +1,150 @@
+{
+  "schema_version": "jev-phase9-headline-table-v1",
+  "created_at": "2026-09-23T15:24:01+00:00",
+  "freeze_tag": "experiment-v1",
+  "experiment_commit": "edc70bacd23f2fc5f511ef4d97a33376e7b20bf8",
+  "run_id": "eval-v1-20260923T035853+0000",
+  "n_evaluation_bugs": 113,
+  "analysis_cohort": {
+    "policy": "exclude_a001_jev_waf_gaps_from_all_methods",
+    "note": "12 Jsoup evaluation bugs with accepted Jev A-001 WAF gaps are excluded from headline metrics for every method (paired denom=113). Listed in README.",
+    "full_evaluation_bugs": 125,
+    "headline_evaluation_bugs": 113,
+    "excluded_count": 12,
+    "excluded_qualified_ids": [
+      "Jsoup-33",
+      "Jsoup-40",
+      "Jsoup-47",
+      "Jsoup-54",
+      "Jsoup-69",
+      "Jsoup-72",
+      "Jsoup-75",
+      "Jsoup-78",
+      "Jsoup-81",
+      "Jsoup-84",
+      "Jsoup-85",
+      "Jsoup-86"
+    ],
+    "excluded_reason": "A-001 OpenRouter WAF blocked complete Jev shortlist scoring"
+  },
+  "method_order": [
+    "Random",
+    "BM25",
+    "Embedding",
+    "Jev",
+    "GPT-Nano"
+  ],
+  "display_name": {
+    "Random": "Random",
+    "BM25": "BM25",
+    "Embedding": "Embedding",
+    "Jev": "Jev",
+    "GPT-Nano": "GPT-5.4 nano"
+  },
+  "methods": {
+    "Random": {
+      "fdr_at_5pct": 0.06956637168141593,
+      "fdr_at_10pct": 0.12289380530973451,
+      "fdr_at_20pct": 0.2277345132743363,
+      "mrr": 0.08263138301420762,
+      "apfd": 0.5200698439177063,
+      "median_nftr": 0.47803665689636177,
+      "cost_usd_per_bug": 0.0
+    },
+    "BM25": {
+      "fdr_at_5pct": 0.6371681415929203,
+      "fdr_at_10pct": 0.7345132743362832,
+      "fdr_at_20pct": 0.8495575221238938,
+      "mrr": 0.5095971564103845,
+      "apfd": 0.900510308762899,
+      "median_nftr": 0.043478260869565216,
+      "cost_usd_per_bug": 0.0
+    },
+    "Embedding": {
+      "fdr_at_5pct": 0.831858407079646,
+      "fdr_at_10pct": 0.8849557522123894,
+      "fdr_at_20pct": 0.911504424778761,
+      "mrr": 0.678338525613671,
+      "apfd": 0.9395983154648916,
+      "median_nftr": 0.016778523489932886,
+      "cost_usd_per_bug": 0.0013477602826327433
+    },
+    "Jev": {
+      "fdr_at_5pct": 0.9026548672566371,
+      "fdr_at_10pct": 0.9557522123893806,
+      "fdr_at_20pct": 0.9823008849557522,
+      "mrr": 0.8221913218489837,
+      "apfd": 0.9722162065081242,
+      "median_nftr": 0.011904761904761904,
+      "cost_usd_per_bug": 0.01387765398079646
+    },
+    "GPT-Nano": {
+      "fdr_at_5pct": 0.9203539823008849,
+      "fdr_at_10pct": 0.9203539823008849,
+      "fdr_at_20pct": 0.9646017699115044,
+      "mrr": 0.8023990121701443,
+      "apfd": 0.963783587077734,
+      "median_nftr": 0.011904761904761904,
+      "cost_usd_per_bug": 0.05472877900663717
+    }
+  },
+  "best_quality": {
+    "fdr_at_5pct": [
+      "GPT-Nano"
+    ],
+    "fdr_at_10pct": [
+      "Jev"
+    ],
+    "fdr_at_20pct": [
+      "Jev"
+    ],
+    "mrr": [
+      "Jev"
+    ],
+    "apfd": [
+      "Jev"
+    ],
+    "median_nftr": [
+      "GPT-Nano",
+      "Jev"
+    ]
+  },
+  "primary_outcome": "fdr_at_10pct",
+  "cost_basis": "effective_prepaid_credits_usd / 113 for Embedding, Jev, GPT-Nano; em dash for unpaid Random/BM25",
+  "provenance": {
+    "phase7_seal": {
+      "path": "results/phase7/raw_evaluation_seal.json",
+      "sha256": "bf9ba9ff9dee9ae91a344ae0079a63e07a6763c01ae07c2e5d9c0b73e3ffffd2",
+      "bytes": 4249
+    },
+    "phase8_seal": {
+      "path": "results/phase8/analysis_seal.json",
+      "sha256": "6d3bf370b2b901dbb44608243e3684792a7a13e6845746314035c6a8974b10f1",
+      "bytes": 9726
+    },
+    "metrics_csv": {
+      "path": "results/metrics.csv",
+      "sha256": "4bd4be3cc3f59e8d90b6fb4c847d45995bf6f97697a0a0d6b6dadb2ab9ecb32e",
+      "bytes": 145101
+    },
+    "statistics_json": {
+      "path": "results/statistics.json",
+      "sha256": "9df933050134bf6eaa3aaca46534e07e41b5c5662ae4a0e75128d06f6bb3bdd7",
+      "bytes": 8483
+    },
+    "figure_data": {
+      "path": "results/phase8/figure_data.json",
+      "sha256": "739c36b66f34afd366f5a43a2c4052c505abbce60378c4ef88e2caaf504bc7e3",
+      "bytes": 58428
+    },
+    "cohort_summaries": "results/phase8/cohort_summaries.json",
+    "cost_latency": "results/phase8/cost_latency.json"
+  },
+  "artifacts": {
+    "headline_md": {
+      "path": "results/phase9/headline_table.md",
+      "sha256": "98ce83a6ac113fe2c6d4d6752c6541a8ccd10c1312205acd9116051941a29736",
+      "bytes": 1946
+    }
+  }
+}

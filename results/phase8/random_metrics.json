@@ -5,38 +5,61 @@
   "run_id": "eval-v1-20260923T035853+0000",
   "freeze_tag": "experiment-v1",
   "num_permutations": 1000,
+  "analysis_cohort": {
+    "policy": "exclude_a001_jev_waf_gaps_from_all_methods",
+    "note": "12 Jsoup evaluation bugs with accepted Jev A-001 WAF gaps are excluded from headline metrics for every method (paired denom=113). Listed in README.",
+    "full_evaluation_bugs": 125,
+    "headline_evaluation_bugs": 113,
+    "excluded_count": 12,
+    "excluded_qualified_ids": [
+      "Jsoup-33",
+      "Jsoup-40",
+      "Jsoup-47",
+      "Jsoup-54",
+      "Jsoup-69",
+      "Jsoup-72",
+      "Jsoup-75",
+      "Jsoup-78",
+      "Jsoup-81",
+      "Jsoup-84",
+      "Jsoup-85",
+      "Jsoup-86"
+    ],
+    "excluded_reason": "A-001 OpenRouter WAF blocked complete Jev shortlist scoring"
+  },
   "counts": {
-    "evaluation_bugs": 125,
-    "random_rows": 125
+    "evaluation_bugs": 113,
+    "random_rows": 113,
+    "full_evaluation_bugs": 125
   },
   "semantics": {
     "per_bug_row": "Each Random row stores the mean of each metric over 1000 permutations for that bug; first_trigger_rank and detected_at_* may be fractional.",
-    "linear_cohort": "FDR/MRR/mean APFD/mean NFTR = arithmetic mean of the 125 per-bug Random rows.",
-    "median_nftr": "For replicate i, use permutation i for every bug; take the cohort median NFTR; report the mean of those 1000 medians.",
+    "linear_cohort": "FDR/MRR/mean APFD/mean NFTR = arithmetic mean of the 113 per-bug Random rows.",
+    "median_nftr": "For replicate i, use permutation i for every headline bug; take the cohort median NFTR; report the mean of those 1000 medians.",
     "cdf": "Average of 1000 replicate empirical CDFs on a 0.00..1.00 grid.",
     "do_not": "Do not take median of per-bug mean NFTRs for the headline median NFTR; do not pick a single lucky permutation."
   },
   "aggregates": {
     "method": "Random",
-    "n_available": 125,
-    "denominator": 125,
-    "mrr": 0.08836604919671748,
-    "mean_apfd": 0.5206429837626279,
-    "mean_nftr": 0.4892957724313171,
-    "median_of_per_bug_mean_nftr": 0.5058111888111894,
-    "fdr_at_1pct": 0.027512,
-    "fdr_at_2pct": 0.033872,
-    "fdr_at_5pct": 0.070032,
-    "fdr_at_10pct": 0.124032,
-    "fdr_at_20pct": 0.22852,
-    "fdr_at_50pct": 0.537208,
+    "n_available": 113,
+    "denominator": 113,
+    "mrr": 0.08263138301420762,
+    "mean_apfd": 0.5200698439177063,
+    "mean_nftr": 0.48919259940110144,
+    "median_of_per_bug_mean_nftr": 0.5053774509803923,
+    "fdr_at_1pct": 0.026380530973451326,
+    "fdr_at_2pct": 0.03341592920353983,
+    "fdr_at_5pct": 0.06956637168141593,
+    "fdr_at_10pct": 0.12289380530973451,
+    "fdr_at_20pct": 0.2277345132743363,
+    "fdr_at_50pct": 0.5366637168141593,
     "fdr_at_100pct": 1.0,
-    "primary_fdr_at_10pct": 0.124032,
-    "median_nftr": 0.47861506079935195,
+    "primary_fdr_at_10pct": 0.12289380530973451,
+    "median_nftr": 0.47803665689636177,
     "median_nftr_detail": {
-      "median_nftr": 0.47861506079935195,
+      "median_nftr": 0.47803665689636177,
       "n_replicates": 1000,
-      "n_bugs": 125,
+      "n_bugs": 113,
       "rule": "mean_of_cohort_medians_across_permutation_replicates"
     }
   },
@@ -47,399 +70,399 @@
     },
     {
       "nftr": 0.01,
-      "fraction_bugs": 0.004656000000000003
+      "fraction_bugs": 0.005150442477876089
     },
     {
       "nftr": 0.02,
-      "fraction_bugs": 0.01135999999999987
+      "fraction_bugs": 0.012566371681415996
     },
     {
       "nftr": 0.03,
-      "fraction_bugs": 0.020551999999999713
+      "fraction_bugs": 0.020380530973451307
     },
     {
       "nftr": 0.04,
-      "fraction_bugs": 0.03041599999999971
+      "fraction_bugs": 0.029592920353982262
     },
     {
       "nftr": 0.05,
-      "fraction_bugs": 0.04696799999999958
+      "fraction_bugs": 0.047902654867256665
     },
     {
       "nftr": 0.06,
-      "fraction_bugs": 0.05843199999999977
+      "fraction_bugs": 0.05838053097345127
     },
     {
       "nftr": 0.07,
-      "fraction_bugs": 0.06550399999999973
+      "fraction_bugs": 0.06620353982300874
     },
     {
       "nftr": 0.08,
-      "fraction_bugs": 0.07593599999999948
+      "fraction_bugs": 0.07609734513274333
     },
     {
       "nftr": 0.09,
-      "fraction_bugs": 0.08941599999999944
+      "fraction_bugs": 0.08881415929203527
     },
     {
       "nftr": 0.1,
-      "fraction_bugs": 0.10125599999999954
+      "fraction_bugs": 0.10191150442477859
     },
     {
       "nftr": 0.11,
-      "fraction_bugs": 0.11103999999999968
+      "fraction_bugs": 0.11273451327433608
     },
     {
       "nftr": 0.12,
-      "fraction_bugs": 0.12292799999999987
+      "fraction_bugs": 0.1216725663716812
     },
     {
       "nftr": 0.13,
-      "fraction_bugs": 0.13014399999999995
+      "fraction_bugs": 0.12965486725663697
     },
     {
       "nftr": 0.14,
-      "fraction_bugs": 0.14571999999999968
+      "fraction_bugs": 0.1468849557522127
     },
     {
       "nftr": 0.15,
-      "fraction_bugs": 0.15559999999999952
+      "fraction_bugs": 0.1555486725663721
     },
     {
       "nftr": 0.16,
-      "fraction_bugs": 0.1678479999999994
+      "fraction_bugs": 0.1672477876106197
     },
     {
       "nftr": 0.17,
-      "fraction_bugs": 0.1744239999999993
+      "fraction_bugs": 0.17452212389380553
     },
     {
       "nftr": 0.18,
-      "fraction_bugs": 0.18814399999999926
+      "fraction_bugs": 0.18754867256637192
     },
     {
       "nftr": 0.19,
-      "fraction_bugs": 0.19913599999999937
+      "fraction_bugs": 0.19970796460176982
     },
     {
       "nftr": 0.2,
-      "fraction_bugs": 0.20959199999999942
+      "fraction_bugs": 0.2092920353982298
     },
     {
       "nftr": 0.21,
-      "fraction_bugs": 0.2177999999999991
+      "fraction_bugs": 0.21651327433628287
     },
     {
       "nftr": 0.22,
-      "fraction_bugs": 0.23180799999999976
+      "fraction_bugs": 0.23200884955752182
     },
     {
       "nftr": 0.23,
-      "fraction_bugs": 0.24279199999999987
+      "fraction_bugs": 0.24390265486725632
     },
     {
       "nftr": 0.24,
-      "fraction_bugs": 0.2541119999999996
+      "fraction_bugs": 0.25251327433628307
     },
     {
       "nftr": 0.25,
-      "fraction_bugs": 0.2624560000000006
+      "fraction_bugs": 0.26174336283185873
     },
     {
       "nftr": 0.26,
-      "fraction_bugs": 0.26946400000000015
+      "fraction_bugs": 0.2692920353982307
     },
     {
       "nftr": 0.27,
-      "fraction_bugs": 0.2852880000000002
+      "fraction_bugs": 0.2843274336283198
     },
     {
       "nftr": 0.28,
-      "fraction_bugs": 0.29587999999999914
+      "fraction_bugs": 0.2952477876106211
     },
     {
       "nftr": 0.29,
-      "fraction_bugs": 0.3033919999999998
+      "fraction_bugs": 0.3033362831858426
     },
     {
       "nftr": 0.3,
-      "fraction_bugs": 0.3126799999999996
+      "fraction_bugs": 0.3116371681415951
     },
     {
       "nftr": 0.31,
-      "fraction_bugs": 0.3247199999999998
+      "fraction_bugs": 0.32432743362832067
     },
     {
       "nftr": 0.32,
-      "fraction_bugs": 0.3386479999999989
+      "fraction_bugs": 0.3388584070796474
     },
     {
       "nftr": 0.33,
-      "fraction_bugs": 0.34670399999999874
+      "fraction_bugs": 0.346044247787612
     },
     {
       "nftr": 0.34,
-      "fraction_bugs": 0.35453599999999924
+      "fraction_bugs": 0.3547079646017709
     },
     {
       "nftr": 0.35,
-      "fraction_bugs": 0.367303999999999
+      "fraction_bugs": 0.367814159292036
     },
     {
       "nftr": 0.36,
-      "fraction_bugs": 0.37662399999999796
+      "fraction_bugs": 0.3753097345132745
     },
     {
       "nftr": 0.37,
-      "fraction_bugs": 0.38893599999999834
+      "fraction_bugs": 0.3889292035398225
     },
     {
       "nftr": 0.38,
-      "fraction_bugs": 0.3973519999999977
+      "fraction_bugs": 0.3979999999999985
     },
     {
       "nftr": 0.39,
-      "fraction_bugs": 0.40679999999999794
+      "fraction_bugs": 0.40614159292035207
     },
     {
       "nftr": 0.4,
-      "fraction_bugs": 0.4195119999999982
+      "fraction_bugs": 0.4190796460176959
     },
     {
       "nftr": 0.41,
-      "fraction_bugs": 0.42885599999999896
+      "fraction_bugs": 0.4294159292035362
     },
     {
       "nftr": 0.42,
-      "fraction_bugs": 0.43791199999999897
+      "fraction_bugs": 0.4375663716814119
     },
     {
       "nftr": 0.43,
-      "fraction_bugs": 0.45007999999999887
+      "fraction_bugs": 0.4501415929203504
     },
     {
       "nftr": 0.44,
-      "fraction_bugs": 0.4611679999999984
+      "fraction_bugs": 0.46166371681415624
     },
     {
       "nftr": 0.45,
-      "fraction_bugs": 0.46967199999999876
+      "fraction_bugs": 0.4692123893805281
     },
     {
       "nftr": 0.46,
-      "fraction_bugs": 0.48055999999999915
+      "fraction_bugs": 0.48107964601769687
     },
     {
       "nftr": 0.47,
-      "fraction_bugs": 0.48930399999999974
+      "fraction_bugs": 0.4901592920353968
     },
     {
       "nftr": 0.48,
-      "fraction_bugs": 0.5047840000000006
+      "fraction_bugs": 0.5046814159292037
     },
     {
       "nftr": 0.49,
-      "fraction_bugs": 0.5120399999999998
+      "fraction_bugs": 0.5125575221238949
     },
     {
       "nftr": 0.5,
-      "fraction_bugs": 0.5272880000000008
+      "fraction_bugs": 0.5266902654867286
     },
     {
       "nftr": 0.51,
-      "fraction_bugs": 0.5320000000000007
+      "fraction_bugs": 0.5319026548672598
     },
     {
       "nftr": 0.52,
-      "fraction_bugs": 0.5400160000000007
+      "fraction_bugs": 0.5397699115044287
     },
     {
       "nftr": 0.53,
-      "fraction_bugs": 0.5542960000000001
+      "fraction_bugs": 0.5538407079646069
     },
     {
       "nftr": 0.54,
-      "fraction_bugs": 0.5621760000000002
+      "fraction_bugs": 0.5619469026548729
     },
     {
       "nftr": 0.55,
-      "fraction_bugs": 0.572408
+      "fraction_bugs": 0.5730265486725723
     },
     {
       "nftr": 0.56,
-      "fraction_bugs": 0.5813599999999998
+      "fraction_bugs": 0.5803893805309799
     },
     {
       "nftr": 0.57,
-      "fraction_bugs": 0.5916959999999994
+      "fraction_bugs": 0.5918230088495642
     },
     {
       "nftr": 0.58,
-      "fraction_bugs": 0.6029840000000001
+      "fraction_bugs": 0.6033982300885019
     },
     {
       "nftr": 0.59,
-      "fraction_bugs": 0.6114400000000004
+      "fraction_bugs": 0.610946902654873
     },
     {
       "nftr": 0.6,
-      "fraction_bugs": 0.6220799999999981
+      "fraction_bugs": 0.6217699115044303
     },
     {
       "nftr": 0.61,
-      "fraction_bugs": 0.6324399999999993
+      "fraction_bugs": 0.6332300884955803
     },
     {
       "nftr": 0.62,
-      "fraction_bugs": 0.6419759999999998
+      "fraction_bugs": 0.6414070796460217
     },
     {
       "nftr": 0.63,
-      "fraction_bugs": 0.6495759999999996
+      "fraction_bugs": 0.6495575221238975
     },
     {
       "nftr": 0.64,
-      "fraction_bugs": 0.66028
+      "fraction_bugs": 0.6607610619469065
     },
     {
       "nftr": 0.65,
-      "fraction_bugs": 0.6682559999999989
+      "fraction_bugs": 0.6677787610619514
     },
     {
       "nftr": 0.66,
-      "fraction_bugs": 0.6804639999999996
+      "fraction_bugs": 0.6802300884955805
     },
     {
       "nftr": 0.67,
-      "fraction_bugs": 0.6876399999999991
+      "fraction_bugs": 0.6881681415929256
     },
     {
       "nftr": 0.68,
-      "fraction_bugs": 0.6963919999999988
+      "fraction_bugs": 0.6954070796460234
     },
     {
       "nftr": 0.69,
-      "fraction_bugs": 0.707103999999999
+      "fraction_bugs": 0.70693805309735
     },
     {
       "nftr": 0.7,
-      "fraction_bugs": 0.7187839999999979
+      "fraction_bugs": 0.7191946902654914
     },
     {
       "nftr": 0.71,
-      "fraction_bugs": 0.7271839999999983
+      "fraction_bugs": 0.7267876106194724
     },
     {
       "nftr": 0.72,
-      "fraction_bugs": 0.7345119999999978
+      "fraction_bugs": 0.7342389380530996
     },
     {
       "nftr": 0.73,
-      "fraction_bugs": 0.7425359999999973
+      "fraction_bugs": 0.7431150442477875
     },
     {
       "nftr": 0.74,
-      "fraction_bugs": 0.7572159999999972
+      "fraction_bugs": 0.7569999999999973
     },
     {
       "nftr": 0.75,
-      "fraction_bugs": 0.7653919999999965
+      "fraction_bugs": 0.7657256637168096
     },
     {
       "nftr": 0.76,
-      "fraction_bugs": 0.7708079999999967
+      "fraction_bugs": 0.7711946902654806
     },
     {
       "nftr": 0.77,
-      "fraction_bugs": 0.7809679999999969
+      "fraction_bugs": 0.779796460176984
     },
     {
       "nftr": 0.78,
-      "fraction_bugs": 0.7897519999999961
+      "fraction_bugs": 0.7892123893805222
     },
     {
       "nftr": 0.79,
-      "fraction_bugs": 0.8021519999999944
+      "fraction_bugs": 0.8029292035398133
     },
     {
       "nftr": 0.8,
-      "fraction_bugs": 0.8120079999999956
+      "fraction_bugs": 0.811123893805299
     },
     {
       "nftr": 0.81,
-      "fraction_bugs": 0.8197359999999961
+      "fraction_bugs": 0.8190973451327326
     },
     {
       "nftr": 0.82,
-      "fraction_bugs": 0.8282159999999961
+      "fraction_bugs": 0.828477876106184
     },
     {
       "nftr": 0.83,
-      "fraction_bugs": 0.8405999999999966
+      "fraction_bugs": 0.8402212389380417
     },
     {
       "nftr": 0.84,
-      "fraction_bugs": 0.847279999999997
+      "fraction_bugs": 0.847203539822997
     },
     {
       "nftr": 0.85,
-      "fraction_bugs": 0.857223999999997
+      "fraction_bugs": 0.8574778761061824
     },
     {
       "nftr": 0.86,
-      "fraction_bugs": 0.8657919999999975
+      "fraction_bugs": 0.8650796460176865
     },
     {
       "nftr": 0.87,
-      "fraction_bugs": 0.877847999999998
+      "fraction_bugs": 0.8784159292035268
     },
     {
       "nftr": 0.88,
-      "fraction_bugs": 0.8846479999999974
+      "fraction_bugs": 0.8855575221238805
     },
     {
       "nftr": 0.89,
-      "fraction_bugs": 0.8940239999999984
+      "fraction_bugs": 0.8935752212389243
     },
     {
       "nftr": 0.9,
-      "fraction_bugs": 0.9014959999999975
+      "fraction_bugs": 0.9018407079645886
     },
     {
       "nftr": 0.91,
-      "fraction_bugs": 0.9097599999999966
+      "fraction_bugs": 0.910982300884943
     },
     {
       "nftr": 0.92,
-      "fraction_bugs": 0.9225199999999978
+      "fraction_bugs": 0.922920353982289
     },
     {
       "nftr": 0.93,
-      "fraction_bugs": 0.930975999999998
+      "fraction_bugs": 0.931575221238927
     },
     {
       "nftr": 0.94,
-      "fraction_bugs": 0.9368639999999986
+      "fraction_bugs": 0.9380884955752107
     },
     {
       "nftr": 0.95,
-      "fraction_bugs": 0.9457359999999985
+      "fraction_bugs": 0.9459026548672472
     },
     {
       "nftr": 0.96,
-      "fraction_bugs": 0.9584479999999985
+      "fraction_bugs": 0.9595486725663643
     },
     {
       "nftr": 0.97,
-      "fraction_bugs": 0.9669039999999992
+      "fraction_bugs": 0.9682477876106134
     },
     {
       "nftr": 0.98,
-      "fraction_bugs": 0.9744559999999987
+      "fraction_bugs": 0.9748053097345084
     },
     {
       "nftr": 0.99,
-      "fraction_bugs": 0.9801039999999982
+      "fraction_bugs": 0.9810530973451289
     },
     {
       "nftr": 1.0,
@@ -2101,90 +2124,6 @@
     },
     {
       "project": "Jsoup",
-      "bug_id": "33",
-      "qualified_id": "Jsoup-33",
-      "split": "evaluation",
-      "method": "Random",
-      "available": true,
-      "num_permutations": 1000,
-      "seed": 1412,
-      "bug_index": 75,
-      "permutations_sha256": "40f798c13f30a9d0253e28194999aac9b2e2da4ff6e4c43d9e28ccc2183fd9b6",
-      "num_test_classes": 25,
-      "num_trigger_classes": 1,
-      "K": 25,
-      "candidate_trigger_in_top200": true,
-      "schema_note": "Numeric fields are means over 1000 permutations; first_trigger_rank and detected_at_* may be fractional",
-      "first_trigger_rank": 12.348,
-      "normalized_first_trigger_rank": 0.4939200000000009,
-      "reciprocal_rank": 0.1651648034242792,
-      "apfd": 0.5260800000000009,
-      "detected_at_1pct": 0.05,
-      "detected_at_2pct": 0.05,
-      "detected_at_5pct": 0.089,
-      "detected_at_10pct": 0.128,
-      "detected_at_20pct": 0.214,
-      "detected_at_50pct": 0.576,
-      "detected_at_100pct": 1.0
-    },
-    {
-      "project": "Jsoup",
-      "bug_id": "40",
-      "qualified_id": "Jsoup-40",
-      "split": "evaluation",
-      "method": "Random",
-      "available": true,
-      "num_permutations": 1000,
-      "seed": 1429,
-      "bug_index": 92,
-      "permutations_sha256": "ebd78ddef57bb5bdc49de3f0dbf3d0dcbc62a6213e8781c3d2e21d0f440f3c9f",
-      "num_test_classes": 25,
-      "num_trigger_classes": 2,
-      "K": 25,
-      "candidate_trigger_in_top200": true,
-      "schema_note": "Numeric fields are means over 1000 permutations; first_trigger_rank and detected_at_* may be fractional",
-      "first_trigger_rank": 8.962,
-      "normalized_first_trigger_rank": 0.3584800000000008,
-      "reciprocal_rank": 0.2295809946860174,
-      "apfd": 0.6615200000000012,
-      "detected_at_1pct": 0.075,
-      "detected_at_2pct": 0.075,
-      "detected_at_5pct": 0.154,
-      "detected_at_10pct": 0.236,
-      "detected_at_20pct": 0.36,
-      "detected_at_50pct": 0.744,
-      "detected_at_100pct": 1.0
-    },
-    {
-      "project": "Jsoup",
-      "bug_id": "47",
-      "qualified_id": "Jsoup-47",
-      "split": "evaluation",
-      "method": "Random",
-      "available": true,
-      "num_permutations": 1000,
-      "seed": 1432,
-      "bug_index": 95,
-      "permutations_sha256": "fa1d6fa18eba9da08bb507c1f31fcd77f2483b58964a1d04bf1f032718bc9176",
-      "num_test_classes": 26,
-      "num_trigger_classes": 1,
-      "K": 26,
-      "candidate_trigger_in_top200": true,
-      "schema_note": "Numeric fields are means over 1000 permutations; first_trigger_rank and detected_at_* may be fractional",
-      "first_trigger_rank": 13.497,
-      "normalized_first_trigger_rank": 0.5191153846153848,
-      "reciprocal_rank": 0.14463426772887614,
-      "apfd": 0.5001153846153851,
-      "detected_at_1pct": 0.034,
-      "detected_at_2pct": 0.034,
-      "detected_at_5pct": 0.072,
-      "detected_at_10pct": 0.108,
-      "detected_at_20pct": 0.233,
-      "detected_at_50pct": 0.502,
-      "detected_at_100pct": 1.0
-    },
-    {
-      "project": "Jsoup",
       "bug_id": "48",
       "qualified_id": "Jsoup-48",
       "split": "evaluation",
@@ -2241,34 +2180,6 @@
     },
     {
       "project": "Jsoup",
-      "bug_id": "54",
-      "qualified_id": "Jsoup-54",
-      "split": "evaluation",
-      "method": "Random",
-      "available": true,
-      "num_permutations": 1000,
-      "seed": 1413,
-      "bug_index": 76,
-      "permutations_sha256": "43b2ca063ffe71bd906817eb641e9ff4c2e7f951c34cbd4aa254a4e6fd5ffb86",
-      "num_test_classes": 26,
-      "num_trigger_classes": 1,
-      "K": 26,
-      "candidate_trigger_in_top200": true,
-      "schema_note": "Numeric fields are means over 1000 permutations; first_trigger_rank and detected_at_* may be fractional",
-      "first_trigger_rank": 13.689,
-      "normalized_first_trigger_rank": 0.5264999999999997,
-      "reciprocal_rank": 0.14278507791923176,
-      "apfd": 0.4927307692307694,
-      "detected_at_1pct": 0.033,
-      "detected_at_2pct": 0.033,
-      "detected_at_5pct": 0.063,
-      "detected_at_10pct": 0.108,
-      "detected_at_20pct": 0.234,
-      "detected_at_50pct": 0.482,
-      "detected_at_100pct": 1.0
-    },
-    {
-      "project": "Jsoup",
       "bug_id": "64",
       "qualified_id": "Jsoup-64",
       "split": "evaluation",
@@ -2293,230 +2204,6 @@
       "detected_at_10pct": 0.105,
       "detected_at_20pct": 0.221,
       "detected_at_50pct": 0.538,
-      "detected_at_100pct": 1.0
-    },
-    {
-      "project": "Jsoup",
-      "bug_id": "69",
-      "qualified_id": "Jsoup-69",
-      "split": "evaluation",
-      "method": "Random",
-      "available": true,
-      "num_permutations": 1000,
-      "seed": 1421,
-      "bug_index": 84,
-      "permutations_sha256": "cc3c36aabaecf833cf603f73882334cf38c149df7a3fcc2a5fa3599870b6fd4f",
-      "num_test_classes": 34,
-      "num_trigger_classes": 1,
-      "K": 34,
-      "candidate_trigger_in_top200": true,
-      "schema_note": "Numeric fields are means over 1000 permutations; first_trigger_rank and detected_at_* may be fractional",
-      "first_trigger_rank": 17.8,
-      "normalized_first_trigger_rank": 0.5235294117647061,
-      "reciprocal_rank": 0.12604488385651774,
-      "apfd": 0.4911764705882355,
-      "detected_at_1pct": 0.037,
-      "detected_at_2pct": 0.037,
-      "detected_at_5pct": 0.069,
-      "detected_at_10pct": 0.119,
-      "detected_at_20pct": 0.208,
-      "detected_at_50pct": 0.487,
-      "detected_at_100pct": 1.0
-    },
-    {
-      "project": "Jsoup",
-      "bug_id": "72",
-      "qualified_id": "Jsoup-72",
-      "split": "evaluation",
-      "method": "Random",
-      "available": true,
-      "num_permutations": 1000,
-      "seed": 1427,
-      "bug_index": 90,
-      "permutations_sha256": "71d70845f400cf60d3a5a9402796128dd8da461e9c3599603e5e07b1861bf800",
-      "num_test_classes": 34,
-      "num_trigger_classes": 2,
-      "K": 34,
-      "candidate_trigger_in_top200": true,
-      "schema_note": "Numeric fields are means over 1000 permutations; first_trigger_rank and detected_at_* may be fractional",
-      "first_trigger_rank": 12.188,
-      "normalized_first_trigger_rank": 0.358470588235294,
-      "reciprocal_rank": 0.18101972803808486,
-      "apfd": 0.6562352941176463,
-      "detected_at_1pct": 0.052,
-      "detected_at_2pct": 0.052,
-      "detected_at_5pct": 0.108,
-      "detected_at_10pct": 0.22,
-      "detected_at_20pct": 0.363,
-      "detected_at_50pct": 0.728,
-      "detected_at_100pct": 1.0
-    },
-    {
-      "project": "Jsoup",
-      "bug_id": "75",
-      "qualified_id": "Jsoup-75",
-      "split": "evaluation",
-      "method": "Random",
-      "available": true,
-      "num_permutations": 1000,
-      "seed": 1424,
-      "bug_index": 87,
-      "permutations_sha256": "529048b76e1bf9dd4ec9265a96bf45fb5015b887852d84921499ac209dfe8ed4",
-      "num_test_classes": 34,
-      "num_trigger_classes": 1,
-      "K": 34,
-      "candidate_trigger_in_top200": true,
-      "schema_note": "Numeric fields are means over 1000 permutations; first_trigger_rank and detected_at_* may be fractional",
-      "first_trigger_rank": 17.134,
-      "normalized_first_trigger_rank": 0.5039411764705879,
-      "reciprocal_rank": 0.11923757279383797,
-      "apfd": 0.5107647058823529,
-      "detected_at_1pct": 0.027,
-      "detected_at_2pct": 0.027,
-      "detected_at_5pct": 0.051,
-      "detected_at_10pct": 0.114,
-      "detected_at_20pct": 0.216,
-      "detected_at_50pct": 0.523,
-      "detected_at_100pct": 1.0
-    },
-    {
-      "project": "Jsoup",
-      "bug_id": "78",
-      "qualified_id": "Jsoup-78",
-      "split": "evaluation",
-      "method": "Random",
-      "available": true,
-      "num_permutations": 1000,
-      "seed": 1415,
-      "bug_index": 78,
-      "permutations_sha256": "084dd940bc6c6338e2ee317cb49b182607405d1d72f115dad251448f68db8fc0",
-      "num_test_classes": 34,
-      "num_trigger_classes": 1,
-      "K": 34,
-      "candidate_trigger_in_top200": true,
-      "schema_note": "Numeric fields are means over 1000 permutations; first_trigger_rank and detected_at_* may be fractional",
-      "first_trigger_rank": 17.825,
-      "normalized_first_trigger_rank": 0.5242647058823532,
-      "reciprocal_rank": 0.1173021456782123,
-      "apfd": 0.49044117647058816,
-      "detected_at_1pct": 0.031,
-      "detected_at_2pct": 0.031,
-      "detected_at_5pct": 0.05,
-      "detected_at_10pct": 0.106,
-      "detected_at_20pct": 0.197,
-      "detected_at_50pct": 0.496,
-      "detected_at_100pct": 1.0
-    },
-    {
-      "project": "Jsoup",
-      "bug_id": "81",
-      "qualified_id": "Jsoup-81",
-      "split": "evaluation",
-      "method": "Random",
-      "available": true,
-      "num_permutations": 1000,
-      "seed": 1418,
-      "bug_index": 81,
-      "permutations_sha256": "603b35a10192a80dd3a59c5159082be8686ac5ea593da4a855df379d05adfdaa",
-      "num_test_classes": 34,
-      "num_trigger_classes": 1,
-      "K": 34,
-      "candidate_trigger_in_top200": true,
-      "schema_note": "Numeric fields are means over 1000 permutations; first_trigger_rank and detected_at_* may be fractional",
-      "first_trigger_rank": 17.488,
-      "normalized_first_trigger_rank": 0.5143529411764708,
-      "reciprocal_rank": 0.12017377570496186,
-      "apfd": 0.5003529411764702,
-      "detected_at_1pct": 0.025,
-      "detected_at_2pct": 0.025,
-      "detected_at_5pct": 0.062,
-      "detected_at_10pct": 0.127,
-      "detected_at_20pct": 0.213,
-      "detected_at_50pct": 0.49,
-      "detected_at_100pct": 1.0
-    },
-    {
-      "project": "Jsoup",
-      "bug_id": "84",
-      "qualified_id": "Jsoup-84",
-      "split": "evaluation",
-      "method": "Random",
-      "available": true,
-      "num_permutations": 1000,
-      "seed": 1433,
-      "bug_index": 96,
-      "permutations_sha256": "32d1f2c92b626d120dac1013d76e280ed5d35cbe9149fd511cba5a940f7d0cb3",
-      "num_test_classes": 34,
-      "num_trigger_classes": 1,
-      "K": 34,
-      "candidate_trigger_in_top200": true,
-      "schema_note": "Numeric fields are means over 1000 permutations; first_trigger_rank and detected_at_* may be fractional",
-      "first_trigger_rank": 17.444,
-      "normalized_first_trigger_rank": 0.5130588235294112,
-      "reciprocal_rank": 0.12281496661147362,
-      "apfd": 0.5016470588235292,
-      "detected_at_1pct": 0.031,
-      "detected_at_2pct": 0.031,
-      "detected_at_5pct": 0.061,
-      "detected_at_10pct": 0.124,
-      "detected_at_20pct": 0.192,
-      "detected_at_50pct": 0.498,
-      "detected_at_100pct": 1.0
-    },
-    {
-      "project": "Jsoup",
-      "bug_id": "85",
-      "qualified_id": "Jsoup-85",
-      "split": "evaluation",
-      "method": "Random",
-      "available": true,
-      "num_permutations": 1000,
-      "seed": 1425,
-      "bug_index": 88,
-      "permutations_sha256": "8086e4fa0a087d2799b2e79f31337818c237d26f0dd1a38836c50774964ce303",
-      "num_test_classes": 34,
-      "num_trigger_classes": 1,
-      "K": 34,
-      "candidate_trigger_in_top200": true,
-      "schema_note": "Numeric fields are means over 1000 permutations; first_trigger_rank and detected_at_* may be fractional",
-      "first_trigger_rank": 17.718,
-      "normalized_first_trigger_rank": 0.5211176470588236,
-      "reciprocal_rank": 0.12021162333981657,
-      "apfd": 0.49358823529411744,
-      "detected_at_1pct": 0.03,
-      "detected_at_2pct": 0.03,
-      "detected_at_5pct": 0.059,
-      "detected_at_10pct": 0.113,
-      "detected_at_20pct": 0.194,
-      "detected_at_50pct": 0.498,
-      "detected_at_100pct": 1.0
-    },
-    {
-      "project": "Jsoup",
-      "bug_id": "86",
-      "qualified_id": "Jsoup-86",
-      "split": "evaluation",
-      "method": "Random",
-      "available": true,
-      "num_permutations": 1000,
-      "seed": 1420,
-      "bug_index": 83,
-      "permutations_sha256": "de7895fe7d2f32e29be3bc67ef4a15aa6348e31350acb70467af94c0ba4287e6",
-      "num_test_classes": 35,
-      "num_trigger_classes": 1,
-      "K": 35,
-      "candidate_trigger_in_top200": true,
-      "schema_note": "Numeric fields are means over 1000 permutations; first_trigger_rank and detected_at_* may be fractional",
-      "first_trigger_rank": 18.426,
-      "normalized_first_trigger_rank": 0.5264571428571423,
-      "reciprocal_rank": 0.11944002920291652,
-      "apfd": 0.48782857142857083,
-      "detected_at_1pct": 0.033,
-      "detected_at_2pct": 0.033,
-      "detected_at_5pct": 0.055,
-      "detected_at_10pct": 0.114,
-      "detected_at_20pct": 0.207,
-      "detected_at_50pct": 0.484,
       "detected_at_100pct": 1.0
     },
     {
@@ -3949,6 +3636,7 @@
     }
   ],
   "notes": [
+    "12 Jsoup evaluation bugs with accepted Jev A-001 WAF gaps are excluded from headline metrics for every method (paired denom=113). Listed in README.",
     "candidate_trigger_in_top200 uses the sealed BM25 shortlist (shared)",
     "Permutations regenerated from sealed Random contracts + inventory"
   ]

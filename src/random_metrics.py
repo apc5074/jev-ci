@@ -1,18 +1,20 @@
 """Random baseline aggregation over 1,000 sealed permutations (P8-03).
 
-Uses the same per-bug metric primitives as P8-02. Each evaluation bug gets one
-``method=Random`` row whose numeric fields are **means over 1,000 permutations**
-(so ranks and detection indicators may be fractional).
+Uses the same per-bug metric primitives as P8-02. Each **headline-cohort** bug
+gets one ``method=Random`` row whose numeric fields are **means over 1,000
+permutations** (so ranks and detection indicators may be fractional).
+
+Headline cohort: 113 bugs (A-001 Jsoup Jev WAF gaps excluded for all methods).
 
 Cohort rules
 ------------
-* Linear headlines (FDR, MRR, mean APFD, mean NFTR): mean of the 125 per-bug
+* Linear headlines (FDR, MRR, mean APFD, mean NFTR): mean of the 113 per-bug
   Random rows (each row already averaged over permutations).
 * Median NFTR: for replicate ``i`` in ``0..999``, take NFTR under permutation
-  ``i`` for every bug, compute the cohort median, then average those 1,000
-  medians. Do **not** take the median of per-bug means.
+  ``i`` for every headline bug, compute the cohort median, then average those
+  1,000 medians. Do **not** take the median of per-bug means.
 * First-trigger CDF: for each grid point ``y``, average the 1,000 replicate
-  empirical CDFs ``F_i(y) = (#bugs with NFTR_i <= y) / 125``.
+  empirical CDFs ``F_i(y) = (#bugs with NFTR_i <= y) / 113``.
 """
 
 from __future__ import annotations
@@ -27,6 +29,13 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
+from src.analysis_cohort import (
+    COHORT_POLICY_NOTE,
+    HEADLINE_EVAL_BUGS,
+    cohort_metadata,
+    filter_headline_ids,
+    require_headline_size,
+)
 from src.evaluation_inputs import (
     BugInputs,
     SealedEvaluationBundle,
@@ -173,8 +182,10 @@ def random_row_for_bug(
 
 
 def _linear_cohort_from_rows(rows: Sequence[Mapping[str, Any]]) -> dict[str, float]:
-    if len(rows) != 125:
-        raise MetricsError(f"expected 125 Random rows, got {len(rows)}")
+    if len(rows) != HEADLINE_EVAL_BUGS:
+        raise MetricsError(
+            f"expected {HEADLINE_EVAL_BUGS} Random rows, got {len(rows)}"
+        )
     out: dict[str, float] = {
         "mrr": _mean([float(r["reciprocal_rank"]) for r in rows]),
         "mean_apfd": _mean([float(r["apfd"]) for r in rows]),
@@ -239,10 +250,8 @@ def cohort_replicate_cdf(
 def compute_random_metrics(
     bundle: SealedEvaluationBundle,
 ) -> dict[str, Any]:
-    ordered_ids = sorted(
-        bundle.bugs.keys(),
-        key=lambda x: (x.split("-")[0], int(x.split("-")[1])),
-    )
+    ordered_ids = filter_headline_ids(bundle.bugs.keys())
+    require_headline_size(ordered_ids, context="random_metrics")
     rows: list[dict[str, Any]] = []
     nftr_matrix: list[list[float]] = []
     for qid in ordered_ids:
@@ -261,9 +270,11 @@ def compute_random_metrics(
         "run_id": bundle.run_id,
         "freeze_tag": bundle.freeze_tag,
         "num_permutations": NUM_PERMUTATIONS,
+        "analysis_cohort": cohort_metadata(),
         "counts": {
             "evaluation_bugs": len(rows),
             "random_rows": len(rows),
+            "full_evaluation_bugs": len(bundle.bugs),
         },
         "semantics": {
             "per_bug_row": (
@@ -272,12 +283,12 @@ def compute_random_metrics(
                 "may be fractional."
             ),
             "linear_cohort": (
-                "FDR/MRR/mean APFD/mean NFTR = arithmetic mean of the 125 "
-                "per-bug Random rows."
+                f"FDR/MRR/mean APFD/mean NFTR = arithmetic mean of the "
+                f"{HEADLINE_EVAL_BUGS} per-bug Random rows."
             ),
             "median_nftr": (
-                "For replicate i, use permutation i for every bug; take the "
-                "cohort median NFTR; report the mean of those 1000 medians."
+                "For replicate i, use permutation i for every headline bug; take "
+                "the cohort median NFTR; report the mean of those 1000 medians."
             ),
             "cdf": (
                 "Average of 1000 replicate empirical CDFs on a 0.00..1.00 grid."
@@ -298,6 +309,7 @@ def compute_random_metrics(
         "cdf": cdf,
         "records": rows,
         "notes": [
+            COHORT_POLICY_NOTE,
             "candidate_trigger_in_top200 uses the sealed BM25 shortlist (shared)",
             "Permutations regenerated from sealed Random contracts + inventory",
         ],

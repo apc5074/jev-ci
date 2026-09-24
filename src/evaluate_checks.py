@@ -7,6 +7,7 @@ import math
 from pathlib import Path
 from typing import Any
 
+from src.analysis_cohort import HEADLINE_EVAL_BUGS, HEADLINE_METRICS_ROWS
 from src.example_contract import WORKSPACE, read_json
 from src.metrics import apfd, budget_k, first_trigger_rank
 from src.statistics import mcnemar_exact_two_sided
@@ -30,10 +31,13 @@ def run_evaluate_checks(*, workspace: Path | None = None) -> dict[str, Any]:
     else:
         with metrics_path.open("r", encoding="utf-8", newline="") as handle:
             rows = list(csv.DictReader(handle))
-        if len(rows) != 625:
-            fail("metrics_csv", f"expected 625 rows, got {len(rows)}")
+        if len(rows) != HEADLINE_METRICS_ROWS:
+            fail(
+                "metrics_csv",
+                f"expected {HEADLINE_METRICS_ROWS} rows, got {len(rows)}",
+            )
         else:
-            ok("metrics_csv_625")
+            ok("metrics_csv_565")
         methods = {r["method"] for r in rows}
         if methods != {"Random", "BM25", "Embedding", "Jev", "GPT-Nano"}:
             fail("metrics_methods", f"unexpected methods {methods}")
@@ -76,10 +80,13 @@ def run_evaluate_checks(*, workspace: Path | None = None) -> dict[str, Any]:
     random_path = root / "results" / "phase8" / "random_metrics.json"
     if random_path.is_file():
         rnd = read_json(random_path)
-        if rnd["counts"]["random_rows"] != 125:
-            fail("random_rows", f"expected 125, got {rnd['counts']['random_rows']}")
+        if rnd["counts"]["random_rows"] != HEADLINE_EVAL_BUGS:
+            fail(
+                "random_rows",
+                f"expected {HEADLINE_EVAL_BUGS}, got {rnd['counts']['random_rows']}",
+            )
         else:
-            ok("random_125_rows")
+            ok("random_113_rows")
         if "median_nftr" not in rnd["aggregates"]:
             fail("random_median_rule", "missing median NFTR")
         else:
@@ -107,10 +114,10 @@ def run_evaluate_checks(*, workspace: Path | None = None) -> dict[str, Any]:
             + table["other_only"]
             + table["neither"]
         )
-        if total != 125:
-            fail("mcnemar_table", f"cells sum to {total}, not 125")
+        if total != HEADLINE_EVAL_BUGS:
+            fail("mcnemar_table", f"cells sum to {total}, not {HEADLINE_EVAL_BUGS}")
         else:
-            ok("mcnemar_table_125")
+            ok("mcnemar_table_113")
     else:
         fail("statistics", "missing statistics.json")
 
@@ -119,11 +126,14 @@ def run_evaluate_checks(*, workspace: Path | None = None) -> dict[str, Any]:
     if cohort_path.is_file():
         cohort = read_json(cohort_path)
         for method, block in cohort["cohort"].items():
-            if block.get("denominator") != 125:
-                fail("cohort_denom", f"{method} denominator {block.get('denominator')}")
+            if block.get("denominator") != HEADLINE_EVAL_BUGS:
+                fail(
+                    "cohort_denom",
+                    f"{method} denominator {block.get('denominator')}",
+                )
                 break
         else:
-            ok("cohort_denom_125")
+            ok("cohort_denom_113")
         recall = cohort["candidate_ceiling"]["recall"]
         if not (0.0 <= float(recall) <= 1.0):
             fail("candidate_recall", f"out of range {recall}")

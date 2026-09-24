@@ -25,7 +25,13 @@ if str(_REPO_ROOT) not in sys.path:
 
 from src.cohort_summaries import (
     index_nonrandom_records,
-    materialize_jev_record,
+)
+from src.analysis_cohort import (
+    COHORT_POLICY_NOTE,
+    HEADLINE_EVAL_BUGS,
+    cohort_metadata,
+    filter_headline_ids,
+    require_headline_size,
 )
 from src.example_contract import WORKSPACE, atomic_write_json, read_json, sha256_file
 
@@ -33,7 +39,7 @@ STATS_PATH = WORKSPACE / "results" / "statistics.json"
 STATS_SCHEMA = "jev-phase8-statistics-v1"
 BOOTSTRAP_SAMPLES = 10_000
 BOOTSTRAP_SEED = 20260922  # Phase 6 selection_seed / locked experiment seed
-EVAL_BUGS = 125
+EVAL_BUGS = HEADLINE_EVAL_BUGS
 PRIMARY = ("Jev", "BM25")
 SECONDARY = (("Jev", "Embedding"), ("Jev", "GPT-Nano"))
 
@@ -137,16 +143,13 @@ def load_method_metric_matrix(
     *,
     workspace: Path,
 ) -> tuple[list[str], dict[str, dict[str, list[float]]]]:
-    """Return ordered bug IDs and per-method metric vectors (length 125)."""
+    """Return ordered headline-cohort bug IDs and per-method metric vectors."""
     per_bug = read_json(workspace / "results" / "phase8" / "per_bug_metrics.json")
-    by_bug = index_nonrandom_records(per_bug["records"])
-    if len(by_bug) != EVAL_BUGS:
-        raise StatisticsError(f"expected {EVAL_BUGS} bugs, got {len(by_bug)}")
+    by_bug_full = index_nonrandom_records(per_bug["records"])
+    ordered = filter_headline_ids(by_bug_full.keys())
+    require_headline_size(ordered, context="statistics")
+    by_bug = {qid: by_bug_full[qid] for qid in ordered}
 
-    ordered = sorted(
-        by_bug.keys(),
-        key=lambda x: (x.split("-")[0], int(x.split("-")[1])),
-    )
     methods = ("BM25", "Embedding", "Jev", "GPT-Nano")
     matrix: dict[str, dict[str, list[float]]] = {
         m: {
@@ -163,11 +166,11 @@ def load_method_metric_matrix(
         for method in methods:
             if method not in recs:
                 raise StatisticsError(f"{qid}: missing {method}")
-            row = (
-                materialize_jev_record(recs[method])
-                if method == "Jev"
-                else dict(recs[method])
-            )
+            row = dict(recs[method])
+            if method == "Jev" and not row.get("available", True):
+                raise StatisticsError(
+                    f"{qid}: Jev unavailable in headline cohort (should be excluded)"
+                )
             matrix[method]["detected_at_10pct"].append(
                 1.0 if _as_bool_detection(row["detected_at_10pct"]) else 0.0
             )
@@ -326,6 +329,7 @@ def compute_statistics(
         "experiment_commit": read_json(seal_path).get("experiment_commit"),
         "run_id": read_json(seal_path).get("run_id"),
         "freeze_tag": read_json(seal_path).get("freeze_tag"),
+        "analysis_cohort": cohort_metadata(),
         "configuration": {
             "bootstrap_samples": n_bootstrap,
             "bootstrap_seed": seed,
@@ -355,7 +359,7 @@ def compute_statistics(
             "Deltas are Jev minus comparator (positive favors Jev for FDR/MRR/APFD; "
             "negative median-NFTR delta favors Jev)",
             "Secondary contrasts are not additional primary tests",
-            "Jev A-001 gaps imputed as non-detections with r=N (same as P8-05)",
+            COHORT_POLICY_NOTE,
             "All contrasts share identical bootstrap index samples",
         ],
     }

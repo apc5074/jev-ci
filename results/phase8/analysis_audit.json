@@ -4,9 +4,9 @@
   "ok": true,
   "errors": [],
   "notes": [
-    "Embedding: cost rows with values=125",
+    "Embedding: cost rows with values=113",
     "Jev: cost rows with values=113",
-    "GPT-Nano: cost rows with values=125"
+    "GPT-Nano: cost rows with values=113"
   ],
   "evaluate_checks": {
     "ok": true,
@@ -14,7 +14,7 @@
     "n_passed": 16,
     "n_failed": 0,
     "passed": [
-      "metrics_csv_625",
+      "metrics_csv_565",
       "metrics_methods",
       "metrics_split",
       "budget_k_ceiling",
@@ -22,16 +22,38 @@
       "apfd_rank_n",
       "multi_trigger_min_rank",
       "mcnemar_zero_discordance",
-      "random_125_rows",
+      "random_113_rows",
       "random_median_nftr_present",
       "bootstrap_10000",
       "bootstrap_seed",
-      "mcnemar_table_125",
-      "cohort_denom_125",
+      "mcnemar_table_113",
+      "cohort_denom_113",
       "candidate_recall_range",
       "figures_present"
     ],
     "failures": []
   },
-  "n_metrics_rows": 625
+  "n_metrics_rows": 565,
+  "analysis_cohort": {
+    "policy": "exclude_a001_jev_waf_gaps_from_all_methods",
+    "note": "12 Jsoup evaluation bugs with accepted Jev A-001 WAF gaps are excluded from headline metrics for every method (paired denom=113). Listed in README.",
+    "full_evaluation_bugs": 125,
+    "headline_evaluation_bugs": 113,
+    "excluded_count": 12,
+    "excluded_qualified_ids": [
+      "Jsoup-33",
+      "Jsoup-40",
+      "Jsoup-47",
+      "Jsoup-54",
+      "Jsoup-69",
+      "Jsoup-72",
+      "Jsoup-75",
+      "Jsoup-78",
+      "Jsoup-81",
+      "Jsoup-84",
+      "Jsoup-85",
+      "Jsoup-86"
+    ],
+    "excluded_reason": "A-001 OpenRouter WAF blocked complete Jev shortlist scoring"
+  }
 }

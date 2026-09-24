@@ -72,11 +72,12 @@ class SealedCohortSummaryTests(unittest.TestCase):
     def test_denominators_and_miss_partition(self) -> None:
         payload = run_cohort_summaries()
         for method, block in payload["cohort"].items():
-            self.assertEqual(block["denominator"], 125, msg=method)
+            self.assertEqual(block["denominator"], 113, msg=method)
         for project, block in payload["projects"].items():
-            self.assertEqual(block["denominator"], 25, msg=project)
+            expected = 13 if project == "Jsoup" else 25
+            self.assertEqual(block["denominator"], expected, msg=project)
         recall = payload["candidate_ceiling"]
-        self.assertEqual(recall["denominator"], 125)
+        self.assertEqual(recall["denominator"], 113)
         self.assertGreaterEqual(recall["recall"], 0.0)
         self.assertLessEqual(recall["recall"], 1.0)
 
@@ -88,7 +89,7 @@ class SealedCohortSummaryTests(unittest.TestCase):
         )
         self.assertEqual(
             misses["n_detections"] + misses["n_misses"],
-            125,
+            113,
         )
         # Every miss ID appears once
         ids = (

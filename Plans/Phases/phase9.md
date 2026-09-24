@@ -6,9 +6,11 @@
 
 Tickets are ordered by dependency. Each has an artifact and an acceptance check. The final audience should be able to see what was tested, how the result compares with the baselines, how uncertain it is, what it cost, and what the study cannot establish.
 
-## P9-01 — Verify the analysis handoff and finalize the headline table
+## P9-01 — Verify the analysis handoff and finalize the headline table ✅ COMPLETE
 
 **Depends on:** Phase 8 completion gate.
+
+**Status:** Complete. [`src/phase9_handoff.py`](../../src/phase9_handoff.py) / [`scripts/verify_phase9_handoff.py`](../../scripts/verify_phase9_handoff.py); verification [`results/phase9/handoff_verification.json`](../../results/phase9/handoff_verification.json); headline [`results/phase9/headline_table.md`](../../results/phase9/headline_table.md) + [`results/phase9/headline_table.json`](../../results/phase9/headline_table.json); docs [`docs/phase9-headline.md`](../../docs/phase9-headline.md); tests [`tests/test_phase9_handoff.py`](../../tests/test_phase9_handoff.py). **PASS** — Phase 7/8 hashes, freeze commit, 125 bugs / 625 rows, FDR@10% and cost cross-checks; report table with provenance.
 
 **Work**
 
@@ -22,9 +24,11 @@ Tickets are ordered by dependency. Each has an artifact and an acceptance check.
 
 **Acceptance:** All required rows/columns are present, values agree with `metrics.csv` and the frozen cost basis, and the table makes the primary FDR@10% comparison easy to identify without hiding other outcomes.
 
-## P9-02 — Finish and inspect the four required figures
+## P9-02 — Finish and inspect the four required figures ✅ COMPLETE
 
 **Depends on:** P9-01 and Phase 8 figure generators.
+
+**Status:** Complete. [`src/phase9_figures.py`](../../src/phase9_figures.py) / [`scripts/publish_figures.py`](../../scripts/publish_figures.py); final SVGs under [`results/figures/`](../../results/figures/); captions [`results/figures/captions.md`](../../results/figures/captions.md); manifest [`results/phase9/figures_manifest.json`](../../results/phase9/figures_manifest.json); docs [`docs/phase9-figures.md`](../../docs/phase9-figures.md); tests [`tests/test_phase9_figures.py`](../../tests/test_phase9_figures.py). **PASS** — values match sealed cohort; legends outside plot; Jsoup n=13 noted; cost basis documented.
 
 **Work**
 
@@ -38,9 +42,11 @@ Tickets are ordered by dependency. Each has an artifact and an acceptance check.
 
 **Acceptance:** Each figure matches the sealed metrics, remains legible at ordinary document width, and regenerates with `python scripts/evaluate.py` without network access.
 
-## P9-03 — Select the 20 cases mechanically
+## P9-03 — Select the 20 cases mechanically ✅ COMPLETE
 
 **Depends on:** Phase 8 analyzed results being sealed.
+
+**Status:** Complete. [`src/phase9_failure_cases.py`](../../src/phase9_failure_cases.py) / [`scripts/select_failure_cases.py`](../../scripts/select_failure_cases.py); selection [`results/failure_cases.json`](../../results/failure_cases.json); table [`results/phase9/failure_cases.md`](../../results/phase9/failure_cases.md); docs [`docs/phase9-failure-cases.md`](../../docs/phase9-failure-cases.md); tests [`tests/test_phase9_failure_cases.py`](../../tests/test_phase9_failure_cases.py). **PASS** — 20 distinct IDs match sealed `case20_deltas.json`; ranks/delta/shortlist status + input hashes recorded; sign labels separate from selection arms.
 
 **Work**
 
@@ -53,9 +59,11 @@ Tickets are ordered by dependency. Each has an artifact and an acceptance check.
 
 **Acceptance:** Another agent can regenerate exactly the same 20 IDs and order from sealed metrics and the stated tie-break, with no discretionary selection.
 
-## P9-04 — Perform a bounded qualitative failure analysis
+## P9-04 — Perform a bounded qualitative failure analysis ✅ COMPLETE
 
 **Depends on:** P9-03.
+
+**Status:** Complete. [`src/phase9_failure_analysis.py`](../../src/phase9_failure_analysis.py) / [`scripts/publish_failure_analysis.py`](../../scripts/publish_failure_analysis.py); [`results/failure_analysis.json`](../../results/failure_analysis.json); table [`results/phase9/failure_analysis.md`](../../results/phase9/failure_analysis.md); docs [`docs/phase9-failure-analysis.md`](../../docs/phase9-failure-analysis.md); tests [`tests/test_phase9_failure_analysis.py`](../../tests/test_phase9_failure_analysis.py). **PASS** — all 20 selected IDs once; categories from the outline; shortlist misses = 0; evidence cites sealed ranks/classes.
 
 **Work**
 
@@ -68,9 +76,11 @@ Tickets are ordered by dependency. Each has an artifact and an acceptance check.
 
 **Acceptance:** All mechanically selected cases are covered exactly once, each has a supported category, and no unselected case is substituted for narrative convenience.
 
-## P9-05 — Write the methodology and findings for a new reader
+## P9-05 — Write the methodology and findings for a new reader ✅ COMPLETE
 
 **Depends on:** P9-01, P9-02, and P9-04.
+
+**Status:** Complete. Research narrative in [`README.md`](../../README.md); full writeup [`docs/phase9-report.md`](../../docs/phase9-report.md). Links to `EXPERIMENT.md`, headline table, figures, failure analysis, and offline `evaluate.py`. Practical-success **PASS** (alt1); limits and A-001 deviation stated; preregistration not rewritten.
 
 **Work**
 
@@ -85,9 +95,11 @@ Tickets are ordered by dependency. Each has an artifact and an acceptance check.
 
 **Acceptance:** A reader who has not seen the planning files can understand the experimental design, primary result, uncertainty, cost, caveats, and how to reproduce every table/figure. Claims stay within the evidence supported by the study.
 
-## P9-06 — Reproduce the reported result from a clean environment
+## P9-06 — Reproduce the reported result from a clean environment ✅ COMPLETE
 
 **Depends on:** P9-01 through P9-05.
+
+**Status:** Complete. [`src/phase9_reproduction.py`](../../src/phase9_reproduction.py) / [`scripts/reproduce_phase9.py`](../../scripts/reproduce_phase9.py); record [`results/phase9/reproduction_record.json`](../../results/phase9/reproduction_record.json); inventory [`results/phase9/final_artifact_inventory.json`](../../results/phase9/final_artifact_inventory.json); docs [`docs/phase9-reproduction.md`](../../docs/phase9-reproduction.md); tests [`tests/test_phase9_reproduction.py`](../../tests/test_phase9_reproduction.py). **PASS** — offline evaluate byte-identical on stable artifacts; inventory complete; report figures reconciled; zero paid requests.
 
 **Work**
 
@@ -101,9 +113,11 @@ Tickets are ordered by dependency. Each has an artifact and an acceptance check.
 
 **Acceptance:** Another agent can follow the README, run `python scripts/evaluate.py` offline, and obtain the same metrics, statistics, table, and four figures without API access or an undocumented manual step.
 
-## P9-07 — Finalize the interpretation and close the experiment
+## P9-07 — Finalize the interpretation and close the experiment ✅ COMPLETE
 
 **Depends on:** P9-06.
+
+**Status:** Complete. [`src/phase9_final.py`](../../src/phase9_final.py) / [`scripts/finalize_phase9.py`](../../scripts/finalize_phase9.py); finding [`results/phase9/main_finding.md`](../../results/phase9/main_finding.md); index [`results/phase9/final_index.json`](../../results/phase9/final_index.json); docs [`docs/phase9-final.md`](../../docs/phase9-final.md); tests [`tests/test_phase9_final.py`](../../tests/test_phase9_final.py). **PASS** — consistency across table/figures/stats/20-case/report; main finding scoped to 10% test-class budget; freeze seals recorded; phase complete.
 
 **Work**
 
@@ -116,6 +130,6 @@ Tickets are ordered by dependency. Each has an artifact and an acceptance check.
 
 **Acceptance:** The study is complete against section 46 of `overall.md`: required artifacts exist, the offline evaluator reproduces reported outputs, and the conclusion matches the measured evidence and stated limits.
 
-## Phase completion gate
+## Phase completion gate ✅ COMPLETE
 
-Phase 9 is implemented when the five-method headline table, four checked figures, deterministic 20-case analysis, README/research writeup, and clean offline reproduction record are finished. A reader can trace each claim back to Phase 8 metrics and Phase 7 sealed raw data, while the Phase 6 preregistration remains unchanged.
+Phase 9 is implemented: five-method headline table, four checked figures, deterministic 20-case analysis, README/research writeup, and clean offline reproduction record are finished. A reader can trace each claim back to Phase 8 metrics and Phase 7 sealed raw data, while the Phase 6 preregistration remains unchanged.

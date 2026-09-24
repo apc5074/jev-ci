@@ -1,7 +1,8 @@
 """Write metrics.csv, headline table, and figure data (P8-07).
 
 Consumes sealed Phase 8 artifacts only — no provider calls. ``statistics.json``
-is produced by P8-06; this module refreshes display outputs and the 625-row CSV.
+is produced by P8-06; this module refreshes display outputs and the headline
+``metrics.csv`` (113 bugs × 5 methods = 565 rows after A-001 exclusions).
 """
 
 from __future__ import annotations
@@ -17,6 +18,14 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
+from src.analysis_cohort import (
+    COHORT_POLICY_NOTE,
+    HEADLINE_EVAL_BUGS,
+    HEADLINE_METRICS_ROWS,
+    cohort_metadata,
+    filter_headline_ids,
+    require_headline_size,
+)
 from src.cohort_summaries import (
     index_nonrandom_records,
     materialize_jev_record,
@@ -153,12 +162,14 @@ def build_metrics_rows(
 
     by_bug = index_nonrandom_records(per_bug["records"])
     random_by = {r["qualified_id"]: r for r in random_doc["records"]}
-    ordered = sorted(
-        by_bug.keys(),
-        key=lambda x: (x.split("-")[0], int(x.split("-")[1])),
-    )
-    if len(ordered) != 125:
-        raise ReportError(f"expected 125 bugs, got {len(ordered)}")
+    ordered = filter_headline_ids(by_bug.keys())
+    require_headline_size(ordered, context="metrics.csv")
+    # Random rows must already be headline-filtered.
+    missing_random = [qid for qid in ordered if qid not in random_by]
+    if missing_random:
+        raise ReportError(
+            f"random_metrics missing headline bugs (first): {missing_random[:3]}"
+        )
 
     meta_cache: dict[str, dict[str, Any]] = {}
     rows: list[dict[str, Any]] = []
@@ -167,11 +178,14 @@ def build_metrics_rows(
         if qid not in meta_cache:
             meta_cache[qid] = _load_bug_meta(workspace, ex)
         meta = meta_cache[qid]
+        jev_rec = dict(by_bug[qid]["Jev"])
+        if not jev_rec.get("available", True):
+            raise ReportError(f"{qid}: Jev unavailable in headline cohort")
         method_recs: dict[str, Mapping[str, Any]] = {
             "Random": random_by[qid],
             "BM25": by_bug[qid]["BM25"],
             "Embedding": by_bug[qid]["Embedding"],
-            "Jev": materialize_jev_record(by_bug[qid]["Jev"]),
+            "Jev": jev_rec,
             "GPT-Nano": by_bug[qid]["GPT-Nano"],
         }
         for method in METHODS:
@@ -206,13 +220,17 @@ def build_metrics_rows(
             }
             rows.append(row)
 
-    if len(rows) != 625:
-        raise ReportError(f"expected 625 rows, got {len(rows)}")
+    if len(rows) != HEADLINE_METRICS_ROWS:
+        raise ReportError(
+            f"expected {HEADLINE_METRICS_ROWS} rows, got {len(rows)}"
+        )
     provenance = {
         "experiment_commit": commit,
         "run_id": run_id,
         "n_rows": len(rows),
+        "n_bugs": HEADLINE_EVAL_BUGS,
         "methods": list(METHODS),
+        "analysis_cohort": cohort_metadata(),
     }
     return rows, provenance
 
@@ -305,7 +323,7 @@ def render_headline_markdown(table: Mapping[str, Any]) -> str:
         ("Cost/Bug", "cost_usd_per_bug"),
     ]
     lines = [
-        "# Headline results (evaluation, n=125)",
+        "# Headline results (evaluation, n=113)",
         "",
         "| Method | FDR@5% | FDR@10% | FDR@20% | MRR | APFD | Median NFTR | Cost/Bug |",
         "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
@@ -349,7 +367,10 @@ def build_figure_data(*, workspace: Path) -> dict[str, Any]:
     cohort = read_json(workspace / "results" / "phase8" / "cohort_summaries.json")
     random_doc = read_json(workspace / "results" / "phase8" / "random_metrics.json")
     per_bug = read_json(workspace / "results" / "phase8" / "per_bug_metrics.json")
-    by_bug = index_nonrandom_records(per_bug["records"])
+    by_bug_full = index_nonrandom_records(per_bug["records"])
+    ordered = filter_headline_ids(by_bug_full.keys())
+    require_headline_size(ordered, context="figure_data")
+    by_bug = {qid: by_bug_full[qid] for qid in ordered}
 
     budgets = [0.01, 0.02, 0.05, 0.10, 0.20, 0.50, 1.00]
     labels = ["1pct", "2pct", "5pct", "10pct", "20pct", "50pct", "100pct"]
@@ -370,19 +391,21 @@ def build_figure_data(*, workspace: Path) -> dict[str, Any]:
     }
     for method in ("BM25", "Embedding", "Jev", "GPT-Nano"):
         vals = []
-        for qid, recs in by_bug.items():
-            row = (
-                materialize_jev_record(recs[method])
-                if method == "Jev"
-                else recs[method]
-            )
+        for qid in ordered:
+            recs = by_bug[qid]
+            row = dict(recs[method])
+            if method == "Jev" and not row.get("available", True):
+                raise ReportError(f"{qid}: Jev unavailable in figure cohort")
             vals.append(float(row["normalized_first_trigger_rank"]))
         nftr_cdf[method] = _empirical_cdf(vals)
 
     project_fdr = {
         project: {
-            method: float(block["methods"][method]["primary_fdr_at_10pct"])
-            for method in METHODS
+            "denominator": int(block["denominator"]),
+            "methods": {
+                method: float(block["methods"][method]["primary_fdr_at_10pct"])
+                for method in METHODS
+            },
         }
         for project, block in cohort["projects"].items()
     }
@@ -412,13 +435,14 @@ def build_figure_data(*, workspace: Path) -> dict[str, Any]:
             if (workspace / "results" / "phase7" / "raw_evaluation_seal.json").is_file()
             else _utcnow()
         ),
+        "analysis_cohort": cohort_metadata(),
         "figure1_budget_curve": budget_curve,
         "figure2_nftr_cdf": nftr_cdf,
         "figure3_project_fdr10": project_fdr,
         "figure4_quality_vs_cost": quality_cost,
         "notes": [
-            "Phase 9 may refine layout/captions; numeric content is frozen here",
-            "Random NFTR CDF uses P8-03 replicate-averaged grid",
+            COHORT_POLICY_NOTE,
+            "Random NFTR CDF uses P8-03 replicate-averaged grid on the headline cohort",
         ],
     }
 
@@ -649,7 +673,7 @@ def _svg_budget_curve(figure_data: Mapping[str, Any]) -> str:
         _text(
             width / 2,
             48,
-            "Evaluation set · n = 125 bugs · primary outcome FDR@10%",
+            f"Evaluation set · n = {HEADLINE_EVAL_BUGS} bugs (A-001 gaps excluded) · primary outcome FDR@10%",
             size=12,
             anchor="middle",
             fill=_MUTED,
@@ -857,6 +881,10 @@ def _svg_project_bars(figure_data: Mapping[str, Any]) -> str:
     plot_w = width - pad_l - pad_r
     plot_h = height - pad_t - pad_b
     projects = list(figure_data["figure3_project_fdr10"].keys())
+    project_denoms = {
+        p: int(figure_data["figure3_project_fdr10"][p].get("denominator") or 25)
+        for p in projects
+    }
     short = {
         "Cli": "Cli",
         "Lang": "Lang",
@@ -887,7 +915,7 @@ def _svg_project_bars(figure_data: Mapping[str, Any]) -> str:
         _text(
             width / 2,
             48,
-            "Descriptive subsets · 25 evaluation bugs per project · not for significance claims",
+            "Descriptive subsets · A-001 gaps excluded · not for significance claims",
             size=12,
             anchor="middle",
             fill=_MUTED,
@@ -916,7 +944,9 @@ def _svg_project_bars(figure_data: Mapping[str, Any]) -> str:
     for i, project in enumerate(projects):
         gx = pad_l + i * group_w + group_w * 0.14
         for j, method in enumerate(METHODS):
-            val = float(figure_data["figure3_project_fdr10"][project][method])
+            val = float(
+                figure_data["figure3_project_fdr10"][project]["methods"][method]
+            )
             bx = gx + j * (bar_w + bar_gap)
             by = sy(val)
             bh = sy(0.0) - by
@@ -954,7 +984,7 @@ def _svg_project_bars(figure_data: Mapping[str, Any]) -> str:
             _text(
                 pad_l + i * group_w + group_w / 2,
                 pad_t + plot_h + 38,
-                "n=25",
+                f"n={project_denoms[project]}",
                 size=10,
                 anchor="middle",
                 fill=_MUTED,
@@ -1172,7 +1202,9 @@ def run_report_outputs(
         "metrics_csv": {
             "path": "results/metrics.csv",
             "sha256": metrics_sha,
-            "n_rows": 625,
+            "n_rows": HEADLINE_METRICS_ROWS,
+            "n_bugs": HEADLINE_EVAL_BUGS,
+            "analysis_cohort": cohort_metadata(),
             "columns": CSV_COLUMNS,
         },
         "statistics_json": {

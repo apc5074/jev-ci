@@ -1,9 +1,9 @@
 """Cohort, project, and candidate-ceiling summaries (P8-05).
 
-Builds on sealed P8-02/P8-03/P8-04 artifacts. Headline FDR denominators are
-always **125** evaluation bugs. Unavailable Jev rankings (A-001 gaps) count as
-non-detections at every budget and receive worst-case continuous metrics
-(``r = N``) so every method has a full 125-bug lineup for descriptive tables.
+Builds on sealed P8-02/P8-03/P8-04 artifacts. Headline FDR denominators use the
+**113-bug** analysis cohort (all methods): the 12 A-001 Jsoup Jev WAF gaps are
+excluded for every method so comparisons stay paired. See
+``src/analysis_cohort.py`` and README.
 """
 
 from __future__ import annotations
@@ -21,6 +21,14 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
+from src.analysis_cohort import (
+    COHORT_POLICY_NOTE,
+    HEADLINE_EVAL_BUGS,
+    cohort_metadata,
+    filter_headline_ids,
+    is_excluded_a001,
+    require_headline_size,
+)
 from src.example_contract import WORKSPACE, atomic_write_json, read_json, sha256_file
 from src.metrics import BUDGET_LABELS, apfd, reciprocal_rank
 
@@ -28,8 +36,8 @@ SUMMARY_PATH = WORKSPACE / "results" / "phase8" / "cohort_summaries.json"
 SUMMARY_SCHEMA = "jev-phase8-cohort-summaries-v1"
 METHODS = ("Random", "BM25", "Embedding", "Jev", "GPT-Nano")
 PROJECTS = ("Cli", "Lang", "Math", "Jsoup", "JacksonDatabind")
-EVAL_BUGS = 125
-PROJECT_BUGS = 25
+EVAL_BUGS = HEADLINE_EVAL_BUGS
+FULL_PROJECT_BUGS = 25
 
 
 class CohortSummaryError(Exception):
@@ -121,8 +129,8 @@ def method_detection_fraction(
     *,
     label: str,
 ) -> float:
-    if len(rows) not in {EVAL_BUGS, PROJECT_BUGS}:
-        raise CohortSummaryError(f"unexpected row count {len(rows)}")
+    if not rows:
+        raise CohortSummaryError("detection fraction over empty rows")
     field = f"detected_at_{label}"
     values: list[float] = []
     for row in rows:
@@ -178,7 +186,9 @@ def summarize_method_rows(
 
 def candidate_recall_at_200(rows_bm25: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     if len(rows_bm25) != EVAL_BUGS:
-        raise CohortSummaryError("candidate recall requires 125 BM25 rows")
+        raise CohortSummaryError(
+            f"candidate recall requires {EVAL_BUGS} BM25 rows, got {len(rows_bm25)}"
+        )
     hits = [
         r
         for r in rows_bm25
@@ -198,7 +208,9 @@ def classify_jev_misses(
 ) -> dict[str, Any]:
     """Classify every Jev non-detection at 10% as candidate vs reranker miss."""
     if len(jev_rows) != EVAL_BUGS:
-        raise CohortSummaryError("Jev miss classification requires 125 rows")
+        raise CohortSummaryError(
+            f"Jev miss classification requires {EVAL_BUGS} rows, got {len(jev_rows)}"
+        )
     candidate_misses: list[str] = []
     reranker_misses: list[str] = []
     detections: list[str] = []
@@ -232,10 +244,7 @@ def classify_jev_misses(
         "reranker_misses": {
             "count": len(reranker_misses),
             "bug_ids": sorted(reranker_misses),
-            "rule": (
-                "trigger_in_bm25_shortlist_but_jev_not_detected_at_10pct "
-                "(includes unavailable A-001 gaps imputed as non-detections)"
-            ),
+            "rule": "trigger_in_bm25_shortlist_but_jev_not_detected_at_10pct",
         },
         "n_misses": expected_misses,
     }
@@ -300,16 +309,22 @@ def build_cohort_summaries(
     random_doc = inputs["random"]
     cost = inputs["cost"]
 
-    by_bug = index_nonrandom_records(per_bug["records"])
-    random_by_bug = {
+    by_bug_full = index_nonrandom_records(per_bug["records"])
+    random_by_bug_full = {
         str(r["qualified_id"]): dict(r) for r in random_doc["records"]
     }
-    if len(by_bug) != EVAL_BUGS or len(random_by_bug) != EVAL_BUGS:
-        raise CohortSummaryError("expected 125 bugs in per-bug and random records")
+    ordered = filter_headline_ids(by_bug_full.keys())
+    require_headline_size(ordered, context="cohort_summaries")
+    by_bug = {qid: by_bug_full[qid] for qid in ordered}
+    random_by_bug = {}
+    for qid in ordered:
+        if qid not in random_by_bug_full:
+            raise CohortSummaryError(f"{qid}: missing Random row")
+        random_by_bug[qid] = random_by_bug_full[qid]
 
-    # Materialize full 125×5 descriptive rows (Random fractional OK).
+    # Headline cohort × 5 methods (Random fractional OK). Jev must be available.
     lineup: dict[str, list[dict[str, Any]]] = {m: [] for m in METHODS}
-    for qid in sorted(by_bug.keys(), key=lambda x: (x.split("-")[0], int(x.split("-")[1]))):
+    for qid in ordered:
         methods = by_bug[qid]
         for method in ("BM25", "Embedding", "GPT-Nano"):
             if method not in methods:
@@ -317,16 +332,23 @@ def build_cohort_summaries(
             lineup[method].append(dict(methods[method]))
         if "Jev" not in methods:
             raise CohortSummaryError(f"{qid}: missing Jev record")
-        lineup["Jev"].append(materialize_jev_record(methods["Jev"]))
-        if qid not in random_by_bug:
-            raise CohortSummaryError(f"{qid}: missing Random row")
+        jev = dict(methods["Jev"])
+        if not jev.get("available", True):
+            raise CohortSummaryError(
+                f"{qid}: Jev unavailable but present in headline cohort"
+            )
+        lineup["Jev"].append(jev)
         lineup["Random"].append(random_by_bug[qid])
 
     for method, rows in lineup.items():
         if len(rows) != EVAL_BUGS:
-            raise CohortSummaryError(f"{method}: expected 125 rows, got {len(rows)}")
+            raise CohortSummaryError(
+                f"{method}: expected {EVAL_BUGS} rows, got {len(rows)}"
+            )
 
-    # Random median NFTR must use replicate rule from P8-03, not median of means.
+    # Random median NFTR: recompute replicate rule on the headline cohort only.
+    # Prefer random_doc headline aggregates when records already filtered; else
+    # take median of per-bug means as a fallback only if replicate grid absent.
     random_headline = dict(
         summarize_method_rows(
             lineup["Random"],
@@ -335,38 +357,58 @@ def build_cohort_summaries(
             latency=None,
         )
     )
-    random_headline["median_nftr"] = float(
-        random_doc["aggregates"]["median_nftr"]
-    )
-    random_headline["median_nftr_rule"] = (
-        "mean_of_cohort_medians_across_permutation_replicates"
-    )
+    if int(random_doc.get("counts", {}).get("random_rows") or 0) == EVAL_BUGS:
+        random_headline["median_nftr"] = float(random_doc["aggregates"]["median_nftr"])
+        random_headline["median_nftr_rule"] = (
+            "mean_of_cohort_medians_across_permutation_replicates"
+        )
+    else:
+        # Records may still be full-125; recompute from filtered per-bug means
+        # is wrong for median — require filtered random_metrics.
+        raise CohortSummaryError(
+            "random_metrics.json must be regenerated for the 113-bug headline cohort "
+            "before cohort summaries"
+        )
+
+    def _mean_cost_for_method(method: str) -> float:
+        per_bug_costs = (
+            cost["methods"][method]["cost"].get("per_bug") or {}
+        )
+        vals = []
+        for qid in ordered:
+            block = per_bug_costs.get(qid)
+            if block is None:
+                continue
+            vals.append(float(block["effective_prepaid_credits_usd"]))
+        if not vals:
+            return 0.0
+        return float(sum(vals) / len(ordered))
 
     cohort: dict[str, Any] = {"Random": random_headline}
     for method in ("BM25", "Embedding", "Jev", "GPT-Nano"):
-        cost_block = cost["methods"][method]["cost"]["cohort"]
         latency = cost["methods"][method].get("latency")
         cohort[method] = summarize_method_rows(
             lineup[method],
             method=method,
-            cost_per_bug=float(cost_block["mean_effective_usd_per_bug"]),
+            cost_per_bug=_mean_cost_for_method(method),
             latency=latency,
         )
 
-    # Project slices (descriptive only).
+    # Project slices (descriptive only); Jsoup has fewer bugs after exclusion.
     projects: dict[str, Any] = {}
     for project in PROJECTS:
         proj_rows = {
             method: [r for r in lineup[method] if r["project"] == project]
             for method in METHODS
         }
+        n_proj = len(proj_rows["BM25"])
         for method, rows in proj_rows.items():
-            if len(rows) != PROJECT_BUGS:
+            if len(rows) != n_proj:
                 raise CohortSummaryError(
-                    f"{project}/{method}: expected 25 rows, got {len(rows)}"
+                    f"{project}/{method}: row count mismatch {len(rows)} vs {n_proj}"
                 )
         projects[project] = {
-            "denominator": PROJECT_BUGS,
+            "denominator": n_proj,
             "significance": "descriptive_only_no_inference",
             "methods": {
                 method: {
@@ -385,10 +427,35 @@ def build_cohort_summaries(
     recall = candidate_recall_at_200(lineup["BM25"])
     misses = classify_jev_misses(lineup["Jev"])
     fdr10 = {m: float(cohort[m]["primary_fdr_at_10pct"]) for m in METHODS}
-    success = practical_success_table(
-        fdr=fdr10,
-        cost_ratio=cost["jev_vs_gpt_cost_criterion"],
+
+    # Practical-success cost ratio on headline-cohort spend only.
+    jev_total = sum(
+        float(
+            (cost["methods"]["Jev"]["cost"].get("per_bug") or {})
+            .get(qid, {})
+            .get("effective_prepaid_credits_usd")
+            or 0.0
+        )
+        for qid in ordered
     )
+    gpt_total = sum(
+        float(
+            (cost["methods"]["GPT-Nano"]["cost"].get("per_bug") or {})
+            .get(qid, {})
+            .get("effective_prepaid_credits_usd")
+            or 0.0
+        )
+        for qid in ordered
+    )
+    ratio = (jev_total / gpt_total) if gpt_total > 0 else float("inf")
+    cost_ratio = {
+        "ratio": ratio,
+        "jev_leq_30pct_of_gpt": bool(ratio <= 0.30),
+        "numerator_jev_usd": jev_total,
+        "denominator_gpt_usd": gpt_total,
+        "basis": "headline_cohort_effective_prepaid_credits",
+    }
+    success = practical_success_table(fdr=fdr10, cost_ratio=cost_ratio)
 
     return {
         "schema_version": SUMMARY_SCHEMA,
@@ -397,13 +464,14 @@ def build_cohort_summaries(
         "run_id": per_bug.get("run_id"),
         "inputs": inputs["paths"],
         "input_hashes": inputs["hashes"],
+        "analysis_cohort": cohort_metadata(),
         "counts": {
             "evaluation_bugs": EVAL_BUGS,
-            "projects": {p: PROJECT_BUGS for p in PROJECTS},
+            "full_evaluation_bugs": 125,
+            "excluded_a001": len([q for q in by_bug_full if is_excluded_a001(q)]),
+            "projects": {p: projects[p]["denominator"] for p in PROJECTS},
             "methods": list(METHODS),
-            "jev_imputed_worst_case": sum(
-                1 for r in lineup["Jev"] if r.get("imputed")
-            ),
+            "jev_imputed_worst_case": 0,
         },
         "cohort": cohort,
         "projects": projects,
@@ -411,10 +479,10 @@ def build_cohort_summaries(
         "jev_miss_classification": misses,
         "practical_success": success,
         "notes": [
-            "Headline FDR denominators are 125 for every method",
-            "Unavailable Jev A-001 bugs imputed as non-detections with r=N",
-            "Random median NFTR uses P8-03 replicate rule",
+            COHORT_POLICY_NOTE,
+            "Random median NFTR uses P8-03 replicate rule on the headline cohort",
             "Project tables are descriptive only (no significance claims)",
+            "Jsoup project denominator is reduced by the excluded A-001 bugs",
         ],
     }
 

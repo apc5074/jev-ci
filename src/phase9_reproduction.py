@@ -44,7 +44,7 @@ STABLE_COMPARE = (
 
 INVENTORY_REQUIRED = (
     "data/manifest.json",
-    "EXPERIMENT.md",
+    "experiment.yaml",
     "results/predictions.jsonl",
     "results/metrics.csv",
     "results/statistics.json",
@@ -159,7 +159,7 @@ def build_inventory(*, workspace: Path) -> dict[str, Any]:
         "phase7_seal_counts": counts,
         "links": {
             "readme": "README.md",
-            "experiment": "EXPERIMENT.md",
+            "experiment": "experiment.yaml",
             "figures": "results/figures/",
             "failure_analysis": "results/failure_analysis.json",
             "reproduction": "results/phase9/reproduction_record.json",

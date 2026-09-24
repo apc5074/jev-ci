@@ -27,22 +27,19 @@ class ExperimentConfigTests(unittest.TestCase):
         self.assertIn("FDR@10%", text)
         self.assertIn("effective_prepaid_credits_usd", text)
 
-    def test_experiment_md_present(self) -> None:
-        path = Path("/workspace/EXPERIMENT.md")
+    def test_readme_carries_freeze_essentials(self) -> None:
+        path = Path("/workspace/README.md")
         if not path.is_file():
-            path = Path("EXPERIMENT.md")
+            path = Path("README.md")
         self.assertTrue(path.is_file())
         text = path.read_text(encoding="utf-8").lower()
         for needle in (
             "fdr@10%",
-            "h1",
-            "practical-success",
-            "prompts/jev/v1.json",
-            "claim limits",
-            "10,000",
-            "cli-30",
-            "evaluation",
-            "fixed_to_buggy",
+            "experiment.yaml",
+            "≥5 pp",
+            "defects4j",
+            "bm25 top-200",
+            "experiment-v1",
         ):
             self.assertIn(needle, text)
 

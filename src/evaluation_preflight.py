@@ -32,7 +32,7 @@ from src.select_bugs import ManifestError, verify_manifest_integrity
 
 PHASE7_DIR = WORKSPACE / "results" / "phase7"
 PREFLIGHT_JSON = PHASE7_DIR / "preflight.json"
-PREFLIGHT_MD = WORKSPACE / "docs" / "phase7-preflight.md"
+PREFLIGHT_MD = WORKSPACE / "results" / "phase7" / "preflight.md"
 RUN_JSON = PHASE7_DIR / "run.json"
 EXECUTION_LOG = PHASE7_DIR / "execution.log.jsonl"
 
@@ -47,8 +47,8 @@ FROZEN_HASH_PATHS = (
 
 # Documentation may drift after tagging (tag rename notes); record only.
 DOC_HASH_PATHS = (
-    "EXPERIMENT.md",
     "experiment.yaml",
+    "README.md",
 )
 
 EXPECTED_D4J_COMMIT = "6d54320e0db5a357f9ab38a8e4d2e5aead7e1c09"

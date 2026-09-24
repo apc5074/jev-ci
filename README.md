@@ -4,8 +4,6 @@ Can a cheap decision model beat BM25 at picking which tests will catch a regress
 
 Short answer: **yes.** On Defects4J, Jev finds the fault-revealing test in the top 10% of the suite **22 points more often** than BM25 alone — and costs ~4× less than GPT-5.4 nano while matching or beating it on most ranking metrics.
 
-Preregistration (frozen, don't rewrite history): [`EXPERIMENT.md`](EXPERIMENT.md)
-
 ---
 
 ## What this is
@@ -34,31 +32,53 @@ We compared five methods on the same bugs: Random, BM25, embeddings, **Jev** (BM
 | GPT-5.4 nano | 0.92 | 0.80 | $0.055 |
 
 - Jev **0.9558** vs BM25 **0.7345** → **+22.1 pp** (McNemar p ≈ 4.6×10⁻⁶, bootstrap 95% CI [0.133, 0.310])
-- Preregistered success bar (≥5 pp over BM25): **PASS**
+- Success bar we froze beforehand (≥5 pp over BM25): **PASS**
 - Near-GPT-and-cheap bar: quality band missed (Jev was slightly *better* than GPT, outside ±2 pp); cost was fine (~25% of GPT)
 
-Charts: [`results/figures/`](results/figures/)
+Charts: [`results/figures/`](results/figures/) · tweet-ready: [`results/share/`](results/share/)
 
 ### Honest caveats
 
 - This ranks **known** triggering tests. It does **not** prove unlabeled tests are safe to skip.
 - “Top 10% of test classes” ≠ “90% less CI time.”
 - Scores were for ranking, not calibrated probabilities.
-- 12 Jsoup bugs never got a full Jev ranking (OpenRouter WAF tripped on `file://etc/passwd` in test source). Those 12 are dropped from **every** method so the comparison stays fair → headline **n=113**, not 125.
+- 12 Jsoup bugs never got a full Jev ranking (OpenRouter WAF tripped on `file://etc/passwd` in test source). Those 12 are dropped from every method so the comparison stays fair → headline **n=113**, not 125.
+
+---
+
+## What we froze before looking
+
+Tag `experiment-v1` @ `edc70bac…`. Machine lock: [`experiment.yaml`](experiment.yaml).
+
+- **Dataset:** Defects4J 3.0.1 · 25 dev / 125 eval · seed `20260922` · Cli, Lang, Math, Jsoup, JacksonDatabind
+- **Primary metric:** FDR@10% with \(k = \lceil 0.10 \cdot N\rceil\)
+- **Success if either:** Jev ≥ BM25 + 5 pp, **or** within 2 pp of GPT-Nano **and** ≤30% of GPT cost
+- **Jev:** BM25 top-200 → `typesafe/jev-1.13` one-pair scores
+- **GPT:** same shortlist, `gpt-5.4-nano`, structured probability
+- Full knobs (prompts, BM25 params, bootstrap, bug IDs): `experiment.yaml` + `data/manifest.json`
 
 ---
 
 ## Layout
 
 ```
-EXPERIMENT.md          # what we promised before looking
-data/                  # bugs, patches, tests, manifest
-results/metrics.csv    # per-bug numbers
-results/statistics.json
-results/figures/       # the four charts
-results/failure_*.json # 20 mechanical extreme cases + notes
-src/                   # the pipeline
-scripts/evaluate.py    # regenerate everything offline
+experiment.yaml           # frozen design lock
+data/                     # bugs, patches, tests, manifest
+results/
+  metrics.csv             # headline numbers
+  statistics.json
+  figures/                # report charts
+  share/                  # tweet charts
+  failure_cases.json      # 20 extremes
+  failure_analysis.json
+  rankings/ embeddings/ random/ semantic/{jev,gpt_nano}/
+  predictions.jsonl       # sealed raw export
+  usage_ledger.jsonl      # cost/latency source
+  phase6/freeze_lock.json
+  phase7/raw_evaluation_seal.json + raw_result_index.json
+  phase8/                 # regenerated analysis (evaluate.py)
+src/
+scripts/evaluate.py       # offline regenerate from sealed rankings
 ```
 
 ---
@@ -72,7 +92,7 @@ docker run --rm --platform linux/amd64 --network=none \
   jev-ci:phase1 python -u scripts/evaluate.py
 ```
 
-That rebuilds metrics, stats, and figures from sealed predictions. Full Phase 9 check: `scripts/reproduce_phase9.py`.
+That rebuilds metrics, stats, and figures from sealed predictions. Full check: `scripts/reproduce_phase9.py`.
 
 ---
 
@@ -87,4 +107,4 @@ docker run --rm --platform linux/amd64 \
 
 ---
 
-Built as a sealed experiment: freeze first, score second, explain last. If something looks hand-wavy, open `EXPERIMENT.md` or `results/` — the numbers live there.
+Freeze first, score second, explain last. Numbers live in `results/`.

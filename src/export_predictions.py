@@ -653,7 +653,6 @@ def build_raw_result_index(
         (WORKSPACE / "results" / "jev_provider_decision.json", "jev_provider_decision"),
         (WORKSPACE / "results" / "gpt_comparison_models.json", "gpt_comparison_models"),
         (WORKSPACE / "experiment.yaml", "experiment_yaml"),
-        (WORKSPACE / "EXPERIMENT.md", "experiment_md"),
         (WORKSPACE / "data" / "manifest.json", "manifest"),
         (WORKSPACE / "results" / "usage_ledger.jsonl", "usage_ledger"),
     ]

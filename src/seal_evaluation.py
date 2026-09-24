@@ -518,8 +518,8 @@ def run_seal(
             "data/manifest.json",
             "results/pricing_snapshot.json",
             "results/usage_ledger.jsonl",
-            "EXPERIMENT.md",
             "experiment.yaml",
+            "README.md",
         ],
         "forbidden_until_seal_verified": [
             "aggregate FDR",

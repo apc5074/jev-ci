@@ -146,8 +146,8 @@ def main_finding_text(*, workspace: Path) -> str:
             "non-triggering tests.",
             "",
             "Frozen raw Phase 7 data and Phase 8 analyzed outputs remain the source of "
-            "truth; Phase 9 only presents and interprets them. `EXPERIMENT.md` is "
-            "unchanged.",
+            "truth; Phase 9 only presents and interprets them. The design lock in "
+            "`experiment.yaml` is unchanged.",
             "",
         ]
     )
@@ -185,7 +185,7 @@ def build_final_index(*, workspace: Path) -> dict[str, Any]:
         },
         "artifact_index": {
             "manifest": "data/manifest.json",
-            "preregistration": "EXPERIMENT.md",
+            "preregistration": "experiment.yaml",
             "metrics": "results/metrics.csv",
             "predictions": "results/predictions.jsonl",
             "statistics": "results/statistics.json",

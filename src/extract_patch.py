@@ -38,7 +38,7 @@ from src.example_contract import (
 REPRESENTATION_CHAR_CAP = 12_000
 PATCH_TRUNCATION_MARKER = "[...PATCH TRUNCATED...]"
 # Character-count convention: Python ``len(str)`` on the Unicode text (code points).
-# For ASCII Java sources this equals UTF-8 byte length. See docs/patch-truncation.md.
+# For ASCII Java sources this equals UTF-8 byte length. 12k char cap with truncation marker.
 
 
 class PatchExtractionError(Exception):

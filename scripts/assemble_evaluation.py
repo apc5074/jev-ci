@@ -37,7 +37,7 @@ from src.freeze_guard import assert_evaluation_allowed
 from src.gpt_ranker import primary_comparison_model
 from src.random_baseline import evaluation_example_ids
 
-# From results/phase7/jev_missing_diagnosis.json / docs/phase7-jev.md
+# From results/phase7/jev_missing_diagnosis.json
 ACCEPTED_JEV_GAPS: dict[str, str] = {
     "Jsoup-33": "org.jsoup.integration.UrlConnectTest",
     "Jsoup-54": "org.jsoup.integration.UrlConnectTest",

@@ -1,7 +1,7 @@
 """Example data contract: paths, status, and load/validate helpers (Phase 3).
 
 Manifest-qualified IDs look like ``Cli-30``. On-disk example IDs use an underscore:
-``Cli_30``. Layout and field visibility are documented in ``docs/example-contract.md``.
+``Cli_30``. Layout and field visibility are documented in ``example layout contract in this module``.
 """
 
 from __future__ import annotations

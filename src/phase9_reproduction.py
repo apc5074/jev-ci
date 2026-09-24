@@ -63,7 +63,6 @@ INVENTORY_REQUIRED = (
     "results/failure_analysis.json",
     "results/phase9/headline_table.md",
     "README.md",
-    "docs/phase9-report.md",
 )
 
 
@@ -160,7 +159,6 @@ def build_inventory(*, workspace: Path) -> dict[str, Any]:
         "phase7_seal_counts": counts,
         "links": {
             "readme": "README.md",
-            "report": "docs/phase9-report.md",
             "experiment": "EXPERIMENT.md",
             "figures": "results/figures/",
             "failure_analysis": "results/failure_analysis.json",
@@ -201,17 +199,15 @@ def reconcile_report_claims(*, workspace: Path) -> dict[str, Any]:
     }
     # Spot-check README contains the rounded primary figures
     readme = (workspace / "README.md").read_text(encoding="utf-8")
-    report = (workspace / "docs/phase9-report.md").read_text(encoding="utf-8")
     checks = []
-    for label, needle, blob in (
-        ("readme_jev_fdr", "0.9558", readme),
-        ("readme_bm25_fdr", "0.7345", readme),
-        ("readme_delta_pp", "+22.1", readme),
-        ("report_jev_fdr", "0.9558", report),
-        ("report_ci", "0.133", report),
-        ("report_practical_pass", "PASS", report),
+    for label, needle in (
+        ("readme_jev_fdr", "0.9558"),
+        ("readme_bm25_fdr", "0.7345"),
+        ("readme_delta_pp", "+22.1"),
+        ("readme_ci", "0.133"),
+        ("readme_practical_pass", "PASS"),
     ):
-        checks.append({"check": label, "ok": needle in blob, "needle": needle})
+        checks.append({"check": label, "ok": needle in readme, "needle": needle})
     return {"claims": claims, "text_checks": checks, "ok": all(c["ok"] for c in checks)}
 
 

@@ -194,7 +194,6 @@ def build_final_index(*, workspace: Path) -> dict[str, Any]:
             "failure_cases": "results/failure_cases.json",
             "failure_analysis": "results/failure_analysis.json",
             "readme": "README.md",
-            "report": "docs/phase9-report.md",
             "reproduction": "results/phase9/reproduction_record.json",
             "inventory": "results/phase9/final_artifact_inventory.json",
             "main_finding": "results/phase9/main_finding.md",

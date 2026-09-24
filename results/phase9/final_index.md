@@ -20,7 +20,6 @@ See [`main_finding.md`](main_finding.md). Jev FDR@10%=0.9558 vs BM25=0.7345 (+22
 | failure_cases | `results/failure_cases.json` |
 | failure_analysis | `results/failure_analysis.json` |
 | readme | `README.md` |
-| report | `docs/phase9-report.md` |
 | reproduction | `results/phase9/reproduction_record.json` |
 | inventory | `results/phase9/final_artifact_inventory.json` |
 | main_finding | `results/phase9/main_finding.md` |

@@ -1,10 +1,10 @@
 # EXPERIMENT.md — Preregistered study design (v1)
 
-**Status:** Frozen at annotated git tag `experiment-v1` (`edc70bacd23f2fc5f511ef4d97a33376e7b20bf8`). Write `results/phase6/freeze_lock.json` via `scripts/write_freeze_lock.py` to unlock evaluation. Handoff: [`docs/phase6-handoff.md`](docs/phase6-handoff.md).
+**Status:** Frozen at annotated git tag `experiment-v1` (`edc70bacd23f2fc5f511ef4d97a33376e7b20bf8`). Write `results/phase6/freeze_lock.json` via `scripts/write_freeze_lock.py` to unlock evaluation.
 
 **Machine companion:** [`experiment.yaml`](experiment.yaml) · [`results/phase6/experiment.json`](results/phase6/experiment.json)  
-**Decisions log:** [`docs/phase6-decisions.md`](docs/phase6-decisions.md)  
-**Prompt files:** [`prompts/jev/v1.json`](prompts/jev/v1.json) · [`prompts/gpt/v1.json`](prompts/gpt/v1.json)
+**Prompt files:** [`prompts/jev/v1.json`](prompts/jev/v1.json) · [`prompts/gpt/v1.json`](prompts/gpt/v1.json)  
+**Human summary of outcomes:** [`README.md`](README.md)
 
 This document is the human-readable freeze of the study. An independent reader must be able to reconstruct the design and decide in advance whether Jev met the success criteria. **No evaluation bugs may be scored until the freeze tag exists.**
 

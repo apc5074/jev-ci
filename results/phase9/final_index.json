@@ -1,6 +1,6 @@
 {
   "schema_version": "jev-phase9-final-v1",
-  "generated_at_utc": "2026-09-24T03:22:36+00:00",
+  "generated_at_utc": "2026-09-24T03:29:32+00:00",
   "ok": true,
   "phase_complete": true,
   "main_finding_path": "results/phase9/main_finding.md",
@@ -47,17 +47,12 @@
           "needle": "+22.1"
         },
         {
-          "check": "report_jev_fdr",
-          "ok": true,
-          "needle": "0.9558"
-        },
-        {
-          "check": "report_ci",
+          "check": "readme_ci",
           "ok": true,
           "needle": "0.133"
         },
         {
-          "check": "report_practical_pass",
+          "check": "readme_practical_pass",
           "ok": true,
           "needle": "PASS"
         }
@@ -90,7 +85,6 @@
     "failure_cases": "results/failure_cases.json",
     "failure_analysis": "results/failure_analysis.json",
     "readme": "README.md",
-    "report": "docs/phase9-report.md",
     "reproduction": "results/phase9/reproduction_record.json",
     "inventory": "results/phase9/final_artifact_inventory.json",
     "main_finding": "results/phase9/main_finding.md"

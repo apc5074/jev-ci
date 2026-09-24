@@ -326,7 +326,7 @@ def run_audit(
                 "the same Phase-3 representation. Do not rewrite representations; "
                 "resolve via TypeSafe direct or OpenRouter allowlist in Phase 6."
             ),
-            "evidence": "docs/phase5-run.md#known-openrouter-waf-issue",
+            "evidence": "accepted OpenRouter WAF gap (file://etc/passwd)",
         }
     ]
     # Only keep unresolved entries that still lack a Jev ranking.

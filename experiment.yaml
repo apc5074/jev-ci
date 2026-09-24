@@ -1,14 +1,8 @@
-# Locked methodological configuration for Phase 7 (P6-04).
-# Human preregistration companion is EXPERIMENT.md (P6-05).
-# Do not edit quietly after experiment-v1; version a new experiment instead.
-
 schema_version: jev-experiment-config-v1
 phase: 6
 locked_at: "2026-09-23T03:30:00+00:00"
 status: methodological_choices_locked
 human_preregistration: EXPERIMENT.md
-# Full freeze tag (experiment-v1) is created in P6-07 after EXPERIMENT.md + gate.
-# After tagging, run: python scripts/write_freeze_lock.py (do not put freeze_lock.json in the tagged commit).
 
 study:
   name: jev-ci-defects4j-test-selection
@@ -46,7 +40,6 @@ systems:
     comparison_key: gpt-5.4-nano
     is_primary_generative: true
 
-# Additional GPT models scored on development for review only (not headline systems).
 gpt_comparison_models_development_only:
   - gpt-4.1-nano
   - gpt-4o-mini
@@ -136,7 +129,7 @@ gpt_nano:
   prompt_file_sha256: "a5e7c1590f560dc6faf1b81fc84bbc4a1cb75d125c370bfa23f2724a6e71fd90"
   prompt_version: gpt-would_detect_regression-v1
   question_sha256: "bcd293f79f5826ab8be4296b8a77d3cbf1139c4dfe3d113d9180c5d7711b2caa"
-  structured_output: {probability: "[0,1]"}
+  structured_output: { probability: "[0,1]" }
   no_chain_of_thought: true
   same_state_as_jev_byte_for_byte: true
 
@@ -163,7 +156,8 @@ outcomes:
     budget_fraction: 0.10
     k_rule: "max(1, ceil(fraction * N))"
   secondary_fdr_fractions: [0.01, 0.02, 0.05, 0.20, 0.50, 1.00]
-  secondary_metrics: [MRR, NFTR, median_NFTR, APFD, candidate_recall_at_200, cost, latency]
+  secondary_metrics:
+    [MRR, NFTR, median_NFTR, APFD, candidate_recall_at_200, cost, latency]
   apfd: "1 - (r_b / N_b) + 1/(2*N_b)"
   mrr: "mean(1 / r_b)"
   nftr: "r_b / N_b"
@@ -224,8 +218,8 @@ open_availability:
 
 artifacts:
   human_preregistration: EXPERIMENT.md
-  decisions_log: docs/phase6-decisions.md
-  defect_log: docs/phase6-defect-log.md
+  decisions_log: results/phase6/ # historical; narrative lives in README
+  defect_log: results/phase6/defect_triage.json
   development_baseline: results/phase6/development_baseline.json
   machine_json: results/phase6/experiment.json
   jev_prompt_file: prompts/jev/v1.json

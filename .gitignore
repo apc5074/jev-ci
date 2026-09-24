@@ -40,12 +40,18 @@ project_repos/
 /tmp-checkouts/
 
 Plans/
-docs/
+socs/
+
+# docs/ and Plans/ are trackable (handoffs, phase tickets, design docs).
 
 *.log
 
 # Regenerable Defects4J working trees (Phase 3+)
 data/bugs/**/checkouts/
+
+# Generated compact test representations and their indexes
+data/tests/**/representations/
+data/tests/**/representations_index.json
 
 # Keep trackable on purpose (do not blanket-ignore these):
 #   data/manifest.json

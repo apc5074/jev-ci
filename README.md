@@ -1,89 +1,62 @@
 # jev-ci
 
-Can a cheap decision model beat BM25 at picking which tests will catch a regression?
+You push a change, CI has a bunch of tests to run, and you want the ones that might catch a bug to go first.
 
-Short answer: **yes.** On Defects4J, Jev finds the fault-revealing test in the top 10% of the suite **22 points more often** than BM25 alone — and costs ~4× less than GPT-5.4 nano while matching or beating it on most ranking metrics.
+That’s the idea behind this repo. Take a code change, find the tests that look relevant, then ask a small decision model to put them in a better order.
 
----
+The question was pretty simple: **can Jev beat BM25 at finding the tests that catch a regression?**
 
-## What this is
+On this Defects4J experiment, it did. Jev put a known failing test in the first 10% of test classes on **96% of bugs**, compared with **73% for BM25**. It also cost about a quarter as much as GPT-5.4 nano per bug.
 
-You have a code change. You have a pile of existing tests. You want to run the ones most likely to fail first.
+## How it works
 
-This repo ranks **test classes** for Defects4J bugs:
+BM25 is the starting point: it matches text in the code change with text in the tests. Jev takes the top 200 candidates and scores each change/test pair using `typesafe/jev-1.13`. Those scores decide the new order.
 
-1. Start from the **fixed** code
-2. Treat the **buggy** code as the proposed change
-3. Rank the fixed-base test suite
-4. Score a method by whether a known triggering test lands in the top **10%** of classes (`FDR@10%`)
+To try this on real bugs, we used Defects4J. For each bug, we start with the fixed code and treat the change back to the buggy version as the proposed patch. Then we rank the existing test classes and check how early a test known to catch that bug shows up.
 
-We compared five methods on the same bugs: Random, BM25, embeddings, **Jev** (BM25 top-200 → Jev rerank), and GPT-5.4 nano.
+We ran five approaches on the same bugs: random order, BM25, embeddings, BM25 → Jev, and BM25 → GPT-5.4 nano. Both rerankers get the same BM25 shortlist; embeddings rank the full suite.
 
----
+## What happened
 
-## Results (n=113)
+These numbers cover the **113 evaluation bugs with complete results across all five methods**.
 
-| Method | FDR@10% | MRR | Cost / bug |
+| Method | Bug found in first 10% of classes | MRR | Cost / bug |
 | --- | ---: | ---: | ---: |
-| Random | 0.12 | 0.08 | — |
-| BM25 | 0.73 | 0.51 | — |
-| Embedding | 0.89 | 0.68 | $0.0013 |
-| **Jev** | **0.96** | **0.82** | $0.014 |
-| GPT-5.4 nano | 0.92 | 0.80 | $0.055 |
+| Random | 12% | 0.08 | — |
+| BM25 | 73% | 0.51 | — |
+| Embeddings | 89% | 0.68 | $0.0013 |
+| **Jev** | **96%** | **0.82** | **$0.014** |
+| GPT-5.4 nano | 92% | 0.80 | $0.055 |
 
-- Jev **0.9558** vs BM25 **0.7345** → **+22.1 pp** (McNemar p ≈ 4.6×10⁻⁶, bootstrap 95% CI [0.133, 0.310])
-- Success bar we froze beforehand (≥5 pp over BM25): **PASS**
-- Near-GPT-and-cheap bar: quality band missed (Jev was slightly *better* than GPT, outside ±2 pp); cost was fine (~25% of GPT)
+The first column is the main metric, `FDR@10%`: how often at least one known failing test class lands in the first 10% of the suite, rounded up. MRR measures how early the first one appears. Higher is better; 1 means it’s always first.
 
-Charts: [`results/figures/`](results/figures/) · tweet-ready: [`results/share/`](results/share/)
+Jev improved on BM25 by **22.1 percentage points** (0.9558 vs. 0.7345). The paired McNemar test gives p ≈ 4.6 × 10⁻⁶, and the bootstrap 95% confidence interval for the improvement is 13.3–31.0 percentage points.
 
-### Honest caveats
+Before scoring the evaluation set, we set a target of at least 5 points over BM25. Jev cleared that. We also set an alternative target: within 2 points of GPT nano at no more than 30% of its cost. Jev met the cost target, but scored slightly better than that quality band allowed, so that second target technically didn’t pass.
 
-- This ranks **known** triggering tests. It does **not** prove unlabeled tests are safe to skip.
-- “Top 10% of test classes” ≠ “90% less CI time.”
-- Scores were for ranking, not calibrated probabilities.
-- 12 Jsoup bugs never got a full Jev ranking (OpenRouter WAF tripped on `file://etc/passwd` in test source). Those 12 are dropped from every method so the comparison stays fair → headline **n=113**, not 125.
+Charts are in [`results/figures/`](results/figures/), with versions for sharing in [`results/share/`](results/share/).
 
----
+## A few limits
 
-## What we froze before looking
+This is a test ranking experiment. It checks where **known failing tests** end up. It doesn’t establish that the other tests are safe to skip, and running 10% of test classes doesn’t necessarily take 10% of the CI time. The model scores are used to sort tests; they aren’t calibrated failure probabilities.
 
-Tag `experiment-v1` @ `edc70bac…`. Machine lock: [`experiment.yaml`](experiment.yaml).
+We planned to evaluate 125 bugs. Twelve Jsoup bugs never got a complete Jev ranking because OpenRouter’s WAF blocked requests containing `file://etc/passwd` in the test source. We left those bugs out of every method’s headline results so everyone is compared on the same 113 bugs.
 
-- **Dataset:** Defects4J 3.0.1 · 25 dev / 125 eval · seed `20260922` · Cli, Lang, Math, Jsoup, JacksonDatabind
-- **Primary metric:** FDR@10% with \(k = \lceil 0.10 \cdot N\rceil\)
-- **Success if either:** Jev ≥ BM25 + 5 pp, **or** within 2 pp of GPT-Nano **and** ≤30% of GPT cost
-- **Jev:** BM25 top-200 → `typesafe/jev-1.13` one-pair scores
-- **GPT:** same shortlist, `gpt-5.4-nano`, structured probability
-- Full knobs (prompts, BM25 params, bootstrap, bug IDs): `experiment.yaml` + `data/manifest.json`
+## The experiment setup
 
----
+We locked the setup before looking at evaluation results under tag `experiment-v1`, commit `edc70bac…`. The full configuration is in [`experiment.yaml`](experiment.yaml), and the bug list is in [`data/manifest.json`](data/manifest.json).
 
-## Layout
+- Defects4J 3.0.1, covering Cli, Lang, Math, Jsoup, and JacksonDatabind.
+- 25 development bugs and 125 planned evaluation bugs, selected with seed `20260922`.
+- Main metric: find a known failing class in the first `ceil(0.10 × N)` classes, where `N` is the suite size.
+- Jev: BM25 top 200 → `typesafe/jev-1.13`, one change/test pair per request.
+- GPT: the same shortlist → `gpt-5.4-nano`, returning a structured probability score.
 
-```
-experiment.yaml           # frozen design lock
-data/                     # bugs, patches, tests, manifest
-results/
-  metrics.csv             # headline numbers
-  statistics.json
-  figures/                # report charts
-  share/                  # tweet charts
-  failure_cases.json      # 20 extremes
-  failure_analysis.json
-  rankings/ embeddings/ random/ semantic/{jev,gpt_nano}/
-  predictions.jsonl       # sealed raw export
-  usage_ledger.jsonl      # cost/latency source
-  phase6/freeze_lock.json
-  phase7/raw_evaluation_seal.json + raw_result_index.json
-  phase8/                 # regenerated analysis (evaluate.py)
-src/
-scripts/evaluate.py       # offline regenerate from sealed rankings
-```
+Prompts, BM25 settings, statistical checks, and the other details are recorded in the configuration so you can see exactly what ran.
 
----
+## Rebuild the results
 
-## Reproduce (no API keys)
+You can regenerate the metrics, statistics, and charts from the saved predictions with Docker. No API keys needed.
 
 ```bash
 docker build --platform linux/amd64 -t jev-ci:phase1 .
@@ -92,11 +65,9 @@ docker run --rm --platform linux/amd64 --network=none \
   jev-ci:phase1 python -u scripts/evaluate.py
 ```
 
-That rebuilds metrics, stats, and figures from sealed predictions. Full check: `scripts/reproduce_phase9.py`.
+This redoes the analysis from the sealed rankings. For the full reproduction check, see [`scripts/reproduce_phase9.py`](scripts/reproduce_phase9.py).
 
----
-
-## Quick vibe check
+To check the environment:
 
 ```bash
 docker build --platform linux/amd64 -t jev-ci:phase1 .
@@ -105,6 +76,21 @@ docker run --rm --platform linux/amd64 \
   jev-ci:phase1 python scripts/check_environment.py
 ```
 
----
+## Where things live
 
-Freeze first, score second, explain last. Numbers live in `results/`.
+| Path | What’s there |
+| --- | --- |
+| [`experiment.yaml`](experiment.yaml) | The locked experiment setup |
+| [`data/`](data/) | Bug IDs, patches, test sources, and the manifest |
+| [`src/`](src/) | Ranking and evaluation code |
+| [`scripts/`](scripts/) | Scripts to run and reproduce the experiment |
+| [`results/metrics.csv`](results/metrics.csv) | Per-bug metrics |
+| [`results/statistics.json`](results/statistics.json) | Statistical comparisons |
+| [`results/figures/`](results/figures/) | Result charts |
+| [`results/share/`](results/share/) | Charts for sharing |
+| [`results/failure_cases.json`](results/failure_cases.json) and [`failure_analysis.json`](results/failure_analysis.json) | Cases worth digging into |
+| [`results/`](results/) | Saved rankings, embeddings, predictions, and the cost/latency ledger |
+
+The freeze record is in `results/phase6/freeze_lock.json`. The raw evaluation seal and index are in `results/phase7/`, and regenerated analysis goes in `results/phase8/`.
+
+The idea is to find useful tests earlier without spending much on the ranking itself. These are the results from one experiment; the saved outputs are here if you want to poke around.
